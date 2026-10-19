@@ -1,0 +1,547 @@
+.rg {
+  /* « clip » : la fin de page cachée (décalée vers le bas) n'agrandit pas la page. N'empêche pas le sticky
+     (contrairement à « hidden » : ne pas le remettre). */
+  overflow: clip;
+  --pad: clamp(16px, 2.4vw, 32px);
+  --head-h: 44px; /* hauteur de l'intitulé en haut */
+  /* place du pied de page en bas de l'écran : les étiquettes de la grille se posent juste au-dessus */
+  --foot-h: 72px;
+  /* Couleurs des guides de la grille (décor) ; --violet : la même teinte, assez foncée pour du texte
+     qui porte une information (contraste AA sur le fond) */
+  --guide: rgba(124, 92, 214, 0.9);
+  --guide-line: rgba(124, 92, 214, 0.45);
+  --violet: #5b42b5;
+  --gap-pink: rgba(214, 92, 150, 0.85);
+  position: relative;
+  padding: 0 var(--pad);
+}
+
+/* ——— Intitulé en haut ——— */
+.rg-top {
+  position: fixed;
+  top: 0;
+  left: var(--pad);
+  right: var(--pad);
+  z-index: 3;
+  height: calc(var(--pad) + var(--head-h) - 8px);
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  pointer-events: none;
+}
+.rg-top strong {
+  font-weight: 500;
+}
+.rg-top span {
+  color: var(--muted);
+}
+.rg-top > * + *::before {
+  content: '·';
+  margin-right: 18px;
+  color: var(--muted);
+}
+
+/* ——— Le champ : une colonne par projet. Chaque carte démarre à sa hauteur (--o)
+   puis colle en haut ; toutes finissent alignées. ——— */
+.rg-field {
+  position: relative;
+  z-index: 2; /* au-dessus du bouton « gap » : une carte qui grossit passe devant */
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  gap: var(--pad);
+  /* Le champ va jusqu'au bas de la page : les cartes restent rangées en haut jusqu'à la fin.
+     Sa hauteur est calculée dans le composant (départ du dernier projet + un écran et demi). */
+  height: var(--field-h, 270vh);
+  /* Il couvre toute la page : seules les cartes captent la souris (le texte et les liens
+     de fin, dessous, restent cliquables ; les cartes survolées passent devant) */
+  pointer-events: none;
+}
+.rg-col {
+  padding-top: var(--o);
+}
+
+/* ——— Les cartes ——— */
+.rg-card {
+  position: sticky;
+  top: calc(var(--pad) + var(--head-h));
+  display: grid;
+  gap: 10px;
+  padding: 10px 10px 14px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: var(--ink);
+  text-decoration: none;
+  pointer-events: auto;
+  /* Ombre qui a du sens : légère tant que la carte monte (elle flotte au-dessus de la grille),
+     plate une fois rangée (posée sur le plan, juste un filet). */
+  box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.3);
+  /* Au survol, elle grossit autant que possible : jusqu'à --span colonnes de large, sans dépasser la
+     hauteur de l'écran (écran − haut de la rangée − titre et description ≈ 300px, au format 16/10).
+     (Les % sont ceux de la colonne : 100% = une colonne.) */
+  --w: min(
+    calc(var(--span) * 100% + (var(--span) - 1) * var(--pad)),
+    calc((100vh - var(--pad) - var(--head-h) - 300px) / 0.625)
+  );
+  /* … et reste centrée sur sa colonne, bornée aux bords de la grille */
+  --ml: calc(
+    clamp(
+      0px,
+      var(--ci) * (100% + var(--pad)) + 50% - var(--w) / 2,
+      var(--n) * 100% + (var(--n) - 1) * var(--pad) - var(--w)
+    ) - var(--ci) * (100% + var(--pad))
+  );
+  width: 100%;
+  transition: box-shadow 0.45s ease, border-color 0.45s ease, width 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+    margin-left 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.rg-card.is-docked {
+  box-shadow: none;
+  border-color: rgba(26, 25, 23, 0.16);
+}
+.rg-card:is(:hover, :focus-visible) {
+  z-index: 4;
+  width: var(--w);
+  margin-left: var(--ml);
+  box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.35);
+}
+.rg-card .shot {
+  border-radius: 8px;
+  border: 0;
+}
+.rg-card .shot-empty span {
+  font-size: 20px;
+}
+.rg-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 0 4px;
+  min-width: 0;
+  container-type: inline-size;
+}
+.rg-n {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+.rg-n::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c);
+  margin-right: 6px;
+}
+.rg-title {
+  font-family: var(--serif);
+  /* Toujours sur une seule ligne, pour que toutes les cartes restent alignées */
+  font-size: clamp(16px, 10cqi, 30px);
+  line-height: 1.05;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+/* Projet pas encore en ligne : une petite ligne qui le dit, sous la phrase (révélée avec elle) */
+.rg-status {
+  display: block;
+  padding-bottom: 4px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+/* en cours : bientôt en ligne (couleur des guides de la grille, comme les TODO) */
+.rg-status.is-wip {
+  color: var(--violet);
+}
+/* Phrase courte : seulement sans survol possible (voir en bas) ; 2 lignes max */
+.rg-short {
+  display: none;
+  padding: 0 4px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--muted);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* Ce que la carte révèle en grossissant : la phrase simple qui dit ce qu'est le projet */
+.rg-more {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.rg-more-inner {
+  overflow: hidden;
+  padding: 0 4px;
+}
+.rg-card:is(:hover, :focus-visible) .rg-more {
+  grid-template-rows: 1fr;
+}
+.rg-long {
+  display: block;
+  padding: 10px 0 4px;
+  border-top: 1px solid var(--line);
+  font-size: 17px;
+  line-height: 1.4;
+}
+
+/* Effet WebGL au survol (canvas qui se pose sur la capture survolée) */
+.rg .cardfx {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+}
+.rg .cardfx canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ——— Guides de grille en fond (comme l'inspecteur de grille CSS) ——— */
+.rg-guides {
+  position: fixed;
+  inset: 0 var(--pad);
+  z-index: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  gap: var(--pad);
+  pointer-events: none;
+  transition: opacity 1s ease;
+}
+.rg-guide-col {
+  position: relative;
+  border-inline: 1px dashed var(--guide-line);
+  background: rgba(124, 92, 214, 0.035);
+}
+/* Étiquettes des guides (et l'indication « scroll ↓ », dans le même style) : posées au-dessus du contact */
+.rg-guide-label,
+.rg-hint {
+  bottom: var(--foot-h);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--guide);
+}
+.rg-guide-label {
+  position: absolute;
+  left: 8px;
+}
+.rg-guide-label em {
+  font-style: normal;
+  opacity: 0.6;
+  margin-left: 6px;
+}
+/* Repère « gap » entre les deux premières colonnes. C'est aussi le déclencheur de l'easter egg :
+   un vrai bouton, posé sur les guides (même cadre), sous les cartes (qui passent devant en grossissant). */
+.rg-gapbox {
+  position: fixed;
+  inset: 0 var(--pad);
+  z-index: 1;
+  pointer-events: none;
+}
+.rg-gap {
+  position: absolute;
+  left: calc((100% - (var(--n) - 1) * var(--pad)) / var(--n));
+  width: var(--pad);
+  /* assez bas pour ne jamais passer sur la phrase de fin (sous les projets), au-dessus du contact */
+  top: 68%;
+  height: 120px;
+  translate: 0 -50%;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  writing-mode: vertical-rl;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--gap-pink);
+  background: repeating-linear-gradient(45deg, rgba(214, 92, 150, 0.12) 0 4px, transparent 4px 8px);
+  pointer-events: auto;
+  cursor: pointer;
+  transition: opacity 1s ease, background 0.3s;
+}
+.rg-gap:hover,
+.rg-gap[aria-expanded='true'] {
+  background: repeating-linear-gradient(45deg, rgba(214, 92, 150, 0.24) 0 4px, transparent 4px 8px);
+}
+/* comme les guides, il s'estompe une fois tout rangé (mais reste cliquable) */
+.rg.is-done .rg-gap:not(:hover, :focus-visible, [aria-expanded='true']) {
+  opacity: 0.25;
+}
+/* Rangées : là où les cartes se collent (row 1), et jusqu'où une carte survolée grossit (row 2) */
+.rg-guide-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--pad) + var(--head-h) + var(--r) * (var(--row-h, 300px) + 14px));
+  border-top: 1px dashed var(--guide-line);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--guide);
+  text-align: right;
+  padding-top: 4px;
+}
+/* Une fois tout rangé, les guides s'estompent */
+.rg.is-done .rg-guides {
+  opacity: 0.25;
+}
+/* le bandeau des projets abandonnés prend leur place, en bas */
+.rg-guide-label {
+  transition: opacity 0.4s;
+}
+.rg.show-ab .rg-guide-label {
+  opacity: 0;
+}
+
+/* Indication « scroll ↓ » : en bas à droite, comme une étiquette de la grille ;
+   elle s'efface dès qu'on commence à faire défiler */
+.rg-hint {
+  position: fixed;
+  z-index: 2;
+  right: calc(var(--pad) + 8px);
+  margin: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.rg-hint.is-off,
+.rg.show-ab .rg-hint {
+  opacity: 0;
+}
+
+/* ——— Fin de page : elle monte quand tout est rangé et occupe le vide sous la rangée
+   (la phrase et le parcours en haut, juste sous les projets ; le contact en bas de l'écran) ——— */
+.rg-end {
+  position: fixed;
+  z-index: 0;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: 0;
+  height: calc(100vh - var(--pad) - var(--head-h) - var(--row-h, 300px) - 56px);
+  display: flex;
+  flex-direction: column;
+  gap: min(28px, 3vh);
+  pointer-events: none;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.5s ease;
+}
+.rg.is-done .rg-end {
+  transform: none;
+  opacity: 1;
+}
+
+.rg-end > * {
+  pointer-events: auto;
+}
+.rg-about {
+  display: grid;
+  gap: 14px;
+  max-width: 760px;
+  padding-top: 8px;
+}
+.rg-intro {
+  font-family: var(--serif);
+  font-size: clamp(26px, 2.4vw, 36px);
+  line-height: 1.15;
+  color: var(--ink);
+}
+.rg-xp {
+  font-size: 16px;
+  color: var(--muted);
+}
+.rg-xp strong {
+  font-weight: 500;
+  color: var(--ink);
+}
+/* Pied de page minimal : une ligne, en petit */
+.rg-foot {
+  margin-top: auto; /* tout en bas de l'écran */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+  padding: 18px 0 24px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--muted);
+}
+.rg-foot p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 0;
+}
+.rg-foot a {
+  color: var(--ink);
+}
+
+/* ——— Easter egg : les projets abandonnés, en bandeau qui défile tout en bas (au-dessus du contact),
+   comme du code mis en commentaire. Il monte quand on clique sur le repère « gap » de la grille. ——— */
+.rg-ab {
+  position: fixed;
+  /* sous les cartes (qui passent devant en montant, comme devant les guides), sans fond */
+  z-index: 1;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: var(--foot-h); /* juste au-dessus du contact */
+  display: grid;
+  gap: 8px;
+  padding-top: 8px;
+  /* caché sous le bas de l'écran ; monte quand on clique sur « gap » */
+  opacity: 0;
+  translate: 0 calc(100% + var(--foot-h));
+  visibility: hidden;
+  transition: translate 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.4s ease, visibility 0s 0.6s;
+}
+.rg.show-ab .rg-ab {
+  opacity: 1;
+  translate: none;
+  visibility: visible;
+  transition: translate 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.4s ease;
+}
+/* étiquette dans le style de celles de la grille */
+.rg-ab-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--guide);
+}
+.rg-ab-window {
+  overflow: hidden;
+  padding: 10px 0;
+  border-block: 1px dashed rgba(124, 92, 214, 0.35);
+}
+.rg-ab-track {
+  display: flex;
+  width: max-content;
+  gap: 48px;
+  /* même espace après la dernière entrée : la 2e copie commence pile à la moitié (boucle sans couture) */
+  padding: 0 48px 0 0;
+  margin: 0;
+  list-style: none;
+  animation: rg-ab 70s linear infinite;
+}
+@keyframes rg-ab {
+  to {
+    translate: -50% 0;
+  }
+}
+/* à l'arrêt tant qu'il est caché ; en pause au survol et au focus clavier (pour lire) */
+.rg:not(.show-ab) .rg-ab-track,
+.rg-ab-window:is(:hover, :focus) .rg-ab-track {
+  animation-play-state: paused;
+}
+.rg-ab-track li {
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+/* les délimiteurs de commentaire (ignorés par les lecteurs d'écran) */
+.rg-ab-track li::before {
+  content: '/* ' / '';
+}
+.rg-ab-track li::after {
+  content: ' */' / '';
+}
+.rg-ab-title {
+  font-weight: 500;
+  color: var(--ink);
+}
+/* projet en cours : un TODO, de la couleur des guides de la grille */
+.rg-ab-todo {
+  color: var(--violet);
+}
+/* moins d'animations demandé : pas de défilement, la liste s'affiche sur plusieurs lignes */
+@media (prefers-reduced-motion: reduce) {
+  .rg-ab-track {
+    animation: none;
+    width: auto;
+    flex-wrap: wrap;
+    gap: 6px 32px;
+    padding: 0;
+  }
+  .rg-ab-track li[aria-hidden] {
+    display: none;
+  }
+}
+
+/* ——— Sans survol possible (mobile, tactile) : la phrase courte reste sur la carte,
+   et la carte ne grossit pas ——— */
+@media (max-width: 900px), (hover: none) {
+  .rg-short {
+    display: -webkit-box;
+  }
+  /* (la phrase est déjà là : seule la ligne « pas en ligne » reste, ouverte) */
+  .rg-more {
+    grid-template-rows: 1fr;
+  }
+  .rg-long {
+    display: none;
+  }
+  .rg-card:is(:hover, :focus-visible) {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+/* ——— Petit écran : pas d'animation, une liste simple, dans l'ordre :
+   le nom, les projets, la phrase de fin, le contact ——— */
+@media (max-width: 900px) {
+  .rg {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-bottom: 32px;
+  }
+  /* le champ, les colonnes et la fin de page s'effacent : leurs éléments se rangent dans .rg */
+  .rg-field,
+  .rg-col,
+  .rg-end {
+    display: contents;
+  }
+  .rg-top {
+    position: static;
+    height: auto;
+    flex-wrap: wrap;
+    padding-top: 24px;
+  }
+  .rg-card {
+    position: static;
+    order: 1;
+  }
+  .rg-about {
+    order: 2;
+    padding-top: 24px;
+  }
+  /* l'easter egg (le repère « gap » et son bandeau) est réservé aux grands écrans, avec la grille */
+  .rg-gapbox,
+  .rg-ab {
+    display: none;
+  }
+  .rg-foot {
+    order: 999;
+  }
+  .rg-guides,
+  .rg-hint {
+    display: none;
+  }
+}
