@@ -24,6 +24,21 @@ const NAME = ['Garance', 'Wetzel']
 const NAME_GAP = 60
 const NAME_STEP = 40
 
+// Deux effets cachés dans la signature, au survol (rien ne les annonce) : les « a » de Garance deviennent creux
+// (seulement leur contour), le W de Wetzel ondule comme un liquide
+const HIDDEN = { Garance: { 1: 'rg-hollow', 3: 'rg-hollow' }, Wetzel: { 0: 'rg-wave' } }
+const signed = (word) =>
+  [...word].map((ch, k) => {
+    const effect = HIDDEN[word]?.[k]
+    return effect ? (
+      <span key={k} className={effect}>
+        {ch}
+      </span>
+    ) : (
+      ch
+    )
+  })
+
 // Passage de la carte à sa fiche (et retour) : la capture de la carte glisse et s'agrandit jusqu'à sa place
 // dans la fiche, le reste apparaît en fondu (View Transitions). Sans elles, ou si l'on a demandé moins
 // d'animations : la fiche apparaît simplement en fondu. after : ce qui suit le changement (le focus).
@@ -148,7 +163,7 @@ export default function Portfolio() {
       const r = root.current
       const cards = [...r.querySelectorAll('.rg-card')]
       if (!cards.length || getComputedStyle(cards[0]).position !== 'sticky') return setPhase('done')
-      // Hauteur de la rangée de cartes (place les lettres du nom, le guide « row 1 » et la fin de page)
+      // Hauteur de la rangée de cartes (place la signature, le bandeau de l.easter egg et la fin de page)
       const h = `${Math.round(Math.max(...cards.map((c) => c.offsetHeight)))}px`
       // (n'écrire que si elle change : sinon toute la page recalcule ses styles à chaque scroll)
       if (h !== rowH) r.style.setProperty('--row-h', (rowH = h))
@@ -257,7 +272,7 @@ export default function Portfolio() {
           // une colonne par projet : la carte y part à sa hauteur, puis se colle en haut
           <div key={p.id} className="rg-col" style={{ '--o': `${start(i)}vh` }}>
             {/* La carte : toute la carte ouvre la fiche du projet (les liens vers le site et le code y sont) */}
-            <div className="rg-card" data-i={i} style={{ '--c': p.color, '--k': i /* ordre sur mobile */ }}>
+            <div className="rg-card" data-i={i} style={{ '--k': i /* ordre sur mobile */ }}>
               <button
                 type="button"
                 className="rg-link"
@@ -291,7 +306,7 @@ export default function Portfolio() {
             <div key={word} className="rg-line" style={{ '--line': line }}>
               {/* la 2e ligne se colle une ligne plus bas : elle part aussi une ligne plus bas */}
               <span className="rg-word" style={{ '--o': `calc(${nameStart(line)}vh + ${line} * var(--lh))` }}>
-                {word}
+                {signed(word)}
               </span>
             </div>
           ))}
@@ -315,7 +330,6 @@ export default function Portfolio() {
             .
           </p>
           <p>
-            <a href={`mailto:${me.email}`}>{me.email}</a>
             <a href={me.github} target="_blank" rel="noreferrer">
               GitHub<span className="sr"> (nouvel onglet)</span> ↗
             </a>
@@ -325,6 +339,16 @@ export default function Portfolio() {
           </p>
         </footer>
       </div>
+
+      {/* le filtre « liquide » du W de la signature */}
+      <svg className="rg-defs" aria-hidden width="0" height="0">
+        <filter id="rg-wobble">
+          <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" seed="3">
+            <animate attributeName="baseFrequency" dur="3s" values="0.015;0.04;0.015" repeatCount="indefinite" />
+          </feTurbulence>
+          <feDisplacementMap in="SourceGraphic" scale="22" />
+        </filter>
+      </svg>
 
       {/* La fiche d'un projet, en grand au milieu (clic sur une carte) */}
       <ProjectSheet projects={projects} index={sheet} cols={N} onClose={closeSheet} onStep={stepSheet} />

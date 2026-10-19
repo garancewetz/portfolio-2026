@@ -4,6 +4,8 @@ Portfolio de projets personnels, en React + Vite.
 
 À l'arrivée, les 5 projets sont déjà là, en escalier (chacun un peu plus bas que le précédent) ; ils montent un par un et se rangent en haut de l'écran (`position: sticky`) sur une ligne, une colonne par projet, sur un fond de guides de grille CSS. Ensuite vient la signature : le nom, en très grand, se range dessous (« Garance » en linéale, puis « Wetzel » en italique). Le nom n'est pas écrit en haut de la page (seulement le métier) : la signature, à la fin, est la révélation ; sur mobile, elle vient après la liste des projets. Au survol, la carte ne change pas de taille : l'effet three.js ondule l'image quand la souris bouge. Un clic sur la carte ouvre la fiche du projet (plein écran, sur la même grille), avec les liens vers le site et le code ; on y passe d'un projet à l'autre (← →), et chaque fiche a son adresse (`#synapso`…) : le retour du navigateur la ferme. À la fin, la page continue juste ce qu'il faut : la grille remonte si besoin, et le pied de page (parcours et contact) arrive dessous.
 
+Deux effets cachés dans la signature, au survol : les « a » de Garance deviennent creux, le W de Wetzel ondule.
+
 Easter egg : le repère « gap » de la grille est un bouton. Un clic fait défiler les projets abandonnés, écrits comme du code en commentaire, dans l'interstice entre les cartes et le nom (rien ne bouge dans la page).
 
 
@@ -38,7 +40,7 @@ public/
 
 ## Modifier le contenu (`src/data.js`)
 
-- **Un projet** : `id` (l'adresse de sa fiche, ex. `#synapso`), `title`, `short` (la phrase simple, dans la fiche et sur mobile), `color` (la pastille), `image` et `alt`.
+- **Un projet** : `id` (l'adresse de sa fiche, ex. `#synapso`), `title`, `short` (la phrase simple, dans la fiche et sur mobile), `image` et `alt`.
 - **Projet en ligne** : `demo` (lien du site, dans la fiche) ; sinon la carte affiche « pas en ligne » et la fiche ne propose que `code` (GitHub).
 - **Projet bientôt en ligne** : `wip: true` (affiche « en cours · bientôt en ligne »).
 - **Projets abandonnés** (easter egg) : `abandoned`, une phrase très courte qui dit le fond du projet.

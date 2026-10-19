@@ -43,7 +43,7 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep })
       ref={dialog}
       className="rg-sheet"
       aria-labelledby="rg-sheet-title"
-      style={{ '--c': p.color, '--n': cols }}
+      style={{ '--n': cols }}
       // Échap (le navigateur ferme la boîte : on suit)
       onCancel={(e) => {
         e.preventDefault()

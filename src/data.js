@@ -4,7 +4,6 @@ export const me = {
   role: 'Développeuse front-end',
   github: 'https://github.com/garancewetz',
   linkedin: 'https://www.linkedin.com/in/garancewetzel/',
-  email: 'garance.wetzel@gmail.com',
 }
 
 // Parcours, du poste actuel au plus ancien (« Aujourd'hui chez …, avant … et … »)
@@ -17,7 +16,6 @@ export const experience = ['Okeiro', 'Colorz', 'Uptoo']
 export const projects = [
   {
     id: 'signe',
-    color: '#6f8fd8',
     title: 'Signe astronomique',
     short: 'Calcule ton vrai signe à partir de la position réelle du Soleil dans le ciel.',
     year: '2026',
@@ -31,7 +29,6 @@ export const projects = [
   },
   {
     id: 'synapso',
-    color: '#7fb69a',
     title: 'Synapso',
     short: 'Accompagne la rééducation après un AVC, un exercice à la fois.',
     year: '2026',
@@ -46,7 +43,6 @@ export const projects = [
   {
     id: 'trame',
     wip: true,
-    color: '#b48ad6',
     title: 'Trans-trame',
     short: 'Une carte des livres et de la manière dont ils se citent entre eux.',
     year: '2025',
@@ -60,7 +56,6 @@ export const projects = [
   },
   {
     id: 'mosaique',
-    color: '#d9a35b',
     title: 'Mosaïque',
     short: 'Remplace l’onglet vide de Chrome par tes sites favoris, rangés par thèmes.',
     year: '2025',
@@ -74,7 +69,6 @@ export const projects = [
   },
   {
     id: 'journey',
-    color: '#e0867a',
     title: 'wwwetzel journey',
     short: 'Mon parcours raconté comme un petit jeu vidéo à explorer au clavier.',
     year: '2025',

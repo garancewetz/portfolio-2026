@@ -181,15 +181,8 @@ kbd {
   /* marge basse invisible (la place des lettres du nom, dessous) : à la fin, les cartes se décollent en même
      temps que les lettres, et tout remonte d'un bloc */
   margin-bottom: calc(32px + 2 * var(--lh));
-  padding: 10px 10px 14px;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 14px;
+  /* sans cadre, sans fond, sans ombre : juste l'image et son titre */
   pointer-events: auto;
-  /* Ombre qui a du sens : légère tant que la carte monte (elle flotte au-dessus de la grille),
-     plate une fois rangée (posée sur le plan, juste un filet). */
-  box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.3);
-  transition: box-shadow 0.45s ease, border-color 0.45s ease;
 }
 .rg-link {
   display: grid;
@@ -203,18 +196,13 @@ kbd {
   color: var(--ink);
   cursor: pointer;
 }
-.rg-card.is-docked {
-  box-shadow: none;
-  border-color: rgba(26, 25, 23, 0.16);
-}
-/* Au survol (seulement une carte rangée : pas celle qui monte encore), elle ne change pas de taille : juste
-   une ombre légère (et l'ondulation de l'image) */
+/* Au survol (seulement une carte rangée : pas celle qui monte encore), elle ne change pas de taille : seule
+   l'image ondule ; elle passe devant les autres */
 .rg-card.is-docked:is(:hover, :has(:focus-visible)) {
   z-index: 4;
-  box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.35);
 }
 .rg-card .shot {
-  border-radius: 8px;
+  border-radius: 4px;
   border: 0;
 }
 .rg-card .shot-empty span {
@@ -224,7 +212,6 @@ kbd {
   display: flex;
   align-items: baseline;
   gap: 10px;
-  padding: 0 4px;
   min-width: 0;
   container-type: inline-size;
 }
@@ -233,15 +220,6 @@ kbd {
   font-family: var(--mono);
   font-size: 12px;
   color: var(--muted);
-}
-.rg-n::before {
-  content: '';
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--c);
-  margin-right: 6px;
 }
 .rg-title {
   font-family: var(--serif);
@@ -256,7 +234,6 @@ kbd {
 /* Projet pas encore en ligne : une petite ligne qui le dit, sous la phrase (sur mobile seulement, voir en bas) */
 .rg-status {
   display: none;
-  padding-inline: 4px;
   padding-bottom: 4px;
   font-family: var(--mono);
   font-size: 11px;
@@ -269,7 +246,6 @@ kbd {
 /* Phrase courte : sur mobile seulement (voir en bas) ; 2 lignes max */
 .rg-short {
   display: none;
-  padding: 0 4px;
   font-size: 14px;
   line-height: 1.4;
   color: var(--muted);
@@ -447,6 +423,30 @@ kbd {
 .rg-xp > span > span,
 .rg-xp > span:first-child {
   color: var(--ink);
+}
+
+/* ——— Deux effets cachés dans la signature, au survol ——— */
+.rg-defs {
+  position: absolute;
+}
+.rg-hollow,
+.rg-wave {
+  pointer-events: auto;
+  transition: color 0.3s ease;
+}
+/* les « a » de Garance : creux, il ne reste que le contour */
+.rg-hollow:hover {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--ink);
+}
+/* le W de Wetzel : ondule comme un liquide (filtre SVG) */
+.rg-wave:hover {
+  filter: url(#rg-wobble);
+}
+@media (prefers-reduced-motion: reduce) {
+  .rg-wave:hover {
+    filter: none;
+  }
 }
 
 /* ——— Easter egg : les projets abandonnés, en bandeau qui défile dans l'interstice (32px) entre les cartes et
@@ -717,8 +717,9 @@ kbd {
   grid-column: 1 / span calc(var(--n) - 2);
 }
 .rg-sheet-shot .shot {
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  /* comme sur les cartes : sans filet, coins à peine arrondis (la même image, en plus grand) */
+  border: 0;
+  border-radius: 4px;
 }
 .rg-sheet-text {
   grid-column: span 2;
@@ -736,15 +737,6 @@ kbd {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
-}
-.rg-sheet-meta::before {
-  content: '';
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  margin-right: 8px;
-  border-radius: 50%;
-  background: var(--c);
 }
 .rg-sheet-title {
   font-family: var(--serif);
