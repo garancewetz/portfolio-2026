@@ -11,8 +11,9 @@ export const me = {
 export const experience = ['Okeiro', 'Colorz', 'Uptoo']
 
 // Les projets (une carte chacun). demo : lien du site s'il est en ligne ; sinon la carte mène à code.
-// wip : en cours, bientôt en ligne. short : la phrase simple qui dit ce que c'est (affichée au survol).
+// wip : en cours, bientôt en ligne. short : la phrase simple qui dit ce que c'est (dans la fiche, et sur mobile).
 // year, kind, long, stack : les détails, affichés dans la fiche du projet (clic sur une carte).
+// focus : le défi, ce que le projet m'a demandé (une phrase, dans la fiche).
 // image : capture 16/10 dans public/shots (WebP, 1200 px de large).
 export const projects = [
   {
@@ -22,7 +23,8 @@ export const projects = [
     short: 'Calcule ton vrai signe à partir de la position réelle du Soleil dans le ciel.',
     year: '2026',
     kind: 'Application web 3D',
-    long: 'Les horoscopes utilisent un découpage vieux de 2 000 ans. Ce site calcule le signe réel selon les constellations officielles (IAU 1930) et le décalage des équinoxes — Ophiuchus inclus. La Terre et les satellites sont affichés en 3D, en temps réel.',
+    long: 'Les horoscopes utilisent un découpage vieux de 2 000 ans. Ce site calcule le signe réel selon les constellations officielles (IAU 1930) et le décalage des équinoxes — Ophiuchus inclus.',
+    focus: 'Passer d’un calcul astronomique exact à une réponse simple, et afficher la Terre en 3D sans alourdir la page.',
     stack: ['TypeScript', 'React', 'Cesium', 'SGP4'],
     image: '/shots/signe.webp',
     alt: 'Interface de Signe astronomique : un formulaire de date de naissance à gauche, la Terre en 3D sur fond étoilé à droite.',
@@ -37,6 +39,7 @@ export const projects = [
     year: '2026',
     kind: 'Application mobile (PWA)',
     long: 'Exercices quotidiens rangés par catégories, suivi de progression, journal personnel et partage avec le ou la kiné. L’interface est pensée pour rester simple à utiliser malgré des difficultés motrices ou cognitives.',
+    focus: 'Concevoir pour des personnes qui ont des difficultés motrices ou cognitives : chaque écran doit rester simple.',
     stack: ['Next.js', 'TypeScript', 'Prisma'],
     image: '/shots/synapso.webp', // capture faite avec un compte et des données de démo
     alt: 'Page « Ma progression » de Synapso : un calendrier des 28 derniers jours rempli de pastilles vertes, une série de 14 jours, les exercices par zone du corps et une liste de progrès notés.',
@@ -52,6 +55,7 @@ export const projects = [
     year: '2025',
     kind: 'Visualisation de données',
     long: 'Chaque ouvrage est un point, chaque citation un lien. On peut explorer le graphe, filtrer par période ou par auteur·ice, et contribuer en ajoutant des références.',
+    focus: 'Rendre lisible un graphe dense : qu’on s’y retrouve en explorant, et que chacun·e puisse y ajouter des références.',
     stack: ['React', 'TypeScript', 'Supabase'],
     image: '/shots/trame.webp', // capture faite avec des données de démo
     alt: 'Graphe de Trans-trame sur fond sombre : des cercles colorés, un par livre, reliés par des lignes de citation, avec des titres comme Le Deuxième Sexe, Gender Trouble ou Sister Outsider, et une frise chronologique en bas.',
@@ -66,6 +70,7 @@ export const projects = [
     year: '2025',
     kind: 'Extension Chrome',
     long: 'Les favoris deviennent des tuiles, organisées en groupes que l’on déplace par glisser-déposer. Les onglets ouverts sont visibles sur le côté pour les ranger en un geste.',
+    focus: 'Un glisser-déposer fluide, pour ranger tuiles, groupes et onglets en un geste.',
     stack: ['React', 'TypeScript', 'API Chrome'],
     image: '/shots/mosaique.webp', // capture de la fiche Chrome Web Store
     alt: 'Interface de Mosaïque sur fond sombre : les onglets ouverts à gauche, une recherche, des favoris en tuiles (Gmail, SNCF, Météo, Doctolib…) et des groupes colorés comme « Démarches » et « Actualité ».',
@@ -80,6 +85,7 @@ export const projects = [
     year: '2025',
     kind: 'Mini-jeu',
     long: 'Un personnage se déplace dans un décor en pixel art et découvre mes expériences en chemin. Un essai ludique, à côté d’un portfolio plus classique.',
+    focus: 'Raconter un parcours par le jeu : un petit monde en pixel art, à parcourir au clavier.',
     stack: ['Next.js', 'Framer Motion'],
     image: '/shots/journey.webp',
     alt: 'Carte en pixel art : un personnage sur un chemin de terre, entouré d’arbres, d’une rivière et d’objets à découvrir (un livre, un piano, un champignon).',

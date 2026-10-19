@@ -2,7 +2,7 @@
 
 Portfolio de projets personnels, en React + Vite.
 
-Les projets montent un par un et se rangent en haut de l'écran (`position: sticky`) sur une ligne, une colonne par projet, sur un fond de guides de grille CSS. Ensuite vient la signature : le nom, en très grand, se range dessous (« Garance » en linéale, puis « Wetzel » en italique). Le nom n'est pas écrit en haut de la page (seulement le métier) : la signature, à la fin, est la révélation ; sur mobile, elle vient après la liste des projets. Au survol, la carte ne change pas de taille : l'effet three.js ondule l'image quand la souris bouge. Un clic sur la carte ouvre la fiche du projet (plein écran, sur la même grille), avec les liens vers le site et le code. À la fin, la page continue juste ce qu'il faut : la grille remonte si besoin, et le pied de page (parcours et contact) arrive dessous.
+Les projets montent un par un et se rangent en haut de l'écran (`position: sticky`) sur une ligne, une colonne par projet, sur un fond de guides de grille CSS. Ensuite vient la signature : le nom, en très grand, se range dessous (« Garance » en linéale, puis « Wetzel » en italique). Le nom n'est pas écrit en haut de la page (seulement le métier) : la signature, à la fin, est la révélation ; sur mobile, elle vient après la liste des projets. Au survol, la carte ne change pas de taille : l'effet three.js ondule l'image quand la souris bouge. Un clic sur la carte ouvre la fiche du projet (plein écran, sur la même grille), avec les liens vers le site et le code ; on y passe d'un projet à l'autre (← →), et chaque fiche a son adresse (`#synapso`…) : le retour du navigateur la ferme. À la fin, la page continue juste ce qu'il faut : la grille remonte si besoin, et le pied de page (parcours et contact) arrive dessous.
 
 Easter egg : le repère « gap » de la grille est un bouton. Un clic fait défiler les projets abandonnés, écrits comme du code en commentaire, dans l'interstice entre les cartes et le nom (rien ne bouge dans la page).
 
@@ -25,7 +25,7 @@ src/
   main.jsx         point d'entrée
   Portfolio.jsx    la page : cartes, guides de grille, fin de page, easter egg
   Portfolio.css    ses styles (mobile en bas du fichier)
-  ProjectSheet.jsx fiche d'un projet (ouverte au clic sur une carte)
+  ProjectSheet.jsx fiche d'un projet (clic sur une carte ; précédent/suivant, adresse #id)
   Shot.jsx         capture d'un projet
   CardFX.jsx       effet three.js au survol des captures (chargé à la demande, souris seulement)
   data.js          tout le contenu
@@ -33,11 +33,12 @@ src/
 public/
   shots/           captures des projets (16/10, WebP, 1200 px de large)
   favicon.svg
+  og.jpg           aperçu des liens partagés (1200 × 630)
 ```
 
 ## Modifier le contenu (`src/data.js`)
 
-- **Un projet** : `title`, `short` (la phrase simple, dans la fiche et sur mobile), `color` (la pastille), `image` et `alt`.
+- **Un projet** : `id` (l'adresse de sa fiche, ex. `#synapso`), `title`, `short` (la phrase simple, dans la fiche et sur mobile), `focus` (le défi, dans la fiche), `color` (la pastille), `image` et `alt`.
 - **Projet en ligne** : `demo` (lien du site, dans la fiche) ; sinon la carte affiche « pas en ligne » et la fiche ne propose que `code` (GitHub).
 - **Projet bientôt en ligne** : `wip: true` (affiche « en cours · bientôt en ligne »).
 - **Projets abandonnés** (easter egg) : `abandoned`, une phrase très courte qui dit le fond du projet.

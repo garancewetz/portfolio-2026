@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { abandoned, experience, me, projects } from './data.js'
 import Shot from './Shot.jsx'
@@ -26,25 +26,40 @@ const NAME_STEP = 40
 
 // Passage de la carte à sa fiche (et retour) : la capture de la carte glisse et s'agrandit jusqu'à sa place
 // dans la fiche, le reste apparaît en fondu (View Transitions). Sans elles, ou si l'on a demandé moins
-// d'animations : la fiche apparaît simplement en fondu.
-function morph(shot, update, opening) {
-  if (!document.startViewTransition || !shot || matchMedia('(prefers-reduced-motion: reduce)').matches)
-    return update()
+// d'animations : la fiche apparaît simplement en fondu. after : ce qui suit le changement (le focus).
+const canMorph = () => document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches
+function morph(shot, update, opening, after) {
+  const done = () => {
+    flushSync(update)
+    after?.()
+  }
+  if (!canMorph() || !shot) return done()
   const html = document.documentElement
   html.classList.add('is-morph')
   // un seul élément porte le nom à la fois : la capture de la carte avant, celle de la fiche après (et l'inverse)
   if (opening) shot.style.viewTransitionName = 'rg-shot'
   const t = document.startViewTransition(async () => {
     if (opening) shot.style.viewTransitionName = ''
-    flushSync(update)
+    done()
     if (!opening) shot.style.viewTransitionName = 'rg-shot'
     // (l'image de la fiche, déjà chargée par la carte, est prête avant la photo d'arrivée)
     else await document.querySelector('.rg-sheet-shot img')?.decode().catch(() => {})
   })
+  // (une transition interrompue, par ex. onglet en arrière-plan : le changement a lieu quand même)
+  t.ready.catch(() => {})
   t.finished.finally(() => {
     shot.style.viewTransitionName = ''
     html.classList.remove('is-morph')
   })
+}
+
+// La fiche ouverte a sa propre adresse (#synapso…) : on peut l'envoyer, et le retour du navigateur la ferme.
+// (La page ne bouge pas au retour : sinon le navigateur remettrait une position de défilement notée pendant que
+// la fiche bloquait le défilement.)
+history.scrollRestoration = 'manual'
+const sheetFromHash = () => {
+  const i = projects.findIndex((p) => `#${p.id}` === location.hash)
+  return i < 0 ? null : i
 }
 
 // Easter egg : les projets abandonnés, écrits comme du code mis en commentaire.
@@ -75,12 +90,53 @@ export default function Portfolio() {
   // Étape : 'scroll' (les projets montent) → 'done' (tous rangés)
   const [phase, setPhase] = useState('scroll')
   const [gap, setGap] = useState(false) // easter egg : projets abandonnés affichés
-  const [sheet, setSheet] = useState(null) // fiche ouverte (index du projet), ou null
+  const [sheet, setSheet] = useState(sheetFromHash) // fiche ouverte (index du projet), ou null
+  const sheetNow = useRef(sheet) // (la même, pour les gestionnaires d'événements)
+  useLayoutEffect(() => {
+    sheetNow.current = sheet
+  }, [sheet])
   const [fx] = useState(hasMouse)
   // la capture de la carte d'un projet (point de départ et d'arrivée de la transition vers sa fiche)
   const shotOf = (i) => root.current?.querySelector(`.rg-card[data-i="${i}"] .shot`)
-  const openSheet = (i) => morph(shotOf(i), () => setSheet(i), true)
-  const closeSheet = () => morph(shotOf(sheet), () => setSheet(null), false)
+  // ouvrir : la fiche prend l'adresse du projet (une étape dans l'historique : le retour la ferme)
+  const openSheet = (i) => {
+    morph(shotOf(i), () => setSheet(i), true)
+    history.pushState({ sheet: true }, '', `#${projects[i].id}`)
+  }
+  // fermer (et rendre le focus à la carte du projet qu'on regardait)
+  const shut = () => {
+    const i = sheetNow.current
+    if (i === null) return
+    morph(shotOf(i), () => setSheet(null), false, () =>
+      root.current?.querySelector(`.rg-card[data-i="${i}"] .rg-link`)?.focus({ preventScroll: true }),
+    )
+  }
+  // « Fermer », Échap, le fil d'Ariane : comme le retour du navigateur, si la fiche a été ouverte depuis la
+  // page ; sinon (arrivée directe sur l'adresse d'une fiche), on ferme et on retire l'adresse
+  const closeSheet = () => {
+    if (history.state?.sheet) return history.back()
+    history.replaceState(null, '', location.pathname + location.search)
+    shut()
+  }
+  // projet précédent ou suivant, dans la fiche (l'adresse suit, sans ajouter d'étape à l'historique)
+  // (une coupe nette : l'image et le texte changent d'un coup, sans animation)
+  const stepSheet = (dir) => {
+    const i = (sheetNow.current + dir + N) % N
+    setSheet(i)
+    history.replaceState(history.state, '', `#${projects[i].id}`)
+  }
+  // retour (ou avance) du navigateur : la fiche suit l'adresse
+  useEffect(() => {
+    const onPop = () => {
+      const i = sheetFromHash()
+      if (i === sheetNow.current) return
+      if (i === null) shut()
+      else if (sheetNow.current === null) morph(shotOf(i), () => setSheet(i), true)
+      else flushSync(() => setSheet(i))
+    }
+    addEventListener('popstate', onPop)
+    return () => removeEventListener('popstate', onPop)
+  }, [])
 
   useEffect(() => {
     let rowH = ''
@@ -271,7 +327,7 @@ export default function Portfolio() {
       </div>
 
       {/* La fiche d'un projet, en grand au milieu (clic sur une carte) */}
-      <ProjectSheet project={sheet === null ? null : projects[sheet]} cols={N} onClose={closeSheet} />
+      <ProjectSheet projects={projects} index={sheet} cols={N} onClose={closeSheet} onStep={stepSheet} />
 
 
       {/* Le déclencheur : le repère « gap » des guides, entre les deux premières colonnes (un vrai bouton) */}

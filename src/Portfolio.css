@@ -126,6 +126,54 @@
   letter-spacing: -0.01em;
 }
 
+/* ——— Le clavier : de petites touches (un filet, du texte en mono), là où une touche sert. Seulement avec un
+   clavier et une souris : sur un écran tactile, elles disparaissent ——— */
+kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 18px;
+  padding: 0 5px;
+  border: 1px solid rgba(26, 25, 23, 0.18);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+  vertical-align: 1px;
+}
+/* sur la carte sélectionnée au clavier : ↵ pour l'ouvrir, au bout de la ligne du titre */
+.rg-link:focus-visible .rg-meta::after {
+  content: '↵' / '';
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 18px;
+  margin-left: auto;
+  padding: 0 5px;
+  border: 1px solid rgba(26, 25, 23, 0.18);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink);
+  align-self: center;
+}
+@media (hover: none), (max-width: 900px) {
+  .rg-sheet-close kbd,
+  .rg-link:focus-visible .rg-meta::after {
+    display: none;
+  }
+  /* (les flèches de la fiche restent, en simples flèches) */
+  .rg-sheet-steps kbd {
+    border: 0;
+    font-size: 13px;
+  }
+}
+
 /* ——— Les cartes ——— */
 .rg-card {
   position: sticky;
@@ -495,7 +543,8 @@
   border: 0;
   background: var(--bg);
   color: var(--ink);
-  overflow: auto;
+  /* (pas de défilement de côté : le texte arrive en glissant) */
+  overflow: hidden auto;
   animation: rg-fade 0.3s ease;
 }
 .rg-sheet::backdrop {
@@ -529,13 +578,7 @@
   animation-duration: 0.35s;
 }
 .rg-sheet-text {
-  animation: rg-in 0.5s 0.12s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
-}
-@keyframes rg-in {
-  from {
-    opacity: 0;
-    translate: 24px 0;
-  }
+  animation: rg-fade 0.4s 0.12s ease-out backwards;
 }
 @media (prefers-reduced-motion: reduce) {
   .rg-sheet-text {
@@ -571,14 +614,14 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
-.rg-sheet-top nav {
+.rg-sheet-top > nav {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: 18px;
   color: var(--muted);
 }
-.rg-sheet-top nav > * + *::before {
+.rg-sheet-top > nav > * + *::before {
   content: '·';
   margin-right: 18px;
   color: var(--muted);
@@ -586,7 +629,7 @@
   display: inline-block; /* (le point n'est pas souligné avec le lien) */
 }
 /* les étapes cliquables : comme du texte, soulignées au survol */
-.rg-sheet-top nav button {
+.rg-sheet-top > nav button {
   padding: 0;
   border: 0;
   background: none;
@@ -597,16 +640,44 @@
   text-underline-offset: 0.3em;
   cursor: pointer;
 }
-.rg-sheet-top nav button:first-child {
+.rg-sheet-top > nav button:first-child {
   font-weight: 500;
   color: var(--ink);
 }
-.rg-sheet-top nav button:hover {
+.rg-sheet-top > nav button:hover {
   color: var(--ink);
   text-decoration: underline;
 }
-.rg-sheet-top nav [aria-current] {
+.rg-sheet-top > nav [aria-current] {
   color: var(--ink);
+}
+/* à droite : ← 02 / 05 → puis « Fermer » */
+.rg-sheet-actions {
+  display: flex;
+  align-items: baseline;
+  gap: 32px;
+}
+.rg-sheet-steps {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  color: var(--muted);
+}
+.rg-sheet-steps button {
+  min-width: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  transition: translate 0.2s ease;
+}
+.rg-sheet-steps button:first-child:hover {
+  translate: -3px 0;
+}
+.rg-sheet-steps button:last-child:hover {
+  translate: 3px 0;
 }
 .rg-sheet-close {
   padding: 0;
@@ -630,7 +701,10 @@
   display: grid;
   grid-template-columns: repeat(var(--n), 1fr);
   gap: var(--pad);
-  align-items: center;
+  /* la rangée (capture et texte) au milieu de l'écran ; le texte aussi haut que la capture : il commence à son
+     bord haut et finit à son bord bas */
+  align-content: center;
+  align-items: stretch;
   min-height: calc(100% - var(--pad) - var(--head-h) + 8px);
   padding: 24px var(--pad) var(--pad);
 }
@@ -643,12 +717,15 @@
 }
 .rg-sheet-text {
   grid-column: span 2;
-  display: grid;
-  align-content: center;
-  gap: 16px;
+  display: flex;
+  flex-direction: column;
+  /* (tailles liées à la hauteur de l'écran : sur un écran plus bas, la capture est plus petite, et le texte
+     doit tenir à sa hauteur) */
+  gap: clamp(9px, 1.45vh, 13px);
   max-width: 34rem;
 }
 .rg-sheet-meta {
+  line-height: 1; /* (la 1re ligne colle au bord haut de la capture) */
   font-family: var(--mono);
   font-size: 12px;
   letter-spacing: 0.06em;
@@ -666,22 +743,43 @@
 }
 .rg-sheet-title {
   font-family: var(--serif);
-  font-size: clamp(40px, 4.4vw, 68px);
+  font-style: italic; /* (comme « Wetzel », dans la signature) */
+  font-size: clamp(36px, min(4vw, 6.6vh), 60px);
   font-weight: 400;
   line-height: 1;
   letter-spacing: -0.01em;
 }
 .rg-sheet-short {
-  font-size: 20px;
+  font-size: clamp(15px, 2vh, 18px);
   line-height: 1.4;
 }
 .rg-sheet-long {
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: clamp(13px, 1.8vh, 16px);
+  line-height: 1.55;
   color: var(--muted);
 }
+/* le numéro de la carte, en tête de la ligne */
+.rg-sheet-meta span {
+  margin-right: 6px;
+  color: var(--ink);
+}
+/* Le défi : ce que le projet m'a demandé (une ligne à part, son étiquette dans le style des guides) */
+.rg-sheet-focus {
+  font-size: clamp(13px, 1.8vh, 16px);
+  line-height: 1.55;
+}
+.rg-sheet-focus span {
+  display: block;
+  margin-bottom: 2px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--violet);
+}
 .rg-sheet-stack {
-  padding-top: 14px;
+  margin-top: auto; /* technos et liens en bas, au niveau du bord bas de la capture */
+  padding-top: 12px;
   border-top: 1px solid var(--line);
   font-family: var(--mono);
   font-size: 12px;
@@ -712,11 +810,17 @@
   .rg-sheet-guides {
     display: none;
   }
-  .rg-sheet-top nav > :not(:last-child) {
+  /* en haut : seulement ← 01 / 05 → et « Fermer » (le titre est juste dessous, en grand) */
+  .rg-sheet-top > nav {
     display: none;
   }
-  .rg-sheet-top nav > * + *::before {
-    content: none;
+  .rg-sheet-actions {
+    flex: 1;
+    justify-content: space-between;
+  }
+  .rg-sheet-actions,
+  .rg-sheet-steps {
+    white-space: nowrap;
   }
   .rg-sheet-in {
     grid-template-columns: 1fr;
