@@ -54,3 +54,7 @@ cwebp -q 82 -resize 1200 0 capture.png -o public/shots/nom.webp
 - Garder `overflow: clip` (et non `hidden`) sur `.rg` : `hidden` casse le sticky.
 - Pendant le scroll, le script n'écrit que ce qui change (une variable réécrite sur toute la page à chaque image fait saccader).
 - Les captures de Trans-trame, Mosaïque (fiche Chrome Web Store) et Synapso montrent des données de démo.
+
+## Mise en ligne
+
+Sur Netlify : « Add new site » → « Import from GitHub » → `portfolio-2026`. Les réglages (build, Node 22, cache) sont dans `netlify.toml`.
