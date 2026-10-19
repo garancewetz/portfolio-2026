@@ -100,7 +100,7 @@ export default function CardFX({ root, item }) {
     const mouse = new THREE.Vector2(0.5, 0.5)
 
     // Pose le canvas sur la capture. Renvoie true si la capture vient de changer de taille
-    // (la carte grossit ou rétrécit) : l'effet attend alors qu'elle soit stable pour s'afficher,
+    // (la carte bouge ou change de taille) : l'effet attend alors qu'elle soit stable pour s'afficher,
     // sinon il suivrait avec une image de retard et donnerait une image fantôme qui tremble.
     const place = () => {
       const r = target.getBoundingClientRect()

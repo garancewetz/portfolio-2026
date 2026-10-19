@@ -29,6 +29,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* la place de la barre de défilement reste réservée : quand la fiche d'un projet bloque le défilement,
+   la page derrière ne se décale pas */
+html {
+  scrollbar-gutter: stable;
+}
+
 h1 {
   margin: 0;
 }
@@ -58,6 +64,7 @@ a:hover {
 
 /* ——— Composants partagés ——— */
 .shot {
+  display: block;
   aspect-ratio: 16 / 10;
   border-radius: 12px;
   overflow: hidden;
