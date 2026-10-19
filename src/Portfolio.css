@@ -384,13 +384,18 @@ kbd {
   opacity: 0.25;
 }
 
-/* Indication « scroll ↓ » : en bas à droite, comme une étiquette de la grille ;
+/* Indication « scroll ↓ » : en bas de la 1re colonne, comme une étiquette de la grille ;
    elle s'efface dès qu'on commence à faire défiler */
 .rg-hint {
   position: fixed;
   z-index: 2;
-  right: calc(var(--pad) + 8px);
+  /* au bout de la 1re colonne (vide en bas : les cartes y sont en escalier, la 1re tout en haut), sur la ligne
+     des étiquettes de la grille */
+  left: calc(var(--pad) + (100vw - 2 * var(--pad) - (var(--n) - 1) * var(--pad)) / var(--n) - 8px);
+  translate: -100% 0;
   margin: 0;
+  /* en encre (et non en violet, comme les étiquettes de la grille) : elle se détache, on la lit */
+  color: var(--ink);
   pointer-events: none;
   transition: opacity 0.4s ease;
 }

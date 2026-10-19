@@ -9,13 +9,13 @@ import './Portfolio.css'
 const CardFX = lazy(() => import('./CardFX.jsx'))
 const hasMouse = () => matchMedia('(hover: hover) and (pointer: fine)').matches
 
-// Hauteur de départ de chaque projet dans la page (en vh), dans l'ordre de lecture : un projet tous les
-// STEP vh, pour qu'il traverse l'écran seul avant de se coller à sa place (position: sticky). La 2e carte part
-// juste sous le bas de l'écran : au chargement, son haut dépasse (on comprend qu'il faut faire défiler).
-const FIRST = 30
-const SECOND = 84
-const STEP = 44
-const start = (i) => (i === 0 ? FIRST : SECOND + (i - 1) * STEP)
+// Hauteur de départ de chaque projet dans la page (en vh). À l'arrivée, les 5 cartes sont déjà là, posées à des
+// hauteurs différentes, sans ordre apparent (la plus basse dépasse du bas de l'écran) : on voit tout de suite
+// l'ensemble, et chaque coup de molette en range une (position: sticky), de la plus haute à la plus basse.
+// (Des hauteurs fixes, choisies : la page est la même à chaque visite.)
+const STARTS = [26, 62, 14, 80, 44]
+const start = (i) => STARTS[i % STARTS.length]
+const LAST = Math.max(...STARTS) // (la dernière carte à se ranger)
 
 // Puis la signature : le nom, en très grand, sous la rangée de cartes. « Garance » (en linéale) NAME_GAP vh
 // après la dernière carte, puis « Wetzel » (en italique, calé à droite) NAME_STEP vh plus loin. Le nom n'est
@@ -83,7 +83,7 @@ function Comment({ a }) {
 export default function Portfolio() {
   const N = projects.length
   // départ de chaque mot du nom (en vh)
-  const nameStart = (line) => start(N - 1) + NAME_GAP + line * NAME_STEP
+  const nameStart = (line) => LAST + NAME_GAP + line * NAME_STEP
   const root = useRef(null)
   const hint = useRef(null)
   const top = useRef(null)
