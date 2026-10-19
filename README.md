@@ -38,7 +38,7 @@ public/
 
 ## Modifier le contenu (`src/data.js`)
 
-- **Un projet** : `id` (l'adresse de sa fiche, ex. `#synapso`), `title`, `short` (la phrase simple, dans la fiche et sur mobile), `focus` (le défi, dans la fiche), `color` (la pastille), `image` et `alt`.
+- **Un projet** : `id` (l'adresse de sa fiche, ex. `#synapso`), `title`, `short` (la phrase simple, dans la fiche et sur mobile), `color` (la pastille), `image` et `alt`.
 - **Projet en ligne** : `demo` (lien du site, dans la fiche) ; sinon la carte affiche « pas en ligne » et la fiche ne propose que `code` (GitHub).
 - **Projet bientôt en ligne** : `wip: true` (affiche « en cours · bientôt en ligne »).
 - **Projets abandonnés** (easter egg) : `abandoned`, une phrase très courte qui dit le fond du projet.

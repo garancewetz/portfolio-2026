@@ -116,12 +116,6 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep })
           </h2>
           <p className="rg-sheet-short">{p.short}</p>
           <p className="rg-sheet-long">{p.long}</p>
-          {p.focus && (
-            <p className="rg-sheet-focus">
-              <span>Le défi</span>
-              {p.focus}
-            </p>
-          )}
           <p className="rg-sheet-stack">
             <span className="sr">Technos : </span>
             {p.stack.join(' · ')}

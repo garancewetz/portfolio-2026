@@ -548,7 +548,7 @@ kbd {
   border: 0;
   background: var(--bg);
   color: var(--ink);
-  /* (pas de défilement de côté : le texte arrive en glissant) */
+  /* (pas de défilement de côté) */
   overflow: hidden auto;
   animation: rg-fade 0.3s ease;
 }
@@ -767,20 +767,6 @@ kbd {
 .rg-sheet-meta span {
   margin-right: 6px;
   color: var(--ink);
-}
-/* Le défi : ce que le projet m'a demandé (une ligne à part, son étiquette dans le style des guides) */
-.rg-sheet-focus {
-  font-size: clamp(13px, 1.8vh, 16px);
-  line-height: 1.55;
-}
-.rg-sheet-focus span {
-  display: block;
-  margin-bottom: 2px;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--violet);
 }
 .rg-sheet-stack {
   margin-top: auto; /* technos et liens en bas, au niveau du bord bas de la capture */
