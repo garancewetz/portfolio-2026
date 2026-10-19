@@ -21,9 +21,9 @@ const start = (i) => (i === 0 ? FIRST : SECOND + (i - 1) * STEP)
 // et montre sa description.
 const SPAN = 2
 
-// Easter egg : le repère « gap » des guides de la grille est un bouton. Un clic fait monter, en bas de
-// l'écran, un bandeau qui fait défiler les projets abandonnés (ceux tombés dans les interstices), écrits
-// comme du code mis en commentaire. Une entrée : /* titre · année — phrase */ (TODO pour un projet en cours).
+// Easter egg : le repère « gap » des guides de la grille est un bouton. Un clic fait apparaître, sous la
+// rangée de cartes, un bandeau qui fait défiler les projets abandonnés (ceux tombés dans les interstices),
+// écrits comme du code mis en commentaire. Une entrée : /* titre · année — phrase */ (TODO pour un projet en cours).
 function Comment({ a }) {
   return (
     <>
@@ -73,9 +73,26 @@ export default function Portfolio() {
     check()
     addEventListener('scroll', check, { passive: true })
     addEventListener('resize', check)
+
+    // Une carte qu'on quitte reste devant les autres le temps de rétrécir (0,45 s, comme sa transition) ;
+    // la carte survolée, elle, passe toujours devant (voir .is-leaving dans le CSS)
+    const timers = new Map()
+    const onLeave = (e) => {
+      const card = e.target.closest?.('.rg-card')
+      if (!card || card.contains(e.relatedTarget)) return
+      clearTimeout(timers.get(card))
+      card.classList.add('is-leaving')
+      timers.set(card, setTimeout(() => card.classList.remove('is-leaving'), 450))
+    }
+    const r = root.current
+    r.addEventListener('pointerout', onLeave)
+    r.addEventListener('focusout', onLeave)
     return () => {
       removeEventListener('scroll', check)
       removeEventListener('resize', check)
+      r.removeEventListener('pointerout', onLeave)
+      r.removeEventListener('focusout', onLeave)
+      timers.forEach(clearTimeout)
     }
   }, [])
 
@@ -158,11 +175,9 @@ export default function Portfolio() {
         ))}
       </section>
 
-      {/* Fin de page, quand tout est rangé : la phrase et le parcours juste sous les projets, et le contact
-          en bas de l'écran */}
+      {/* Fin de page, quand tout est rangé : le parcours, puis le contact, en bas de l'écran */}
       <div className="rg-end">
         <section className="rg-about" aria-label="À propos">
-          <p className="rg-intro">{me.intro}</p>
           <p className="rg-xp">
             {/* Le premier de la liste est le poste actuel */}
             Aujourd’hui chez <strong>{experience[0]}</strong>, avant{' '}
@@ -186,7 +201,7 @@ export default function Portfolio() {
         </footer>
       </div>
 
-      {/* Easter egg : les projets abandonnés, en bandeau qui défile en bas de l'écran (pause au survol et au
+      {/* Easter egg : les projets abandonnés, en bandeau qui défile sous les cartes (pause au survol et au
           focus ; immobile si l'on a demandé moins d'animations). Les lecteurs d'écran lisent la liste une fois. */}
       <section id="rg-ab" className="rg-ab" aria-label="Projets abandonnés">
         <p className="rg-ab-label" aria-hidden>

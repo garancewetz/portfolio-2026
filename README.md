@@ -2,9 +2,9 @@
 
 Portfolio de projets personnels, en React + Vite.
 
-Les projets montent un par un et se rangent en haut de l'écran (`position: sticky`), sur un fond de guides de grille CSS. Au survol, une carte grossit et montre ce qu'est le projet. À la fin : la rangée complète, « Ici, les projets qui ont survécu. », le parcours et le contact.
+Les projets montent un par un et se rangent en haut de l'écran (`position: sticky`), sur un fond de guides de grille CSS. Au survol, une carte grossit et montre ce qu'est le projet ; l'effet three.js ondule l'image quand la souris bouge. À la fin : la rangée complète, puis, en bas de l'écran, le parcours et le contact.
 
-Easter egg : le repère « gap » de la grille est un bouton ; il fait monter un bandeau des projets abandonnés.
+Easter egg : le repère « gap » de la grille est un bouton ; il fait apparaître, sous les cartes, un bandeau des projets abandonnés.
 
 ## Lancer le projet
 

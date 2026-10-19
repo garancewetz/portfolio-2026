@@ -2,7 +2,6 @@
 export const me = {
   name: 'Garance Wetzel',
   role: 'Développeuse front-end',
-  intro: 'Ici, les projets qui ont survécu.',
   github: 'https://github.com/garancewetz',
   email: 'garance.wetzel@gmail.com',
 }

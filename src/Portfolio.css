@@ -107,6 +107,10 @@
   box-shadow: none;
   border-color: rgba(26, 25, 23, 0.16);
 }
+/* qu'on vient de quitter : reste devant les autres le temps de rétrécir (sous la carte survolée) */
+.rg-card.is-leaving {
+  z-index: 3;
+}
 .rg-card:is(:hover, :focus-visible) {
   z-index: 4;
   width: var(--w);
@@ -260,8 +264,8 @@
   position: absolute;
   left: calc((100% - (var(--n) - 1) * var(--pad)) / var(--n));
   width: var(--pad);
-  /* assez bas pour ne jamais passer sur la phrase de fin (sous les projets), au-dessus du contact */
-  top: 68%;
+  /* entre le bandeau de l'easter egg (sous les cartes) et le parcours (en bas) */
+  top: 60%;
   height: 120px;
   translate: 0 -50%;
   padding: 0;
@@ -303,13 +307,6 @@
 .rg.is-done .rg-guides {
   opacity: 0.25;
 }
-/* le bandeau des projets abandonnés prend leur place, en bas */
-.rg-guide-label {
-  transition: opacity 0.4s;
-}
-.rg.show-ab .rg-guide-label {
-  opacity: 0;
-}
 
 /* Indication « scroll ↓ » : en bas à droite, comme une étiquette de la grille ;
    elle s'efface dès qu'on commence à faire défiler */
@@ -321,13 +318,12 @@
   pointer-events: none;
   transition: opacity 0.4s ease;
 }
-.rg-hint.is-off,
-.rg.show-ab .rg-hint {
+.rg-hint.is-off {
   opacity: 0;
 }
 
-/* ——— Fin de page : elle monte quand tout est rangé et occupe le vide sous la rangée
-   (la phrase et le parcours en haut, juste sous les projets ; le contact en bas de l'écran) ——— */
+/* ——— Fin de page : elle monte quand tout est rangé ; le parcours juste au-dessus du contact,
+   en bas de l'écran (le vide sous les projets reste libre pour l'easter egg) ——— */
 .rg-end {
   position: fixed;
   z-index: 0;
@@ -337,6 +333,7 @@
   height: calc(100vh - var(--pad) - var(--head-h) - var(--row-h, 300px) - 56px);
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   gap: min(28px, 3vh);
   pointer-events: none;
   transform: translateY(100%);
@@ -357,12 +354,6 @@
   max-width: 760px;
   padding-top: 8px;
 }
-.rg-intro {
-  font-family: var(--serif);
-  font-size: clamp(26px, 2.4vw, 36px);
-  line-height: 1.15;
-  color: var(--ink);
-}
 .rg-xp {
   font-size: 16px;
   color: var(--muted);
@@ -373,7 +364,6 @@
 }
 /* Pied de page minimal : une ligne, en petit */
 .rg-foot {
-  margin-top: auto; /* tout en bas de l'écran */
   display: flex;
   flex-wrap: wrap;
   gap: 8px 32px;
@@ -393,21 +383,21 @@
   color: var(--ink);
 }
 
-/* ——— Easter egg : les projets abandonnés, en bandeau qui défile tout en bas (au-dessus du contact),
-   comme du code mis en commentaire. Il monte quand on clique sur le repère « gap » de la grille. ——— */
+/* ——— Easter egg : les projets abandonnés, en bandeau qui défile sous la rangée de cartes, comme du code
+   mis en commentaire. Il apparaît quand on clique sur le repère « gap » de la grille. ——— */
 .rg-ab {
   position: fixed;
   /* sous les cartes (qui passent devant en montant, comme devant les guides), sans fond */
   z-index: 1;
   left: var(--pad);
   right: var(--pad);
-  bottom: var(--foot-h); /* juste au-dessus du contact */
+  /* juste sous la rangée de cartes (et sous l'étiquette « row 2 » des guides) */
+  top: calc(var(--pad) + var(--head-h) + var(--row-h, 300px) + 42px);
   display: grid;
   gap: 8px;
-  padding-top: 8px;
-  /* caché sous le bas de l'écran ; monte quand on clique sur « gap » */
+  /* caché derrière les cartes ; glisse dessous quand on clique sur « gap » */
   opacity: 0;
-  translate: 0 calc(100% + var(--foot-h));
+  translate: 0 -24px;
   visibility: hidden;
   transition: translate 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.4s ease, visibility 0s 0.6s;
 }

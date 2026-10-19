@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
 import * as THREE from 'three'
 
-// Effet au survol des cartes : un seul canvas WebGL vient se poser sur l'image survolée
-// et la déforme en ondulation autour du curseur, avec un léger décalage des couleurs (RGB).
+// Effet au survol des cartes : un seul canvas WebGL vient se poser sur l'image survolée. Au repos, il est
+// identique à l'image (mêmes couleurs, même netteté) ; c'est le mouvement de la souris qui crée la
+// distorsion (ondulation autour du curseur, léger décalage RGB), qui se calme quand la souris s'arrête.
+// Ainsi, le passage de l'image au canvas est invisible.
 const vertex = /* glsl */ `
   varying vec2 vUv;
   void main() {
@@ -54,7 +56,9 @@ export default function CardFX({ root, item }) {
 
     const renderer = new THREE.WebGLRenderer({ antialias: true })
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2))
-    renderer.outputColorSpace = THREE.SRGBColorSpace
+    // Couleurs transmises telles quelles (aucune conversion à l'entrée ni à la sortie) : le canvas au
+    // repos a exactement les couleurs de l'image affichée par le navigateur
+    renderer.outputColorSpace = THREE.LinearSRGBColorSpace
     box.appendChild(renderer.domElement)
 
     const scene = new THREE.Scene()
@@ -77,8 +81,11 @@ export default function CardFX({ root, item }) {
     const textureFor = (src) => {
       if (!cache.has(src)) {
         const t = loader.load(src, () => (t.userData.ready = true))
-        t.colorSpace = THREE.SRGBColorSpace
-        t.minFilter = THREE.LinearFilter
+        t.colorSpace = THREE.NoColorSpace
+        // mipmaps : l'image réduite est aussi nette (et pas plus) que celle du navigateur
+        t.generateMipmaps = true
+        t.minFilter = THREE.LinearMipmapLinearFilter
+        t.anisotropy = renderer.capabilities.getMaxAnisotropy()
         cache.set(src, t)
       }
       return cache.get(src)
@@ -87,8 +94,9 @@ export default function CardFX({ root, item }) {
     container.querySelectorAll(`${item} img`).forEach((img) => textureFor(img.currentSrc || img.src))
 
     let target = null // l'élément .shot survolé
-    let hover = 0
+    let energy = 0 // intensité de la distorsion : monte quand la souris bouge, retombe quand elle s'arrête
     let goal = 0
+    let last = null // dernière position de la souris (pour sa vitesse)
     const mouse = new THREE.Vector2(0.5, 0.5)
 
     // Pose le canvas sur la capture. Renvoie true si la capture vient de changer de taille
@@ -132,13 +140,16 @@ export default function CardFX({ root, item }) {
       if (!target) return
       const r = target.getBoundingClientRect()
       mouse.set((e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height)
+      // plus la souris va vite, plus ça ondule
+      if (goal && last) energy = Math.min(1, energy + Math.hypot(e.clientX - last.x, e.clientY - last.y) / 160)
+      last = { x: e.clientX, y: e.clientY }
     }
     // Pendant le scroll, les cartes défilent sous la souris : l'effet se cacherait mal. On le masque donc
     // dès qu'on scrolle ; il revient au prochain mouvement de souris sur une carte (voir onMove).
     const onScroll = () => {
       if (!target && goal === 0) return
       goal = 0
-      hover = 0
+      energy = 0
       box.style.opacity = 0
     }
     container.addEventListener('pointerover', onOver)
@@ -151,19 +162,22 @@ export default function CardFX({ root, item }) {
     const tick = () => {
       const dt = Math.min(clock.getDelta(), 0.05)
       uniforms.uTime.value += dt
-      // Réactif : l'effet s'installe en ~0,2 s et disparaît encore plus vite quand la souris sort
-      hover += (goal - hover) * Math.min(1, dt * (goal ? 16 : 24))
-      if (!goal && hover < 0.02) hover = 0
-      uniforms.uHover.value = hover
+      // la distorsion retombe doucement (≈ 0,5 s) quand la souris ne bouge plus
+      energy *= Math.exp(-dt * 4)
+      if (energy < 0.002) energy = 0
       uniforms.uMouse.value.lerp(mouse, Math.min(1, dt * 10))
-      let visible = target && hover > 0.01 && uniforms.uTex.value?.userData.ready
+      let visible = target && goal && uniforms.uTex.value?.userData.ready
       if (visible) {
+        // pendant que la carte change de taille : pas de canvas, on montre l'image elle-même,
+        // et la distorsion reste à zéro (le canvas apparaîtra identique à l'image)
         stable = place() ? 0 : stable + 1
-        // pendant que la carte change de taille : pas d'effet, on montre l'image elle-même
         visible = stable >= 2
+        if (!visible) energy = 0
+        uniforms.uHover.value = energy
         if (visible) renderer.render(scene, camera)
       }
       box.style.opacity = visible ? 1 : 0
+      if (!goal) last = null
       raf = requestAnimationFrame(tick)
     }
     tick()
