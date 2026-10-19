@@ -260,6 +260,10 @@
   .rg-sheet-top > nav {
     display: none;
   }
+  /* (le haut reste en place : si la fiche défile, le texte passe dessous sans se mélanger) */
+  .rg-sheet-top {
+    background: var(--bg);
+  }
   .rg-sheet-actions {
     flex: 1;
     justify-content: space-between;
@@ -285,5 +289,24 @@
   .rg-sheet-steps kbd {
     border: 0;
     font-size: 13px;
+  }
+}
+/* écran tactile : les flèches, « Fermer » et les liens gardent leur taille à l'écran, mais leur zone à toucher
+   fait au moins 44px de haut (une zone invisible autour) */
+@media (pointer: coarse) {
+  .rg-sheet-steps button,
+  .rg-sheet-close,
+  .rg-sheet-links a {
+    position: relative;
+  }
+  .rg-sheet-steps button::after,
+  .rg-sheet-close::after,
+  .rg-sheet-links a::after {
+    content: '';
+    position: absolute;
+    inset: -12px -8px;
+  }
+  .rg-sheet-steps button::after {
+    inset: -12px -10px;
   }
 }

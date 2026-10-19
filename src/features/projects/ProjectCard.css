@@ -111,6 +111,7 @@
   }
   .rg-card {
     position: relative; /* pas de sticky sur mobile */
+    top: auto; /* (sinon le décalage du sticky pousse toutes les cartes de 60px vers le bas) */
     margin-top: 0;
     margin-bottom: 0;
     order: var(--k); /* dans l'ordre des projets, quelle que soit la colonne */

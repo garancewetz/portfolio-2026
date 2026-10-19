@@ -38,3 +38,14 @@
     order: 999;
   }
 }
+/* écran tactile : les liens gardent leur taille à l'écran, mais leur zone à toucher fait au moins 44px de haut */
+@media (pointer: coarse) {
+  .rg-foot a {
+    position: relative;
+  }
+  .rg-foot a::after {
+    content: '';
+    position: absolute;
+    inset: -12px -8px;
+  }
+}
