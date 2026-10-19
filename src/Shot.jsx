@@ -10,7 +10,8 @@ export default function Shot({ project }) {
   }
   return (
     <div className="shot">
-      <img src={project.image} alt={project.alt} loading="lazy" />
+      {/* dimensions indicatives (format 16/10) : la place est réservée avant le chargement */}
+      <img src={project.image} alt={project.alt} width="1200" height="750" loading="lazy" decoding="async" />
     </div>
   )
 }

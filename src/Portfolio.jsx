@@ -165,11 +165,11 @@ export default function Portfolio() {
           <p className="rg-intro">{me.intro}</p>
           <p className="rg-xp">
             {/* Le premier de la liste est le poste actuel */}
-            Aujourd’hui chez <strong>{experience[0].company}</strong>, avant{' '}
-            {experience.slice(1).map((x, k) => (
-              <span key={x.company}>
+            Aujourd’hui chez <strong>{experience[0]}</strong>, avant{' '}
+            {experience.slice(1).map((company, k) => (
+              <span key={company}>
                 {k > 0 && ' et '}
-                <strong>{x.company}</strong>
+                <strong>{company}</strong>
               </span>
             ))}
             .

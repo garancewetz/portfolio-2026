@@ -29,15 +29,25 @@ src/
   data.js          tout le contenu
   index.css        base : couleurs, typo, captures
 public/
-  shots/           captures des projets (16/10)
+  shots/           captures des projets (16/10, WebP, 1200 px de large)
   favicon.svg
 ```
 
 ## Modifier le contenu (`src/data.js`)
 
+- **Un projet** : `title`, `short` (la phrase simple affichée au survol), `color` (la pastille), `image` et `alt`.
 - **Projet en ligne** : `demo` (lien du site) ; sinon la carte mène à `code` (GitHub) et affiche « pas en ligne ».
 - **Projet bientôt en ligne** : `wip: true` (affiche « en cours · bientôt en ligne »).
 - **Projets abandonnés** (easter egg) : `abandoned`, une phrase très courte qui dit le fond du projet.
+- **Parcours** : `experience`, du poste actuel au plus ancien.
+
+## Ajouter une capture
+
+Capture au format 16/10, puis conversion en WebP (1200 px de large) :
+
+```bash
+cwebp -q 82 -resize 1200 0 capture.png -o public/shots/nom.webp
+```
 
 ## À savoir
 
