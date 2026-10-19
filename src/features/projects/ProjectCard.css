@@ -1,0 +1,118 @@
+/* ——— Les cartes ——— */
+.rg-card {
+  position: sticky;
+  top: calc(var(--pad) + var(--head-h));
+  /* marge basse invisible (la place des lettres du nom, dessous) : à la fin, les cartes se décollent en même
+     temps que les lettres, et tout remonte d'un bloc */
+  margin-bottom: calc(32px + 2 * var(--lh));
+  /* sans cadre, sans fond, sans ombre : juste l'image et son titre */
+  pointer-events: auto;
+}
+.rg-link {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+}
+/* Au survol (seulement une carte rangée : pas celle qui monte encore), elle ne change pas de taille : seule
+   l'image ondule ; elle passe devant les autres */
+.rg-card.is-docked:is(:hover, :has(:focus-visible)) {
+  z-index: 4;
+}
+.rg-card .shot {
+  border-radius: 4px;
+  border: 0;
+}
+.rg-card .shot-empty span {
+  font-size: 20px;
+}
+.rg-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+  container-type: inline-size;
+}
+.rg-n {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+.rg-title {
+  font-family: var(--serif);
+  /* Toujours sur une seule ligne, pour que toutes les cartes restent alignées */
+  font-size: clamp(16px, 10cqi, 30px);
+  line-height: 1.05;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+/* Projet pas encore en ligne : une petite ligne qui le dit, sous la phrase (sur mobile seulement, voir en bas) */
+.rg-status {
+  display: none;
+  padding-bottom: 4px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+/* en cours : bientôt en ligne (couleur des guides de la grille, comme les TODO) */
+.rg-status.is-wip {
+  color: var(--violet);
+}
+/* Phrase courte : sur mobile seulement (voir en bas) ; 2 lignes max */
+.rg-short {
+  display: none;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--muted);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* sur la carte sélectionnée au clavier : ↵ pour l'ouvrir, au bout de la ligne du titre */
+.rg-link:focus-visible .rg-meta::after {
+  content: '↵' / '';
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 18px;
+  margin-left: auto;
+  padding: 0 5px;
+  border: 1px solid rgba(26, 25, 23, 0.18);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink);
+  align-self: center;
+}
+
+@media (hover: none), (max-width: 900px) {
+  .rg-link:focus-visible .rg-meta::after {
+    display: none;
+  }
+}
+/* petit écran : les cartes en liste, dans l'ordre ; la phrase courte et la ligne « pas en ligne » restent */
+@media (max-width: 900px) {
+  .rg-short {
+    display: -webkit-box;
+  }
+  .rg-status {
+    display: block;
+  }
+  .rg-card {
+    position: relative; /* pas de sticky sur mobile */
+    margin-top: 0;
+    margin-bottom: 0;
+    order: var(--k); /* dans l'ordre des projets, quelle que soit la colonne */
+  }
+}

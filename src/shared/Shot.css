@@ -1,0 +1,31 @@
+/* Une capture de projet (format 16/10), ou l'encart « capture à venir » */
+.shot {
+  display: block;
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--empty);
+}
+.shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
+.shot-empty {
+  display: grid;
+  place-content: center;
+  text-align: center;
+  gap: 4px;
+}
+.shot-empty span {
+  font-family: var(--serif);
+  font-size: 32px;
+}
+.shot-empty small {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--muted);
+}

@@ -1,0 +1,289 @@
+/* ——— La fiche d'un projet (clic sur une carte) : une page du site, en plein écran, sur la même grille
+   (guides en fond, capture sur les premières colonnes, texte sur les deux dernières). Simple fondu. ——— */
+.rg-sheet {
+  --pad: clamp(16px, 2.4vw, 32px);
+  --head-h: 44px;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--bg);
+  color: var(--ink);
+  /* (pas de défilement de côté) */
+  overflow: hidden auto;
+  animation: rg-fade 0.3s ease;
+}
+.rg-sheet::backdrop {
+  background: transparent;
+}
+@keyframes rg-fade {
+  from {
+    opacity: 0;
+  }
+}
+/* Transition depuis la carte (View Transitions) : la capture glisse jusqu'à sa place, le texte arrive juste après */
+.rg-sheet-shot .shot {
+  view-transition-name: rg-shot;
+}
+/* avec les View Transitions, le fondu de la page entière s'en charge (pas de fondu propre à la fiche : retiré
+   puis remis à la fin de la transition, il repartirait de zéro et la fiche clignoterait) */
+@supports (view-transition-name: none) {
+  .rg-sheet {
+    animation: none;
+  }
+}
+::view-transition-group(rg-shot) {
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.35s;
+}
+.rg-sheet-text {
+  animation: rg-fade 0.4s 0.12s ease-out backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rg-sheet-text {
+    animation: none;
+  }
+}
+.rg-sheet-guides {
+  position: fixed;
+  inset: 0 var(--pad);
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  gap: var(--pad);
+  pointer-events: none;
+  opacity: 0.6;
+}
+.rg-sheet-guides span {
+  border-inline: 1px dashed rgba(124, 92, 214, 0.45);
+  background: rgba(124, 92, 214, 0.035);
+}
+/* en haut : comme l'intitulé du site, avec « fermer » à droite */
+.rg-sheet-top {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  height: calc(var(--pad) + var(--head-h) - 8px);
+  padding: 0 var(--pad);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.rg-sheet-top > nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 18px;
+  color: var(--muted);
+}
+.rg-sheet-top > nav > * + *::before {
+  content: '·';
+  margin-right: 18px;
+  color: var(--muted);
+  text-decoration: none;
+  display: inline-block; /* (le point n'est pas souligné avec le lien) */
+}
+/* les étapes cliquables : comme du texte, soulignées au survol */
+.rg-sheet-top > nav button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--muted);
+  text-underline-offset: 0.3em;
+  cursor: pointer;
+}
+.rg-sheet-top > nav button:first-child {
+  font-weight: 500;
+  color: var(--ink);
+}
+.rg-sheet-top > nav button:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+.rg-sheet-top > nav [aria-current] {
+  color: var(--ink);
+}
+/* à droite : ← 02 / 05 → puis « Fermer » */
+.rg-sheet-actions {
+  display: flex;
+  align-items: baseline;
+  gap: 32px;
+}
+.rg-sheet-steps {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  color: var(--muted);
+}
+.rg-sheet-steps button {
+  min-width: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  transition: translate 0.2s ease;
+}
+.rg-sheet-steps button:first-child:hover {
+  translate: -3px 0;
+}
+.rg-sheet-steps button:last-child:hover {
+  translate: 3px 0;
+}
+.rg-sheet-close {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 0.3em;
+  cursor: pointer;
+}
+.rg-sheet-close:hover {
+  text-decoration-color: var(--ink);
+}
+/* le contenu, calé sur les colonnes de la grille */
+.rg-sheet-in {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  gap: var(--pad);
+  /* la rangée (capture et texte) au milieu de l'écran ; le texte aussi haut que la capture : il commence à son
+     bord haut et finit à son bord bas */
+  align-content: center;
+  align-items: stretch;
+  min-height: calc(100% - var(--pad) - var(--head-h) + 8px);
+  padding: 24px var(--pad) var(--pad);
+}
+.rg-sheet-shot {
+  grid-column: 1 / span calc(var(--n) - 2);
+}
+.rg-sheet-shot .shot {
+  /* comme sur les cartes : sans filet, coins à peine arrondis (la même image, en plus grand) */
+  border: 0;
+  border-radius: 4px;
+}
+.rg-sheet-text {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+  /* (tailles liées à la hauteur de l'écran : sur un écran plus bas, la capture est plus petite, et le texte
+     doit tenir à sa hauteur) */
+  gap: clamp(9px, 1.45vh, 13px);
+  max-width: 34rem;
+}
+.rg-sheet-meta {
+  line-height: 1; /* (la 1re ligne colle au bord haut de la capture) */
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rg-sheet-title {
+  font-family: var(--serif);
+  font-style: italic; /* (comme « Wetzel », dans la signature) */
+  font-size: clamp(36px, min(4vw, 6.6vh), 60px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.rg-sheet-short {
+  font-size: clamp(15px, 2vh, 18px);
+  line-height: 1.4;
+}
+.rg-sheet-long {
+  font-size: clamp(13px, 1.8vh, 16px);
+  line-height: 1.55;
+  color: var(--muted);
+}
+/* le numéro de la carte, en tête de la ligne */
+.rg-sheet-meta span {
+  margin-right: 6px;
+  color: var(--ink);
+}
+.rg-sheet-stack {
+  margin-top: auto; /* technos et liens en bas, au niveau du bord bas de la capture */
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+.rg-sheet-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  font-family: var(--mono);
+  font-size: 13px;
+}
+.rg-sheet-links a {
+  color: var(--ink);
+  text-decoration-color: var(--line);
+}
+.rg-sheet-links a:hover {
+  text-decoration-color: var(--ink);
+}
+.rg-sheet-status {
+  color: var(--muted);
+}
+.rg-sheet-status.is-wip {
+  color: var(--violet);
+}
+/* écran étroit : une colonne, la capture au-dessus du texte */
+@media (max-width: 900px) {
+  .rg-sheet-guides {
+    display: none;
+  }
+  /* en haut : seulement ← 01 / 05 → et « Fermer » (le titre est juste dessous, en grand) */
+  .rg-sheet-top > nav {
+    display: none;
+  }
+  .rg-sheet-actions {
+    flex: 1;
+    justify-content: space-between;
+  }
+  .rg-sheet-actions,
+  .rg-sheet-steps {
+    white-space: nowrap;
+  }
+  .rg-sheet-in {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  .rg-sheet-shot,
+  .rg-sheet-text {
+    grid-column: 1;
+  }
+}
+@media (hover: none), (max-width: 900px) {
+  .rg-sheet-close kbd {
+    display: none;
+  }
+  /* (les flèches restent, en simples flèches) */
+  .rg-sheet-steps kbd {
+    border: 0;
+    font-size: 13px;
+  }
+}

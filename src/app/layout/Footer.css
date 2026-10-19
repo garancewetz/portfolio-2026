@@ -1,0 +1,40 @@
+/* Pied de page : une ligne, en petit (le parcours à gauche, le contact à droite) */
+.rg-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 32px;
+  padding: 18px 0 24px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--muted);
+}
+.rg-foot p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 0;
+}
+.rg-foot a {
+  color: var(--ink);
+}
+/* le parcours : du contexte, au même niveau que le contact (une phrase, pas une rangée de liens ;
+   les entreprises juste un peu plus foncées) */
+.rg-foot .rg-xp {
+  display: block;
+}
+.rg-xp > span > span,
+.rg-xp > span:first-child {
+  color: var(--ink);
+}
+
+/* (sous la signature : en bas de l'écran, la fin de page le pousse vers le bas) */
+.rg-foot {
+  margin-top: auto;
+}
+@media (max-width: 900px) {
+  .rg-foot {
+    order: 999;
+  }
+}

@@ -1,0 +1,132 @@
+/* La page : la grille de projets, l'intitulé en haut, la fin de page. (Variables partagées par toutes les
+   parties : marges, hauteurs, couleurs des guides, taille du nom.) */
+.rg {
+  /* « clip » : la fin de page cachée (décalée vers le bas) n'agrandit pas la page. N'empêche pas le sticky
+     (contrairement à « hidden » : ne pas le remettre). */
+  overflow: clip;
+  --pad: clamp(16px, 2.4vw, 32px);
+  --head-h: 44px; /* hauteur de l'intitulé en haut */
+  /* place du pied de page en bas de l'écran : les étiquettes de la grille se posent juste au-dessus */
+  --foot-h: 72px;
+  /* Couleurs des guides de la grille (décor) ; --violet : la même teinte, assez foncée pour du texte
+     qui porte une information (contraste AA sur le fond) */
+  --guide: rgba(124, 92, 214, 0.9);
+  --guide-line: rgba(124, 92, 214, 0.45);
+  --violet: #5b42b5;
+  --gap-pink: rgba(214, 92, 150, 0.85);
+  position: relative;
+  padding: 0 var(--pad);
+}
+
+/* ——— Intitulé en haut (à la fin, si la grille remonte, il remonte avec elle : décalage écrit par le script) ——— */
+.rg-top {
+  position: fixed;
+  top: 0;
+  left: var(--pad);
+  right: var(--pad);
+  z-index: 3;
+  height: calc(var(--pad) + var(--head-h) - 8px);
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  pointer-events: none;
+}
+.rg-top strong {
+  font-weight: 500;
+}
+/* (le nom est caché : le métier vient en premier, sans point devant, et en plus foncé) */
+.rg-top strong + span::before {
+  content: none;
+}
+.rg-top strong + span {
+  color: var(--ink);
+  font-weight: 500;
+}
+.rg-top span {
+  color: var(--muted);
+}
+.rg-top > * + *::before {
+  content: '·';
+  margin-right: 18px;
+  color: var(--muted);
+}
+/* ——— Le champ : une colonne par projet. Chaque carte démarre à sa hauteur (--o)
+   puis colle en haut ; toutes finissent alignées. ——— */
+.rg-field {
+  position: relative;
+  z-index: 2; /* au-dessus du bouton « gap » */
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  gap: var(--pad);
+  /* Le champ va jusqu'au bas de la page : les cartes restent rangées en haut jusqu'à la fin.
+     Sa hauteur est calculée dans le composant (départ du dernier projet + un écran et demi). */
+  height: var(--field-h, 270vh);
+  /* Il couvre toute la page : seules les cartes captent la souris (le texte et les liens
+     de fin, dessous, restent cliquables ; les cartes survolées passent devant) */
+  pointer-events: none;
+}
+.rg-col {
+  padding-top: var(--o);
+}
+
+/* ——— Hauteur d'une ligne du nom (la signature, voir features/signature) et de la grille rangée ——— */
+.rg {
+  /* hauteur d'une ligne du nom : deux lignes tiennent sous les cartes (en gardant la place du pied de page),
+     et « Garance » tient dans la largeur */
+  --lh: min(
+    calc((100vh - var(--pad) - var(--head-h) - var(--row-h, 300px) - 32px - 140px) / 2),
+    calc((100vw - 2 * var(--pad)) * 0.24)
+  );
+  /* hauteur de la grille rangée (cartes, puis nom) : la fin de page remplit le reste de l'écran */
+  --grid-h: calc(var(--row-h, 300px) + 32px + 2 * var(--lh));
+}
+
+/* ——— Fin de page ——— */
+/* sous la grille, dans la page ; elle remplit l'écran sous la grille rangée : le pied de page en bas de
+   l'écran (sur un écran pas assez haut, la grille remonte) */
+.rg-end {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-top: 32px;
+  min-height: calc(100vh - var(--pad) - var(--head-h) - var(--grid-h));
+}
+
+/* ——— Petit écran : pas d'animation, une liste simple, dans l'ordre :
+   l'intitulé, les projets, la signature, le pied de page ——— */
+@media (max-width: 900px) {
+  .rg {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-bottom: 32px;
+  }
+  /* le champ, les colonnes et la fin de page s'effacent : leurs éléments se rangent dans .rg */
+  .rg-field,
+  .rg-col,
+  .rg-end {
+    display: contents;
+  }
+  .rg-top {
+    position: static;
+    height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding-top: 24px;
+  }
+  /* (une information par ligne : pas de point de séparation en début de ligne) */
+  .rg-top > * + *::before {
+    content: none;
+  }
+}

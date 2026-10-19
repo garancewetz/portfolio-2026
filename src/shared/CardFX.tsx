@@ -1,5 +1,7 @@
 import { useEffect } from 'react'
 import * as THREE from 'three'
+import type { RippleProps } from './Ripple'
+import './CardFX.css'
 
 // Effet au survol des cartes : un seul canvas WebGL vient se poser sur l'image survolée. Au repos, il est
 // identique à l'image (mêmes couleurs, même netteté) ; c'est le mouvement de la souris qui crée la
@@ -44,7 +46,7 @@ const fragment = /* glsl */ `
 
 // root : le conteneur à surveiller ; item : le sélecteur des éléments survolables (une capture .shot, ou un
 // élément qui en contient une).
-export default function CardFX({ root, item }) {
+export default function CardFX({ root, item }: RippleProps) {
   useEffect(() => {
     const container = root.current
     if (!container) return
@@ -63,7 +65,13 @@ export default function CardFX({ root, item }) {
 
     const scene = new THREE.Scene()
     const camera = new THREE.Camera()
-    const uniforms = {
+    const uniforms: {
+      uTex: { value: THREE.Texture | null }
+      uMouse: { value: THREE.Vector2 }
+      uHover: { value: number }
+      uTime: { value: number }
+      uAspect: { value: number }
+    } = {
       uTex: { value: null },
       uMouse: { value: new THREE.Vector2(0.5, 0.5) },
       uHover: { value: 0 },
@@ -77,10 +85,10 @@ export default function CardFX({ root, item }) {
     scene.add(mesh)
 
     const loader = new THREE.TextureLoader()
-    const cache = new Map()
-    const textureFor = (src) => {
+    const cache = new Map<string, THREE.Texture>()
+    const textureFor = (src: string): THREE.Texture => {
       if (!cache.has(src)) {
-        const t = loader.load(src, () => (t.userData.ready = true))
+        const t: THREE.Texture = loader.load(src, () => (t.userData.ready = true))
         t.colorSpace = THREE.NoColorSpace
         // mipmaps : l'image réduite est aussi nette (et pas plus) que celle du navigateur
         t.generateMipmaps = true
@@ -88,26 +96,29 @@ export default function CardFX({ root, item }) {
         t.anisotropy = renderer.capabilities.getMaxAnisotropy()
         cache.set(src, t)
       }
-      return cache.get(src)
+      return cache.get(src)!
     }
     // Précharge toutes les images survolables, pour qu'elles soient prêtes au premier survol
-    container.querySelectorAll(`${item} img`).forEach((img) => textureFor(img.currentSrc || img.src))
+    container.querySelectorAll<HTMLImageElement>(`${item} img`).forEach((img) => textureFor(img.currentSrc || img.src))
 
-    let target = null // l'élément .shot survolé
+    let target: HTMLElement | null = null // l'élément .shot survolé
     let energy = 0 // intensité de la distorsion : monte quand la souris bouge, retombe quand elle s'arrête
     let goal = 0
-    let last = null // dernière position de la souris (pour sa vitesse)
+    let last: { x: number; y: number } | null = null // dernière position de la souris (pour sa vitesse)
     const mouse = new THREE.Vector2(0.5, 0.5)
 
     // Pose le canvas sur la capture. Renvoie true si la capture vient de changer de taille
     // (la carte bouge ou change de taille) : l'effet attend alors qu'elle soit stable pour s'afficher,
     // sinon il suivrait avec une image de retard et donnerait une image fantôme qui tremble.
-    const place = () => {
+    let boxW = 0
+    let boxH = 0
+    const place = (): boolean => {
+      if (!target) return false
       const r = target.getBoundingClientRect()
       box.style.transform = `translate(${r.left}px, ${r.top}px)`
-      if (box._w === r.width && box._h === r.height) return false
-      box._w = r.width
-      box._h = r.height
+      if (boxW === r.width && boxH === r.height) return false
+      boxW = r.width
+      boxH = r.height
       box.style.width = `${r.width}px`
       box.style.height = `${r.height}px`
       renderer.setSize(r.width, r.height, false)
@@ -116,11 +127,11 @@ export default function CardFX({ root, item }) {
     }
     let stable = 0 // nombre d'images consécutives sans changement de taille
 
-    const onOver = (e) => {
-      const card = e.target.closest?.(item)
-      const shot = card?.matches('.shot') ? card : card?.querySelector('.shot')
+    const onOver = (e: PointerEvent) => {
+      const card = (e.target as Element | null)?.closest?.<HTMLElement>(item)
+      const shot = card?.matches('.shot') ? card : card?.querySelector<HTMLElement>('.shot')
       const img = shot?.querySelector('img')
-      if (!img) return
+      if (!shot || !img) return
       if (shot !== target) {
         target = shot
         uniforms.uTex.value = textureFor(img.currentSrc || img.src)
@@ -130,13 +141,13 @@ export default function CardFX({ root, item }) {
       }
       goal = 1
     }
-    const onOut = (e) => {
-      const from = e.target.closest?.(item)
-      if (from && !from.contains(e.relatedTarget)) goal = 0
+    const onOut = (e: PointerEvent) => {
+      const from = (e.target as Element | null)?.closest?.(item)
+      if (from && !from.contains(e.relatedTarget as Node | null)) goal = 0
     }
-    const onMove = (e) => {
+    const onMove = (e: PointerEvent) => {
       // Si la souris était déjà sur une carte au chargement, aucun « pointerover » n'arrive : on rattrape ici.
-      if (goal === 0 && container.contains(e.target)) onOver(e)
+      if (goal === 0 && container.contains(e.target as Node | null)) onOver(e)
       if (!target) return
       const r = target.getBoundingClientRect()
       mouse.set((e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height)
@@ -150,7 +161,7 @@ export default function CardFX({ root, item }) {
       if (!target && goal === 0) return
       goal = 0
       energy = 0
-      box.style.opacity = 0
+      box.style.opacity = '0'
     }
     container.addEventListener('pointerover', onOver)
     container.addEventListener('pointerout', onOut)
@@ -158,7 +169,7 @@ export default function CardFX({ root, item }) {
     addEventListener('scroll', onScroll, { passive: true })
 
     const clock = new THREE.Clock()
-    let raf
+    let raf = 0
     const tick = () => {
       const dt = Math.min(clock.getDelta(), 0.05)
       uniforms.uTime.value += dt
@@ -166,7 +177,7 @@ export default function CardFX({ root, item }) {
       energy *= Math.exp(-dt * 4)
       if (energy < 0.002) energy = 0
       uniforms.uMouse.value.lerp(mouse, Math.min(1, dt * 10))
-      let visible = target && goal && uniforms.uTex.value?.userData.ready
+      let visible = Boolean(target && goal && uniforms.uTex.value?.userData.ready)
       if (visible) {
         // pendant que la carte change de taille : pas de canvas, on montre l'image elle-même,
         // et la distorsion reste à zéro (le canvas apparaîtra identique à l'image)
@@ -176,7 +187,7 @@ export default function CardFX({ root, item }) {
         uniforms.uHover.value = energy
         if (visible) renderer.render(scene, camera)
       }
-      box.style.opacity = visible ? 1 : 0
+      box.style.opacity = visible ? '1' : '0'
       if (!goal) last = null
       raf = requestAnimationFrame(tick)
     }

@@ -1,0 +1,77 @@
+/* ——— Guides de grille en fond (comme l'inspecteur de grille CSS) ——— */
+.rg-guides {
+  position: fixed;
+  inset: 0 var(--pad);
+  z-index: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  gap: var(--pad);
+  pointer-events: none;
+  transition: opacity 1s ease;
+}
+.rg-guide-col {
+  position: relative;
+  border-inline: 1px dashed var(--guide-line);
+  background: rgba(124, 92, 214, 0.035);
+}
+/* Étiquettes des guides (et l'indication « scroll ↓ », dans le même style) : posées au-dessus du contact */
+.rg-guide-label,
+.rg-hint {
+  bottom: var(--foot-h);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--guide);
+}
+.rg-guide-label {
+  position: absolute;
+  left: 8px;
+}
+.rg-guide-label em {
+  font-style: normal;
+  opacity: 0.6;
+  margin-left: 6px;
+}
+/* Rangée : là où les cartes se collent */
+.rg-guide-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--pad) + var(--head-h));
+  border-top: 1px dashed var(--guide-line);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--guide);
+  text-align: right;
+  padding-top: 4px;
+}
+/* Une fois tout rangé, les guides s'estompent */
+.rg.is-done .rg-guides {
+  opacity: 0.25;
+}
+
+/* Indication « scroll ↓ » : en bas de la 1re colonne, comme une étiquette de la grille ;
+   elle s'efface dès qu'on commence à faire défiler */
+.rg-hint {
+  position: fixed;
+  z-index: 2;
+  /* au bout de la 1re colonne (vide en bas : les cartes y sont en escalier, la 1re tout en haut), sur la ligne
+     des étiquettes de la grille */
+  left: calc(var(--pad) + (100vw - 2 * var(--pad) - (var(--n) - 1) * var(--pad)) / var(--n) - 8px);
+  translate: -100% 0;
+  margin: 0;
+  /* en encre (et non en violet, comme les étiquettes de la grille) : elle se détache, on la lit */
+  color: var(--ink);
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.rg-hint.is-off {
+  opacity: 0;
+}
+
+@media (max-width: 900px) {
+  .rg-guides,
+  .rg-hint {
+    display: none;
+  }
+}

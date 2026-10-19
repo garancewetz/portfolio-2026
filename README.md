@@ -1,6 +1,6 @@
 # Portfolio — Garance Wetzel
 
-Portfolio de projets personnels, en React + Vite.
+Portfolio de projets personnels, en React + Vite + TypeScript (strict).
 
 À l'arrivée, les 5 projets sont déjà là, en escalier (chacun un peu plus bas que le précédent) ; ils montent un par un et se rangent en haut de l'écran (`position: sticky`) sur une ligne, une colonne par projet, sur un fond de guides de grille CSS. Ensuite vient la signature : le nom, en très grand, se range dessous (« Garance » en linéale, puis « Wetzel » en italique). Le nom n'est pas écrit en haut de la page (seulement le métier) : la signature, à la fin, est la révélation ; sur mobile, elle vient après la liste des projets. Au survol, la carte ne change pas de taille : l'effet three.js ondule l'image quand la souris bouge. Un clic sur la carte ouvre la fiche du projet (plein écran, sur la même grille), avec les liens vers le site et le code ; on y passe d'un projet à l'autre (← →), et chaque fiche a son adresse (`#synapso`…) : le retour du navigateur la ferme. À la fin, la page continue juste ce qu'il faut : la grille remonte si besoin, et le pied de page (parcours et contact) arrive dessous.
 
@@ -16,29 +16,55 @@ Easter egg : le repère « gap » de la grille est un bouton. Un clic fait défi
 ```bash
 bun install
 bun run dev      # http://localhost:5188 (le port 5173 est pris par une autre app)
-bun run build    # build de production dans dist/
+bun run build    # vérification des types, puis build de production dans dist/
+bun run typecheck
 bun run lint
 ```
 
 ## Structure
 
+Organisé par fonctionnalité (feature first) : chaque fonctionnalité a son dossier, avec son composant et son CSS.
+`app/` assemble la page (avec ses morceaux de mise en page) et décide du déroulé ; les features ne dépendent pas
+de `app/` (elles reçoivent ce dont elles ont besoin en props). Ce qui sert à plusieurs parties est dans `shared/`.
+Les imports passent par l'alias `@/` (= `src/`).
+
 ```
 src/
-  main.jsx         point d'entrée
-  Portfolio.jsx    la page : cartes, guides de grille, fin de page, easter egg
-  Portfolio.css    ses styles (mobile en bas du fichier)
-  ProjectSheet.jsx fiche d'un projet (clic sur une carte ; précédent/suivant, adresse #id)
-  Shot.jsx         capture d'un projet
-  CardFX.jsx       effet three.js au survol des captures (chargé à la demande, souris seulement)
-  data.js          tout le contenu
-  index.css        base : couleurs, typo, captures
+  main.tsx                     point d'entrée
+  app/
+    App.tsx                    la page : assemble les parties
+    App.css                    mise en page (variables, intitulé, champ, fin de page, mobile)
+    timeline.ts                le déroulé : hauteurs de départ des cartes et du nom
+    useStickyLayout.ts         au défilement : cartes rangées, étape, intitulé, « scroll ↓ »
+    layout/PageGuides          la grille en fond (colonnes, row 1)
+    layout/ScrollHint          « scroll ↓ »
+    layout/Footer              parcours et liens
+  features/
+    projects/ProjectCard       une carte projet (sticky, ouvre la fiche)
+    sheet/ProjectSheet         la fiche d'un projet (précédent/suivant, Échap)
+    sheet/useSheetRoute.ts     fiche ↔ adresse (#synapso), retour du navigateur
+    sheet/morph.ts             transition carte ↔ fiche (View Transitions)
+    signature/Signature        le nom en grand, et ses deux effets cachés
+    abandoned/AbandonedBand    easter egg : les projets abandonnés en bandeau
+    abandoned/GapMarker        son déclencheur, le repère « gap »
+  shared/
+    Shot                       capture d'un projet (ou « capture à venir »)
+    Ripple + CardFX            effet three.js au survol (chargé à la demande, souris seulement)
+    Guides                     colonnes de grille (page et fiche)
+    ExternalLink               lien « nouvel onglet » (↗, et le texte pour les lecteurs d'écran)
+    ProjectStatus              « en cours · bientôt en ligne » / « pas en ligne »
+    projectNumber.ts           0 → « 01 »
+  content/content.ts           tout le contenu (textes, projets, parcours, liens)
+  content/types.ts             ses types (Project, AbandonedProject, Person)
+  styles/base.css              base : couleurs, typo, accessibilité, touches du clavier
+  env.d.ts                     types globaux (variables CSS dans style={{ '--o': … }})
 public/
-  shots/           captures des projets (16/10, WebP, 1200 px de large)
+  shots/                       captures des projets (16/10, WebP, 1200 px de large)
   favicon.svg
-  og.jpg           aperçu des liens partagés (1200 × 630)
+  og.jpg                       aperçu des liens partagés (1200 × 630)
 ```
 
-## Modifier le contenu (`src/data.js`)
+## Modifier le contenu (`src/content/content.ts`)
 
 - **Un projet** : `id` (l'adresse de sa fiche, ex. `#synapso`), `title`, `short` (la phrase simple, dans la fiche et sur mobile), `image` et `alt`.
 - **Projet en ligne** : `demo` (lien du site, dans la fiche) ; sinon la carte affiche « pas en ligne » et la fiche ne propose que `code` (GitHub).

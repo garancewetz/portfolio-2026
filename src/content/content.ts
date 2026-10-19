@@ -1,5 +1,7 @@
-// Tout le contenu du site : textes, projets, parcours, liens.
-export const me = {
+// Tout le contenu du site : textes, projets, parcours, liens (le reste du code ne contient pas de texte à changer).
+import type { AbandonedProject, Person, Project } from './types'
+
+export const me: Person = {
   name: 'Garance Wetzel',
   role: 'Développeuse front-end',
   github: 'https://github.com/garancewetz',
@@ -7,13 +9,13 @@ export const me = {
 }
 
 // Parcours, du poste actuel au plus ancien (« Aujourd'hui chez …, avant … et … »)
-export const experience = ['Okeiro', 'Colorz', 'Uptoo']
+export const experience: string[] = ['Okeiro', 'Colorz', 'Uptoo']
 
 // Les projets (une carte chacun). demo : lien du site s'il est en ligne ; sinon la carte mène à code.
 // wip : en cours, bientôt en ligne. short : la phrase simple qui dit ce que c'est (dans la fiche, et sur mobile).
 // year, kind, long, stack : les détails, affichés dans la fiche du projet (clic sur une carte).
 // image : capture 16/10 dans public/shots (WebP, 1200 px de large).
-export const projects = [
+export const projects: Project[] = [
   {
     id: 'signe',
     title: 'Signe astronomique',
@@ -85,7 +87,7 @@ export const projects = [
 // Les projets abandonnés (dépôts privés) : un bandeau qui défile, comme du code mis en commentaire,
 // tout en bas, si l'on continue à scroller après la fin. Pas de lien : ils ne sont pas en ligne.
 // Une phrase archi courte qui dit le fond du projet (pas sa forme). wip : pas abandonné, en cours (« TODO »).
-export const abandoned = [
+export const abandoned: AbandonedProject[] = [
   { id: 'sarah-bernhardt', title: 'Sarah Bernhardt — Divine Édition', year: '2026', line: 'Faire revivre Sarah Bernhardt dans le navigateur.' },
   { id: 'quand-meme', title: 'Quand Même', year: '2026', line: 'La vie de Sarah Bernhardt, d’après ses mémoires.' },
   { id: 'trame', title: 'Trame', year: '2026', line: 'Voir comment les personnages d’un roman se croisent.' },

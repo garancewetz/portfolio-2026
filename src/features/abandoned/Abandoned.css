@@ -1,0 +1,129 @@
+/* ——— Easter egg : les projets abandonnés, en bandeau qui défile dans l'interstice (32px) entre les cartes et
+   le nom, comme du code mis en commentaire. Il apparaît quand on sélectionne le repère « gap ». ——— */
+.rg-abcol {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.rg-ab {
+  position: sticky;
+  top: calc(var(--pad) + var(--head-h) + var(--row-h, 300px));
+  height: 32px;
+  /* il se décolle en même temps que les cartes et les lettres (marge basse invisible : les deux lignes du nom) */
+  margin-bottom: calc(2 * var(--lh));
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.rg.show-ab .rg-ab {
+  opacity: 1;
+  pointer-events: auto;
+}
+.rg-ab-window {
+  flex: 1;
+  overflow: hidden;
+  /* les bords s'effacent : le texte entre et sort de l'interstice en fondu */
+  mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+}
+.rg-ab-track {
+  display: flex;
+  width: max-content;
+  gap: 48px;
+  /* même espace après la dernière entrée : la 2e copie commence pile à la moitié (boucle sans couture) */
+  padding: 0 48px 0 0;
+  margin: 0;
+  list-style: none;
+  animation: rg-ab 80s linear infinite;
+}
+@keyframes rg-ab {
+  to {
+    translate: -50% 0;
+  }
+}
+/* à l'arrêt tant qu'il est caché ; en pause au survol et au focus clavier (pour lire) */
+.rg:not(.show-ab) .rg-ab-track,
+.rg-ab-window:is(:hover, :focus) .rg-ab-track {
+  animation-play-state: paused;
+}
+.rg-ab-track li {
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+/* les délimiteurs de commentaire (ignorés par les lecteurs d'écran) */
+.rg-ab-track li::before {
+  content: '/* ' / '';
+}
+.rg-ab-track li::after {
+  content: ' */' / '';
+}
+.rg-ab-title {
+  font-weight: 500;
+  color: var(--ink);
+}
+/* projet en cours : un TODO, de la couleur des guides de la grille */
+.rg-ab-todo {
+  color: var(--violet);
+}
+/* moins d'animations demandé : pas de défilement, la liste en entier (on peut la faire défiler à la main) */
+@media (prefers-reduced-motion: reduce) {
+  .rg-ab-window {
+    overflow-x: auto;
+    mask-image: none;
+  }
+  .rg-ab-track {
+    animation: none;
+  }
+  .rg-ab-track li[aria-hidden] {
+    display: none;
+  }
+}
+
+/* Repère « gap » entre les deux premières colonnes. C'est aussi le déclencheur de l'easter egg :
+   un vrai bouton, posé sur les guides (même cadre), sous les cartes. */
+.rg-gapbox {
+  position: fixed;
+  inset: 0 var(--pad);
+  z-index: 1;
+  pointer-events: none;
+}
+.rg-gap {
+  position: absolute;
+  left: calc((100% - (var(--n) - 1) * var(--pad)) / var(--n));
+  width: var(--pad);
+  /* dans la rangée des cartes, entre les deux premières (plus bas, les lettres du nom passeraient dessus) */
+  top: calc(var(--pad) + var(--head-h) + var(--row-h, 300px) / 2);
+  height: min(120px, calc(var(--row-h, 300px) - 40px));
+  translate: 0 -50%;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  writing-mode: vertical-rl;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--gap-pink);
+  background: repeating-linear-gradient(45deg, rgba(214, 92, 150, 0.12) 0 4px, transparent 4px 8px);
+  pointer-events: auto;
+  cursor: pointer;
+  transition: opacity 1s ease, background 0.3s;
+}
+.rg-gap:hover,
+.rg-gap[aria-expanded='true'] {
+  background: repeating-linear-gradient(45deg, rgba(214, 92, 150, 0.24) 0 4px, transparent 4px 8px);
+}
+/* comme les guides, il s'estompe une fois tout rangé (mais reste cliquable) */
+.rg.is-done .rg-gap:not(:hover, :focus-visible, [aria-expanded='true']) {
+  opacity: 0.25;
+}
+
+/* l'easter egg (le repère « gap » et son bandeau) est réservé aux grands écrans, avec la grille */
+@media (max-width: 900px) {
+  .rg-gapbox,
+  .rg-ab {
+    display: none;
+  }
+}

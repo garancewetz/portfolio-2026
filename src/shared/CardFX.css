@@ -1,0 +1,19 @@
+/* Effet WebGL au survol (canvas qui se pose sur la capture survolée) */
+.rg .cardfx {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+}
+.rg .cardfx canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* pendant la transition de la carte à sa fiche : l'ondulation reste sur la carte, elle ne suit pas la capture */
+.is-morph .cardfx {
+  visibility: hidden;
+}

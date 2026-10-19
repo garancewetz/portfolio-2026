@@ -1,0 +1,85 @@
+/* ——— La signature : le nom, après les cartes ——— */
+.rg-name {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.rg-line {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-start; /* (le mot garde sa hauteur : sinon il s'étire sur toute la colonne) */
+}
+/* « Wetzel » calé à droite */
+.rg-line:last-child {
+  justify-content: flex-end;
+}
+.rg-word {
+  display: block;
+  position: sticky;
+  top: calc(var(--pad) + var(--head-h) + var(--row-h, 300px) + 32px + var(--line) * var(--lh));
+  margin-top: var(--o);
+  /* la 1re ligne se décolle en même temps que la 2e (marge basse invisible d'une ligne) */
+  margin-bottom: calc((1 - var(--line)) * var(--lh));
+  /* « Garance » : la police du texte du site, resserrée comme un titre d'affiche */
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: calc(var(--lh) / 0.92);
+  line-height: var(--lh);
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+  color: var(--ink);
+}
+/* « Wetzel » : en italique (Instrument Serif) */
+.rg-line:last-child .rg-word {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: calc(var(--lh) / 0.78);
+  letter-spacing: -0.01em;
+}
+
+/* ——— Deux effets cachés dans la signature, au survol ——— */
+.rg-defs {
+  position: absolute;
+}
+.rg-hollow,
+.rg-wave {
+  pointer-events: auto;
+  transition: color 0.3s ease;
+}
+/* les « a » de Garance : creux, il ne reste que le contour */
+.rg-hollow:hover {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--ink);
+}
+/* le W de Wetzel : ondule comme un liquide (filtre SVG) */
+.rg-wave:hover {
+  filter: url(#rg-wobble);
+}
+@media (prefers-reduced-motion: reduce) {
+  .rg-wave:hover {
+    filter: none;
+  }
+}
+
+/* petit écran : la signature reste, en grand, après les projets (sans animation) */
+@media (max-width: 900px) {
+  .rg-name {
+    position: static;
+    order: 998;
+    padding-top: 48px;
+  }
+  .rg-line {
+    position: static;
+  }
+  .rg-word {
+    position: static;
+    margin: 0;
+    font-size: 24vw;
+    line-height: 0.95;
+  }
+  .rg-line:last-child .rg-word {
+    font-size: 27vw;
+  }
+}

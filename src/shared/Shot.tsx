@@ -1,7 +1,16 @@
+import type { Project } from '@/content/types'
+import './Shot.css'
+
 // Capture d'un projet (ou un encart « capture à venir » s'il n'y en a pas encore).
 // (des span : la capture est aussi dans le bouton de la carte)
-// eager : chargée tout de suite (dans la fiche du projet) plutôt qu'à l'approche du scroll
-export default function Shot({ project, eager = false }) {
+
+interface ShotProps {
+  project: Project
+  /** chargée tout de suite (dans la fiche) plutôt qu'à l'approche du scroll */
+  eager?: boolean
+}
+
+export default function Shot({ project, eager = false }: ShotProps) {
   if (!project.image) {
     return (
       <span className="shot shot-empty" role="img" aria-label={`Capture de ${project.title} à venir`}>
