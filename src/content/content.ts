@@ -11,18 +11,17 @@ export const me: Person = {
 export const experience: string[] = ['Okeiro', 'Colorz', 'Uptoo']
 
 // Les projets (une carte chacun). demo : lien du site s'il est en ligne ; sinon la carte mène à code.
-// wip : en cours, bientôt en ligne. short : la phrase simple qui dit ce que c'est (dans la fiche, et sur mobile).
-// year, kind, long, stack : les détails, affichés dans la fiche du projet (clic sur une carte).
+// wip : en cours, bientôt en ligne. short : la phrase qui dit ce que c'est, écrite par Garance (dans la fiche, et sur
+// mobile). year, kind, stack : les détails, affichés dans la fiche du projet (clic sur une carte).
 // image : capture 16/10 dans public/shots (WebP, 1200 px de large). phone : dans la fiche, un écran de téléphone
 // à côté (voir types.ts).
 export const projects: Project[] = [
   {
     id: 'signe',
     title: 'Signe astronomique',
-    short: 'Calcule ton vrai signe à partir de la position réelle du Soleil dans le ciel.',
+    short: 'Une application qui permet de visualiser l’aspect du ciel à la naissance, et donne le réel signe astrologique.',
     year: '2026',
     kind: 'Application web 3D',
-    long: 'Les horoscopes utilisent un découpage vieux de 2 000 ans. Ce site calcule le signe réel selon les constellations officielles (IAU 1930) et le décalage des équinoxes — Ophiuchus inclus. La Terre et les satellites sont affichés en 3D, en temps réel.',
     stack: ['TypeScript', 'React', 'Cesium', 'SGP4'],
     image: '/shots/signe.webp',
     alt: 'Interface de Signe astronomique : un formulaire de date de naissance à gauche, la Terre en 3D sur fond étoilé à droite.',
@@ -37,10 +36,9 @@ export const projects: Project[] = [
   {
     id: 'synapso',
     title: 'Synapso',
-    short: 'Accompagne la rééducation après un AVC, un exercice à la fois.',
+    short: 'Une application de rééducation post-AVC, ou de rééducation tout court, pensée d’abord pour être simple d’utilisation.',
     year: '2026',
     kind: 'Application mobile (PWA)',
-    long: 'Exercices quotidiens rangés par catégories, suivi de progression, journal personnel et partage avec le ou la kiné.',
     stack: ['Next.js', 'TypeScript', 'Prisma'],
     image: '/shots/synapso.webp', // capture faite avec un compte et des données de démo
     alt: 'Page « Ma progression » de Synapso : un calendrier des 28 derniers jours rempli de pastilles vertes, une série de 14 jours, les exercices par zone du corps et une liste de progrès notés.',
@@ -57,10 +55,9 @@ export const projects: Project[] = [
     id: 'trame',
     wip: true,
     title: 'Trans-trame',
-    short: 'Une carte des livres et de la manière dont ils se citent entre eux.',
+    short: 'Une data visualisation des textes intersectionnels, pour rendre visibles les évolutions et les influences.',
     year: '2025',
     kind: 'Visualisation de données',
-    long: 'Chaque ouvrage est un point, chaque citation un lien. On peut explorer le graphe, filtrer par période ou par auteur·ice, et contribuer en ajoutant des références.',
     stack: ['React', 'TypeScript', 'Supabase'],
     image: '/shots/trame.webp', // capture faite avec des données de démo
     alt: 'Graphe de Trans-trame sur fond sombre : des cercles colorés, un par livre, reliés par des lignes de citation, avec des titres comme Le Deuxième Sexe, Gender Trouble ou Sister Outsider, et une frise chronologique en bas.',
@@ -70,10 +67,9 @@ export const projects: Project[] = [
   {
     id: 'mosaique',
     title: 'Mosaïque',
-    short: 'Remplace l’onglet vide de Chrome par tes sites favoris, rangés par thèmes.',
+    short: 'Une extension qui permet d’avoir un accès simplifié et facile d’utilisation aux favoris.',
     year: '2025',
     kind: 'Extension Chrome',
-    long: 'Les favoris deviennent des tuiles, organisées en groupes que l’on déplace par glisser-déposer. Les onglets ouverts sont visibles sur le côté pour les ranger en un geste.',
     stack: ['React', 'TypeScript', 'API Chrome'],
     image: '/shots/mosaique.webp', // capture de la fiche Chrome Web Store
     alt: 'Interface de Mosaïque sur fond sombre : les onglets ouverts à gauche, une recherche, des favoris en tuiles (Gmail, SNCF, Météo, Doctolib…) et des groupes colorés comme « Démarches » et « Actualité ».',
@@ -83,10 +79,9 @@ export const projects: Project[] = [
   {
     id: 'journey',
     title: 'wwwetzel journey',
-    short: 'Mon parcours raconté comme un petit jeu vidéo à explorer au clavier.',
+    short: 'Mon CV en mini-jeu pixel art.',
     year: '2025',
     kind: 'Mini-jeu',
-    long: 'Un personnage se déplace dans un décor en pixel art et découvre mes expériences en chemin.',
     stack: ['Next.js', 'Framer Motion'],
     image: '/shots/journey.webp', // la vraie vue du jeu (faite en local) : tout est noir, sauf autour du personnage
     alt: 'Écran noir avec un cercle de lumière au centre : en pixel art, un personnage sur un chemin de terre, des arbres autour et un objet brillant à ramasser.',

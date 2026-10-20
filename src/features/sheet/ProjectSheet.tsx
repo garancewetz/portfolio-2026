@@ -115,7 +115,6 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
             {p.title}
           </h2>
           <p className="rg-sheet-short">{p.short}</p>
-          <p className="rg-sheet-long">{p.long}</p>
           {/* le site, s'il est en ligne : le lien principal, en évidence sous la description */}
           {p.demo && (
             <p className="rg-sheet-site">
