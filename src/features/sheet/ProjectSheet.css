@@ -212,11 +212,6 @@
   font-size: clamp(15px, 2vh, 18px);
   line-height: 1.4;
 }
-.rg-sheet-long {
-  font-size: clamp(13px, 1.8vh, 16px);
-  line-height: 1.55;
-  color: var(--muted);
-}
 /* le numéro de la carte, en tête de la ligne */
 .rg-sheet-meta span {
   margin-right: 6px;
