@@ -22,11 +22,20 @@ export interface Project {
   /** capture 16/10 dans public/shots (WebP, 1200 px de large) */
   image?: string
   alt?: string
+  /** dans la fiche (site pensé pour le téléphone) : un écran de téléphone à côté de la capture (WebP, 640 px de
+      large, 390 × 844) */
+  phone?: Screen
   /** le site, s'il est en ligne */
   demo: string | null
   code: string
   /** en cours, bientôt en ligne */
   wip?: boolean
+}
+
+/** un écran : son image et sa description */
+export interface Screen {
+  src: string
+  alt: string
 }
 
 export interface AbandonedProject {

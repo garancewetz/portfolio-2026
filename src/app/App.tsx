@@ -10,7 +10,7 @@ import GapMarker from '@/features/abandoned/GapMarker'
 import PageGuides from './layout/PageGuides'
 import ScrollHint from './layout/ScrollHint'
 import Footer from './layout/Footer'
-import { NAME, cardStart, fieldHeight, nameStart } from './timeline'
+import { NAME, cardStart, fieldHeight, hintCol, nameStart } from './timeline'
 import { useStickyLayout } from './useStickyLayout'
 import './App.css'
 
@@ -26,7 +26,7 @@ export default function App() {
   const [gap, setGap] = useState(false) // easter egg : projets abandonnés affichés
 
   return (
-    <main className={`rg is-${phase} ${gap ? 'show-ab' : ''}`} style={{ '--n': N }} ref={root}>
+    <main className={`rg is-${phase} ${gap ? 'show-ab' : ''}`} style={{ '--n': N, '--hint-col': hintCol }} ref={root}>
       {/* l'ondulation au survol des captures (seulement l'image, pas toute la carte) */}
       <Ripple root={root} item=".rg-card .shot" />
 
@@ -43,8 +43,6 @@ export default function App() {
       <PageGuides cols={N} />
 
       <section className="rg-field" aria-label="Projets" style={{ '--field-h': fieldHeight }}>
-        {/* (avant les cartes : elles passent devant en montant) */}
-        <AbandonedBand open={gap} />
         {projects.map((p, i) => (
           <ProjectCard key={p.id} project={p} index={i} start={cardStart(i)} onOpen={sheet.open} />
         ))}
@@ -53,6 +51,8 @@ export default function App() {
 
       {/* Fin de page, sous la grille, dans la page */}
       <div className="rg-end">
+        {/* l'easter egg : juste au-dessus du pied de page */}
+        <AbandonedBand open={gap} />
         <Footer />
       </div>
 

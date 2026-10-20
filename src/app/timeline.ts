@@ -1,13 +1,22 @@
+import { projects } from '@/content/content'
+
 // Le déroulé de la page, en hauteurs de départ (vh) : où chaque élément part dans la page avant de monter et
 // de se coller à sa place (position: sticky). Plus c'est bas, plus il arrive tard en faisant défiler.
 
-// Les projets : à l'arrivée, les 5 cartes sont déjà là, posées à des hauteurs différentes, sans ordre apparent
-// (la plus basse dépasse du bas de l'écran) : on voit tout de suite l'ensemble, et chaque coup de molette en
-// range une, de la plus haute à la plus basse. (Des hauteurs fixes, choisies : la page est la même à chaque
-// visite.)
-const STARTS = [26, 62, 14, 80, 44]
-export const cardStart = (i: number): number => STARTS[i % STARTS.length]
+// Les projets : à l'arrivée, les cartes sont déjà là, posées en V inversé, comme un vol d'oiseaux : celle du
+// milieu en tête, les autres de plus en plus bas vers les bords, une aile un peu plus longue que l'autre (moins
+// figé, et les cartes n'arrivent pas deux par deux : chaque coup de molette en range une). La plus basse dépasse
+// du bas de l'écran : coupée, elle dit qu'il y a une suite, on fait défiler. En faisant défiler, elles se rangent
+// en ligne.
+const MID = (projects.length - 1) / 2
+const V_TOP = 14 // la carte de tête
+const V_LEFT = 27 // un cran plus bas à chaque pas vers la gauche…
+const V_RIGHT = 40 // … et vers la droite (l'aile longue)
+const STARTS = projects.map((_, i) => V_TOP + Math.abs(i - MID) * (i < MID ? V_LEFT : V_RIGHT))
+export const cardStart = (i: number): number => STARTS[i]
 const LAST = Math.max(...STARTS) // (la dernière carte à se ranger)
+// la colonne de la carte la plus haute (de 1 à N) : vide en bas, « scroll ↓ » s'y pose
+export const hintCol = STARTS.indexOf(Math.min(...STARTS)) + 1
 
 // Puis la signature : le nom, en très grand, sous la rangée de cartes. « Garance » NAME_GAP vh après la
 // dernière carte, puis « Wetzel » NAME_STEP vh plus loin.

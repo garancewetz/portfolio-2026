@@ -127,14 +127,22 @@ export default function CardFX({ root, item }: RippleProps) {
     }
     let stable = 0 // nombre d'images consécutives sans changement de taille
 
+    // Après un scroll, le navigateur envoie de faux mouvements de souris (pour mettre à jour le survol des
+    // éléments passés sous la souris immobile) : on les ignore jusqu'au premier vrai mouvement, sinon l'effet
+    // revient pendant le scroll et suit la capture avec une image de retard (on voit l'image dessous)
+    let scrolled = false
     const onOver = (e: PointerEvent) => {
+      if (scrolled) return
       const card = (e.target as Element | null)?.closest?.<HTMLElement>(item)
       const shot = card?.matches('.shot') ? card : card?.querySelector<HTMLElement>('.shot')
       const img = shot?.querySelector('img')
       if (!shot || !img) return
-      if (shot !== target) {
+      // (même capture, mais une autre image : dans la fiche, en passant d'un projet à l'autre, React garde le
+      // même élément et n'en change que l'image)
+      const tex = textureFor(img.currentSrc || img.src)
+      if (shot !== target || tex !== uniforms.uTex.value) {
         target = shot
-        uniforms.uTex.value = textureFor(img.currentSrc || img.src)
+        uniforms.uTex.value = tex
         box.style.borderRadius = getComputedStyle(shot).borderRadius
         place()
         stable = 0
@@ -146,8 +154,13 @@ export default function CardFX({ root, item }: RippleProps) {
       if (from && !from.contains(e.relatedTarget as Node | null)) goal = 0
     }
     const onMove = (e: PointerEvent) => {
-      // Si la souris était déjà sur une carte au chargement, aucun « pointerover » n'arrive : on rattrape ici.
-      if (goal === 0 && container.contains(e.target as Node | null)) onOver(e)
+      if (scrolled) {
+        if (!e.movementX && !e.movementY) return
+        scrolled = false
+      }
+      // Si la souris était déjà sur une carte au chargement, ou si l'image a changé sous la souris (fiche suivante
+      // au clavier), aucun « pointerover » n'arrive : on rattrape ici.
+      if (container.contains(e.target as Node | null)) onOver(e)
       if (!target) return
       const r = target.getBoundingClientRect()
       mouse.set((e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height)
@@ -156,8 +169,9 @@ export default function CardFX({ root, item }: RippleProps) {
       last = { x: e.clientX, y: e.clientY }
     }
     // Pendant le scroll, les cartes défilent sous la souris : l'effet se cacherait mal. On le masque donc
-    // dès qu'on scrolle ; il revient au prochain mouvement de souris sur une carte (voir onMove).
+    // dès qu'on scrolle ; il revient au prochain vrai mouvement de souris sur une carte (voir onMove).
     const onScroll = () => {
+      scrolled = true
       if (!target && goal === 0) return
       goal = 0
       energy = 0

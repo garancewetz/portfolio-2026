@@ -16,30 +16,28 @@ function Comment({ a }: { a: AbandonedProject }) {
   )
 }
 
-// Easter egg : les projets abandonnés (ceux tombés dans les interstices), en bandeau qui défile dans
-// l'interstice entre les cartes et le nom (pause au survol et au focus ; immobile si l'on a demandé moins
-// d'animations). Il a sa propre colonne (toute la hauteur du champ) : il reste à sa place, collé comme les
-// cartes, et ne fait rien bouger. Les lecteurs d'écran lisent la liste une fois. open : affiché ou non.
+// Easter egg : les projets abandonnés (ceux tombés dans les interstices), en bandeau qui défile juste au-dessus
+// du pied de page (pause au survol et au focus ; immobile si l'on a demandé moins d'animations). Sa place est
+// gardée même caché : l'ouvrir ne fait rien bouger. Les lecteurs d'écran lisent la liste une fois.
+// open : affiché ou non.
 export default function AbandonedBand({ open }: { open: boolean }) {
   return (
-    <div className="rg-abcol">
-      <section id="rg-ab" className="rg-ab" aria-label="Projets abandonnés">
-        <div className="rg-ab-window" tabIndex={open ? 0 : -1}>
-          <ul className="rg-ab-track">
-            {abandoned.map((a) => (
-              <li key={a.id}>
-                <Comment a={a} />
-              </li>
-            ))}
-            {/* deuxième copie, pour que le défilement boucle sans couture */}
-            {abandoned.map((a) => (
-              <li key={`${a.id}-2`} aria-hidden>
-                <Comment a={a} />
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-    </div>
+    <section id="rg-ab" className="rg-ab" aria-label="Projets abandonnés">
+      <div className="rg-ab-window" tabIndex={open ? 0 : -1}>
+        <ul className="rg-ab-track">
+          {abandoned.map((a) => (
+            <li key={a.id}>
+              <Comment a={a} />
+            </li>
+          ))}
+          {/* deuxième copie, pour que le défilement boucle sans couture */}
+          {abandoned.map((a) => (
+            <li key={`${a.id}-2`} aria-hidden>
+              <Comment a={a} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
   )
 }

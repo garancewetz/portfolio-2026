@@ -27,8 +27,11 @@ export function morph(
     if (opening) shot.style.viewTransitionName = ''
     done()
     if (!opening) shot.style.viewTransitionName = 'rg-shot'
-    // (l'image de la fiche, déjà chargée par la carte, est prête avant la photo d'arrivée)
-    else await document.querySelector<HTMLImageElement>('.rg-sheet-shot img')?.decode().catch(() => {})
+    // (les images de la fiche prêtes avant la photo d'arrivée)
+    else {
+      const imgs = [...document.querySelectorAll<HTMLImageElement>('.rg-sheet-shot img')]
+      await Promise.all(imgs.map((i) => i.decode().catch(() => {})))
+    }
   })
   // (une transition interrompue, par ex. onglet en arrière-plan : le changement a lieu quand même)
   t.ready.catch(() => {})

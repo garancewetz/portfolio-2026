@@ -1,20 +1,20 @@
-/* ——— Easter egg : les projets abandonnés, en bandeau qui défile dans l'interstice (32px) entre les cartes et
-   le nom, comme du code mis en commentaire. Il apparaît quand on sélectionne le repère « gap ». ——— */
-.rg-abcol {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
+/* ——— Easter egg : les projets abandonnés, en bandeau qui défile juste au-dessus du pied de page, comme du code
+   mis en commentaire. Il apparaît quand on sélectionne le repère « gap ». ——— */
 .rg-ab {
-  position: sticky;
-  top: calc(var(--pad) + var(--head-h) + var(--row-h, 300px));
   height: 32px;
-  /* il se décolle en même temps que les cartes et les lettres (marge basse invisible : les deux lignes du nom) */
-  margin-bottom: calc(2 * var(--lh));
+  /* en bas de la fin de page, collé au pied de page (qui ne pousse plus de son côté) */
+  margin-top: auto;
   display: flex;
   align-items: center;
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.4s ease;
+}
+/* (grand écran seulement : sur mobile, le bandeau est caché, le pied de page garde sa place) */
+@media (min-width: 901px) {
+  .rg-ab + .rg-foot {
+    margin-top: -16px;
+  }
 }
 .rg.show-ab .rg-ab {
   opacity: 1;
@@ -23,7 +23,7 @@
 .rg-ab-window {
   flex: 1;
   overflow: hidden;
-  /* les bords s'effacent : le texte entre et sort de l'interstice en fondu */
+  /* les bords s'effacent : le texte entre et sort du bandeau en fondu */
   mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
 }
 .rg-ab-track {
