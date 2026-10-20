@@ -61,7 +61,8 @@ src/
 public/
   shots/                       captures des projets (16/10, WebP, 1200 px de large)
   favicon.svg
-  og.jpg                       aperçu des liens partagés (1200 × 630)
+  og.jpg                       aperçu des liens partagés (1200 × 630 ; le nom, au centre)
+scripts/og/                    la source de og.jpg, et comment la refaire
 ```
 
 ## Modifier le contenu (`src/content/content.ts`)
