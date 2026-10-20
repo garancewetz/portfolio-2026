@@ -1,11 +1,12 @@
 <!doctype html>
-<!-- L'image d'aperçu des liens partagés (public/og.jpg, 1200 × 630). Slack, iMessage, WhatsApp n'en montrent souvent
-     qu'un carré, au centre : le nom y tient en entier. Pour la refaire : voir scripts/og/README.md -->
+<!-- L'image d'aperçu des liens partagés (public/og.jpg, 1200 × 630) : un G, comme le favicon. Slack, iMessage,
+     WhatsApp n'en montrent souvent qu'un carré, au centre : le G y tient en entier. Pour la refaire : voir
+     scripts/og/README.md -->
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Inter+Tight:wght@500&family=JetBrains+Mono&display=block"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=JetBrains+Mono&display=block"
       rel="stylesheet"
     />
     <style>
@@ -29,31 +30,17 @@
       .guides i {
         border-inline: 1px solid #1a19171c;
       }
-      /* le nom, au centre (dans le carré du milieu : 630 × 630) */
-      .name {
+      /* le G, comme le favicon : en italique, au centre */
+      .mark {
         position: absolute;
-        left: 50%;
-        top: 50%;
-        translate: -50% -52%;
-        width: 520px;
-      }
-      .name span {
-        display: block;
-        line-height: 0.92;
-        white-space: nowrap;
-      }
-      .g {
-        font-family: 'Inter Tight', sans-serif;
-        font-weight: 500;
-        font-size: 128px;
-        letter-spacing: -0.05em;
-      }
-      .w {
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding-bottom: 40px;
         font-family: 'Instrument Serif', serif;
         font-style: italic;
-        font-size: 150px;
-        letter-spacing: -0.01em;
-        text-align: right;
+        font-size: 460px;
+        line-height: 1;
       }
       .label {
         position: absolute;
@@ -68,6 +55,6 @@
   <body>
     <div class="guides"><i></i><i></i><i></i><i></i><i></i></div>
     <p class="label">Projets personnels</p>
-    <div class="name"><span class="g">Garance</span><span class="w">Wetzel</span></div>
+    <div class="mark">G</div>
   </body>
 </html>

@@ -1,7 +1,7 @@
 # L'image d'aperçu des liens partagés
 
 `og.html` est la source de `public/og.jpg` (1200 × 630). Slack, iMessage et WhatsApp n'en montrent souvent qu'un
-carré, au centre : le nom doit y tenir en entier (le carré va de x 285 à x 915).
+carré, au centre : le G doit y tenir en entier (le carré va de x 285 à x 915).
 
 Pour la refaire, depuis `portfolio/` (Chrome sans fenêtre, puis conversion en JPEG) :
 
