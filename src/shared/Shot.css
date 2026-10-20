@@ -30,8 +30,7 @@
   aspect-ratio: 640 / 1385;
   border-radius: 12% / 5.5% !important;
 }
-.shot img,
-.shot video {
+.shot img {
   width: 100%;
   height: 100%;
   object-fit: cover;

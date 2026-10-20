@@ -25,9 +25,6 @@ export interface Project {
   /** dans la fiche (site pensé pour le téléphone) : un écran de téléphone à côté de la capture (WebP, 640 px de
       large, 390 × 844) */
   phone?: Screen
-  /** mini vidéo du site en action dans public/videos (MP4, muette, en boucle) : dans la fiche, à la place de la
-      capture (qui sert d'image d'attente) */
-  video?: string
   /** le site, s'il est en ligne */
   demo: string | null
   code: string

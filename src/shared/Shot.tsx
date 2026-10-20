@@ -2,20 +2,17 @@ import type { Project } from '@/content/types'
 import './Shot.css'
 
 // Capture d'un projet (ou un encart « capture à venir » s'il n'y en a pas encore) ; dans la fiche, avec un écran
-// de téléphone à côté (site pensé pour le téléphone), ou sa mini vidéo à la place. L'élément du dehors (.shot-frame) est
-// celui qui glisse de la carte à la fiche.
+// de téléphone à côté (site pensé pour le téléphone). L'élément du dehors (.shot-frame) est celui qui glisse de la
+// carte à la fiche.
 // (des span : la capture est aussi dans le bouton de la carte)
 
 interface ShotProps {
   project: Project
   /** chargée tout de suite (dans la fiche) plutôt qu'à l'approche du scroll */
   eager?: boolean
-  /** dans la fiche : son téléphone à côté de la capture, ou sa mini vidéo à la place, s'il en a */
+  /** dans la fiche : avec son écran de téléphone à côté, s'il en a un */
   sheet?: boolean
 }
-
-// moins d'animations demandé : pas de vidéo qui se lance toute seule, la capture
-const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches
 
 export default function Shot({ project, eager = false, sheet = false }: ShotProps) {
   // dans la fiche, site pensé pour le téléphone : un écran de téléphone et la capture, côte à côte (chacun une
@@ -44,25 +41,6 @@ export default function Shot({ project, eager = false, sheet = false }: ShotProp
       <span className="shot shot-frame shot-empty" role="img" aria-label={`Capture de ${project.title} à venir`}>
         <span>{project.title}</span>
         <small>capture à venir</small>
-      </span>
-    )
-  }
-  if (sheet && project.video && !calm()) {
-    return (
-      <span className="shot shot-frame">
-        {/* (key : une autre vidéo en passant au projet suivant, depuis le début) */}
-        <video
-          key={project.video}
-          src={project.video}
-          poster={project.image}
-          aria-label={project.alt}
-          width="1200"
-          height="750"
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
       </span>
     )
   }

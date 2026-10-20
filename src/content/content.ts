@@ -15,8 +15,7 @@ export const experience: string[] = ['Okeiro', 'Colorz', 'Uptoo']
 // wip : en cours, bientôt en ligne. short : la phrase simple qui dit ce que c'est (dans la fiche, et sur mobile).
 // year, kind, long, stack : les détails, affichés dans la fiche du projet (clic sur une carte).
 // image : capture 16/10 dans public/shots (WebP, 1200 px de large). phone : dans la fiche, un écran de téléphone
-// à côté (voir types.ts). video : mini vidéo dans public/videos (MP4, muette, 1600 × 1000), dans la fiche à la
-// place de la capture (aucun projet n'en a pour l'instant).
+// à côté (voir types.ts).
 export const projects: Project[] = [
   {
     id: 'signe',
