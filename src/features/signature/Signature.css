@@ -46,14 +46,10 @@
 .rg-wave {
   pointer-events: auto;
 }
-/* le e de Garance : ondule comme un liquide (filtre SVG) */
-.rg-wave:hover {
+/* le e de Garance : ondule comme un liquide (filtre SVG ; sa force monte et retombe : voir Wave, dans
+   Signature.tsx). Rien si l'on a demandé moins d'animations. */
+.rg-wave.is-on {
   filter: url(#rg-wobble);
-}
-@media (prefers-reduced-motion: reduce) {
-  .rg-wave:hover {
-    filter: none;
-  }
 }
 /* Au survol de « Wetzel », ses lettres bougent jusqu'à donner « Marzal », l'une après l'autre ; la souris partie,
    elles reviennent. (Tournées autour du milieu de la hauteur des minuscules.) */
