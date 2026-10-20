@@ -42,7 +42,7 @@
 .rg-top strong {
   font-weight: 500;
 }
-/* (le nom est caché : le métier vient en premier, sans point devant, et en plus foncé) */
+/* (le nom est caché : « Projets personnels » vient seul, sans point devant, et en plus foncé) */
 .rg-top strong + span::before {
   content: none;
 }

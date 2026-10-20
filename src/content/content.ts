@@ -3,7 +3,6 @@ import type { AbandonedProject, Person, Project } from './types'
 
 export const me: Person = {
   name: 'Garance Wetzel',
-  role: 'Développeuse front-end',
   github: 'https://github.com/garancewetz',
   linkedin: 'https://www.linkedin.com/in/garancewetzel/',
 }
@@ -41,7 +40,7 @@ export const projects: Project[] = [
     short: 'Accompagne la rééducation après un AVC, un exercice à la fois.',
     year: '2026',
     kind: 'Application mobile (PWA)',
-    long: 'Exercices quotidiens rangés par catégories, suivi de progression, journal personnel et partage avec le ou la kiné. L’interface est pensée pour rester simple à utiliser malgré des difficultés motrices ou cognitives.',
+    long: 'Exercices quotidiens rangés par catégories, suivi de progression, journal personnel et partage avec le ou la kiné.',
     stack: ['Next.js', 'TypeScript', 'Prisma'],
     image: '/shots/synapso.webp', // capture faite avec un compte et des données de démo
     alt: 'Page « Ma progression » de Synapso : un calendrier des 28 derniers jours rempli de pastilles vertes, une série de 14 jours, les exercices par zone du corps et une liste de progrès notés.',
@@ -87,7 +86,7 @@ export const projects: Project[] = [
     short: 'Mon parcours raconté comme un petit jeu vidéo à explorer au clavier.',
     year: '2025',
     kind: 'Mini-jeu',
-    long: 'Un personnage se déplace dans un décor en pixel art et découvre mes expériences en chemin. Un essai ludique, à côté d’un portfolio plus classique.',
+    long: 'Un personnage se déplace dans un décor en pixel art et découvre mes expériences en chemin.',
     stack: ['Next.js', 'Framer Motion'],
     image: '/shots/journey.webp', // la vraie vue du jeu (faite en local) : tout est noir, sauf autour du personnage
     alt: 'Écran noir avec un cercle de lumière au centre : en pixel art, un personnage sur un chemin de terre, des arbres autour et un objet brillant à ramasser.',
