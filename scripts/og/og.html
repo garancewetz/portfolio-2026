@@ -1,0 +1,73 @@
+<!doctype html>
+<!-- L'image d'aperçu des liens partagés (public/og.jpg, 1200 × 630). Slack, iMessage, WhatsApp n'en montrent souvent
+     qu'un carré, au centre : le nom y tient en entier. Pour la refaire : voir scripts/og/README.md -->
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Inter+Tight:wght@500&family=JetBrains+Mono&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      html,
+      body {
+        margin: 0;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: #f6f4ef;
+        color: #1a1917;
+      }
+      /* les guides de la grille, comme sur le site : cinq colonnes */
+      .guides {
+        position: absolute;
+        inset: 0 32px;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        column-gap: 32px;
+      }
+      .guides i {
+        border-inline: 1px solid #1a19171c;
+      }
+      /* le nom, au centre (dans le carré du milieu : 630 × 630) */
+      .name {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        translate: -50% -52%;
+        width: 520px;
+      }
+      .name span {
+        display: block;
+        line-height: 0.92;
+        white-space: nowrap;
+      }
+      .g {
+        font-family: 'Inter Tight', sans-serif;
+        font-weight: 500;
+        font-size: 128px;
+        letter-spacing: -0.05em;
+      }
+      .w {
+        font-family: 'Instrument Serif', serif;
+        font-style: italic;
+        font-size: 150px;
+        letter-spacing: -0.01em;
+        text-align: right;
+      }
+      .label {
+        position: absolute;
+        left: 32px;
+        top: 32px;
+        font: 14px/1 'JetBrains Mono', monospace;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="guides"><i></i><i></i><i></i><i></i><i></i></div>
+    <p class="label">Projets personnels</p>
+    <div class="name"><span class="g">Garance</span><span class="w">Wetzel</span></div>
+  </body>
+</html>
