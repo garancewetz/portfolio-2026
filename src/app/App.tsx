@@ -35,7 +35,6 @@ export default function App() {
         {/* le nom, seulement pour les lecteurs d'écran et les moteurs de recherche : à l'écran, c'est la
             signature, à la fin */}
         <strong className="sr">{me.name}</strong>
-        <span>{me.role}</span>
         <span>Projets personnels</span>
       </h1>
 

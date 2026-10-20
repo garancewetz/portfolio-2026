@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import { me } from '@/content/content'
 import Shot from '@/shared/Shot'
 import Ripple from '@/shared/Ripple'
@@ -46,6 +46,17 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
       if (d.open) d.close()
     }
   }, [open])
+
+  // l'onglet porte le nom du projet ouvert (utile aussi quand on partage son adresse)
+  const title = p?.title
+  useEffect(() => {
+    if (!title) return
+    const page = document.title
+    document.title = `${title} — ${me.name}`
+    return () => {
+      document.title = page
+    }
+  }, [title])
 
   if (p === null || index === null) return null
   const prev = projects[(index - 1 + projects.length) % projects.length]
@@ -124,20 +135,22 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
         </div>
       </div>
 
-      {/* en bas, là où l'on finit de lire : le projet précédent et le suivant, par leur nom (aussi ← → au
-          clavier) */}
+      {/* en bas, là où l'on finit de lire : le projet précédent et le suivant, par leur nom seul et une flèche
+          (aussi ← → au clavier) */}
       <nav className="rg-sheet-pager" aria-label="Autres projets">
         <button type="button" onClick={() => onStep(-1)}>
-          <span className="rg-pager-dir">← Précédent</span>
+          <span className="rg-pager-dir" aria-hidden>←</span>
+          <span className="sr">Précédent : </span>
           <span className="rg-pager-title">
             <span>{num(projects.indexOf(prev))}</span> {prev.title}
           </span>
         </button>
         <button type="button" onClick={() => onStep(1)}>
-          <span className="rg-pager-dir">Suivant →</span>
+          <span className="sr">Suivant : </span>
           <span className="rg-pager-title">
             <span>{num(projects.indexOf(next))}</span> {next.title}
           </span>
+          <span className="rg-pager-dir" aria-hidden>→</span>
         </button>
       </nav>
     </dialog>

@@ -49,6 +49,11 @@ a {
 a:hover {
   text-decoration-thickness: 2px;
 }
+/* le texte surligné : le violet du site (celui des projets en cours), plutôt que le bleu du système */
+::selection {
+  background: #5b42b52e;
+  color: var(--ink);
+}
 :focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 3px;

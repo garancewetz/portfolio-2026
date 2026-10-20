@@ -106,6 +106,7 @@ export default function CardFX({ root, item }: RippleProps) {
     let goal = 0
     let last: { x: number; y: number } | null = null // dernière position de la souris (pour sa vitesse)
     const mouse = new THREE.Vector2(0.5, 0.5)
+    let at: { x: number; y: number } | null = null // où est la souris (même immobile)
 
     // Pose le canvas sur la capture. Renvoie true si la capture vient de changer de taille
     // (la carte bouge ou change de taille) : l'effet attend alors qu'elle soit stable pour s'afficher,
@@ -131,12 +132,12 @@ export default function CardFX({ root, item }: RippleProps) {
     // éléments passés sous la souris immobile) : on les ignore jusqu'au premier vrai mouvement, sinon l'effet
     // revient pendant le scroll et suit la capture avec une image de retard (on voit l'image dessous)
     let scrolled = false
-    const onOver = (e: PointerEvent) => {
-      if (scrolled) return
-      const card = (e.target as Element | null)?.closest?.<HTMLElement>(item)
+    // l'élément sous la souris devient la capture survolée (s'il en est une)
+    const hover = (el: Element | null): boolean => {
+      const card = el?.closest?.<HTMLElement>(item)
       const shot = card?.matches('.shot') ? card : card?.querySelector<HTMLElement>('.shot')
       const img = shot?.querySelector('img')
-      if (!shot || !img) return
+      if (!shot || !img) return false
       // (même capture, mais une autre image : dans la fiche, en passant d'un projet à l'autre, React garde le
       // même élément et n'en change que l'image)
       const tex = textureFor(img.currentSrc || img.src)
@@ -148,6 +149,10 @@ export default function CardFX({ root, item }: RippleProps) {
         stable = 0
       }
       goal = 1
+      return true
+    }
+    const onOver = (e: PointerEvent) => {
+      if (!scrolled) hover(e.target as Element | null)
     }
     const onOut = (e: PointerEvent) => {
       const from = (e.target as Element | null)?.closest?.(item)
@@ -158,9 +163,9 @@ export default function CardFX({ root, item }: RippleProps) {
         if (!e.movementX && !e.movementY) return
         scrolled = false
       }
-      // Si la souris était déjà sur une carte au chargement, ou si l'image a changé sous la souris (fiche suivante
-      // au clavier), aucun « pointerover » n'arrive : on rattrape ici.
+      // Si la souris était déjà sur une carte au chargement, aucun « pointerover » n'arrive : on rattrape ici.
       if (container.contains(e.target as Node | null)) onOver(e)
+      at = { x: e.clientX, y: e.clientY }
       if (!target) return
       const r = target.getBoundingClientRect()
       mouse.set((e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height)
@@ -177,6 +182,18 @@ export default function CardFX({ root, item }: RippleProps) {
       energy = 0
       box.style.opacity = '0'
     }
+    // Fiche suivante au clavier : l'image change sous la souris immobile, sans aucun événement de souris. On
+    // regarde alors ce qu'il y a sous la souris : la nouvelle capture prend l'effet (ou il s'efface s'il n'y en a
+    // plus), au lieu de garder l'image du projet d'avant.
+    // (pas pendant un scroll : l'effet reste masqué jusqu'au prochain vrai mouvement, voir onScroll)
+    const swapped = new MutationObserver(() => {
+      if (scrolled || !target || !at) return
+      if (!hover(document.elementFromPoint(at.x, at.y))) {
+        target = null
+        goal = 0
+      }
+    })
+    swapped.observe(container, { subtree: true, childList: true, attributes: true, attributeFilter: ['src'] })
     container.addEventListener('pointerover', onOver)
     container.addEventListener('pointerout', onOut)
     addEventListener('pointermove', onMove)
@@ -209,6 +226,7 @@ export default function CardFX({ root, item }: RippleProps) {
 
     return () => {
       cancelAnimationFrame(raf)
+      swapped.disconnect()
       container.removeEventListener('pointerover', onOver)
       container.removeEventListener('pointerout', onOut)
       removeEventListener('pointermove', onMove)
