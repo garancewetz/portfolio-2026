@@ -20,7 +20,15 @@ const fragment = /* glsl */ `
   uniform float uHover;
   uniform float uTime;
   uniform float uAspect;
+  uniform vec2 uCrop; // la part de l'image visible (recadrée comme object-fit: cover)…
+  uniform vec2 uCropAt; // … et où (object-position, de 0 à 1 depuis le coin haut gauche)
   varying vec2 vUv;
+
+  // du point de la case au point de l'image
+  vec2 crop(vec2 p) {
+    vec2 off = uCropAt * (1.0 - uCrop);
+    return vec2(off.x + p.x * uCrop.x, 1.0 - (off.y + (1.0 - p.y) * uCrop.y));
+  }
 
   void main() {
     vec2 uv = vUv;
@@ -37,9 +45,9 @@ const fragment = /* glsl */ `
     uv += dir * (wave + lens * dist);
 
     float shift = 0.012 * uHover * exp(-dist * 2.5);
-    float r = texture2D(uTex, uv + vec2(shift, 0.0)).r;
-    float g = texture2D(uTex, uv).g;
-    float b = texture2D(uTex, uv - vec2(shift, 0.0)).b;
+    float r = texture2D(uTex, crop(uv + vec2(shift, 0.0))).r;
+    float g = texture2D(uTex, crop(uv)).g;
+    float b = texture2D(uTex, crop(uv - vec2(shift, 0.0))).b;
     gl_FragColor = vec4(r, g, b, 1.0);
   }
 `
@@ -71,12 +79,16 @@ export default function CardFX({ root, item }: RippleProps) {
       uHover: { value: number }
       uTime: { value: number }
       uAspect: { value: number }
+      uCrop: { value: THREE.Vector2 }
+      uCropAt: { value: THREE.Vector2 }
     } = {
       uTex: { value: null },
       uMouse: { value: new THREE.Vector2(0.5, 0.5) },
       uHover: { value: 0 },
       uTime: { value: 0 },
       uAspect: { value: 1.6 },
+      uCrop: { value: new THREE.Vector2(1, 1) },
+      uCropAt: { value: new THREE.Vector2(0.5, 0) },
     }
     const mesh = new THREE.Mesh(
       new THREE.PlaneGeometry(2, 2),
@@ -98,10 +110,35 @@ export default function CardFX({ root, item }: RippleProps) {
       }
       return cache.get(src)!
     }
+    // Une vidéo (dans la fiche) : sa texture suit la vidéo image par image ; prête dès qu'elle a une image
+    const videos = new Map<HTMLVideoElement, THREE.VideoTexture>()
+    const videoTexture = (v: HTMLVideoElement): THREE.Texture => {
+      if (!videos.has(v)) {
+        const t = new THREE.VideoTexture(v)
+        t.colorSpace = THREE.NoColorSpace
+        videos.set(v, t)
+      }
+      const t = videos.get(v)!
+      t.userData.ready = v.readyState >= 2
+      return t
+    }
     // Précharge toutes les images survolables, pour qu'elles soient prêtes au premier survol
     container.querySelectorAll<HTMLImageElement>(`${item} img`).forEach((img) => textureFor(img.currentSrc || img.src))
 
     let target: HTMLElement | null = null // l'élément .shot survolé
+    let media: HTMLImageElement | HTMLVideoElement | null = null // son image (ou sa vidéo)
+    // L'image est-elle recadrée dans sa case (object-fit: cover) ? La part visible, en largeur et en hauteur
+    const fitCrop = () => {
+      const w = media instanceof HTMLVideoElement ? media.videoWidth : media?.naturalWidth
+      const h = media instanceof HTMLVideoElement ? media.videoHeight : media?.naturalHeight
+      if (!w || !h || !boxW || !boxH) return uniforms.uCrop.value.set(1, 1)
+      const [x, y] = getComputedStyle(media!).objectPosition.split(' ').map((v) => (v.endsWith('%') ? parseFloat(v) / 100 : 0.5))
+      uniforms.uCropAt.value.set(x ?? 0.5, y ?? 0)
+      const box = boxW / boxH
+      const img = w / h
+      if (img > box) uniforms.uCrop.value.set(box / img, 1)
+      else uniforms.uCrop.value.set(1, img / box)
+    }
     let energy = 0 // intensité de la distorsion : monte quand la souris bouge, retombe quand elle s'arrête
     let goal = 0
     let last: { x: number; y: number } | null = null // dernière position de la souris (pour sa vitesse)
@@ -123,20 +160,31 @@ export default function CardFX({ root, item }: RippleProps) {
       box.style.height = `${r.height}px`
       renderer.setSize(r.width, r.height, false)
       uniforms.uAspect.value = r.width / r.height
+      fitCrop()
       return true
     }
     let stable = 0 // nombre d'images consécutives sans changement de taille
 
+    // Après un scroll, le navigateur envoie de faux mouvements de souris (pour mettre à jour le survol des
+    // éléments passés sous la souris immobile) : on les ignore jusqu'au premier vrai mouvement, sinon l'effet
+    // revient pendant le scroll et suit la capture avec une image de retard (on voit l'image dessous)
+    let scrolled = false
     const onOver = (e: PointerEvent) => {
+      if (scrolled) return
       const card = (e.target as Element | null)?.closest?.<HTMLElement>(item)
       const shot = card?.matches('.shot') ? card : card?.querySelector<HTMLElement>('.shot')
-      const img = shot?.querySelector('img')
-      if (!shot || !img) return
-      if (shot !== target) {
+      const m = shot?.querySelector<HTMLImageElement | HTMLVideoElement>('img, video')
+      if (!shot || !m) return
+      // (même capture, mais une autre image : dans la fiche, en passant d'un projet à l'autre, React garde le
+      // même élément et n'en change que l'image)
+      const tex = m instanceof HTMLVideoElement ? videoTexture(m) : textureFor(m.currentSrc || m.src)
+      if (shot !== target || tex !== uniforms.uTex.value) {
         target = shot
-        uniforms.uTex.value = textureFor(img.currentSrc || img.src)
+        media = m
+        uniforms.uTex.value = tex
         box.style.borderRadius = getComputedStyle(shot).borderRadius
         place()
+        fitCrop()
         stable = 0
       }
       goal = 1
@@ -146,8 +194,13 @@ export default function CardFX({ root, item }: RippleProps) {
       if (from && !from.contains(e.relatedTarget as Node | null)) goal = 0
     }
     const onMove = (e: PointerEvent) => {
-      // Si la souris était déjà sur une carte au chargement, aucun « pointerover » n'arrive : on rattrape ici.
-      if (goal === 0 && container.contains(e.target as Node | null)) onOver(e)
+      if (scrolled) {
+        if (!e.movementX && !e.movementY) return
+        scrolled = false
+      }
+      // Si la souris était déjà sur une carte au chargement, ou si l'image a changé sous la souris (fiche suivante
+      // au clavier), aucun « pointerover » n'arrive : on rattrape ici.
+      if (container.contains(e.target as Node | null)) onOver(e)
       if (!target) return
       const r = target.getBoundingClientRect()
       mouse.set((e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height)
@@ -156,8 +209,9 @@ export default function CardFX({ root, item }: RippleProps) {
       last = { x: e.clientX, y: e.clientY }
     }
     // Pendant le scroll, les cartes défilent sous la souris : l'effet se cacherait mal. On le masque donc
-    // dès qu'on scrolle ; il revient au prochain mouvement de souris sur une carte (voir onMove).
+    // dès qu'on scrolle ; il revient au prochain vrai mouvement de souris sur une carte (voir onMove).
     const onScroll = () => {
+      scrolled = true
       if (!target && goal === 0) return
       goal = 0
       energy = 0
@@ -200,6 +254,7 @@ export default function CardFX({ root, item }: RippleProps) {
       removeEventListener('pointermove', onMove)
       removeEventListener('scroll', onScroll)
       cache.forEach((t) => t.dispose())
+      videos.forEach((t) => t.dispose())
       mesh.geometry.dispose()
       mesh.material.dispose()
       renderer.dispose()

@@ -14,7 +14,9 @@ export const experience: string[] = ['Okeiro', 'Colorz', 'Uptoo']
 // Les projets (une carte chacun). demo : lien du site s'il est en ligne ; sinon la carte mène à code.
 // wip : en cours, bientôt en ligne. short : la phrase simple qui dit ce que c'est (dans la fiche, et sur mobile).
 // year, kind, long, stack : les détails, affichés dans la fiche du projet (clic sur une carte).
-// image : capture 16/10 dans public/shots (WebP, 1200 px de large).
+// image : capture 16/10 dans public/shots (WebP, 1200 px de large). phone : dans la fiche, un écran de téléphone
+// à côté (voir types.ts). video : mini vidéo dans public/videos (MP4, muette, 1600 × 1000), dans la fiche à la
+// place de la capture (aucun projet n'en a pour l'instant).
 export const projects: Project[] = [
   {
     id: 'signe',
@@ -26,6 +28,11 @@ export const projects: Project[] = [
     stack: ['TypeScript', 'React', 'Cesium', 'SGP4'],
     image: '/shots/signe.webp',
     alt: 'Interface de Signe astronomique : un formulaire de date de naissance à gauche, la Terre en 3D sur fond étoilé à droite.',
+    // dans la fiche, à côté de la capture : le résultat sur téléphone (fait sur le site en ligne)
+    phone: {
+      src: '/shots/signe-signe.webp',
+      alt: 'Sur téléphone, le résultat : le vrai signe est Poissons, alors que l’horoscope dit Bélier, avec un schéma Terre, Soleil, constellation.',
+    },
     demo: 'https://signe-astronomique.netlify.app/',
     code: 'https://github.com/garancewetz/signe-astronomique',
   },
@@ -39,6 +46,12 @@ export const projects: Project[] = [
     stack: ['Next.js', 'TypeScript', 'Prisma'],
     image: '/shots/synapso.webp', // capture faite avec un compte et des données de démo
     alt: 'Page « Ma progression » de Synapso : un calendrier des 28 derniers jours rempli de pastilles vertes, une série de 14 jours, les exercices par zone du corps et une liste de progrès notés.',
+    // dans la fiche, à côté de la capture : l'accueil sur téléphone (fait en local, avec le compte et les données
+    // de démo)
+    phone: {
+      src: '/shots/synapso-home.webp',
+      alt: 'Sur téléphone, l’accueil : « Bonjour, Calypso », 7 jours actifs sur 7, le bouton « Commencer ma séance » et les zones du corps.',
+    },
     demo: 'https://synapso.netlify.app/',
     code: 'https://github.com/garancewetz/synapso-app-reeducation',
   },
@@ -77,8 +90,8 @@ export const projects: Project[] = [
     kind: 'Mini-jeu',
     long: 'Un personnage se déplace dans un décor en pixel art et découvre mes expériences en chemin. Un essai ludique, à côté d’un portfolio plus classique.',
     stack: ['Next.js', 'Framer Motion'],
-    image: '/shots/journey.webp',
-    alt: 'Carte en pixel art : un personnage sur un chemin de terre, entouré d’arbres, d’une rivière et d’objets à découvrir (un livre, un piano, un champignon).',
+    image: '/shots/journey.webp', // la vraie vue du jeu (faite en local) : tout est noir, sauf autour du personnage
+    alt: 'Écran noir avec un cercle de lumière au centre : en pixel art, un personnage sur un chemin de terre, des arbres autour et un objet brillant à ramasser.',
     demo: null,
     code: 'https://github.com/garancewetz/wwwetzel-journey',
   },

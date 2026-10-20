@@ -26,6 +26,11 @@
 .rg-guide-label {
   position: absolute;
   left: 8px;
+  transition: translate 0.4s ease;
+}
+/* bandeau de l'easter egg ouvert (juste au-dessus du pied de page) : les étiquettes remontent au-dessus */
+.rg.show-ab .rg-guide-label {
+  translate: 0 -40px;
 }
 .rg-guide-label em {
   font-style: normal;
@@ -50,14 +55,14 @@
   opacity: 0.25;
 }
 
-/* Indication « scroll ↓ » : en bas de la 1re colonne, comme une étiquette de la grille ;
+/* Indication « scroll ↓ » : en bas de la colonne de la carte la plus haute (--hint-col), comme une étiquette de la grille ;
    elle s'efface dès qu'on commence à faire défiler */
 .rg-hint {
   position: fixed;
   z-index: 2;
-  /* au bout de la 1re colonne (vide en bas : les cartes y sont en escalier, la 1re tout en haut), sur la ligne
-     des étiquettes de la grille */
-  left: calc(var(--pad) + (100vw - 2 * var(--pad) - (var(--n) - 1) * var(--pad)) / var(--n) - 8px);
+  /* au bout de cette colonne (vide en bas), sur la ligne des étiquettes de la grille */
+  --col-w: calc((100vw - 2 * var(--pad) - (var(--n) - 1) * var(--pad)) / var(--n));
+  left: calc(var(--pad) + var(--hint-col) * var(--col-w) + (var(--hint-col) - 1) * var(--pad) - 8px);
   translate: -100% 0;
   margin: 0;
   /* en encre (et non en violet, comme les étiquettes de la grille) : elle se détache, on la lit */

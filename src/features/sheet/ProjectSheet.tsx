@@ -14,7 +14,7 @@ const host = (url: string) => url.replace(/^https?:\/\//, '').split('/')[0]
 
 // La fiche d'un projet (ouverte au clic sur une carte) : une page du site, en plein écran,
 // sur la même grille. La capture occupe les premières colonnes, le texte les deux dernières.
-// En haut, on passe au projet précédent ou suivant (aussi avec les flèches du clavier) sans revenir à la page.
+// En bas, on passe au projet précédent ou suivant (aussi avec les flèches du clavier) sans revenir à la page.
 // Une vraie boîte de dialogue : le focus y reste, Échap la ferme (le focus revient sur la carte : voir
 // useSheetRoute).
 interface ProjectSheetProps {
@@ -86,29 +86,14 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
           </button>
           <span aria-current="page">{p.title}</span>
         </nav>
-        <div className="rg-sheet-actions">
-          {/* précédent · 02 / 05 · suivant */}
-          <nav className="rg-sheet-steps" aria-label="Autres projets">
-            {/* les flèches sont des touches : on peut aussi les taper au clavier */}
-            <button type="button" onClick={() => onStep(-1)} aria-label={`Projet précédent : ${prev.title}`}>
-              <kbd>←</kbd>
-            </button>
-            <span aria-hidden>
-              {num(index)} / {num(projects.length - 1)}
-            </span>
-            <button type="button" onClick={() => onStep(1)} aria-label={`Projet suivant : ${next.title}`}>
-              <kbd>→</kbd>
-            </button>
-          </nav>
-          <button type="button" className="rg-sheet-close" onClick={onClose}>
-            Fermer <kbd aria-hidden>esc</kbd>
-          </button>
-        </div>
+        <button type="button" className="rg-sheet-close" onClick={onClose}>
+          Fermer <kbd aria-hidden>esc</kbd>
+        </button>
       </div>
 
       <div className="rg-sheet-in">
         <div className="rg-sheet-shot">
-          <Shot project={p} eager />
+          <Shot project={p} eager sheet />
         </div>
         <div className="rg-sheet-text">
           <p className="rg-sheet-meta">
@@ -120,12 +105,17 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
           </h2>
           <p className="rg-sheet-short">{p.short}</p>
           <p className="rg-sheet-long">{p.long}</p>
+          {/* le site, s'il est en ligne : le lien principal, en évidence sous la description */}
+          {p.demo && (
+            <p className="rg-sheet-site">
+              <ExternalLink href={p.demo}>{host(p.demo)}</ExternalLink>
+            </p>
+          )}
           <p className="rg-sheet-stack">
             <span className="sr">Technos : </span>
             {p.stack.join(' · ')}
           </p>
           <p className="rg-sheet-links">
-            {p.demo && <ExternalLink href={p.demo}>{host(p.demo)}</ExternalLink>}
             <ProjectStatus project={p} className="rg-sheet-status" />
             <ExternalLink href={p.code} sr="sur GitHub">
               code
@@ -133,6 +123,23 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
           </p>
         </div>
       </div>
+
+      {/* en bas, là où l'on finit de lire : le projet précédent et le suivant, par leur nom (aussi ← → au
+          clavier) */}
+      <nav className="rg-sheet-pager" aria-label="Autres projets">
+        <button type="button" onClick={() => onStep(-1)}>
+          <span className="rg-pager-dir">← Précédent</span>
+          <span className="rg-pager-title">
+            <span>{num(projects.indexOf(prev))}</span> {prev.title}
+          </span>
+        </button>
+        <button type="button" onClick={() => onStep(1)}>
+          <span className="rg-pager-dir">Suivant →</span>
+          <span className="rg-pager-title">
+            <span>{num(projects.indexOf(next))}</span> {next.title}
+          </span>
+        </button>
+      </nav>
     </dialog>
   )
 }

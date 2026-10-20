@@ -7,7 +7,31 @@
   border: 1px solid var(--line);
   background: var(--empty);
 }
-.shot img {
+/* Dans la fiche, un téléphone et la capture, côte à côte dans la case 16/10 : le téléphone en grand, sur toute
+   la hauteur (28,88 % de la largeur : 16/10 × 640/1385), à gauche ; la capture dans le reste de la largeur
+   (moins 3 % d'écart), alignée en haut. Chacun un filet et une ombre très douce. */
+.with-phone {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  aspect-ratio: 16 / 10;
+}
+.with-phone .shot {
+  outline: 1px solid rgba(26, 25, 23, 0.1);
+  outline-offset: -1px;
+  box-shadow: 0 1.2em 2.4em -1.4em rgba(26, 25, 23, 0.35);
+}
+.with-phone .shot.is-desktop {
+  width: 68.12%;
+}
+.with-phone .shot.is-phone {
+  order: -1;
+  width: 28.88%;
+  aspect-ratio: 640 / 1385;
+  border-radius: 12% / 5.5% !important;
+}
+.shot img,
+.shot video {
   width: 100%;
   height: 100%;
   object-fit: cover;

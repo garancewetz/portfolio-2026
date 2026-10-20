@@ -3,6 +3,7 @@
 .rg-sheet {
   --pad: clamp(16px, 2.4vw, 32px);
   --head-h: 44px;
+  --pager-h: 96px; /* le bas : projet précédent, suivant */
   position: fixed;
   inset: 0;
   width: 100%;
@@ -27,7 +28,15 @@
   }
 }
 /* Transition depuis la carte (View Transitions) : la capture glisse jusqu'à sa place, le texte arrive juste après */
-.rg-sheet-shot .shot {
+.rg-sheet-shot .shot-frame {
+  view-transition-name: rg-shot;
+}
+/* téléphone + capture : la capture de la carte glisse jusqu'à la capture (la même image), le téléphone apparaît
+   en fondu avec le reste */
+.rg-sheet-shot .with-phone {
+  view-transition-name: none;
+}
+.rg-sheet-shot .with-phone .is-desktop {
   view-transition-name: rg-shot;
 }
 /* avec les View Transitions, le fondu de la page entière s'en charge (pas de fondu propre à la fiche : retiré
@@ -119,39 +128,17 @@
 .rg-sheet-top > nav [aria-current] {
   color: var(--ink);
 }
-/* à droite : ← 02 / 05 → puis « Fermer » */
-.rg-sheet-actions {
-  display: flex;
-  align-items: baseline;
-  gap: 32px;
-}
-.rg-sheet-steps {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  color: var(--muted);
-}
-.rg-sheet-steps button {
-  min-width: 24px;
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  color: var(--ink);
-  cursor: pointer;
-  transition: translate 0.2s ease;
-}
-.rg-sheet-steps button:first-child:hover {
-  translate: -3px 0;
-}
-.rg-sheet-steps button:last-child:hover {
-  translate: 3px 0;
-}
+/* à droite : « Fermer » */
 .rg-sheet-close {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 0;
   border: 0;
   background: none;
   font: inherit;
+  font-size: 13px;
+  font-weight: 500;
   letter-spacing: inherit;
   text-transform: inherit;
   color: var(--ink);
@@ -173,7 +160,7 @@
      bord haut et finit à son bord bas */
   align-content: center;
   align-items: stretch;
-  min-height: calc(100% - var(--pad) - var(--head-h) + 8px);
+  min-height: calc(100% - var(--pad) - var(--head-h) + 8px - var(--pager-h));
   padding: 24px var(--pad) var(--pad);
 }
 .rg-sheet-shot {
@@ -183,6 +170,18 @@
   /* comme sur les cartes : sans filet, coins à peine arrondis (la même image, en plus grand) */
   border: 0;
   border-radius: 4px;
+}
+/* grand écran : la fiche tient sur un écran, sans défiler. Sur un écran large et peu haut, la capture
+   (16/10) serait plus haute que la place entre le haut et le bas de la fiche : elle est limitée à cette
+   hauteur, et sa largeur suit. */
+@media (min-width: 901px) {
+  .rg-sheet {
+    /* la hauteur disponible pour la capture, entre le haut et le bas de la fiche */
+    --shot-max-h: calc(100dvh - 2 * var(--pad) - var(--head-h) + 8px - 24px - var(--pager-h));
+  }
+  .rg-sheet-shot .shot-frame {
+    width: min(100%, var(--shot-max-h) * 1.6);
+  }
 }
 .rg-sheet-text {
   grid-column: span 2;
@@ -223,6 +222,24 @@
   margin-right: 6px;
   color: var(--ink);
 }
+/* le site : le lien principal, plus grand, en encre, souligné (le soulignement s'affirme au survol) */
+.rg-sheet-site {
+  margin-top: 6px;
+  font-size: clamp(16px, 2.1vh, 19px);
+  font-weight: 500;
+  line-height: 1.3;
+}
+.rg-sheet-site a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(26, 25, 23, 0.35);
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color 0.2s ease;
+}
+.rg-sheet-site a:hover {
+  text-decoration-color: var(--ink);
+}
 .rg-sheet-stack {
   margin-top: auto; /* technos et liens en bas, au niveau du bord bas de la capture */
   padding-top: 12px;
@@ -251,12 +268,70 @@
 .rg-sheet-status.is-wip {
   color: var(--violet);
 }
+/* En bas : le projet précédent (à gauche), le suivant (à droite), par leur nom */
+.rg-sheet-pager {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--pad);
+  min-height: var(--pager-h);
+  padding: 0 var(--pad) var(--pad);
+}
+.rg-sheet-pager button {
+  display: grid;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+}
+.rg-sheet-pager button:last-child {
+  text-align: right;
+}
+.rg-pager-dir {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+.rg-pager-title {
+  font-family: var(--serif);
+  font-size: clamp(22px, 2.2vw, 30px);
+  line-height: 1.05;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  transition: text-decoration-color 0.2s ease;
+}
+/* le numéro de la carte, comme sur les cartes */
+.rg-pager-title span {
+  display: inline-block; /* (pas souligné avec le titre) */
+  margin-right: 6px;
+  font-family: var(--mono);
+  font-size: 12px;
+  vertical-align: 0.4em;
+  color: var(--muted);
+}
+.rg-sheet-pager button:is(:hover, :focus-visible) .rg-pager-dir {
+  color: var(--ink);
+}
+.rg-sheet-pager button:is(:hover, :focus-visible) .rg-pager-title {
+  text-decoration-color: currentColor;
+}
+
 /* écran étroit : une colonne, la capture au-dessus du texte */
 @media (max-width: 900px) {
   .rg-sheet-guides {
     display: none;
   }
-  /* en haut : seulement ← 01 / 05 → et « Fermer » (le titre est juste dessous, en grand) */
+  /* en haut : seulement « Fermer » (le titre est juste dessous, en grand) */
   .rg-sheet-top > nav {
     display: none;
   }
@@ -264,13 +339,11 @@
   .rg-sheet-top {
     background: var(--bg);
   }
-  .rg-sheet-actions {
-    flex: 1;
-    justify-content: space-between;
+  .rg-sheet-top {
+    justify-content: flex-end;
   }
-  .rg-sheet-actions,
-  .rg-sheet-steps {
-    white-space: nowrap;
+  .rg-sheet-pager {
+    padding-top: 32px;
   }
   .rg-sheet-in {
     grid-template-columns: 1fr;
@@ -285,28 +358,18 @@
   .rg-sheet-close kbd {
     display: none;
   }
-  /* (les flèches restent, en simples flèches) */
-  .rg-sheet-steps kbd {
-    border: 0;
-    font-size: 13px;
-  }
 }
 /* écran tactile : les flèches, « Fermer » et les liens gardent leur taille à l'écran, mais leur zone à toucher
    fait au moins 44px de haut (une zone invisible autour) */
 @media (pointer: coarse) {
-  .rg-sheet-steps button,
   .rg-sheet-close,
   .rg-sheet-links a {
     position: relative;
   }
-  .rg-sheet-steps button::after,
   .rg-sheet-close::after,
   .rg-sheet-links a::after {
     content: '';
     position: absolute;
     inset: -12px -8px;
-  }
-  .rg-sheet-steps button::after {
-    inset: -12px -10px;
   }
 }

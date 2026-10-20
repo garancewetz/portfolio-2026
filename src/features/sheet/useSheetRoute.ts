@@ -16,7 +16,7 @@ const fromHash = (projects: Project[]): number | null => {
 // la carte d'un projet sur la page, et sa capture (départ et arrivée de la transition)
 type Root = RefObject<HTMLElement | null>
 const cardOf = (root: Root, i: number) => root.current?.querySelector<HTMLElement>(`.rg-card[data-i="${i}"]`)
-const shotOf = (root: Root, i: number) => cardOf(root, i)?.querySelector<HTMLElement>('.shot')
+const shotOf = (root: Root, i: number) => cardOf(root, i)?.querySelector<HTMLElement>('.shot-frame')
 
 // L'état de la fiche : quel projet est ouvert (son index, ou null), et comment l'ouvrir, la fermer, passer au
 // précédent ou au suivant. projects : la liste ; root : la page (pour retrouver la carte de chaque projet).
