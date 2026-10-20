@@ -62,7 +62,7 @@ const morphOf = (word: string) =>
     const move = MOVES[ch]
     if (!move) return ch
     return (
-      <span key={k} className={`rg-m ${move}`} style={{ '--k': k }}>
+      <span key={k} className={`rg-m ${move}`} style={{ '--k': k, '--r': word.length - 1 - k }}>
         {move === 'rg-m-card' ? (
           <>
             <span className="rg-m-front">{ch}</span>
