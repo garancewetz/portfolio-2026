@@ -46,17 +46,14 @@
 .rg-wave {
   pointer-events: auto;
 }
-/* le e de Garance : ondule comme un liquide (filtre SVG) */
-.rg-wave:hover {
+/* le e de Garance : ondule comme un liquide (filtre SVG ; sa force monte et retombe : voir Wave, dans
+   Signature.tsx). Rien si l'on a demandé moins d'animations. */
+.rg-wave.is-on {
   filter: url(#rg-wobble);
 }
-@media (prefers-reduced-motion: reduce) {
-  .rg-wave:hover {
-    filter: none;
-  }
-}
-/* Au survol de « Wetzel », ses lettres bougent jusqu'à donner « Marzal », l'une après l'autre ; la souris partie,
-   elles reviennent. (Tournées autour du milieu de la hauteur des minuscules.) */
+/* Au survol de « Wetzel », ses lettres bougent jusqu'à donner « Marzal », l'une après l'autre, de gauche à droite ;
+   la souris partie, elles reviennent plus lentement, de droite à gauche (le nom se rembobine). (Tournées autour du
+   milieu de la hauteur des minuscules ; --k : place de la lettre, --r : place depuis la fin.) */
 .rg-line:last-child .rg-word {
   pointer-events: auto;
 }
@@ -64,8 +61,15 @@
   display: inline-block;
   position: relative;
   transform-origin: 50% var(--oy, 62%);
-  transition: transform 0.6s cubic-bezier(0.5, 0, 0.2, 1);
-  transition-delay: calc(var(--k) * 60ms);
+  /* le retour */
+  transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+  transition-delay: calc(var(--r) * 90ms);
+}
+/* l'aller */
+.rg-word:hover .rg-m {
+  transition-duration: 0.6s;
+  transition-timing-function: cubic-bezier(0.5, 0, 0.2, 1);
+  transition-delay: calc(var(--k) * 110ms);
 }
 /* le W : centre du retournement au milieu de sa propre hauteur */
 .rg-m-flip {
@@ -96,7 +100,8 @@
   transform: perspective(10em) rotateX(180deg);
 }
 @media (prefers-reduced-motion: reduce) {
-  .rg-m {
+  .rg-m,
+  .rg-word:hover .rg-m {
     transition: none;
   }
 }
