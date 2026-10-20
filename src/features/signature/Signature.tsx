@@ -9,13 +9,15 @@ const HIDDEN: Record<string, Record<number, true>> = { Garance: { 6: true } }
 // (Un filtre SVG ne passe pas d'un état à l'autre en CSS : on fait varier sa force, image par image, seulement
 // pendant ces passages.)
 const WAVE_MAX = 22 // la force du filtre, à fond
-const WAVE_IN = 1.6 // secondes pour monter (lentement au début, puis fort)
+const WAVE_IN = 1.2 // secondes pour monter (un frémissement tout de suite, puis fort)
+const WAVE_START = 0.15 // la force dès que la souris arrive (un léger frémissement visible)
 const WAVE_OUT = 1.4 // secondes pour retomber (en douceur, jusqu'au calme)
 function Wave({ children }: { children: string }) {
   const el = useRef<HTMLSpanElement>(null)
   const stop = useRef<() => void>(() => {})
 
-  // part de la force actuelle et va vers le but : montée en accélérant, descente adoucie aux deux bouts
+  // part de la force actuelle et va vers le but : montée qui frémit tout de suite puis accélère, descente adoucie
+  // aux deux bouts
   const go = (to: 0 | 1) => {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
     stop.current()
@@ -28,8 +30,9 @@ function Wave({ children }: { children: string }) {
     let raf = 0
     const tick = (now: number) => {
       const p = dur ? Math.min(1, (now - t0) / 1000 / dur) : 1
-      const eased = to ? p * p * p : p * p * (3 - 2 * p)
-      const level = from + (to - from) * eased
+      const level = to
+        ? Math.max(from, WAVE_START) + (1 - Math.max(from, WAVE_START)) * p * p
+        : from * (1 - p * p * (3 - 2 * p))
       fe.scale.baseVal = level * WAVE_MAX
       // filtre posé seulement quand il ondule (au repos, la lettre reste nette)
       span.classList.toggle('is-on', level > 0)
