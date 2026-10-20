@@ -55,8 +55,8 @@
   opacity: 0.25;
 }
 
-/* Indication « scroll ↓ » : en bas de la colonne de la carte la plus haute (--hint-col), comme une étiquette de la grille ;
-   elle s'efface dès qu'on commence à faire défiler */
+/* Indication « scroll ↓ » : en bas de la colonne de la carte la plus haute (--hint-col), comme une étiquette de
+   la grille ; elle s'efface dès qu'on commence à faire défiler */
 .rg-hint {
   position: fixed;
   z-index: 2;

@@ -2,8 +2,8 @@ import type { Project } from '@/content/types'
 import './Shot.css'
 
 // Capture d'un projet (ou un encart « capture à venir » s'il n'y en a pas encore) ; dans la fiche, avec un écran
-// de téléphone à côté (site pensé pour le téléphone). L'élément du dehors (.shot-frame) est celui qui glisse de la
-// carte à la fiche.
+// de téléphone à côté (site pensé pour le téléphone). L'élément du dehors (.shot-frame) est celui qui glisse de
+// la carte à la fiche.
 // (des span : la capture est aussi dans le bouton de la carte)
 
 interface ShotProps {
@@ -21,7 +21,14 @@ export default function Shot({ project, eager = false, sheet = false }: ShotProp
     return (
       <span className="with-phone shot-frame">
         <span className="shot is-desktop">
-          <img src={project.image} alt={project.alt} width="1200" height="750" loading={eager ? 'eager' : 'lazy'} decoding="async" />
+          <img
+            src={project.image}
+            alt={project.alt}
+            width="1200"
+            height="750"
+            loading={eager ? 'eager' : 'lazy'}
+            decoding="async"
+          />
         </span>
         <span className="shot is-phone">
           <img
