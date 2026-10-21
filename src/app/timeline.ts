@@ -17,13 +17,13 @@ const LAST = Math.max(...STARTS) // (la dernière carte à se ranger)
 // la colonne de la carte la plus haute (de 1 à N) : vide en bas, « scroll ↓ » s'y pose
 export const hintCol = STARTS.indexOf(Math.min(...STARTS)) + 1
 
-// Puis la signature : le nom, en très grand, sous la rangée de cartes. « Garance » NAME_GAP vh après la
-// dernière carte, puis « Wetzel » NAME_STEP vh plus loin.
+// Puis la signature : le nom, sur une ligne, posé en bas de l'écran. « Garance » NAME_GAP vh après la dernière
+// carte, puis « Wetzel » NAME_STEP vh plus loin (il arrive juste après, et se pose à côté).
 export const NAME: string[] = ['Garance', 'Wetzel']
 const NAME_GAP = 60
-const NAME_STEP = 40
+const NAME_STEP = 25
 export const nameStart = (line: number): number => LAST + NAME_GAP + line * NAME_STEP
 
 // La hauteur du champ (cartes et signature) : assez pour que le dernier mot se range, puis une pause courte
 // avant la fin de page (plus longue, on ferait défiler un écran entier où rien ne bouge)
-export const fieldHeight = `calc(${nameStart(NAME.length - 1) + 20}vh + 2 * var(--lh))`
+export const fieldHeight = `calc(${nameStart(NAME.length - 1) + 20}vh + var(--lh))`

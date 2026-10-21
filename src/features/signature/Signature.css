@@ -13,34 +13,31 @@
 .rg-word {
   display: block;
   position: sticky;
-  top: calc(var(--pad) + var(--head-h) + var(--row-h, 300px) + 32px + var(--line) * var(--lh));
+  /* posé en bas de l'écran, au-dessus du pied de page (--dock, voir App.css) */
+  top: var(--dock);
   margin-top: var(--o);
-  /* la 1re ligne se décolle en même temps que la 2e (marge basse invisible d'une ligne) */
-  margin-bottom: calc((1 - var(--line)) * var(--lh));
-  /* « Garance » : la police du texte du site, resserrée comme un titre d'affiche */
-  font-family: var(--sans);
-  font-weight: 500;
-  font-size: calc(var(--lh) / 0.92);
-  line-height: var(--lh);
-  /* une ligne fait toujours une ligne de haut, quelle que soit la taille des lettres (sinon la fin de page,
-     calculée en lignes, saute) */
+  /* une ligne fait toujours une ligne de haut (sinon la fin de page, calculée en lignes, saute) */
   height: var(--lh);
-  letter-spacing: -0.05em;
+  line-height: var(--lh);
+  /* « Garance » : la police du texte du site, d'une graisse qui donne le même gris que l'italique de « Wetzel »
+     (ni plus maigre, ni plus noire), à peine resserrée */
+  font-family: var(--sans);
+  font-weight: 350;
+  font-size: calc(var(--lh) / 0.92);
+  letter-spacing: -0.03em;
   white-space: nowrap;
   color: var(--ink);
 }
-/* « Wetzel » : en italique (Instrument Serif), lié à « Garance » pour qu'on lise « prénom, nom » : même bord gauche
-   (l'italique, qui penche, est tiré un peu à gauche), même taille apparente (ses capitales de la hauteur de
-   celles de « Garance »), et juste dessous (--tuck : de combien il remonte vers « Garance ») */
-.rg-line:last-child .rg-word {
-  --tuck: 0.085;
+/* « Wetzel » : en italique (Instrument Serif), à la suite, de la même taille apparente (ses capitales de la
+   hauteur de celles de « Garance », sur la même ligne de base), juste après le prénom (sa largeur, plus une
+   espace) */
+.rg-word[data-line='1'] {
+  margin-left: calc(var(--first-w, 0px) + var(--lh) * 0.32);
   font-family: var(--serif);
   font-style: italic;
   font-weight: 400;
   font-size: calc(var(--lh) / 0.9);
   letter-spacing: -0.01em;
-  margin-left: calc(var(--lh) * -0.058);
-  translate: 0 calc(var(--lh) * var(--tuck) * -1);
 }
 
 /* ——— Effets cachés dans la signature, au survol ——— */
@@ -58,7 +55,7 @@
 /* Au survol de « Wetzel », ses lettres bougent jusqu'à donner « Marzal », l'une après l'autre, de gauche à droite ;
    la souris partie, elles reviennent plus lentement, de droite à gauche (le nom se rembobine). (Tournées autour du
    milieu de la hauteur des minuscules ; --k : place de la lettre, --r : place depuis la fin.) */
-.rg-line:last-child .rg-word {
+.rg-word[data-line='1'] {
   pointer-events: auto;
 }
 .rg-m {
@@ -117,20 +114,25 @@
     order: 998;
     padding-top: 48px;
   }
+  /* (les deux mots à la suite, sur une ligne) */
+  .rg-name {
+    display: flex;
+    align-items: baseline;
+    gap: 2.6vw;
+  }
   .rg-line {
-    position: static;
+    display: contents;
   }
   .rg-word {
     position: static;
     margin: 0;
-    font-size: 24vw;
-    line-height: 0.95;
     height: auto;
+    line-height: 1;
+    font-size: 11vw;
   }
-  .rg-line:last-child .rg-word {
-    font-size: 24.5vw;
-    margin-left: -1.3vw;
-    translate: 0 -1vw;
+  .rg-word[data-line='1'] {
+    margin: 0;
+    font-size: 11.25vw;
   }
 }
 

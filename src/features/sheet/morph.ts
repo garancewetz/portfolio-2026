@@ -5,8 +5,7 @@ import { flushSync } from 'react-dom'
 // d'animations : la fiche apparaît simplement en fondu.
 // shot : la capture de la carte ; update : le changement d'état ; opening : on ouvre (sinon on ferme) ;
 // after : ce qui suit le changement (le focus).
-const canMorph = () =>
-  'startViewTransition' in document && !matchMedia('(prefers-reduced-motion: reduce)').matches
+const canMorph = () => 'startViewTransition' in document && !matchMedia('(prefers-reduced-motion: reduce)').matches
 
 export function morph(
   shot: HTMLElement | null | undefined,

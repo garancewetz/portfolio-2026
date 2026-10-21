@@ -111,10 +111,12 @@ function measure(root: HTMLElement): Places {
   return places
 }
 
-// La signature, à la fin : le nom en très grand, sous les cartes (« Garance » puis « Wetzel » en italique, calé à
-// droite). Chaque mot a sa propre colonne (toute la hauteur du champ), où il part à sa hauteur puis se colle sur
-// sa ligne. (Décor : le nom est le titre de la page, pour les lecteurs d'écran.)
-// words : les mots, un par ligne ; start(line) : la hauteur de départ de chaque mot (en vh) ;
+// La signature, à la fin : le nom, sur une ligne, discret, posé en bas de l'écran comme une signature au bas
+// d'une lettre (« Garance » puis « Wetzel » en italique). Chaque mot a sa propre colonne (toute la hauteur du
+// champ) : « Garance » arrive, puis « Wetzel » vient se poser à côté. Sa place dépend de la largeur du prénom
+// (--first-w, mesurée : elle change avec les anagrammes). (Décor : le nom est le titre de la page, pour les
+// lecteurs d'écran.)
+// words : le prénom et le nom ; start(line) : la hauteur de départ de chaque mot (en vh) ;
 // ref : de quoi afficher une anagramme (show), voir SignatureHandle.
 export interface SignatureHandle {
   /** affiche l'anagramme n (0 : le nom), en faisant voyager les lettres */
@@ -151,8 +153,21 @@ export default function Signature({ words, start, ref }: SignatureProps) {
   )
   const letters = mix !== 0 || moving ? arrange(ANAGRAMS[mix]) : null
 
+  // la largeur du prénom, pour placer le nom à côté : mesurée avant chaque affichage (une anagramme la change :
+  // avant le voyage des lettres, pour qu'elles visent la bonne place), et quand la fenêtre change de taille
+  const placeName = () => {
+    const first = root.current?.querySelector<HTMLElement>('.rg-word')
+    if (first) root.current!.style.setProperty('--first-w', `${first.offsetWidth}px`)
+  }
+  useEffect(() => {
+    document.fonts.ready.then(placeName)
+    addEventListener('resize', placeName)
+    return () => removeEventListener('resize', placeName)
+  }, [])
+
   // puis chaque lettre part de son ancienne place (position, taille) et rejoint la nouvelle
   useLayoutEffect(() => {
+    placeName()
     const from = before.current
     before.current = null
     if (!from || !root.current) return
@@ -187,13 +202,9 @@ export default function Signature({ words, start, ref }: SignatureProps) {
     <>
       <div className="rg-name" aria-hidden ref={root}>
         {(letters ? ANAGRAMS[mix] : words).map((word, line) => (
-          <div key={line} className="rg-line" style={{ '--line': line }}>
-            {/* la 2e ligne se colle une ligne plus bas : elle part aussi une ligne plus bas */}
-            <span
-              className="rg-word"
-              data-line={line}
-              style={{ '--o': `calc(${start(line)}vh + ${line} * var(--lh))` }}
-            >
+          <div key={line} className="rg-line">
+            {/* chaque mot part à sa hauteur (le nom un peu après le prénom), puis se pose à côté */}
+            <span className="rg-word" data-line={line} style={{ '--o': `${start(line)}vh` }}>
               {letters
                 ? letters[line].map((l) => (
                     <span key={l.id} className="rg-l" data-l={l.id}>

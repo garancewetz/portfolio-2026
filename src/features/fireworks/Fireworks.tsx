@@ -5,10 +5,11 @@ import type { Show } from './show'
 import './Fireworks.css'
 
 // Le mode feu d'artifice (éteint par défaut, voir FireworksSwitch) : la nuit tombe sur la page (base.css), le ciel
-// apparaît (un dégradé de nuit, des étoiles), et il s'allume, sur toute la page. Les couches, du fond vers l'avant :
-// le ciel ; la fumée, qui s'accumule doucement au fil du spectacle ; à chaque explosion, un halo de couleur liquide
-// qui fleurit et se dissout (fluid.ts) ; puis la page ; et devant tout (cartes et nom compris), les étincelles, qui
-// brillent (show.ts : fusées, gerbes en traits de lumière).
+// apparaît (un dégradé de nuit, des étoiles), et il s'allume, sur toute la page. Deux plans, comme un vrai feu vu
+// à travers des fenêtres : les gerbes lointaines (petites) éclatent derrière les cartes, les gerbes proches
+// (grandes) devant. Chaque plan a ses étincelles, qui brillent (show.ts : fusées, gerbes en traits de lumière), et
+// son halo de couleur liquide qui fleurit et se dissout (fluid.ts). Derrière tout, la fumée des gerbes lointaines
+// s'accumule doucement au fil du spectacle (les proches n'en laissent pas : elle voilerait les captures).
 // Le rythme, comme un vrai spectacle : des fusées seules ou par deux, puis un bouquet, puis un court silence. Un
 // clic dans le vide fait éclater une gerbe à cet endroit. De temps en temps, un bouquet devient un grand final
 // autour du nom. À chaque anagramme (le repère « gap »), des fusées
@@ -26,6 +27,7 @@ const HALO = { ink: 0.09, fade: 1.6, curl: 5 }
 // la fumée : gris-bleu, très légère, qui se dissipe lentement (elle s'accumule) en tournoyant un peu
 const SMOKE = { ink: 0.014, tint: [0.62, 0.64, 0.78], fade: 0.3, curl: 4 }
 const STARS = 170
+const NEAR = 1.45 // à partir de cette taille, une gerbe est proche : elle éclate devant les cartes
 
 interface FireworksProps {
   on: boolean
@@ -34,9 +36,16 @@ interface FireworksProps {
 
 const around = (a: number, b: number) => a + Math.random() * (b - a)
 
+// les deux plans ensemble : une gerbe, une fusée vont dans le plan qui convient à leur taille (near : forcer le
+// plan proche)
+interface Planes {
+  burst(x: number, y: number, size: number, near?: boolean): void
+  launch(x: number, y: number, size: number, trail?: number, near?: boolean): void
+}
+
 // le grand final, en deux gestes : des fusées qui montent tout autour (climb), puis des gerbes en rafale tout le
-// long du nom (crown), là où il est à l'écran ; alive : le mode est encore allumé
-const climb = (show: Show, alive: () => boolean) => {
+// long du nom, devant lui (crown), là où il est à l'écran ; alive : le mode est encore allumé
+const climb = (show: Planes, alive: () => boolean) => {
   for (let i = 0; i < 6; i++) {
     setTimeout(
       () => alive() && show.launch(innerWidth * around(0.05, 0.95), innerHeight * around(0.06, 0.4), around(1, 1.8)),
@@ -44,14 +53,15 @@ const climb = (show: Show, alive: () => boolean) => {
     )
   }
 }
-const crown = (show: Show) => {
+const crown = (show: Planes) => {
   const words = [...document.querySelectorAll('.rg-name .rg-word')].map((w) => w.getBoundingClientRect())
   words.forEach((r, line) => {
     // (seulement si le mot est à l'écran)
     if (r.bottom < 0 || r.top > innerHeight) return
     for (let i = 0; i < 6; i++) {
       setTimeout(
-        () => show.burst(r.left + r.width * around(0.05, 0.95), r.top + r.height * around(0.1, 0.8), around(1.2, 2)),
+        () =>
+          show.burst(r.left + r.width * around(0.05, 0.95), r.top + r.height * around(0.1, 0.8), around(1.2, 2), true),
         line * 160 + i * around(60, 140),
       )
     }
@@ -72,12 +82,19 @@ function starField(n: number): [string, string] {
 }
 
 export default function Fireworks({ on, mix }: FireworksProps) {
-  const sparksCanvas = useRef<HTMLCanvasElement>(null)
-  const haloCanvas = useRef<HTMLCanvasElement>(null)
+  // les toiles, du fond vers l'avant : fumée, puis le plan lointain (halo, étincelles), puis, devant la page, le
+  // plan proche (halo, étincelles)
   const smokeCanvas = useRef<HTMLCanvasElement>(null)
-  const show = useRef<Show | null>(null)
-  const halo = useRef<Fluid | null>(null)
+  const farHaloCanvas = useRef<HTMLCanvasElement>(null)
+  const farCanvas = useRef<HTMLCanvasElement>(null)
+  const nearHaloCanvas = useRef<HTMLCanvasElement>(null)
+  const nearCanvas = useRef<HTMLCanvasElement>(null)
+  const far = useRef<Show | null>(null)
+  const near = useRef<Show | null>(null)
+  const farHalo = useRef<Fluid | null>(null)
+  const nearHalo = useRef<Fluid | null>(null)
   const smoke = useRef<Fluid | null>(null)
+  const planes = useRef<Planes | null>(null)
   const onRef = useRef(on)
   const raf = useRef(0)
   const paf = useRef<(() => void) | null>(null) // ce qui se passe à la première explosion (la nuit tombe)
@@ -85,22 +102,22 @@ export default function Fireworks({ on, mix }: FireworksProps) {
 
   // une seule boucle à la fois : relancée à l'allumage, elle s'arrête seule une fois tout éteint et dissipé
   const wake = () => {
-    if (raf.current || !show.current) return
+    if (raf.current || !near.current) return
     let last = performance.now()
     let quietSince = last
     const frame = (now: number) => {
       const dt = Math.min(0.033, (now - last) / 1000)
       last = now
       smoke.current?.step(dt)
-      halo.current?.step(dt)
-      const flying = show.current?.step(dt) ?? 0
+      farHalo.current?.step(dt)
+      nearHalo.current?.step(dt)
+      const flying = (far.current?.step(dt) ?? 0) + (near.current?.step(dt) ?? 0)
       if (onRef.current || flying) quietSince = now
       if (now - quietSince < LINGER) raf.current = requestAnimationFrame(frame)
       else {
         raf.current = 0
-        show.current?.clear()
-        halo.current?.clear()
-        smoke.current?.clear()
+        for (const s of [far, near]) s.current?.clear()
+        for (const f of [farHalo, nearHalo, smoke]) f.current?.clear()
       }
     }
     raf.current = requestAnimationFrame(frame)
@@ -120,7 +137,7 @@ export default function Fireworks({ on, mix }: FireworksProps) {
     // de la profondeur : des gerbes lointaines, petites, et d'autres toutes proches, immenses
     const rocket = () => {
       if (onRef.current)
-        show.current?.launch(innerWidth * around(0.04, 0.96), innerHeight * around(0.08, 0.6), around(0.5, 2.3))
+        planes.current?.launch(innerWidth * around(0.04, 0.96), innerHeight * around(0.08, 0.6), around(0.5, 2.3))
     }
     let shots = 0
     // (le 2e bouquet est déjà un grand final autour du nom)
@@ -138,8 +155,8 @@ export default function Fireworks({ on, mix }: FireworksProps) {
       // quelques tirs
       shots = 3 + Math.floor(Math.random() * 3)
       bouquets++
-      if (show.current && bouquets % CROWN_EVERY === 0) {
-        const s = show.current
+      if (planes.current && bouquets % CROWN_EVERY === 0) {
+        const s = planes.current
         climb(s, () => onRef.current)
         setTimeout(() => onRef.current && crown(s), 1100)
         timer = window.setTimeout(program, 1100 + around(REST[0], REST[1]) + 800)
@@ -151,20 +168,36 @@ export default function Fireworks({ on, mix }: FireworksProps) {
     }
 
     Promise.all([import('./show'), import('./fluid')]).then(([{ createShow }, { createFluid }]) => {
-      if (cancelled || !sparksCanvas.current || !haloCanvas.current || !smokeCanvas.current) return
-      // (sur un petit écran, un téléphone : pas de fumée, et un halo moins fin, pour rester fluide)
+      const canvases = [smokeCanvas, farHaloCanvas, farCanvas, nearHaloCanvas, nearCanvas].map((c) => c.current)
+      if (cancelled || canvases.some((c) => !c)) return
+      // (sur un petit écran, un téléphone : pas de fumée, et des halos moins fins, pour rester fluide)
       const small = innerWidth < 700
-      if (!small) smoke.current ??= createFluid(smokeCanvas.current, SMOKE)
-      halo.current ??= createFluid(haloCanvas.current, small ? { ...HALO, dye: 320 } : HALO)
-      show.current ??= createShow(sparksCanvas.current, (x, y, size, colors) => {
-        halo.current?.burst(x, y, size, colors)
-        smoke.current?.burst(x, y, size * 1.4)
-        // (la première explosion : l'ouverture, voir plus bas)
+      const halo = small ? { ...HALO, dye: 320 } : HALO
+      if (!small) smoke.current ??= createFluid(smokeCanvas.current!, SMOKE)
+      farHalo.current ??= createFluid(farHaloCanvas.current!, halo)
+      nearHalo.current ??= createFluid(nearHaloCanvas.current!, halo)
+      // (la première explosion : l'ouverture, voir plus bas)
+      const opening = () => {
         const first = paf.current
         paf.current = null
         first?.()
+      }
+      far.current ??= createShow(farCanvas.current!, (x, y, size, colors) => {
+        farHalo.current?.burst(x, y, size, colors)
+        smoke.current?.burst(x, y, size * 1.4)
+        opening()
       })
-      if (!show.current) return
+      near.current ??= createShow(nearCanvas.current!, (x, y, size, colors) => {
+        nearHalo.current?.burst(x, y, size, colors)
+        opening()
+      })
+      const f = far.current
+      const n = near.current
+      if (!f || !n) return
+      planes.current ??= {
+        burst: (x, y, size, close = size >= NEAR) => (close ? n : f).burst(x, y, size),
+        launch: (x, y, size, trail, close = size >= NEAR) => (close ? n : f).launch(x, y, size, trail),
+      }
       wake()
       // l'ouverture : une seule fusée monte sur le site encore clair ; quand elle éclate, PAF, la nuit tombe d'un
       // coup, et le spectacle commence
@@ -175,17 +208,17 @@ export default function Fireworks({ on, mix }: FireworksProps) {
         timer = window.setTimeout(program, 500)
       }
       // (en violet, la couleur de la grille : l'or se verrait à peine sur le fond clair)
-      show.current.launch(innerWidth / 2, innerHeight * 0.36, 2, 0)
+      n.launch(innerWidth / 2, innerHeight * 0.36, 2, 0)
     })
     const onResize = () => {
-      show.current?.resize()
-      halo.current?.resize()
-      smoke.current?.resize()
+      for (const s of [far, near]) s.current?.resize()
+      for (const f of [farHalo, nearHalo, smoke]) f.current?.resize()
     }
     // un clic dans le vide (pas sur une carte, un lien, un bouton) : une gerbe à cet endroit
     const onDown = (e: PointerEvent) => {
       if ((e.target as Element).closest('a, button, .rg-card, dialog')) return
-      show.current?.burst(e.clientX, e.clientY, 1.3)
+      // (proche : c'est le geste du visiteur)
+      planes.current?.burst(e.clientX, e.clientY, 1.3, true)
     }
     addEventListener('resize', onResize)
     addEventListener('pointerdown', onDown)
@@ -207,8 +240,8 @@ export default function Fireworks({ on, mix }: FireworksProps) {
       firstMix.current = false
       return
     }
-    if (!onRef.current || !show.current) return
-    const s = show.current
+    if (!onRef.current || !planes.current) return
+    const s = planes.current
     climb(s, () => onRef.current)
     const timer = window.setTimeout(() => onRef.current && crown(s), MIX_LANDS)
     return () => clearTimeout(timer)
@@ -219,10 +252,11 @@ export default function Fireworks({ on, mix }: FireworksProps) {
     () => () => {
       cancelAnimationFrame(raf.current)
       document.documentElement.classList.remove('is-night')
-      halo.current?.destroy()
-      smoke.current?.destroy()
-      halo.current = smoke.current = null
-      show.current = null
+      for (const f of [farHalo, nearHalo, smoke]) {
+        f.current?.destroy()
+        f.current = null
+      }
+      far.current = near.current = planes.current = null
     },
     [],
   )
@@ -234,8 +268,10 @@ export default function Fireworks({ on, mix }: FireworksProps) {
         <i style={{ boxShadow: stars[1] }} />
       </div>
       <canvas ref={smokeCanvas} className="rg-fw" aria-hidden />
-      <canvas ref={haloCanvas} className="rg-fw" aria-hidden />
-      <canvas ref={sparksCanvas} className="rg-fw rg-fw-front" aria-hidden />
+      <canvas ref={farHaloCanvas} className="rg-fw" aria-hidden />
+      <canvas ref={farCanvas} className="rg-fw" aria-hidden />
+      <canvas ref={nearHaloCanvas} className="rg-fw rg-fw-front" aria-hidden />
+      <canvas ref={nearCanvas} className="rg-fw rg-fw-front" aria-hidden />
     </>
   )
 }

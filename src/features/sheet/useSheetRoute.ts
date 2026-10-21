@@ -74,7 +74,10 @@ export function useSheetRoute(projects: Project[], root: Root): SheetRoute {
 // fermer la fiche du projet i (et rendre le focus à sa carte)
 function shut(root: Root, i: number | null, setSheet: Dispatch<SetStateAction<number | null>>) {
   if (i === null) return
-  morph(shotOf(root, i), () => setSheet(null), false, () =>
-    cardOf(root, i)?.querySelector<HTMLButtonElement>('.rg-link')?.focus({ preventScroll: true }),
+  morph(
+    shotOf(root, i),
+    () => setSheet(null),
+    false,
+    () => cardOf(root, i)?.querySelector<HTMLButtonElement>('.rg-link')?.focus({ preventScroll: true }),
   )
 }

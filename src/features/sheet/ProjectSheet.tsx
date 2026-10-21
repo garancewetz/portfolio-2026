@@ -12,7 +12,10 @@ import './ProjectSheet.css'
 // L'adresse d'un lien, sans « https:// » ni chemin (pour l'afficher)
 // Le domaine du lien ; pour une page de ce site (le jeu sous /journey), le chemin aussi
 const host = (url: string) => {
-  const [domain, ...path] = url.replace(/^https?:\/\//, '').replace(/\/$/, '').split('/')
+  const [domain, ...path] = url
+    .replace(/^https?:\/\//, '')
+    .replace(/\/$/, '')
+    .split('/')
   return domain === 'garancewetz.netlify.app' && path.length ? `${domain}/${path.join('/')}` : domain
 }
 
@@ -142,7 +145,9 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
           (aussi ← → au clavier) */}
       <nav className="rg-sheet-pager" aria-label="Autres projets">
         <button type="button" onClick={() => onStep(-1)}>
-          <span className="rg-pager-dir" aria-hidden>←</span>
+          <span className="rg-pager-dir" aria-hidden>
+            ←
+          </span>
           <span className="sr">Précédent : </span>
           <span className="rg-pager-title">
             <span>{num(projects.indexOf(prev))}</span> {prev.title}
@@ -153,7 +158,9 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
           <span className="rg-pager-title">
             <span>{num(projects.indexOf(next))}</span> {next.title}
           </span>
-          <span className="rg-pager-dir" aria-hidden>→</span>
+          <span className="rg-pager-dir" aria-hidden>
+            →
+          </span>
         </button>
       </nav>
     </dialog>
