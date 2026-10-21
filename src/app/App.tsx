@@ -49,7 +49,7 @@ export default function App() {
       </h1>
 
       <ScrollHint ref={hint} />
-      <Fireworks on={fireworks} mix={mix} />
+      <Fireworks on={fireworks} mix={mix} onEnd={() => setFireworks(false)} />
       <PageGuides cols={N} />
 
       <section className="rg-field" aria-label="Projets" style={{ '--field-h': fieldHeight }}>
