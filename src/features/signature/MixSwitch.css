@@ -33,17 +33,14 @@
   background: repeating-linear-gradient(45deg, rgb(var(--tint-gap) / 0.12) 0 4px, transparent 4px 8px);
   pointer-events: auto;
   cursor: pointer;
-  transition:
-    opacity 1s ease,
-    background 0.3s;
+  transition: background 0.3s;
 }
-/* on le voit monter, mais il ne se clique qu'une fois les cartes rangées, quand le nom arrive (avant, il n'y
-   aurait rien à mélanger à l'écran) */
-.rg:not(.is-done) .rg-gap {
-  pointer-events: none;
+/* (désactivé tant que le nom n'est pas là : on le voit monter, sans main au survol) */
+.rg-gap:disabled {
+  cursor: default;
 }
 /* sur une anagramme : les rayures plus soutenues */
-.rg-gap:hover,
+.rg-gap:enabled:hover,
 .rg-gap.is-mixed {
   background: repeating-linear-gradient(45deg, rgb(var(--tint-gap) / 0.24) 0 4px, transparent 4px 8px);
 }

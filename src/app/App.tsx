@@ -58,7 +58,7 @@ export default function App() {
         ))}
         <Signature words={NAME} start={nameStart} ref={signature} />
         {/* (il se pose avec le dernier mot du nom : avant, il n'y a rien à mélanger) */}
-        <MixSwitch mixed={mix !== 0} onNext={nextMix} start={nameStart(NAME.length - 1)} />
+        <MixSwitch mixed={mix !== 0} ready={phase === 'done'} onNext={nextMix} start={nameStart(NAME.length - 1)} />
       </section>
 
       {/* Fin de page, sous la grille, dans la page */}

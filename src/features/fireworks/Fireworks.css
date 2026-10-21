@@ -74,16 +74,17 @@
 
 /* la lumière des gerbes proches sur les captures des cartes (voir lightCards, dans Fireworks.tsx) : un reflet
    de la couleur de l'explosion, centré sur elle (--gx, --gy : sa place par rapport à la capture ; --gr : jusqu'où
-   il porte sur la capture ; --gc : sa couleur), dont la force (--glow) retombe à zéro */
+   il porte sur la capture ; --gc : sa couleur), dont la force (--glow) retombe à zéro. Seulement la nuit, quand le
+   feu d'artifice tourne */
 @property --glow {
   syntax: '<number>';
   inherits: true;
   initial-value: 0;
 }
-.rg-card .shot {
+:root.is-night .rg-card .shot {
   position: relative;
 }
-.rg-card .shot::after {
+:root.is-night .rg-card .shot::after {
   content: '';
   position: absolute;
   inset: 0;

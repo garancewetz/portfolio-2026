@@ -112,7 +112,7 @@ function measure(root: HTMLElement): Places {
 }
 
 // La signature, à la fin : le nom, sur une ligne, discret, posé en bas de l'écran comme une signature au bas
-// d'une lettre (« Garance » puis « Wetzel » en italique). Chaque mot a sa propre colonne (toute la hauteur du
+// d'une lettre (« Garance », puis « Wetzel » plus appuyé). Chaque mot a sa propre colonne (toute la hauteur du
 // champ) : « Garance » arrive, puis « Wetzel » vient se poser à côté. Sa place dépend de la largeur du prénom
 // (--first-w, mesurée : elle change avec les anagrammes). (Décor : le nom est le titre de la page, pour les
 // lecteurs d'écran.)
