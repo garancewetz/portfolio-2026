@@ -10,18 +10,17 @@ import './Fireworks.css'
 // (grandes) devant. Chaque plan a ses étincelles, qui brillent (show.ts : fusées, gerbes en traits de lumière), et
 // son halo de couleur liquide qui fleurit et se dissout (fluid.ts). Derrière tout, la fumée des gerbes lointaines
 // s'accumule doucement au fil du spectacle (les proches n'en laissent pas : elle voilerait les captures).
-// Le rythme, comme un vrai spectacle : des fusées seules ou par deux, puis un bouquet, puis un court silence. Un
-// clic dans le vide fait éclater une gerbe à cet endroit. De temps en temps, un bouquet devient un grand final
-// autour du nom. À chaque anagramme (le repère « gap »), des fusées montent pendant que les lettres voyagent, et le
-// grand final éclate tout le long du nom quand elles ont atterri. Au bout de SHOW ms, le bouquet final, puis la nuit
-// calme, et le jour revient : le mode s'éteint de lui-même (onEnd).
+// Le rythme, comme un vrai spectacle : des fusées seules ou par deux, puis un bouquet, puis un court silence, le
+// tout réparti sur toute la page. Un clic dans le vide fait éclater une gerbe à cet endroit. À chaque anagramme (le
+// repère « gap »), des fusées montent pendant que les lettres voyagent, et une salve éclate partout quand elles ont
+// atterri. Au bout de SHOW ms, le bouquet final, partout, en vagues, puis la nuit calme, et le jour revient : le mode
+// s'éteint de lui-même (onEnd).
 // Les moteurs ne sont chargés qu'à la première mise en route. Éteint : plus de fusées, les dernières étincelles
 // s'éteignent, la fumée se dissipe, puis plus rien ne tourne.
-// on : mode allumé ; mix : l'anagramme affichée (à chaque changement, le grand final).
+// on : mode allumé ; mix : l'anagramme affichée (à chaque changement, une salve).
 const SOLO = [650, 1300] // ms entre deux tirs (une ou deux fusées)
 const BOUQUET = [6, 10] // fusées dans un bouquet
 const REST = [1200, 1800] // ms de silence après un bouquet
-const CROWN_EVERY = 3 // un bouquet sur trois est un grand final autour du nom, comme pour une anagramme
 // comme un vrai spectacle, il a une fin : SHOW ms après la nuit, le bouquet final, puis CALM ms de nuit calme, et le
 // jour revient (on peut toujours l'éteindre avant)
 const SHOW = 30000
@@ -50,8 +49,8 @@ interface Planes {
   launch(x: number, y: number, size: number, trail?: number, near?: boolean): void
 }
 
-// le grand final, en deux gestes : des fusées qui montent tout autour (climb), puis des gerbes en rafale tout le
-// long du nom, devant lui (crown), là où il est à l'écran ; alive : le mode est encore allumé
+// les salves, en deux gestes : des fusées qui montent tout autour (climb), puis des gerbes en rafale réparties sur
+// tout l'écran (spread) ; alive : le mode est encore allumé
 const climb = (show: Planes, alive: () => boolean) => {
   for (let i = 0; i < 6; i++) {
     setTimeout(
@@ -83,19 +82,21 @@ function lightCards(x: number, y: number, size: number, color: string) {
   }
 }
 
-const crown = (show: Planes) => {
-  const words = [...document.querySelectorAll('.rg-name .rg-word')].map((w) => w.getBoundingClientRect())
-  words.forEach((r, line) => {
-    // (seulement si le mot est à l'écran)
-    if (r.bottom < 0 || r.top > innerHeight) return
-    for (let i = 0; i < 6; i++) {
-      setTimeout(
-        () =>
-          show.burst(r.left + r.width * around(0.05, 0.95), r.top + r.height * around(0.1, 0.8), around(1.2, 2), true),
-        line * 160 + i * around(60, 140),
-      )
-    }
-  })
+// n gerbes en rafale, réparties sur toute la largeur (une par tranche, placée au hasard dedans) et dans le haut de
+// l'écran, à quelques dixièmes de seconde d'écart
+const spread = (show: Planes, n: number, alive: () => boolean) => {
+  for (let i = 0; i < n; i++) {
+    setTimeout(
+      () =>
+        alive() &&
+        show.burst(
+          innerWidth * (0.04 + (0.92 * (i + Math.random())) / n),
+          innerHeight * around(0.1, 0.62),
+          around(0.9, 2),
+        ),
+      i * around(40, 110),
+    )
+  }
 }
 
 // les étoiles : des points (une ombre portée chacune), plus nombreux en haut du ciel ; deux groupes, qui
@@ -174,20 +175,19 @@ export default function Fireworks({ on, mix, onEnd }: FireworksProps) {
         planes.current?.launch(innerWidth * around(0.04, 0.96), innerHeight * around(0.08, 0.6), around(0.5, 2.3))
     }
     let shots = 0
-    // (le 2e bouquet est déjà un grand final autour du nom)
-    let bouquets = CROWN_EVERY - 2
     let nightAt = 0 // (quand la nuit est tombée : le spectacle dure SHOW ms à partir de là)
     const alive = () => onRef.current
-    // le bouquet final : des fusées qui montent tout autour, une rafale de fusées partout, deux couronnes de gerbes
-    // autour du nom ; puis la nuit calme, et la fin
+    // le bouquet final, partout : des fusées qui montent tout autour, une rafale de fusées, puis trois vagues de
+    // gerbes de plus en plus denses sur tout l'écran ; puis la nuit calme, et la fin
     const finale = () => {
       const s = planes.current
       if (!s) return
       climb(s, alive)
       for (let i = 0; i < 14; i++) setTimeout(rocket, 300 + i * around(60, 130))
-      setTimeout(() => alive() && crown(s), 1100)
-      setTimeout(() => alive() && crown(s), 1800)
-      timer = window.setTimeout(() => alive() && endRef.current(), 1800 + 1200 + CALM)
+      setTimeout(() => spread(s, 8, alive), 1100)
+      setTimeout(() => spread(s, 10, alive), 1900)
+      setTimeout(() => spread(s, 14, alive), 2700)
+      timer = window.setTimeout(() => alive() && endRef.current(), 2700 + 1500 + CALM)
     }
     const program = () => {
       if (performance.now() - nightAt > SHOW) return finale()
@@ -199,17 +199,8 @@ export default function Fireworks({ on, mix, onEnd }: FireworksProps) {
         timer = window.setTimeout(program, around(SOLO[0], SOLO[1]))
         return
       }
-      // le bouquet (ou, de temps en temps, le grand final autour du nom), puis le silence, puis à nouveau
-      // quelques tirs
+      // le bouquet, puis le silence, puis à nouveau quelques tirs
       shots = 3 + Math.floor(Math.random() * 3)
-      bouquets++
-      if (planes.current && bouquets % CROWN_EVERY === 0) {
-        const s = planes.current
-        climb(s, alive)
-        setTimeout(() => alive() && crown(s), 1100)
-        timer = window.setTimeout(program, 1100 + around(REST[0], REST[1]) + 800)
-        return
-      }
       const n = Math.round(around(BOUQUET[0], BOUQUET[1]))
       for (let i = 0; i < n; i++) setTimeout(rocket, i * around(80, 180))
       timer = window.setTimeout(program, around(REST[0], REST[1]))
@@ -282,8 +273,8 @@ export default function Fireworks({ on, mix, onEnd }: FireworksProps) {
     }
   }, [on])
 
-  // une anagramme : des fusées montent pendant que les lettres voyagent, puis, quand elles ont atterri, le grand
-  // final éclate en rafale tout le long du nom
+  // une anagramme : des fusées montent pendant que les lettres voyagent, puis, quand elles ont atterri, une salve
+  // éclate partout
   const firstMix = useRef(true)
   useEffect(() => {
     if (firstMix.current) {
@@ -292,8 +283,9 @@ export default function Fireworks({ on, mix, onEnd }: FireworksProps) {
     }
     if (!onRef.current || !planes.current) return
     const s = planes.current
-    climb(s, () => onRef.current)
-    const timer = window.setTimeout(() => onRef.current && crown(s), MIX_LANDS)
+    const alive = () => onRef.current
+    climb(s, alive)
+    const timer = window.setTimeout(() => alive() && spread(s, 7, alive), MIX_LANDS)
     return () => clearTimeout(timer)
   }, [mix])
 
