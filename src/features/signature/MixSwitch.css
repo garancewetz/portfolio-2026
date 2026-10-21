@@ -37,9 +37,9 @@
     opacity 1s ease,
     background 0.3s;
 }
-/* invisible (et pas cliquable) tant que les cartes ne sont pas rangées : il apparaît avec le nom */
+/* on le voit monter, mais il ne se clique qu'une fois les cartes rangées, quand le nom arrive (avant, il n'y
+   aurait rien à mélanger à l'écran) */
 .rg:not(.is-done) .rg-gap {
-  opacity: 0;
   pointer-events: none;
 }
 /* sur une anagramme : les rayures plus soutenues */
