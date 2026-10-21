@@ -46,6 +46,9 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
     const d = dialog.current
     if (!open || !d) return
     d.showModal()
+    // le focus sur la fiche elle-même, pas sur son premier lien (sinon, en arrivant par l'adresse d'un projet, ce
+    // lien s'entoure du cadre du clavier) : Tab mène ensuite aux liens, dans l'ordre
+    d.focus()
     // la page ne défile pas derrière la fiche
     document.documentElement.style.overflow = 'hidden'
     return () => {
@@ -72,6 +75,7 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
     <dialog
       ref={dialog}
       className="rg-sheet"
+      tabIndex={-1}
       aria-labelledby="rg-sheet-title"
       style={{ '--n': cols }}
       // Échap (le navigateur ferme la boîte : on suit)

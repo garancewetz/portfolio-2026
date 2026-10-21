@@ -1,5 +1,9 @@
 /* ——— La fiche d'un projet (clic sur une carte) : une page du site, en plein écran, sur la même grille
    (guides en fond, capture sur les premières colonnes, texte sur les deux dernières). Simple fondu. ——— */
+/* (la fiche reçoit le focus à l'ouverture : pas de cadre autour de toute la page) */
+.rg-sheet:focus-visible {
+  outline: none;
+}
 .rg-sheet {
   --pad: clamp(16px, 2.4vw, 32px);
   --head-h: 44px;
