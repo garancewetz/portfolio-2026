@@ -93,3 +93,19 @@
   mix-blend-mode: screen;
   opacity: calc(var(--glow) * 0.65);
 }
+
+/* la nuit, les captures des cartes s'assombrissent un peu (on voit moins ce qui n'est pas éclairé) : le feu
+   d'artifice ressort, et le reflet des gerbes proches s'y voit mieux. (Aussi l'ondulation au survol, qui recopie
+   la capture : sinon elle la rallumerait.) */
+.rg-card .shot img,
+.rg .cardfx canvas {
+  transition: filter 1.8s ease;
+}
+:root.is-night .rg-card .shot img,
+:root.is-night .rg .cardfx canvas {
+  filter: brightness(0.72);
+}
+:root.is-paf .rg-card .shot img,
+:root.is-paf .rg .cardfx canvas {
+  transition-duration: 0.15s;
+}
