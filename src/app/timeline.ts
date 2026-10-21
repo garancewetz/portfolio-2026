@@ -3,16 +3,15 @@ import { projects } from '@/content/content'
 // Le déroulé de la page, en hauteurs de départ (vh) : où chaque élément part dans la page avant de monter et
 // de se coller à sa place (position: sticky). Plus c'est bas, plus il arrive tard en faisant défiler.
 
-// Les projets : à l'arrivée, les cartes sont déjà là, posées en V inversé, comme un vol d'oiseaux : celle du
-// milieu en tête, les autres de plus en plus bas vers les bords, une aile un peu plus longue que l'autre (moins
-// figé, et les cartes n'arrivent pas deux par deux : chaque coup de molette en range une). La plus basse dépasse
-// du bas de l'écran : coupée, elle dit qu'il y a une suite, on fait défiler. En faisant défiler, elles se rangent
+// Les projets : à l'arrivée, les cartes sont déjà là, posées en V inversé symétrique, comme un vol d'oiseaux :
+// celle du milieu en tête, les autres de plus en plus bas vers les bords, les deux ailes pareilles (les cartes
+// à la même distance du milieu, à la même hauteur : elles se rangent ensemble). Les plus basses dépassent du bas
+// de l'écran : coupées, elles disent qu'il y a une suite, on fait défiler. En faisant défiler, elles se rangent
 // en ligne.
 const MID = (projects.length - 1) / 2
 const V_TOP = 14 // la carte de tête
-const V_LEFT = 27 // un cran plus bas à chaque pas vers la gauche…
-const V_RIGHT = 40 // … et vers la droite (l'aile longue)
-const STARTS = projects.map((_, i) => V_TOP + Math.abs(i - MID) * (i < MID ? V_LEFT : V_RIGHT))
+const V_STEP = 34 // un cran plus bas à chaque pas vers un bord
+const STARTS = projects.map((_, i) => V_TOP + Math.abs(i - MID) * V_STEP)
 export const cardStart = (i: number): number => STARTS[i]
 const LAST = Math.max(...STARTS) // (la dernière carte à se ranger)
 // la colonne de la carte la plus haute (de 1 à N) : vide en bas, « scroll ↓ » s'y pose
