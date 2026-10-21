@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 // Ce que le CSS ne sait pas faire seul, à chaque défilement : mesurer la hauteur de la rangée de cartes
-// (--row-h : elle place la signature, le bandeau de l'easter egg et la fin de page), savoir quelles cartes sont
+// (--row-h : elle place la signature et la fin de page), savoir quelles cartes sont
 // rangées (classe is-docked) et si toutes le sont (étape 'scroll' → 'done'), remonter l'intitulé avec la grille
 // à la fin (écran pas assez haut), et effacer « scroll ↓ » dès qu'on a commencé à défiler.
 // Renvoie les références à poser sur la page (root), l'intitulé (top) et « scroll ↓ » (hint), et l'étape.
@@ -31,7 +31,10 @@ export function useStickyLayout() {
       cards.forEach((c, k) => c.classList.toggle('is-docked', docked[k]))
       const p: Phase = docked.every(Boolean) ? 'done' : 'scroll'
       if (p !== phaseNow) setPhase((phaseNow = p))
-      const lift = Math.max(0, Math.round(parseFloat(getComputedStyle(cards[0]).top) - cards[0].getBoundingClientRect().top))
+      const lift = Math.max(
+        0,
+        Math.round(parseFloat(getComputedStyle(cards[0]).top) - cards[0].getBoundingClientRect().top),
+      )
       if (lift !== liftNow && top.current) {
         liftNow = lift
         top.current.style.transform = lift ? `translateY(${-lift}px)` : ''

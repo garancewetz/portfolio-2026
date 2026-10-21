@@ -14,9 +14,76 @@
   --ink: #1a1917;
   --muted: #5f5a52; /* contraste AA sur --bg */
   --line: #1a19171c;
-  --accent: #1a1917;
+  --accent: var(--ink);
   --empty: #ebe7df;
+  /* la teinte des guides de la grille (en canaux R G B) et celle du repère « gap » ; --violet : la même teinte
+     que les guides, assez foncée pour du texte qui porte une information (contraste AA sur le fond) */
+  --tint: 124 92 214;
+  --tint-gap: 214 92 150;
+  --violet: #5b42b5;
+  --guide: rgb(var(--tint) / 0.9);
+  --guide-line: rgb(var(--tint) / 0.45);
+  --guide-fill: rgb(var(--tint) / 0.035);
+  --gap-pink: rgb(var(--tint-gap) / 0.85);
   color-scheme: light; /* toujours clair, indépendamment du réglage système */
+}
+
+/* ——— La nuit du feu d'artifice (voir features/fireworks) : quand le mode s'allume, la nuit tombe doucement sur
+   toute la page (le fond, l'encre, les guides), et le jour revient quand on l'éteint. Les couleurs sont déclarées
+   (@property) pour pouvoir passer de l'une à l'autre en fondu. (Pas --line : la signature emploie aussi ce nom,
+   pour le numéro de ligne du nom) ——— */
+@property --bg {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #f6f4ef;
+}
+@property --ink {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #1a1917;
+}
+@property --muted {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #5f5a52;
+}
+@property --empty {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #ebe7df;
+}
+@property --violet {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #5b42b5;
+}
+@property --tint {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 124 92 214;
+}
+:root {
+  transition:
+    --bg 1.8s ease,
+    --ink 1.8s ease,
+    --muted 1.8s ease,
+    --empty 1.8s ease,
+    --violet 1.8s ease,
+    --tint 1.8s ease;
+}
+:root.is-paf {
+  /* PAF : la première fusée éclate, la nuit tombe d'un coup (voir features/fireworks) */
+  transition-duration: 0.15s;
+}
+:root.is-night {
+  --bg: #0b0d1c;
+  --ink: #eeeae2;
+  --muted: #a39e95;
+  --line: #eeeae21f;
+  --empty: #1b1d2e;
+  --violet: #b4a3ff;
+  --tint: 150 130 255;
+  color-scheme: dark;
 }
 
 html,
@@ -28,6 +95,11 @@ body {
   font-size: 18px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+}
+/* le fond est porté par html seul : body reste transparent, pour que les couches tout au fond (le ciel et la
+   fumée du feu d'artifice, en z-index négatif) passent derrière le texte sans être cachées par lui */
+body {
+  background: none;
 }
 
 /* la place de la barre de défilement reste réservée : quand la fiche d'un projet bloque le défilement,
@@ -49,9 +121,9 @@ a {
 a:hover {
   text-decoration-thickness: 2px;
 }
-/* le texte surligné : le violet du site (celui des projets en cours), plutôt que le bleu du système */
+/* le texte surligné : la teinte du site (celle des guides), plutôt que le bleu du système */
 ::selection {
-  background: #5b42b52e;
+  background: rgb(var(--tint) / 0.2);
   color: var(--ink);
 }
 :focus-visible {

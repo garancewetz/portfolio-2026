@@ -126,3 +126,14 @@
     font-size: 27vw;
   }
 }
+
+/* ——— Les anagrammes : chaque lettre, une boîte qui peut voyager (voir Signature.tsx) ——— */
+.rg-l {
+  display: inline-block;
+}
+/* repère de la ligne de base : sans taille, posé dessus */
+.rg-base {
+  display: inline-block;
+  width: 0;
+  height: 0;
+}

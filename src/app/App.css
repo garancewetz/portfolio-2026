@@ -8,12 +8,7 @@
   --head-h: 44px; /* hauteur de l'intitulé en haut */
   /* place du pied de page en bas de l'écran : les étiquettes de la grille se posent juste au-dessus */
   --foot-h: 72px;
-  /* Couleurs des guides de la grille (décor) ; --violet : la même teinte, assez foncée pour du texte
-     qui porte une information (contraste AA sur le fond) */
-  --guide: rgba(124, 92, 214, 0.9);
-  --guide-line: rgba(124, 92, 214, 0.45);
-  --violet: #5b42b5;
-  --gap-pink: rgba(214, 92, 150, 0.85);
+  /* (couleurs des guides : dans base.css) */
   position: relative;
   padding: 0 var(--pad);
 }
@@ -62,7 +57,7 @@
    puis colle en haut ; toutes finissent alignées. ——— */
 .rg-field {
   position: relative;
-  z-index: 2; /* au-dessus du bouton « gap » */
+  z-index: 2;
   display: grid;
   grid-template-columns: repeat(var(--n), 1fr);
   gap: var(--pad);

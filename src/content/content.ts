@@ -1,5 +1,5 @@
 // Tout le contenu du site : textes, projets, parcours, liens (le reste du code ne contient pas de texte à changer).
-import type { AbandonedProject, Person, Project } from './types'
+import type { Person, Project } from './types'
 
 export const me: Person = {
   name: 'Garance Wetzel',
@@ -19,7 +19,8 @@ export const projects: Project[] = [
   {
     id: 'signe',
     title: 'Signe astronomique',
-    short: 'Une application qui permet de visualiser l’aspect du ciel à la naissance, et donne le réel signe astrologique.',
+    short:
+      'Une application qui permet de visualiser l’aspect du ciel à la naissance, et donne le réel signe astrologique.',
     year: '2026',
     kind: 'Application web 3D',
     stack: ['TypeScript', 'React', 'Cesium', 'SGP4'],
@@ -36,7 +37,8 @@ export const projects: Project[] = [
   {
     id: 'synapso',
     title: 'Synapso',
-    short: 'Une application de rééducation post-AVC, ou de rééducation tout court, pensée d’abord pour être simple d’utilisation.',
+    short:
+      'Une application de rééducation post-AVC, ou de rééducation tout court, pensée d’abord pour être simple d’utilisation.',
     year: '2026',
     kind: 'Application mobile (PWA)',
     stack: ['Next.js', 'TypeScript', 'Prisma'],
@@ -94,20 +96,4 @@ export const projects: Project[] = [
     demo: 'https://garancewetz.netlify.app/journey',
     code: 'https://github.com/garancewetz/wwwetzel-journey',
   },
-]
-
-// Les projets abandonnés (dépôts privés) : un bandeau qui défile, comme du code mis en commentaire,
-// tout en bas, si l'on continue à scroller après la fin. Pas de lien : ils ne sont pas en ligne.
-// Une phrase archi courte qui dit le fond du projet (pas sa forme). wip : pas abandonné, en cours (« TODO »).
-export const abandoned: AbandonedProject[] = [
-  { id: 'sarah-bernhardt', title: 'Sarah Bernhardt — Divine Édition', year: '2026', line: 'Faire revivre Sarah Bernhardt dans le navigateur.' },
-  { id: 'quand-meme', title: 'Quand Même', year: '2026', line: 'La vie de Sarah Bernhardt, d’après ses mémoires.' },
-  { id: 'trame', title: 'Trame', year: '2026', line: 'Voir comment les personnages d’un roman se croisent.' },
-  { id: 'melangeur-de-vers', wip: true, title: 'Mélangeur de vers', year: '2026', line: 'Faire entendre les poétesses du matrimoine.' },
-  { id: 'collections', title: 'Mes collections', year: '2026', line: 'Les dessins animés de mon enfance.' },
-  { id: 'portfolios', title: 'Portfolios 2024 et 2025', year: '2024', line: 'Les versions précédentes de ce site.' },
-  { id: 'maurice-et-les-autres', title: 'Maurice et les autres', year: '2022', line: 'Les spectacles d’une compagnie de théâtre.' },
-  { id: 'poet-mixer', title: 'Poet Mixer', year: '2022', line: 'Écrire de nouveaux poèmes avec les vers des autres.' },
-  { id: 'where-is-yaya', title: 'Where is Yaya', year: '2021', line: 'Un souvenir de voyage Nice – Paris.' },
-  { id: 'poetry-verse-mixer', title: 'Poetry verse mixer', year: '2022', line: 'Croiser les vers d’Artaud et de Miguel Hernández.' },
 ]

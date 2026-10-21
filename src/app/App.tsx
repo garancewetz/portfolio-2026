@@ -1,12 +1,13 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { me, projects } from '@/content/content'
 import Ripple from '@/shared/Ripple'
 import ProjectCard from '@/features/projects/ProjectCard'
 import ProjectSheet from '@/features/sheet/ProjectSheet'
 import { useSheetRoute } from '@/features/sheet/useSheetRoute'
-import Signature from '@/features/signature/Signature'
-import AbandonedBand from '@/features/abandoned/AbandonedBand'
-import GapMarker from '@/features/abandoned/GapMarker'
+import Signature, { type SignatureHandle } from '@/features/signature/Signature'
+import MixSwitch from '@/features/signature/MixSwitch'
+import { ANAGRAMS } from '@/features/signature/anagrams'
+import Fireworks from '@/features/fireworks/Fireworks'
 import PageGuides from './layout/PageGuides'
 import ScrollHint from './layout/ScrollHint'
 import Footer from './layout/Footer'
@@ -23,10 +24,19 @@ export default function App() {
   // la mise en place au défilement ; phase : 'scroll' (les projets montent) → 'done' (tous rangés)
   const { root, top, hint, phase } = useStickyLayout()
   const sheet = useSheetRoute(projects, root)
-  const [gap, setGap] = useState(false) // easter egg : projets abandonnés affichés
+  const [fireworks, setFireworks] = useState(false) // le mode feu d'artifice (éteint par défaut)
+  const signature = useRef<SignatureHandle>(null)
+  const [mix, setMix] = useState(0) // l'anagramme du nom affichée (0 : le nom ; l'interrupteur sur la grille)
+
+  // le repère « gap » : l'anagramme suivante (les lettres voyagent, et le feu d'artifice le sait)
+  const nextMix = () => {
+    const next = (mix + 1) % ANAGRAMS.length
+    signature.current?.show(next)
+    setMix(next)
+  }
 
   return (
-    <main className={`rg is-${phase} ${gap ? 'show-ab' : ''}`} style={{ '--n': N, '--hint-col': hintCol }} ref={root}>
+    <main className={`rg is-${phase}`} style={{ '--n': N, '--hint-col': hintCol }} ref={root}>
       {/* l'ondulation au survol des captures (seulement l'image, pas toute la carte) */}
       <Ripple root={root} item=".rg-card .shot" />
 
@@ -39,24 +49,23 @@ export default function App() {
       </h1>
 
       <ScrollHint ref={hint} />
+      <Fireworks on={fireworks} mix={mix} />
       <PageGuides cols={N} />
 
       <section className="rg-field" aria-label="Projets" style={{ '--field-h': fieldHeight }}>
         {projects.map((p, i) => (
           <ProjectCard key={p.id} project={p} index={i} start={cardStart(i)} onOpen={sheet.open} />
         ))}
-        <Signature words={NAME} start={nameStart} />
+        <Signature words={NAME} start={nameStart} ref={signature} />
       </section>
 
       {/* Fin de page, sous la grille, dans la page */}
       <div className="rg-end">
-        {/* l'easter egg : juste au-dessus du pied de page */}
-        <AbandonedBand open={gap} />
-        <Footer />
+        <Footer fireworks={fireworks} onFireworks={() => setFireworks((f) => !f)} />
       </div>
 
       <ProjectSheet projects={projects} index={sheet.sheet} cols={N} onClose={sheet.close} onStep={sheet.step} />
-      <GapMarker open={gap} onToggle={() => setGap((g) => !g)} />
+      <MixSwitch mixed={mix !== 0} onNext={nextMix} />
     </main>
   )
 }
