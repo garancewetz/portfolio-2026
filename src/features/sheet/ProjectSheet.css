@@ -201,8 +201,8 @@
   color: var(--muted);
 }
 .rg-sheet-title {
+  /* (droit, comme les titres des cartes) */
   font-family: var(--serif);
-  font-style: italic; /* (comme « Wetzel », dans la signature) */
   font-size: clamp(36px, min(4vw, 6.6vh), 60px);
   font-weight: 400;
   line-height: 1;

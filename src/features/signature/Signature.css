@@ -19,25 +19,23 @@
   /* une ligne fait toujours une ligne de haut (sinon la fin de page, calculée en lignes, saute) */
   height: var(--lh);
   line-height: var(--lh);
-  /* « Garance » : la police du texte du site, d'une graisse qui donne le même gris que l'italique de « Wetzel »
-     (ni plus maigre, ni plus noire), à peine resserrée */
+  /* « Garance » : la police du texte du site, légère, à peine resserrée */
   font-family: var(--sans);
-  font-weight: 350;
+  font-weight: 300;
   font-size: calc(var(--lh) / 0.92);
   letter-spacing: -0.03em;
   white-space: nowrap;
   color: var(--ink);
 }
-/* « Wetzel » : en italique (Instrument Serif), à la suite, de la même taille apparente (ses capitales de la
-   hauteur de celles de « Garance », sur la même ligne de base), juste après le prénom (sa largeur, plus une
-   espace) */
+/* (le G commence un peu après le bord de sa boîte : on le tire sur le bord de la colonne) */
+.rg-word[data-line='0'] {
+  margin-left: calc(var(--lh) * -0.052);
+}
+/* « Wetzel » : la même police que « Garance », à la même taille, juste plus appuyée (le nom plus gras que le
+   prénom), juste après le prénom (sa largeur, plus une espace) */
 .rg-word[data-line='1'] {
-  margin-left: calc(var(--first-w, 0px) + var(--lh) * 0.32);
-  font-family: var(--serif);
-  font-style: italic;
-  font-weight: 400;
-  font-size: calc(var(--lh) / 0.9);
-  letter-spacing: -0.01em;
+  margin-left: calc(var(--first-w, 0px) + var(--lh) * (0.3 - 0.052));
+  font-weight: 500;
 }
 
 /* ——— Effets cachés dans la signature, au survol ——— */
@@ -61,7 +59,8 @@
 .rg-m {
   display: inline-block;
   position: relative;
-  transform-origin: 50% var(--oy, 62%);
+  /* (centres de rotation réglés pour l'Inter Tight : chaque lettre retournée retombe sur la ligne de base) */
+  transform-origin: 50% var(--oy, 50%);
   /* le retour */
   transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
   transition-delay: calc(var(--r) * 90ms);
@@ -72,9 +71,13 @@
   transition-timing-function: cubic-bezier(0.5, 0, 0.2, 1);
   transition-delay: calc(var(--k) * 110ms);
 }
-/* le W : centre du retournement au milieu de sa propre hauteur */
+/* le W : retourné autour du milieu des capitales (il devient un M, à la même hauteur) */
 .rg-m-flip {
-  --oy: 45%;
+  --oy: 49.7%;
+}
+/* les e : un demi-tour autour du milieu des minuscules (ils deviennent des ə, comme des a d'imprimerie) */
+.rg-m-spin {
+  --oy: 60%;
 }
 .rg-word:hover .rg-m-flip {
   transform: perspective(10em) rotateX(180deg);
@@ -132,7 +135,6 @@
   }
   .rg-word[data-line='1'] {
     margin: 0;
-    font-size: 11.25vw;
   }
 }
 
