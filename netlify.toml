@@ -7,6 +7,19 @@
   # Vite 8 demande Node 20.19+ ou 22.12+
   NODE_VERSION = "22"
 
+# Le jeu wwwetzel journey (dépôt garancewetz/wwwetzel-journey) a son propre site Netlify, que le public ne voit pas :
+# on le sert ici, sous /journey
+[[redirects]]
+  from = "/journey"
+  to = "/journey/"
+  status = 301
+
+[[redirects]]
+  from = "/journey/*"
+  to = "https://wwwetzel-journey.netlify.app/:splat"
+  status = 200
+  force = true
+
 # Les fichiers du build ont un nom qui change à chaque version : on peut les garder en cache longtemps
 [[headers]]
   for = "/assets/*"

@@ -10,7 +10,11 @@ import type { Project } from '@/content/types'
 import './ProjectSheet.css'
 
 // L'adresse d'un lien, sans « https:// » ni chemin (pour l'afficher)
-const host = (url: string) => url.replace(/^https?:\/\//, '').split('/')[0]
+// Le domaine du lien ; pour une page de ce site (le jeu sous /journey), le chemin aussi
+const host = (url: string) => {
+  const [domain, ...path] = url.replace(/^https?:\/\//, '').replace(/\/$/, '').split('/')
+  return domain === 'garancewetz.netlify.app' && path.length ? `${domain}/${path.join('/')}` : domain
+}
 
 // La fiche d'un projet (ouverte au clic sur une carte) : une page du site, en plein écran,
 // sur la même grille. La capture occupe les premières colonnes, le texte les deux dernières.
