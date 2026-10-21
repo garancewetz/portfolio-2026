@@ -49,7 +49,7 @@ export default function App() {
       </h1>
 
       <ScrollHint ref={hint} />
-      <Fireworks on={fireworks} mix={mix} />
+      <Fireworks on={fireworks} mix={mix} onEnd={() => setFireworks(false)} />
       <PageGuides cols={N} />
 
       <section className="rg-field" aria-label="Projets" style={{ '--field-h': fieldHeight }}>
@@ -57,6 +57,8 @@ export default function App() {
           <ProjectCard key={p.id} project={p} index={i} start={cardStart(i)} onOpen={sheet.open} />
         ))}
         <Signature words={NAME} start={nameStart} ref={signature} />
+        {/* (il se pose avec le dernier mot du nom : avant, il n'y a rien à mélanger) */}
+        <MixSwitch mixed={mix !== 0} ready={phase === 'done'} onNext={nextMix} start={nameStart(NAME.length - 1)} />
       </section>
 
       {/* Fin de page, sous la grille, dans la page */}
@@ -65,7 +67,6 @@ export default function App() {
       </div>
 
       <ProjectSheet projects={projects} index={sheet.sheet} cols={N} onClose={sheet.close} onStep={sheet.step} />
-      <MixSwitch mixed={mix !== 0} onNext={nextMix} />
     </main>
   )
 }

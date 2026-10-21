@@ -54,7 +54,14 @@ export default function Shot({ project, eager = false, sheet = false }: ShotProp
   return (
     <span className="shot shot-frame">
       {/* dimensions indicatives (format 16/10) : la place est réservée avant le chargement */}
-      <img src={project.image} alt={project.alt} width="1200" height="750" loading={eager ? 'eager' : 'lazy'} decoding="async" />
+      <img
+        src={project.image}
+        alt={project.alt}
+        width="1200"
+        height="750"
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+      />
     </span>
   )
 }

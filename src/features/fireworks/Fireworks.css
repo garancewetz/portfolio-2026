@@ -71,3 +71,41 @@
 .rg-fw-switch:hover {
   text-decoration-thickness: 2px;
 }
+
+/* la lumière des gerbes proches sur les captures des cartes (voir lightCards, dans Fireworks.tsx) : un reflet
+   de la couleur de l'explosion, centré sur elle (--gx, --gy : sa place par rapport à la capture ; --gr : jusqu'où
+   il porte sur la capture ; --gc : sa couleur), dont la force (--glow) retombe à zéro. Seulement la nuit, quand le
+   feu d'artifice tourne */
+@property --glow {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+:root.is-night .rg-card .shot {
+  position: relative;
+}
+:root.is-night .rg-card .shot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle var(--gr, 400px) at var(--gx, 50%) var(--gy, 50%), var(--gc, #fff), transparent);
+  mix-blend-mode: screen;
+  opacity: calc(var(--glow) * 0.65);
+}
+
+/* la nuit, les captures des cartes s'assombrissent un peu (on voit moins ce qui n'est pas éclairé) : le feu
+   d'artifice ressort, et le reflet des gerbes proches s'y voit mieux. (Aussi l'ondulation au survol, qui recopie
+   la capture : sinon elle la rallumerait.) */
+.rg-card .shot img,
+.rg .cardfx canvas {
+  transition: filter 1.8s ease;
+}
+:root.is-night .rg-card .shot img,
+:root.is-night .rg .cardfx canvas {
+  filter: brightness(0.72);
+}
+:root.is-paf .rg-card .shot img,
+:root.is-paf .rg .cardfx canvas {
+  transition-duration: 0.15s;
+}

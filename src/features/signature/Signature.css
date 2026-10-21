@@ -10,33 +10,35 @@
   display: flex;
   align-items: flex-start; /* (le mot garde sa hauteur : sinon il s'étire sur toute la colonne) */
 }
-/* « Wetzel » calé à droite */
-.rg-line:last-child {
-  justify-content: flex-end;
-}
 .rg-word {
   display: block;
   position: sticky;
-  top: calc(var(--pad) + var(--head-h) + var(--row-h, 300px) + 32px + var(--line) * var(--lh));
+  /* posé en bas de l'écran, au-dessus du pied de page (--dock, voir App.css) */
+  top: var(--dock);
   margin-top: var(--o);
-  /* la 1re ligne se décolle en même temps que la 2e (marge basse invisible d'une ligne) */
-  margin-bottom: calc((1 - var(--line)) * var(--lh));
-  /* « Garance » : la police du texte du site, resserrée comme un titre d'affiche */
-  font-family: var(--sans);
-  font-weight: 500;
-  font-size: calc(var(--lh) / 0.92);
+  /* une ligne fait toujours une ligne de haut (sinon la fin de page, calculée en lignes, saute) */
+  height: var(--lh);
   line-height: var(--lh);
-  letter-spacing: -0.05em;
+  /* « Garance » : la police du texte du site, légère, à peine resserrée */
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: calc(var(--lh) / 0.92);
+  letter-spacing: -0.03em;
+  /* tout en minuscules : pendant les anagrammes, aucune lettre ne change de casse en route (une capitale qui
+     devient minuscule d'un coup ferait sauter l'œil) */
+  text-transform: lowercase;
   white-space: nowrap;
   color: var(--ink);
 }
-/* « Wetzel » : en italique (Instrument Serif) */
-.rg-line:last-child .rg-word {
-  font-family: var(--serif);
-  font-style: italic;
+/* (le g commence un peu après le bord de sa boîte : on le tire sur le bord de la colonne) */
+.rg-word[data-line='0'] {
+  margin-left: calc(var(--lh) * -0.043);
+}
+/* « Wetzel » : la même police que « Garance », à la même taille, juste un peu plus appuyée (le nom un cran
+   plus gras que le prénom), juste après le prénom (sa largeur, plus une espace) */
+.rg-word[data-line='1'] {
+  margin-left: calc(var(--first-w, 0px) + var(--lh) * (0.3 - 0.043));
   font-weight: 400;
-  font-size: calc(var(--lh) / 0.78);
-  letter-spacing: -0.01em;
 }
 
 /* ——— Effets cachés dans la signature, au survol ——— */
@@ -54,13 +56,14 @@
 /* Au survol de « Wetzel », ses lettres bougent jusqu'à donner « Marzal », l'une après l'autre, de gauche à droite ;
    la souris partie, elles reviennent plus lentement, de droite à gauche (le nom se rembobine). (Tournées autour du
    milieu de la hauteur des minuscules ; --k : place de la lettre, --r : place depuis la fin.) */
-.rg-line:last-child .rg-word {
+.rg-word[data-line='1'] {
   pointer-events: auto;
 }
 .rg-m {
   display: inline-block;
   position: relative;
-  transform-origin: 50% var(--oy, 62%);
+  /* (centres de rotation réglés pour l'Inter Tight : chaque lettre retournée retombe sur la ligne de base) */
+  transform-origin: 50% var(--oy, 50%);
   /* le retour */
   transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
   transition-delay: calc(var(--r) * 90ms);
@@ -71,9 +74,13 @@
   transition-timing-function: cubic-bezier(0.5, 0, 0.2, 1);
   transition-delay: calc(var(--k) * 110ms);
 }
-/* le W : centre du retournement au milieu de sa propre hauteur */
+/* le w : retourné autour du milieu des minuscules (il devient un m pointu, à la même hauteur) */
 .rg-m-flip {
-  --oy: 45%;
+  --oy: 60%;
+}
+/* les e : un demi-tour autour du milieu des minuscules (ils deviennent des ə, comme des a d'imprimerie) */
+.rg-m-spin {
+  --oy: 60%;
 }
 .rg-word:hover .rg-m-flip {
   transform: perspective(10em) rotateX(180deg);
@@ -113,17 +120,24 @@
     order: 998;
     padding-top: 48px;
   }
+  /* (les deux mots à la suite, sur une ligne) */
+  .rg-name {
+    display: flex;
+    align-items: baseline;
+    gap: 2.6vw;
+  }
   .rg-line {
-    position: static;
+    display: contents;
   }
   .rg-word {
     position: static;
     margin: 0;
-    font-size: 24vw;
-    line-height: 0.95;
+    height: auto;
+    line-height: 1;
+    font-size: 11vw;
   }
-  .rg-line:last-child .rg-word {
-    font-size: 27vw;
+  .rg-word[data-line='1'] {
+    margin: 0;
   }
 }
 

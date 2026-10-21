@@ -2,9 +2,9 @@
 .rg-card {
   position: sticky;
   top: calc(var(--pad) + var(--head-h));
-  /* marge basse invisible (la place des lettres du nom, dessous) : à la fin, les cartes se décollent en même
-     temps que les lettres, et tout remonte d'un bloc */
-  margin-bottom: calc(32px + 2 * var(--lh));
+  /* marge basse invisible (jusqu'au bas du nom, posé plus bas) : à la fin, les cartes se décollent en même
+     temps que lui, et tout remonte d'un bloc */
+  margin-bottom: calc(var(--grid-h) - var(--row-h, 300px));
   /* sans cadre, sans fond, sans ombre : juste l'image et son titre */
   pointer-events: auto;
 }
