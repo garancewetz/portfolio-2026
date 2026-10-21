@@ -10,11 +10,6 @@
   display: flex;
   align-items: flex-start; /* (le mot garde sa hauteur : sinon il s'étire sur toute la colonne) */
 }
-/* « Wetzel » sous « Garance », décalé jusqu'au a de « Garance » (le G fait 0,66 em de « Garance », dont la taille
-   est --lh / 0.92) */
-.rg-line:last-child .rg-word {
-  padding-left: calc(var(--lh) * 0.66 / 0.92);
-}
 .rg-word {
   display: block;
   position: sticky;
@@ -27,17 +22,25 @@
   font-weight: 500;
   font-size: calc(var(--lh) / 0.92);
   line-height: var(--lh);
+  /* une ligne fait toujours une ligne de haut, quelle que soit la taille des lettres (sinon la fin de page,
+     calculée en lignes, saute) */
+  height: var(--lh);
   letter-spacing: -0.05em;
   white-space: nowrap;
   color: var(--ink);
 }
-/* « Wetzel » : en italique (Instrument Serif) */
+/* « Wetzel » : en italique (Instrument Serif), lié à « Garance » pour qu'on lise « prénom, nom » : même bord gauche
+   (l'italique, qui penche, est tiré un peu à gauche), même taille apparente (ses capitales de la hauteur de
+   celles de « Garance »), et juste dessous (--tuck : de combien il remonte vers « Garance ») */
 .rg-line:last-child .rg-word {
+  --tuck: 0.085;
   font-family: var(--serif);
   font-style: italic;
   font-weight: 400;
-  font-size: calc(var(--lh) / 0.78);
+  font-size: calc(var(--lh) / 0.9);
   letter-spacing: -0.01em;
+  margin-left: calc(var(--lh) * -0.058);
+  translate: 0 calc(var(--lh) * var(--tuck) * -1);
 }
 
 /* ——— Effets cachés dans la signature, au survol ——— */
@@ -122,10 +125,12 @@
     margin: 0;
     font-size: 24vw;
     line-height: 0.95;
+    height: auto;
   }
   .rg-line:last-child .rg-word {
-    font-size: 27vw;
-    padding-left: calc(24vw * 0.66);
+    font-size: 24.5vw;
+    margin-left: -1.3vw;
+    translate: 0 -1vw;
   }
 }
 
