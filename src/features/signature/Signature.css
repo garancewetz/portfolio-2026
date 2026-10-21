@@ -24,17 +24,20 @@
   font-weight: 300;
   font-size: calc(var(--lh) / 0.92);
   letter-spacing: -0.03em;
+  /* tout en minuscules : pendant les anagrammes, aucune lettre ne change de casse en route (une capitale qui
+     devient minuscule d'un coup ferait sauter l'œil) */
+  text-transform: lowercase;
   white-space: nowrap;
   color: var(--ink);
 }
-/* (le G commence un peu après le bord de sa boîte : on le tire sur le bord de la colonne) */
+/* (le g commence un peu après le bord de sa boîte : on le tire sur le bord de la colonne) */
 .rg-word[data-line='0'] {
-  margin-left: calc(var(--lh) * -0.052);
+  margin-left: calc(var(--lh) * -0.043);
 }
 /* « Wetzel » : la même police que « Garance », à la même taille, juste un peu plus appuyée (le nom un cran
    plus gras que le prénom), juste après le prénom (sa largeur, plus une espace) */
 .rg-word[data-line='1'] {
-  margin-left: calc(var(--first-w, 0px) + var(--lh) * (0.3 - 0.052));
+  margin-left: calc(var(--first-w, 0px) + var(--lh) * (0.3 - 0.043));
   font-weight: 400;
 }
 
@@ -71,9 +74,9 @@
   transition-timing-function: cubic-bezier(0.5, 0, 0.2, 1);
   transition-delay: calc(var(--k) * 110ms);
 }
-/* le W : retourné autour du milieu des capitales (il devient un M, à la même hauteur) */
+/* le w : retourné autour du milieu des minuscules (il devient un m pointu, à la même hauteur) */
 .rg-m-flip {
-  --oy: 49.7%;
+  --oy: 60%;
 }
 /* les e : un demi-tour autour du milieu des minuscules (ils deviennent des ə, comme des a d'imprimerie) */
 .rg-m-spin {
