@@ -53,6 +53,29 @@ const climb = (show: Planes, alive: () => boolean) => {
     )
   }
 }
+// la lumière des gerbes proches sur les cartes : chaque capture à portée reçoit un reflet de la couleur de
+// l'explosion, venu de son côté, d'autant plus fort qu'elle est près, et qui s'éteint avec elle (--glow, animé :
+// voir Fireworks.css). (x, y) : le centre de la gerbe ; size : sa taille ; color : sa couleur
+const LIGHT_REACH = 520 // px : jusqu'où porte la lumière d'une gerbe de taille 1
+const LIGHT_FADE = 1600 // ms
+function lightCards(x: number, y: number, size: number, color: string) {
+  const reach = LIGHT_REACH * size
+  for (const shot of document.querySelectorAll<HTMLElement>('.rg-card .shot')) {
+    const r = shot.getBoundingClientRect()
+    if (r.bottom < 0 || r.top > innerHeight) continue
+    // (la distance au bord le plus proche de la capture : une gerbe qui éclate dessus l'éclaire à fond)
+    const d = Math.hypot(Math.max(r.left - x, 0, x - r.right), Math.max(r.top - y, 0, y - r.bottom))
+    const k = 1 - d / reach
+    if (k < 0.05) continue
+    shot.style.setProperty('--gx', `${x - r.left}px`)
+    shot.style.setProperty('--gy', `${y - r.top}px`)
+    // (le reflet s'éteint en traversant la capture : plus fort du côté de la gerbe)
+    shot.style.setProperty('--gr', `${d + r.width * 1.1}px`)
+    shot.style.setProperty('--gc', color)
+    shot.animate([{ '--glow': k }, { '--glow': 0 }], { duration: LIGHT_FADE, easing: 'cubic-bezier(0.1, 0.6, 0.3, 1)' })
+  }
+}
+
 const crown = (show: Planes) => {
   const words = [...document.querySelectorAll('.rg-name .rg-word')].map((w) => w.getBoundingClientRect())
   words.forEach((r, line) => {
@@ -167,7 +190,7 @@ export default function Fireworks({ on, mix }: FireworksProps) {
       timer = window.setTimeout(program, around(REST[0], REST[1]))
     }
 
-    Promise.all([import('./show'), import('./fluid')]).then(([{ createShow }, { createFluid }]) => {
+    Promise.all([import('./show'), import('./fluid')]).then(([{ createShow, COLORS }, { createFluid }]) => {
       const canvases = [smokeCanvas, farHaloCanvas, farCanvas, nearHaloCanvas, nearCanvas].map((c) => c.current)
       if (cancelled || canvases.some((c) => !c)) return
       // (sur un petit écran, un téléphone : pas de fumée, et des halos moins fins, pour rester fluide)
@@ -189,6 +212,7 @@ export default function Fireworks({ on, mix }: FireworksProps) {
       })
       near.current ??= createShow(nearCanvas.current!, (x, y, size, colors) => {
         nearHalo.current?.burst(x, y, size, colors)
+        lightCards(x, y, size, COLORS[colors[0]])
         opening()
       })
       const f = far.current

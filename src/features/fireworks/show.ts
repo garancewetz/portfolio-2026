@@ -8,7 +8,7 @@
 
 // les couleurs des captures des projets (les mêmes, dans le même ordre, que le liquide : voir fluid.ts) :
 // violet de la grille, rose, bleu, vert, orange, or
-const COLORS = ['#7d5cd6', '#d65c96', '#3d7ae0', '#2ea36b', '#f08a3d', '#e8ba30']
+export const COLORS = ['#7d5cd6', '#d65c96', '#3d7ae0', '#2ea36b', '#f08a3d', '#e8ba30']
 const GOLD = 5 // (index de l'or dans COLORS)
 // le cœur des traits : la même couleur, à peine éclaircie (qu'elle reste franche, pas blanche)
 const CORES = COLORS.map((hex) => {
