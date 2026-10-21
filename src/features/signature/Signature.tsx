@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useImperativeHandle, useLayoutEffect, useRef, useState, type Ref } from 'react'
+import { ANAGRAMS, MIX_DUR, MIX_STAGGER, arrange } from './anagrams'
 import './Signature.css'
 
 // Effets cachés, au survol (rien ne les annonce), un par mot : le e de Garance ondule comme un liquide, et
@@ -75,24 +76,135 @@ const morphOf = (word: string) =>
     )
   })
 
+// Les anagrammes (voir anagrams.ts) : au changement, chaque lettre part de là où elle était et glisse jusqu'à sa
+// nouvelle place, l'une après l'autre (elle change de ligne, donc de police et de taille, si elle le doit).
+// Pendant ce temps, et sur une anagramme, chaque lettre est une boîte à part ; au repos sur le nom, on revient au
+// texte d'origine (avec son crénage et ses effets au survol).
+const MIX_EASE = 'cubic-bezier(0.5, 0, 0.2, 1)'
+
+// où est chaque lettre, à l'écran : son bord gauche, sa ligne de base, la taille de sa police
+type Places = Map<string, { x: number; base: number; fs: number }>
+function measure(root: HTMLElement): Places {
+  const places: Places = new Map()
+  const range = document.createRange()
+  for (const word of root.querySelectorAll<HTMLElement>('.rg-word')) {
+    const line = word.dataset.line
+    const base = word.querySelector('.rg-base')!.getBoundingClientRect().top
+    const fs = parseFloat(getComputedStyle(word).fontSize)
+    const boxes = word.querySelectorAll<HTMLElement>('[data-l]')
+    if (boxes.length) {
+      for (const el of boxes) places.set(el.dataset.l!, { x: el.getBoundingClientRect().left, base, fs })
+      continue
+    }
+    // le nom, en texte : lettre par lettre (sans le r caché au dos du t de Wetzel)
+    const walk = document.createTreeWalker(word, NodeFilter.SHOW_TEXT)
+    let k = 0
+    for (let node = walk.nextNode(); node; node = walk.nextNode()) {
+      if (node.parentElement?.closest('.rg-m-back')) continue
+      for (let i = 0; i < (node.textContent ?? '').length; i++, k++) {
+        range.setStart(node, i)
+        range.setEnd(node, i + 1)
+        places.set(`${line}-${k}`, { x: range.getBoundingClientRect().left, base, fs })
+      }
+    }
+  }
+  return places
+}
+
 // La signature, à la fin : le nom en très grand, sous les cartes (« Garance » puis « Wetzel » en italique, calé à
 // droite). Chaque mot a sa propre colonne (toute la hauteur du champ), où il part à sa hauteur puis se colle sur
 // sa ligne. (Décor : le nom est le titre de la page, pour les lecteurs d'écran.)
-// words : les mots, un par ligne ; start(line) : la hauteur de départ de chaque mot (en vh).
+// words : les mots, un par ligne ; start(line) : la hauteur de départ de chaque mot (en vh) ;
+// ref : de quoi afficher une anagramme (show), voir SignatureHandle.
+export interface SignatureHandle {
+  /** affiche l'anagramme n (0 : le nom), en faisant voyager les lettres */
+  show(n: number): void
+}
 interface SignatureProps {
   words: string[]
   start: (line: number) => number
+  ref?: Ref<SignatureHandle>
 }
 
-export default function Signature({ words, start }: SignatureProps) {
+export default function Signature({ words, start, ref }: SignatureProps) {
+  const root = useRef<HTMLDivElement>(null)
+  const [mix, setMix] = useState(0)
+  // les lettres sont des boîtes à part pendant le voyage (et sur une anagramme)
+  const [moving, setMoving] = useState(false)
+  const before = useRef<Places | null>(null)
+  const run = useRef(0)
+
+  // au changement : on note où sont les lettres, avant que la page ne change, puis on change
+  useImperativeHandle(
+    ref,
+    () => ({
+      show(n) {
+        const still = matchMedia('(prefers-reduced-motion: reduce)').matches
+        if (root.current && !still) {
+          before.current = measure(root.current)
+          setMoving(true)
+        }
+        setMix(n)
+      },
+    }),
+    [],
+  )
+  const letters = mix !== 0 || moving ? arrange(ANAGRAMS[mix]) : null
+
+  // puis chaque lettre part de son ancienne place (position, taille) et rejoint la nouvelle
+  useLayoutEffect(() => {
+    const from = before.current
+    before.current = null
+    if (!from || !root.current) return
+    const token = ++run.current
+    const to = measure(root.current)
+    const els = [...root.current.querySelectorAll<HTMLElement>('[data-l]')]
+    const anims = els.map((el, n) => {
+      el.getAnimations().forEach((a) => a.cancel())
+      const id = el.dataset.l!
+      const a = from.get(id)
+      const b = to.get(id)!
+      const box = el.getBoundingClientRect()
+      el.style.transformOrigin = `0 ${b.base - box.top}px`
+      const s = a ? a.fs / b.fs : 1
+      const dx = a ? a.x - b.x : 0
+      const dy = a ? a.base - b.base : 0
+      return el.animate([{ transform: `translate(${dx}px, ${dy}px) scale(${s})` }, { transform: 'none' }], {
+        duration: MIX_DUR,
+        delay: n * MIX_STAGGER,
+        easing: MIX_EASE,
+        fill: 'backwards',
+      })
+    })
+    Promise.all(anims.map((a) => a.finished))
+      .then(() => {
+        if (run.current === token) setMoving(false)
+      })
+      .catch(() => {}) // (relancée avant la fin : la suivante prend le relais)
+  }, [mix])
+
   return (
     <>
-      <div className="rg-name" aria-hidden>
-        {words.map((word, line) => (
-          <div key={word} className="rg-line" style={{ '--line': line }}>
+      <div className="rg-name" aria-hidden ref={root}>
+        {(letters ? ANAGRAMS[mix] : words).map((word, line) => (
+          <div key={line} className="rg-line" style={{ '--line': line }}>
             {/* la 2e ligne se colle une ligne plus bas : elle part aussi une ligne plus bas */}
-            <span className="rg-word" style={{ '--o': `calc(${start(line)}vh + ${line} * var(--lh))` }}>
-              {MORPHS[word] ? morphOf(word) : lettersOf(word)}
+            <span
+              className="rg-word"
+              data-line={line}
+              style={{ '--o': `calc(${start(line)}vh + ${line} * var(--lh))` }}
+            >
+              {letters
+                ? letters[line].map((l) => (
+                    <span key={l.id} className="rg-l" data-l={l.id}>
+                      {l.ch}
+                    </span>
+                  ))
+                : MORPHS[word]
+                  ? morphOf(word)
+                  : lettersOf(word)}
+              {/* repère de la ligne de base (pour placer les lettres qui voyagent) */}
+              <i className="rg-base" />
             </span>
           </div>
         ))}

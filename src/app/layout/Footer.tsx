@@ -1,9 +1,16 @@
 import { experience, me } from '@/content/content'
 import ExternalLink from '@/shared/ExternalLink'
+import FireworksSwitch from '@/features/fireworks/FireworksSwitch'
 import './Footer.css'
 
-// Le pied de page, sur une ligne : le parcours (contexte, à gauche), les liens (à droite)
-export default function Footer() {
+// Le pied de page, sur une ligne : le parcours (contexte, à gauche), le feu d'artifice et les liens (à droite).
+// fireworks : le mode feu d'artifice allumé ; onFireworks : l'allumer ou l'éteindre.
+interface FooterProps {
+  fireworks: boolean
+  onFireworks: () => void
+}
+
+export default function Footer({ fireworks, onFireworks }: FooterProps) {
   return (
     <footer className="rg-foot">
       <p className="rg-xp">
@@ -18,6 +25,7 @@ export default function Footer() {
         .
       </p>
       <p>
+        <FireworksSwitch on={fireworks} onToggle={onFireworks} />
         <ExternalLink href={me.github}>GitHub</ExternalLink>
         <ExternalLink href={me.linkedin}>LinkedIn</ExternalLink>
       </p>

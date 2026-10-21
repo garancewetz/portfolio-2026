@@ -72,8 +72,8 @@
   opacity: 0.6;
 }
 .rg-sheet-guides span {
-  border-inline: 1px dashed rgba(124, 92, 214, 0.45);
-  background: rgba(124, 92, 214, 0.035);
+  border-inline: 1px dashed var(--guide-line);
+  background: var(--guide-fill);
 }
 /* en haut : comme l'intitulé du site, avec « fermer » à droite */
 .rg-sheet-top {

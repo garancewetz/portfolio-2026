@@ -34,13 +34,3 @@ export interface Screen {
   src: string
   alt: string
 }
-
-export interface AbandonedProject {
-  id: string
-  title: string
-  year: string
-  /** une phrase archi courte qui dit le fond du projet */
-  line: string
-  /** pas abandonné : en cours (« TODO ») */
-  wip?: boolean
-}
