@@ -84,10 +84,16 @@ export const projects: Project[] = [
     short: 'Mon CV en mini-jeu pixel art.',
     year: '2025',
     kind: 'Mini-jeu',
-    stack: ['Next.js', 'Framer Motion'],
-    image: '/shots/journey.webp', // la vraie vue du jeu (faite en local) : tout est noir, sauf autour du personnage
-    alt: 'Écran noir avec un cercle de lumière au centre : en pixel art, un personnage sur un chemin de terre, des arbres autour et un objet brillant à ramasser.',
-    demo: null,
+    stack: ['Next.js', 'TypeScript'],
+    image: '/shots/journey-jeu.webp', // la vraie vue du jeu, en ligne : tout est noir, sauf autour du personnage
+    alt: "Écran noir avec un cercle de lumière au centre : en pixel art façon Game Boy, l'héroïne devant une maison aux fenêtres allumées, un petit dragon orange à ses côtés, un étang ; en haut des étoiles, en bas deux orbes d'XP et de mana.",
+    // dans la fiche, à côté de la capture : le jeu sur téléphone, avec son joystick
+    phone: {
+      src: '/shots/journey-mobile.webp',
+      alt: "Sur téléphone, l'héroïne entre dans une maison : une bulle annonce « Formation · Sorbonne Nouvelle · Master de lettres · 2015 », un petit dragon orange la suit, un joystick en bas et le sac entre deux orbes.",
+    },
+    // Servi par ce site, à l'adresse /journey (voir netlify.toml)
+    demo: 'https://garancewetz.netlify.app/journey',
     code: 'https://github.com/garancewetz/wwwetzel-journey',
   },
 ]
