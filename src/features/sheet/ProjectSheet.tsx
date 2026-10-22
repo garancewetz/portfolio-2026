@@ -117,31 +117,52 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
         <div className="rg-sheet-shot">
           <Shot project={p} eager sheet />
         </div>
+        {/* sous la capture, deux zones : à gauche ce qu'on lit (le titre, la phrase, le site), à droite la fiche
+            technique, qu'on consulte (une ligne par information, avec son étiquette) */}
         <div className="rg-sheet-text">
-          <p className="rg-sheet-meta">
-            {/* le numéro de la carte, pour garder le fil */}
-            <span>{num(index)}</span> {p.kind} · {p.year}
-          </p>
-          <h2 id="rg-sheet-title" className="rg-sheet-title">
-            {p.title}
-          </h2>
-          <p className="rg-sheet-short">{p.short}</p>
-          {/* le site, s'il est en ligne : le lien principal, en évidence sous la description */}
-          {p.demo && (
-            <p className="rg-sheet-site">
-              <ExternalLink href={p.demo}>{host(p.demo)}</ExternalLink>
-            </p>
-          )}
-          <p className="rg-sheet-stack">
-            <span className="sr">Technos : </span>
-            {p.stack.join(' · ')}
-          </p>
-          <p className="rg-sheet-links">
-            <ProjectStatus project={p} className="rg-sheet-status" />
-            <ExternalLink href={p.code} sr="sur GitHub">
-              code
-            </ExternalLink>
-          </p>
+          <div className="rg-sheet-main">
+            <h2 id="rg-sheet-title" className="rg-sheet-title">
+              {/* le numéro de la carte, pour garder le fil */}
+              <span className="rg-sheet-num">{num(index)}</span> {p.title}
+            </h2>
+            <p className="rg-sheet-short">{p.short}</p>
+            {/* le site, s'il est en ligne : le lien principal, en évidence sous la description */}
+            {p.demo && (
+              <p className="rg-sheet-site">
+                <ExternalLink href={p.demo}>{host(p.demo)}</ExternalLink>
+              </p>
+            )}
+          </div>
+          <dl className="rg-sheet-facts">
+            <div>
+              <dt>Type</dt>
+              <dd>{p.kind}</dd>
+            </div>
+            <div>
+              <dt>Année</dt>
+              <dd>{p.year}</dd>
+            </div>
+            <div>
+              <dt>Technos</dt>
+              <dd>{p.stack.join(' · ')}</dd>
+            </div>
+            {!p.demo && (
+              <div>
+                <dt>Statut</dt>
+                <dd>
+                  <ProjectStatus project={p} className="rg-sheet-status" />
+                </dd>
+              </div>
+            )}
+            <div>
+              <dt>Code</dt>
+              <dd>
+                <ExternalLink href={p.code} sr="sur GitHub">
+                  GitHub
+                </ExternalLink>
+              </dd>
+            </div>
+          </dl>
         </div>
       </div>
 
