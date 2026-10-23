@@ -12,12 +12,17 @@ interface ProjectCardProps {
   index: number
   /** hauteur de départ (vh) */
   start: number
+  /** sa colonne (de 1 à 5) et sa ligne (0 : la première) */
+  col: number
+  row: number
   onOpen: (index: number) => void
 }
 
-export default function ProjectCard({ project: p, index: i, start, onOpen }: ProjectCardProps) {
+export default function ProjectCard({ project: p, index: i, start, col, row, onOpen }: ProjectCardProps) {
   return (
-    <div className="rg-col" style={{ '--o': `${start}vh` }}>
+    // (toutes les colonnes sur la même rangée de la grille : une carte de la seconde ligne se colle plus bas, sous
+    // celle de la première)
+    <div className="rg-col" style={{ '--o': `${start}vh`, '--row': row, gridColumn: col, gridRow: 1 }}>
       <div className="rg-card" data-i={i} style={{ '--k': i /* ordre sur mobile */ }}>
         <button
           type="button"
@@ -26,7 +31,8 @@ export default function ProjectCard({ project: p, index: i, start, onOpen }: Pro
           aria-label={`${p.title} : ouvrir la fiche`}
           onClick={() => onOpen(i)}
         >
-          <Shot project={p} />
+          {/* (chargée tout de suite : la carte est là dès l'arrivée, même si elle part hors de l'écran) */}
+          <Shot project={p} eager />
           <span className="rg-meta">
             <span className="rg-n">{projectNumber(i)}</span>
             <span className="rg-title">{p.title}</span>

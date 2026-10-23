@@ -7,11 +7,14 @@ import ExternalLink from '@/shared/ExternalLink'
 import ProjectStatus from '@/shared/ProjectStatus'
 import { projectNumber as num } from '@/shared/projectNumber'
 import type { Project } from '@/content/types'
+import Flipbook from './Flipbook'
 import './ProjectSheet.css'
 
 // L'adresse d'un lien, sans « https:// » ni chemin (pour l'afficher)
-// Le domaine du lien ; pour une page de ce site (le jeu sous /journey), le chemin aussi
+// Le domaine du lien ; pour une page de ce site (le jeu sous /journey, ou un lien relatif comme /murmuration/),
+// le chemin aussi
 const host = (url: string) => {
+  if (url.startsWith('/')) return `garancewetz.dev${url.replace(/\/$/, '')}`
   const [domain, ...path] = url
     .replace(/^https?:\/\//, '')
     .replace(/\/$/, '')
@@ -115,7 +118,14 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
 
       <div className="rg-sheet-in">
         <div className="rg-sheet-shot">
-          <Shot project={p} eager sheet />
+          {/* la capture mène au site (s'il est en ligne), comme le lien sous la description */}
+          {p.demo ? (
+            <a href={p.demo} target="_blank" rel="noreferrer" aria-label={`${p.title} : voir le site (nouvel onglet)`}>
+              <Shot project={p} eager sheet />
+            </a>
+          ) : (
+            <Shot project={p} eager sheet />
+          )}
         </div>
         <div className="rg-sheet-text">
           <h2 id="rg-sheet-title" className="rg-sheet-title">
@@ -129,6 +139,8 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
               <ExternalLink href={p.demo}>{host(p.demo)}</ExternalLink>
             </p>
           )}
+          {/* Totoro et un oiseau, debout sur le filet de la fiche technique */}
+          <Flipbook page={index} pages={projects.length} />
           {/* en bas, au niveau du bord bas de la capture : la fiche technique, qu'on consulte (chaque information
               avec son étiquette) */}
           <dl className="rg-sheet-facts">

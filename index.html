@@ -8,10 +8,10 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Garance Wetzel</title>
-    <meta name="description" content="Garance Wetzel, développeuse front-end : mes projets personnels — Signe astronomique, Synapso, Trans-trame, Mosaïque, wwwetzel journey." />
+    <meta name="description" content="Garance Wetzel, développeuse front-end : mes projets personnels — Signe astronomique, Trans-trame, Synapso, Mosaïque, wwwetzel journey, Murmuration." />
     <meta name="theme-color" content="#f6f4ef" />
     <meta property="og:title" content="Garance Wetzel" />
-    <meta property="og:description" content="Mes projets personnels : Signe astronomique, Synapso, Trans-trame, Mosaïque, wwwetzel journey." />
+    <meta property="og:description" content="Mes projets personnels : Signe astronomique, Trans-trame, Synapso, Mosaïque, wwwetzel journey, Murmuration." />
     <meta property="og:type" content="website" />
     <link rel="canonical" href="https://garancewetz.dev/" />
     <meta property="og:url" content="https://garancewetz.dev/" />
@@ -28,6 +28,14 @@
       href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter+Tight:wght@300..500&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    <!-- les captures des cartes, demandées dès la lecture de la page (sans attendre le script) : elles sont là dès
+         l'arrivée (les mêmes que dans src/content/content.ts) -->
+    <link rel="preload" as="image" href="/shots/signe.webp" />
+    <link rel="preload" as="image" href="/shots/trame.webp" />
+    <link rel="preload" as="image" href="/shots/synapso.webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/shots/mosaique.webp" />
+    <link rel="preload" as="image" href="/shots/journey-jeu.webp" />
+    <link rel="preload" as="image" href="/shots/murmuration.webp" />
   </head>
   <body>
     <div id="root"></div>

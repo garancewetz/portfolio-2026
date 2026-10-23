@@ -1,0 +1,24 @@
+/* ——— Le dessin des coins de cahier (Totoro et un oiseau), dans la colonne du texte, tout à droite, les pieds sur
+   le filet au-dessus de la fiche technique (type, technos…), comme sur le sol : petit, en gris, sans animation
+   (il ne bouge que quand on tourne la fiche). ——— */
+.rg-flipbook {
+  align-self: flex-end;
+  /* poussé en bas de la colonne, collé à la fiche technique (moins l'écart entre les éléments de la colonne,
+     --text-gap : voir .rg-sheet-text), et un peu plus bas : le bas des lettres pile sur le filet, comme sur le
+     sol */
+  margin: auto 0 calc(-1 * var(--text-gap) - 0.05em);
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.05;
+  /* (sans les ligatures de la police : « ^^^ » ou « -- » restent des signes séparés) */
+  font-variant-ligatures: none;
+  font-feature-settings: 'calt' 0;
+  color: var(--muted);
+  opacity: 0.7;
+  pointer-events: none;
+  user-select: none;
+}
+/* (la fiche technique suit, collée dessous) */
+.rg-flipbook + .rg-sheet-facts {
+  margin-top: 0;
+}

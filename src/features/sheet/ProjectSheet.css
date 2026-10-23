@@ -170,6 +170,12 @@
 .rg-sheet-shot {
   grid-column: 1 / span calc(var(--n) - 2);
 }
+/* la capture, quand elle mène au site : un lien sans soulignement, la main au survol */
+.rg-sheet-shot > a {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
 .rg-sheet-shot .shot {
   /* comme sur les cartes : sans filet, coins à peine arrondis (la même image, en plus grand) */
   border: 0;
@@ -193,7 +199,8 @@
   flex-direction: column;
   /* (tailles liées à la hauteur de l'écran : sur un écran plus bas, la capture est plus petite, et le texte
      doit tenir à sa hauteur) */
-  gap: clamp(9px, 1.45vh, 13px);
+  --text-gap: clamp(9px, 1.45vh, 13px);
+  gap: var(--text-gap);
   max-width: 34rem;
 }
 .rg-sheet-title {

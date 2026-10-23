@@ -1,0 +1,79 @@
+/* ——— Murmuration : le ciel en caractères sur toute la page, le village perché en bas à droite. En encre, sur un
+   ciel de crépuscule, en couleurs de coucher de soleil ; rien d'autre. ——— */
+@import '@/styles/base.css';
+
+/* un ciel de crépuscule, indigo profond et uni ; ce sont les caractères qui ont les couleurs du coucher de soleil :
+   rose fluo en haut de la page, orange vif vers le bas (le dégradé est fixé à la fenêtre : un oiseau change de
+   couleur selon sa hauteur) */
+:root {
+  --bg: #16132a;
+  color-scheme: dark;
+  --sunset: linear-gradient(to bottom, #ff2d95, #ff5a6e 45%, #ff8a2a) fixed;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+.mm {
+  position: fixed;
+  inset: 0;
+  /* (tout le ciel se clique : c'est là qu'on fait voler les oiseaux ; au doigt, on peut le glisser sur les
+     oiseaux sans faire défiler ni zoomer la page) */
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+}
+.mm pre {
+  margin: 0;
+  font-family: var(--mono);
+  font-variant-ligatures: none;
+  font-feature-settings: 'calt' 0;
+}
+.mm-sky {
+  position: absolute;
+  inset: 0;
+  font-family: var(--mono);
+  /* (12 px, ou moins sur un téléphone : main.ts règle --mm-size pour que le village tienne dans la largeur) */
+  font-size: var(--mm-size, 12px);
+  line-height: var(--mm-size, 12px);
+  color: var(--ink);
+}
+/* une couche par signe, les unes sur les autres : un oiseau seul (le point) à peine visible, l'encre fonce à
+   mesure que les oiseaux se croisent, jusqu'au M, en pleine encre et en gras */
+.mm-layer {
+  position: absolute;
+  inset: 0;
+  font: inherit;
+}
+/* (les caractères, peints avec le coucher de soleil) */
+.mm-layer,
+.mm-village {
+  background: var(--sunset);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.mm-l0 {
+  opacity: 0.6;
+}
+.mm-l1 {
+  opacity: 0.8;
+}
+.mm-l2 {
+  opacity: 0.92;
+}
+.mm-l3 {
+  opacity: 1;
+}
+.mm-l4 {
+  font-weight: 700;
+}
+/* le village, en bas à droite, sur la même grille que le ciel (placé par main.ts) */
+.mm-village {
+  position: absolute;
+  font-size: var(--mm-size, 12px);
+  line-height: var(--mm-size, 12px);
+  opacity: 0.85;
+}

@@ -1,10 +1,12 @@
 /* ——— Les cartes ——— */
 .rg-card {
+  /* (une carte de la seconde ligne : une hauteur de carte et un écart plus bas) */
+  --row-y: calc(var(--row, 0) * (var(--row-h, 300px) + var(--pad)));
   position: sticky;
-  top: calc(var(--pad) + var(--head-h));
+  top: calc(var(--pad) + var(--head-h) + var(--row-y));
   /* marge basse invisible (jusqu'au bas du nom, posé plus bas) : à la fin, les cartes se décollent en même
      temps que lui, et tout remonte d'un bloc */
-  margin-bottom: calc(var(--grid-h) - var(--row-h, 300px));
+  margin-bottom: calc(var(--grid-h) - var(--row-h, 300px) - var(--row-y));
   /* sans cadre, sans fond, sans ombre : juste l'image et son titre */
   pointer-events: auto;
 }
