@@ -3,8 +3,9 @@ import { VILLAGE } from './village'
 
 // Murmuration : un vol d'étourneaux, dessiné en caractères sur toute la page, au-dessus d'un village perché.
 // Au départ, les oiseaux sont posés sur les toits du village et sur le bas de la page. Un clic n'importe où les
-// fait s'envoler : ils font leur murmuration, puis, au bout de vingt-cinq secondes, se reposent un par un. Un autre
-// clic les fait repartir, et ainsi de suite (en plein vol, un clic fige le vol, un autre le relance).
+// fait s'envoler : ils font leur murmuration, puis, au bout de vingt-cinq secondes, le nuage s'abaisse au-dessus
+// du village, se resserre, et les oiseaux plongent se poser par coulées. Un autre clic les fait repartir, et ainsi
+// de suite (en plein vol, un clic fige le vol, un autre le relance).
 // Posés, ils s'envolent quand la souris passe sur eux, font un petit tour et reviennent à leur place ; et de
 // temps en temps, un ou deux s'envolent tout seuls.
 // En plein vol, la souris fait comme un faucon : le nuage s'écarte de chaque côté de sa route, une vague
@@ -53,6 +54,11 @@ const LIFT_TIME = 2.5
 const FLY = 25
 const LAND_SPREAD = 8
 const LAND_TIME = 3.5
+const STREAMS = 6
+// avant de se poser, le nuage s'abaisse au-dessus du village et se resserre (pendant DESCENT secondes, à partir de
+// quelques secondes avant les premiers posés) ; à l'envol, il se forme d'abord là, bas et serré, puis monte
+const DESCENT = 7
+const RISE = 6
 // les instants (en secondes de vol) où on les a fait s'envoler
 let lifts: number[] = []
 // où en est le vol à l'instant clock : depuis quand ils sont partis (ou null), et quand ils se poseront
@@ -164,7 +170,10 @@ for (let i = 0; i < COUNT; i++) {
   // part de l'avant et se propage dans le nuage, qui s'étire en traînées
   const late = 0.5 * (1 - (u[i] + 1) / 2) + 0.2 * Math.abs(v[i]) + 0.3 * Math.random()
   lag[i] = Math.min(LAGS - 1, Math.floor(Math.max(0, late) * LAGS))
-  settle[i] = Math.random() * LAND_SPREAD
+  // les oiseaux plongent par coulées : six groupes, selon leur place dans le nuage, du côté du village (u grand,
+  // posés le plus à droite) vers l'autre ; chaque groupe d'un bloc, à une seconde près
+  const band = Math.min(STREAMS - 1, Math.floor((1 - (u[i] + 1.5) / 3) * STREAMS))
+  settle[i] = Math.max(0, band) * (LAND_SPREAD / STREAMS) + Math.random() * 1
 }
 
 let cellW = 7
@@ -306,16 +315,32 @@ const poses: Pose[] = []
 function draw(t: number, now: number) {
   const W = innerWidth
   const H = innerHeight
-  const R = Math.min(W, H) * 0.5
+  const { landAt, liftAt } = cycle(now)
+  // près du village : 0 en plein ciel, 1 bas et serré au-dessus des toits (juste après l'envol, et avant de se
+  // poser)
+  const ease = (x: number) => {
+    const c = clamp(x)
+    return c * c * (3 - 2 * c)
+  }
+  const low = Math.max(
+    ease((now - (landAt - DESCENT + 2)) / DESCENT),
+    liftAt !== null && now < landAt ? 1 - ease((now - liftAt) / RISE) : 0,
+  )
+  const R = Math.min(W, H) * 0.5 * (1 - 0.5 * low)
+  // (au-dessus du village : au milieu de ses toits, un peu plus haut que le clocher)
+  const lowX = (villageCol + VILLAGE_W * 0.55) * cellW
+  const lowY = skyTop + villageRow * cellH - R * 0.6
   // la pose pour chaque retard (ceux de derrière voient la nappe telle qu'elle était un peu plus tôt)
   for (let k = 0; k < LAGS; k++) {
     const late = (k / LAGS) * MAX_LAG
-    poses[k] = pose(t - late, W, H)
+    const P = pose(t - late, W, H)
+    P.cx += (lowX - P.cx) * low
+    P.cy += (lowY - P.cy) * low
+    poses[k] = P
   }
 
   density.fill(0)
   perched.fill(0)
-  const { landAt, liftAt } = cycle(now)
   // la souris : sa vitesse sur cette image, et la direction de côté (perpendiculaire à sa route)
   const seconds = performance.now() / 1000
   if (flying) {
@@ -451,12 +476,11 @@ function draw(t: number, now: number) {
     }
     px += ox[i]
     py += oy[i]
-    // en descendant se poser : de sa place dans le nuage à sa place sur le toit, en douceur, avec un dernier
-    // petit envol au-dessus avant de se poser
+    // en descendant se poser : il plonge de sa place dans le nuage vers son toit, comme une coulée (il file d'abord
+    // de côté, puis tombe de plus en plus vite)
     if (land > 0) {
-      const e = land * land * (3 - 2 * land)
-      px += ((perchCol[i] + 0.5) * cellW - px) * e
-      py += (skyTop + (perchRow[i] + 0.5) * cellH - py) * e - Math.sin(Math.PI * land) * 30
+      px += ((perchCol[i] + 0.5) * cellW - px) * (1 - (1 - land) ** 2)
+      py += (skyTop + (perchRow[i] + 0.5) * cellH - py) * land * land
     }
     const c = Math.floor(px / cellW)
     const r = Math.floor((py - skyTop) / cellH)
