@@ -50,14 +50,6 @@ body {
 .mm-l4 {
   font-weight: 700;
 }
-/* les collines derrière le village : une ligne de crête, en gris plus clair que le village */
-.mm-hills {
-  position: absolute;
-  inset: 0;
-  font: inherit;
-  color: var(--muted);
-  opacity: 0.55;
-}
 /* le village, en gris, en bas à droite, sur la même grille que le ciel (placé par main.ts) */
 .mm-village {
   position: absolute;
