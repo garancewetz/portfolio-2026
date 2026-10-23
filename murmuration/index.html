@@ -12,12 +12,12 @@
     <link rel="canonical" href="https://garancewetz.dev/murmuration" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
   </head>
   <body>
     <!-- le ciel : la murmuration y est dessinée en caractères (voir src/features/murmuration) -->
     <main class="mm" aria-label="Murmuration : un vol d’étourneaux en caractères, au-dessus d’un village perché. Cliquer pour le faire voler.">
-      <pre class="mm-sky" aria-hidden="true"></pre>
+      <div class="mm-sky" aria-hidden="true"></div>
       <pre class="mm-village" aria-hidden="true"></pre>
     </main>
     <script type="module" src="/src/features/murmuration/main.ts"></script>

@@ -23,9 +23,32 @@ body {
 .mm-sky {
   position: absolute;
   inset: 0;
+  font-family: var(--mono);
   font-size: 12px;
   line-height: 12px;
   color: var(--ink);
+}
+/* une couche par signe, les unes sur les autres : un oiseau seul (le point) à peine visible, l'encre fonce à
+   mesure que les oiseaux se croisent, jusqu'au M, en pleine encre et en gras */
+.mm-layer {
+  position: absolute;
+  inset: 0;
+  font: inherit;
+}
+.mm-l0 {
+  opacity: 0.35;
+}
+.mm-l1 {
+  opacity: 0.5;
+}
+.mm-l2 {
+  opacity: 0.68;
+}
+.mm-l3 {
+  opacity: 0.85;
+}
+.mm-l4 {
+  font-weight: 700;
 }
 /* le village, en gris, les pieds sur le bas de la page */
 .mm-village {
