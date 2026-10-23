@@ -60,8 +60,8 @@ function draw(t: number, arrival: number) {
   // le centre du vol dérive dans le haut du ciel, au-dessus du village
   let cx = W * (0.46 + 0.2 * Math.sin(t * 0.05) + 0.06 * Math.sin(t * 0.13))
   // l'arrivée : au départ, le vol attend hors de la page, à gauche (seuls quelques oiseaux isolés dépassent) ; au
-  // premier clic, il entre et rejoint sa route en ralentissant (huit secondes)
-  const e = 1 - Math.pow(1 - Math.min(1, arrival / 8), 3)
+  // premier clic, il entre lentement et rejoint sa route en ralentissant (vingt-cinq secondes)
+  const e = 1 - Math.pow(1 - Math.min(1, arrival / 25), 3)
   cx = -R * 1.35 + (cx + R * 1.35) * e
   const cy = H * (0.36 + 0.09 * Math.sin(t * 0.07 + 1) + 0.03 * Math.sin(t * 0.21))
   // la nappe tourne lentement sur elle-même (lacet, tangage, roulis)
@@ -129,6 +129,7 @@ function draw(t: number, arrival: number) {
 // ——— Voler, ou rester figé ———
 // t : le temps du vol (il n'avance que quand les oiseaux volent) ; on part d'un instant où la nappe est belle
 let t = 14
+const SLOW = 0.4
 // le temps de vol depuis le premier clic (pour l'arrivée par la gauche)
 let arrival = 0
 let flying = false
@@ -139,7 +140,8 @@ function loop(now: number) {
   // le vol reprend où il en était)
   if (last) {
     const dt = Math.min(0.1, (now - last) / 1000)
-    t += dt
+    // (le vol avance plus lentement que l'horloge : une murmuration flotte, elle ne file pas)
+    t += dt * SLOW
     arrival += dt
   }
   last = now

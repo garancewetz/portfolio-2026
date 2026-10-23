@@ -1,9 +1,7 @@
-// Le village perché, en bas à droite (d'après une photo d'Eus, dans les Pyrénées-Orientales) : la montagne
-// derrière, l'église et son clocher carré au sommet, les maisons serrées en gradins qui descendent la colline vers
-// la gauche, un cyprès, la pente qui redescend à droite
+// Le village perché, en bas à droite (d'après une photo d'Eus, dans les Pyrénées-Orientales) : l'église et son
+// clocher carré au sommet, les maisons serrées en gradins qui descendent la colline vers la gauche, un cyprès, la
+// pente qui redescend à droite
 export const VILLAGE = [
-  "               _,.--''``''--.,_                   _,.--''``''--..,__",
-  "       _,.--''`                `''--.,_  _,.--''`                    `''--.._",
   '                                      _',
   '                                     | |',
   '                                    _|n|_',
