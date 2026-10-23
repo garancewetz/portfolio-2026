@@ -3,7 +3,6 @@
 // droite, deux maisons à l'écart plus bas à droite, des cyprès
 export const VILLAGE = [
   '                                                     /\\',
-  '                                                    |  |',
   '                                                    |^^|',
   '                                                    |  |',
   '                                            ________|  |',
