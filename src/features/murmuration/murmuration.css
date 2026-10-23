@@ -1,10 +1,13 @@
-/* ——— Murmuration : le ciel en caractères sur toute la page, le village perché en bas à droite. En encre, sur une
-   page blanche ; rien d'autre. ——— */
+/* ——— Murmuration : le ciel en caractères sur toute la page, le village perché en bas à droite. En encre, sur un
+   ciel bleu pâle ; rien d'autre. ——— */
 @import '@/styles/base.css';
 
-/* (une page blanche, rien d'autre : du blanc pur, pas le papier du site) */
+/* le ciel : un bleu léger en haut, qui pâlit vers l'horizon (le bas de la page), comme un vrai ciel */
 :root {
-  --bg: #fff;
+  --bg: #e9f0f5;
+}
+html {
+  background: linear-gradient(to bottom, #c9dbe8, #e9f0f5 70%, #f3f6f8);
 }
 
 html,
