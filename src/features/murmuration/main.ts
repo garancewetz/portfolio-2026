@@ -59,19 +59,23 @@ const STREAMS = 6
 // quelques secondes avant les premiers posés) ; à l'envol, il se forme d'abord là, bas et serré, puis monte
 const DESCENT = 7
 const RISE = 8
-// les instants (en secondes de vol) où on les a fait s'envoler
-let lifts: number[] = []
+// chaque envol : son instant (en secondes de vol) et l'endroit du clic (d'où part l'alarme)
+let lifts: { at: number; x: number; y: number }[] = []
 // où en est le vol à l'instant clock : depuis quand ils sont partis (ou null), et quand ils se poseront
 function cycle(clock: number) {
   let landAt = -Infinity
   let liftAt: number | null = null
-  for (const at of lifts) {
+  let fromX = 0
+  let fromY = 0
+  for (const { at, x, y } of lifts) {
     if (at <= clock && at >= landAt + LAND_SPREAD + LAND_TIME) {
       liftAt = at
       landAt = at + FLY
+      fromX = x
+      fromY = y
     }
   }
-  return { landAt, liftAt }
+  return { landAt, liftAt, fromX, fromY }
 }
 // tous posés ?
 const landed = (clock: number) => clock >= cycle(clock).landAt + LAND_SPREAD + LAND_TIME
@@ -157,10 +161,11 @@ function startle(i: number, x: number, y: number, seconds: number, side: number)
 }
 // combien sont en l'air en ce moment après avoir été dérangés (tant qu'il y en a, on continue de dessiner)
 let startledNow = 0
-// quand il s'envole (secondes après le clic : la plupart presque tout de suite, quelques retardataires) et combien
-// de temps il met à rejoindre le nuage (chacun le sien : l'envol n'est pas un bloc)
+// à l'envol, l'alarme part de l'endroit du clic et gagne de proche en proche (ALARM pixels par seconde) : chaque
+// oiseau part quand elle l'atteint, avec un petit retard à lui, et met son propre temps à rejoindre le nuage
 const leave = new Float32Array(COUNT)
 const leaveTime = new Float32Array(COUNT)
+const ALARM = 450
 // quand il se pose (secondes après le début de l'atterrissage : ils ne se posent pas tous ensemble)
 const settle = new Float32Array(COUNT)
 for (let i = 0; i < COUNT; i++) {
@@ -178,7 +183,7 @@ for (let i = 0; i < COUNT; i++) {
   // posés le plus à droite) vers l'autre ; chaque groupe d'un bloc, à une seconde près
   const band = Math.min(STREAMS - 1, Math.floor((1 - (u[i] + 1.5) / 3) * STREAMS))
   settle[i] = Math.max(0, band) * (LAND_SPREAD / STREAMS) + Math.random() * 1
-  leave[i] = 2.5 * Math.random() ** 2
+  leave[i] = 0.6 * Math.random() ** 2
   leaveTime[i] = LIFT_TIME * (0.7 + 0.8 * Math.random())
 }
 
@@ -321,7 +326,7 @@ const poses: Pose[] = []
 function draw(t: number, now: number) {
   const W = innerWidth
   const H = innerHeight
-  const { landAt, liftAt } = cycle(now)
+  const { landAt, liftAt, fromX, fromY } = cycle(now)
   // près du village : 0 en plein ciel, 1 bas et serré au-dessus des toits (juste après l'envol, et avant de se
   // poser)
   const ease = (x: number) => {
@@ -371,7 +376,14 @@ function draw(t: number, now: number) {
       now >= landAt
         ? clamp((now - landAt - settle[i]) / LAND_TIME)
         : liftAt !== null
-          ? 1 - clamp((now - liftAt - leave[i]) / leaveTime[i])
+          ? 1 -
+            clamp(
+              (now -
+                liftAt -
+                leave[i] -
+                Math.hypot((perchCol[i] + 0.5) * cellW - fromX, skyTop + (perchRow[i] + 0.5) * cellH - fromY) / ALARM) /
+                leaveTime[i],
+            )
           : 0
     if (land === 1) {
       // posé : la souris passe tout près ? il s'envole en sursaut, fait un tour dans le ciel en s'écartant d'elle,
@@ -584,13 +596,13 @@ function scrub(seconds: number) {
 }
 // un clic : quand tous sont posés, les faire s'envoler ; en plein vol, il ne fait rien (sauf relancer le vol, s'il
 // a été figé en faisant défiler)
-function press() {
+function press(x = (villageCol + VILLAGE_W / 2) * cellW, y = innerHeight) {
   if (landed(clock)) {
-    lifts = [...lifts.filter((at) => at < clock), clock]
+    lifts = [...lifts.filter(({ at }) => at < clock), { at: clock, x, y }]
     if (!flying) toggle()
   } else if (!flying) toggle()
 }
-addEventListener('click', press)
+addEventListener('click', (e) => press(e.clientX, e.clientY))
 addEventListener('keydown', (e) => {
   // Espace ou Entrée : comme un clic
   if (e.key === ' ' || e.key === 'Enter') {
