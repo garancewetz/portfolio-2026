@@ -1,0 +1,38 @@
+/* ——— Murmuration : le ciel en caractères sur toute la page, le village perché en bas à droite. Sur le papier du
+   site, en encre ; rien d'autre. ——— */
+@import '@/styles/base.css';
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+.mm {
+  position: fixed;
+  inset: 0;
+  /* (tout le ciel se clique : c'est là qu'on fait voler les oiseaux) */
+  cursor: pointer;
+  user-select: none;
+}
+.mm pre {
+  margin: 0;
+  font-family: var(--mono);
+  font-variant-ligatures: none;
+  font-feature-settings: 'calt' 0;
+}
+.mm-sky {
+  position: absolute;
+  inset: 0;
+  font-size: 12px;
+  line-height: 12px;
+  color: var(--ink);
+}
+/* le village, en gris, les pieds sur le bas de la page */
+.mm-village {
+  position: absolute;
+  right: clamp(16px, 2.4vw, 32px);
+  bottom: 0;
+  font-size: 12px;
+  line-height: 1.15;
+  color: var(--muted);
+}
