@@ -41,7 +41,7 @@
   font-weight: 400;
 }
 
-/* ——— Effets cachés dans la signature, au survol ——— */
+/* ——— Effet caché dans la signature, au survol ——— */
 .rg-defs {
   position: absolute;
 }
@@ -53,66 +53,6 @@
 .rg-wave.is-on {
   filter: url(#rg-wobble);
 }
-/* Au survol de « Wetzel », ses lettres bougent jusqu'à donner « Marzal », l'une après l'autre, de gauche à droite ;
-   la souris partie, elles reviennent plus lentement, de droite à gauche (le nom se rembobine). (Tournées autour du
-   milieu de la hauteur des minuscules ; --k : place de la lettre, --r : place depuis la fin.) */
-.rg-word[data-line='1'] {
-  pointer-events: auto;
-}
-.rg-m {
-  display: inline-block;
-  position: relative;
-  /* (centres de rotation réglés pour l'Inter Tight : chaque lettre retournée retombe sur la ligne de base) */
-  transform-origin: 50% var(--oy, 50%);
-  /* le retour */
-  transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
-  transition-delay: calc(var(--r) * 90ms);
-}
-/* l'aller */
-.rg-word:hover .rg-m {
-  transition-duration: 0.6s;
-  transition-timing-function: cubic-bezier(0.5, 0, 0.2, 1);
-  transition-delay: calc(var(--k) * 110ms);
-}
-/* le w : retourné autour du milieu des minuscules (il devient un m pointu, à la même hauteur) */
-.rg-m-flip {
-  --oy: 60%;
-}
-/* les e : un demi-tour autour du milieu des minuscules (ils deviennent des ə, comme des a d'imprimerie) */
-.rg-m-spin {
-  --oy: 60%;
-}
-.rg-word:hover .rg-m-flip {
-  transform: perspective(10em) rotateX(180deg);
-}
-.rg-word:hover .rg-m-spin {
-  transform: rotate(180deg);
-}
-/* le t : une carte, t devant, r au dos */
-.rg-m-card {
-  transform-style: preserve-3d;
-}
-.rg-m-front,
-.rg-m-back {
-  display: inline-block;
-  backface-visibility: hidden;
-}
-.rg-m-back {
-  position: absolute;
-  left: 0;
-  top: 0;
-  transform: rotateX(180deg);
-}
-.rg-word:hover .rg-m-card {
-  transform: perspective(10em) rotateX(180deg);
-}
-@media (prefers-reduced-motion: reduce) {
-  .rg-m,
-  .rg-word:hover .rg-m {
-    transition: none;
-  }
-}
-
 /* petit écran : la signature reste, en grand, après les projets (sans animation) */
 @media (max-width: 900px) {
   .rg-name {

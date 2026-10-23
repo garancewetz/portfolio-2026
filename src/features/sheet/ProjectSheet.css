@@ -196,14 +196,6 @@
   gap: clamp(9px, 1.45vh, 13px);
   max-width: 34rem;
 }
-.rg-sheet-meta {
-  line-height: 1; /* (la 1re ligne colle au bord haut de la capture) */
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
 .rg-sheet-title {
   /* (droit, comme les titres des cartes) */
   font-family: var(--serif);
@@ -216,10 +208,14 @@
   font-size: clamp(15px, 2vh, 18px);
   line-height: 1.4;
 }
-/* le numéro de la carte, en tête de la ligne */
-.rg-sheet-meta span {
-  margin-right: 6px;
-  color: var(--ink);
+/* le numéro de la carte, devant le titre, comme sur les cartes */
+.rg-sheet-num {
+  margin-right: 4px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0;
+  vertical-align: 0.9em;
+  color: var(--muted);
 }
 /* le site : le lien principal, plus grand, en encre, souligné (le soulignement s'affirme au survol) */
 .rg-sheet-site {
@@ -239,30 +235,38 @@
 .rg-sheet-site a:hover {
   text-decoration-color: var(--ink);
 }
-.rg-sheet-stack {
-  margin-top: auto; /* technos et liens en bas, au niveau du bord bas de la capture */
+/* la fiche technique, en bas, au niveau du bord bas de la capture : sous un filet, deux informations par ligne,
+   l'étiquette en petit, la valeur dessous (en encre) */
+.rg-sheet-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(8px, 1.3vh, 12px) 24px;
+  margin: auto 0 0;
   padding-top: 12px;
   border-top: 1px solid var(--line);
   font-family: var(--mono);
   font-size: 12px;
+  line-height: 1.4;
+}
+.rg-sheet-facts dt {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--muted);
 }
-.rg-sheet-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 24px;
-  font-family: var(--mono);
-  font-size: 13px;
+.rg-sheet-facts dd {
+  margin: 0;
+  color: var(--ink);
 }
-.rg-sheet-links a {
+.rg-sheet-facts a {
   color: var(--ink);
   text-decoration-color: var(--line);
 }
-.rg-sheet-links a:hover {
+.rg-sheet-facts a:hover {
   text-decoration-color: var(--ink);
 }
 .rg-sheet-status {
-  color: var(--muted);
+  color: var(--ink);
 }
 .rg-sheet-status.is-wip {
   color: var(--violet);
@@ -361,11 +365,11 @@
    fait au moins 44px de haut (une zone invisible autour) */
 @media (pointer: coarse) {
   .rg-sheet-close,
-  .rg-sheet-links a {
+  .rg-sheet-facts a {
     position: relative;
   }
   .rg-sheet-close::after,
-  .rg-sheet-links a::after {
+  .rg-sheet-facts a::after {
     content: '';
     position: absolute;
     inset: -12px -8px;

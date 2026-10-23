@@ -74,9 +74,9 @@
 
 /* ——— Hauteur d'une ligne du nom (la signature, voir features/signature) et de la grille rangée ——— */
 .rg {
-  /* hauteur de la ligne du nom : une seule ligne, discrète, qui fait exactement deux colonnes de la grille de
-     large (« garance wetzel » fait 6,75 fois sa hauteur de ligne) */
-  --lh: calc((2 * (100vw - 2 * var(--pad) - (var(--n) - 1) * var(--pad)) / var(--n) + var(--pad)) / 6.75);
+  /* hauteur de la ligne du nom : une seule ligne, discrète, qui fait une colonne et demie de la grille de large
+     (« garance wetzel » fait 6,75 fois sa hauteur de ligne) */
+  --lh: calc(0.75 * (2 * (100vw - 2 * var(--pad) - (var(--n) - 1) * var(--pad)) / var(--n) + var(--pad)) / 6.75);
   /* où se pose le nom : en bas de l'écran, au-dessus des étiquettes de la grille et du pied de page (et, sur un
      écran pas assez haut, au moins sous les cartes) */
   --dock: max(
