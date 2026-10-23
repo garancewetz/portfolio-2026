@@ -49,12 +49,14 @@ const layers = SIGNS.map((_, k) => {
 const COUNT = 6000
 // le déroulé, en secondes de vol : au départ, ils sont posés ; un clic les fait s'envoler (étalés sur quelques
 // secondes, chacun mettant LIFT_TIME secondes à rejoindre le nuage) ; FLY secondes après, ils se reposent (étalés
-// sur LAND_SPREAD secondes, chacun mettant LAND_TIME secondes à descendre jusqu'à sa place) ; et ainsi de suite
+// sur LAND_SPREAD secondes, chacun mettant jusqu'à LAND_TIME secondes à descendre à sa place) ; et ainsi de suite
 const LIFT_TIME = 2.5
 const FLY = 25
-const LAND_SPREAD = 8
-const LAND_TIME = 3.5
-const STREAMS = 6
+const LAND_SPREAD = 10
+// (le plus long : chacun met entre la moitié et la totalité de ce temps)
+const LAND_TIME = 5
+// les zones où ils se posent (des morceaux de toits et de sol), qui se remplissent l'une après l'autre
+const ZONES = 8
 // avant de se poser, le nuage s'abaisse au-dessus du village et se resserre (pendant DESCENT secondes, à partir de
 // quelques secondes avant les premiers posés) ; à l'envol, il se forme d'abord là, bas et serré, puis monte
 const DESCENT = 7
@@ -168,6 +170,8 @@ const leaveTime = new Float32Array(COUNT)
 const ALARM = 450
 // quand il se pose (secondes après le début de l'atterrissage : ils ne se posent pas tous ensemble)
 const settle = new Float32Array(COUNT)
+// (et le temps qu'il met à descendre)
+const landTime = new Float32Array(COUNT)
 for (let i = 0; i < COUNT; i++) {
   const a = Math.random() * Math.PI * 2
   // (un disque aux bords effilochés : quelques oiseaux isolés autour du nuage)
@@ -179,10 +183,7 @@ for (let i = 0; i < COUNT; i++) {
   // part de l'avant et se propage dans le nuage, qui s'étire en traînées
   const late = 0.5 * (1 - (u[i] + 1) / 2) + 0.2 * Math.abs(v[i]) + 0.3 * Math.random()
   lag[i] = Math.min(LAGS - 1, Math.floor(Math.max(0, late) * LAGS))
-  // les oiseaux plongent par coulées : six groupes, selon leur place dans le nuage, du côté du village (u grand,
-  // posés le plus à droite) vers l'autre ; chaque groupe d'un bloc, à une seconde près
-  const band = Math.min(STREAMS - 1, Math.floor((1 - (u[i] + 1.5) / 3) * STREAMS))
-  settle[i] = Math.max(0, band) * (LAND_SPREAD / STREAMS) + Math.random() * 1
+  landTime[i] = LAND_TIME * (0.5 + 0.5 * Math.random())
   leave[i] = 0.6 * Math.random() ** 2
   leaveTime[i] = LIFT_TIME * (0.7 + 0.8 * Math.random())
 }
@@ -273,6 +274,20 @@ function perches() {
     perchCol[bird] = place[0]
     perchRow[bird] = place[1]
   })
+  // l'atterrissage par zones : les places sont regroupées en ZONES morceaux, de gauche à droite ; elles se
+  // remplissent l'une après l'autre, du village vers l'extérieur (avec un peu de désordre dans l'ordre), et dans
+  // chaque zone les oiseaux arrivent étalés sur deux secondes (beaucoup au début, quelques retardataires)
+  const villageMid = villageCol + VILLAGE_W / 2
+  const zoneOrder = Array.from({ length: ZONES }, (_, z) => z)
+    .map((z) => ({ z, d: Math.abs(((z + 0.5) / ZONES) * cols - villageMid) / cols + Math.random() * 0.15 }))
+    .sort((a, b) => a.d - b.d)
+    .map(({ z }) => z)
+  const rank = zoneOrder.map((_, z) => zoneOrder.indexOf(z))
+  const step = (LAND_SPREAD - 2) / (ZONES - 1)
+  for (let i = 0; i < COUNT; i++) {
+    const zone = Math.min(ZONES - 1, Math.floor((perchCol[i] / cols) * ZONES))
+    settle[i] = rank[zone] * step + 2 * Math.random() ** 1.6
+  }
 }
 
 // ——— La pose de la nappe à l'instant t : où elle est, comment elle tourne, s'étire et se plie ———
@@ -374,7 +389,7 @@ function draw(t: number, now: number) {
     // posé ou non : 0 en vol, 1 posé (en train de se poser, ou de redécoller : entre les deux)
     const land =
       now >= landAt
-        ? clamp((now - landAt - settle[i]) / LAND_TIME)
+        ? clamp((now - landAt - settle[i]) / landTime[i])
         : liftAt !== null
           ? 1 -
             clamp(
