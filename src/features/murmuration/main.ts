@@ -106,6 +106,9 @@ document.documentElement.addEventListener('pointerleave', () => {
 // les oiseaux posés qu'on dérange en passant la souris dessus : quand ils se sont envolés (en secondes, horloge
 // réelle), et combien de temps dure leur petit tour avant de revenir à leur place
 const startled = new Float64Array(COUNT).fill(-1e9)
+// (de quel côté il part : décidé une fois, au moment où il s'envole, à l'opposé de la souris ; ensuite il finit
+// son tour sans s'occuper d'elle)
+const startledSide = new Int8Array(COUNT).fill(1)
 const STARTLE_NEAR = 46 // (en pixels autour de la souris)
 const STARTLE_TIME = 3.2
 // combien sont en l'air en ce moment après avoir été dérangés (tant qu'il y en a, on continue de dessiner)
@@ -304,6 +307,7 @@ function draw(t: number, now: number) {
       const span = STARTLE_TIME * (0.75 + 0.5 * ((seed[i] * 3.7) % 1))
       if (age > span + 0.5 && (homeX - mouseX) ** 2 + (homeY - mouseY) ** 2 < STARTLE_NEAR ** 2) {
         startled[i] = seconds - Math.random() * 0.15
+        startledSide[i] = homeX >= mouseX ? 1 : -1
         age = seconds - startled[i]
       }
       if (age >= span) {
@@ -313,7 +317,7 @@ function draw(t: number, now: number) {
       startledNow++
       // un arc : il monte vite, plane, redescend ; du côté opposé à la souris (chacun un peu différemment)
       const f = Math.max(0, age) / span
-      const away = homeX >= mouseX ? 1 : -1
+      const away = startledSide[i]
       const lift = 50 + 90 * ((seed[i] * 1.9) % 1)
       const drift = (30 + 60 * ((seed[i] * 5.3) % 1)) * away
       const px = homeX + drift * Math.sin(Math.PI * f) + 6 * Math.sin(seed[i] + age * 7)
