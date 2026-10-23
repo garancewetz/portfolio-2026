@@ -50,12 +50,10 @@ body {
 .mm-l4 {
   font-weight: 700;
 }
-/* le village, en gris, les pieds sur le bas de la page */
+/* le village, en gris, en bas à droite, sur la même grille que le ciel (placé par main.ts) */
 .mm-village {
   position: absolute;
-  right: clamp(16px, 2.4vw, 32px);
-  bottom: 0;
   font-size: 12px;
-  line-height: 1.15;
+  line-height: 12px;
   color: var(--muted);
 }
