@@ -1,10 +1,14 @@
 /* ——— Murmuration : le ciel en caractères sur toute la page, le village perché en bas à droite. En encre, sur un
-   ciel bleu pâle ; rien d'autre. ——— */
+   ciel de coucher de soleil ; rien d'autre. ——— */
 @import '@/styles/base.css';
 
-/* le ciel : un bleu pâle, uni */
+/* le ciel : un coucher de soleil franc, rose fluo en haut, orange vif vers l'horizon (l'heure des murmurations :
+   les oiseaux et le village en silhouettes, à l'encre) */
 :root {
-  --bg: #dde8ef;
+  --bg: #ff7a3d;
+}
+html {
+  background: linear-gradient(to bottom, #ff2d95, #ff5a6e 45%, #ff8a2a);
 }
 
 html,
@@ -44,24 +48,25 @@ body {
   font: inherit;
 }
 .mm-l0 {
-  opacity: 0.35;
-}
-.mm-l1 {
   opacity: 0.5;
 }
+.mm-l1 {
+  opacity: 0.65;
+}
 .mm-l2 {
-  opacity: 0.68;
+  opacity: 0.8;
 }
 .mm-l3 {
-  opacity: 0.85;
+  opacity: 0.92;
 }
 .mm-l4 {
   font-weight: 700;
 }
-/* le village, en gris, en bas à droite, sur la même grille que le ciel (placé par main.ts) */
+/* le village, en silhouette, en bas à droite, sur la même grille que le ciel (placé par main.ts) */
 .mm-village {
   position: absolute;
   font-size: var(--mm-size, 12px);
   line-height: var(--mm-size, 12px);
-  color: var(--muted);
+  color: var(--ink);
+  opacity: 0.75;
 }
