@@ -140,12 +140,15 @@ OPEN.forEach((row, y) => {
     }
   }
 })
+// la dernière ligne de l'église (le bas de sa façade)
+const CHURCH_BASE = VILLAGE_LINES.findIndex((line) => line.includes('|________|'))
 function perches() {
   const roofs: [number, number][] = []
   VILLAGE_LINES.forEach((line, y) => {
     for (let x = 0; x < line.length; x++) {
-      // (seulement sous le ciel)
-      if (y > 0 && !SKY[y - 1][x]) continue
+      // l'église : seulement sur son toit et la pointe du clocher (pas sur le bas de sa façade) ; les maisons : sur
+      // tous leurs toits, même ceux des rangées du bas
+      if (y <= CHURCH_BASE ? y > 0 && !SKY[y - 1][x] : VILLAGE_LINES[y - 1]?.[x] === '_') continue
       // sur un toit (« _ ») : dans la même case, le v posé sur le trait ; sur la pointe du clocher : juste au-dessus
       if (line[x] === '_') roofs.push([villageCol + x, villageRow + y])
       else if (line[x] === '/' || line[x] === '\\') roofs.push([villageCol + x, villageRow + y - 1])
