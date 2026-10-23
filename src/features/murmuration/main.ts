@@ -23,8 +23,6 @@ const sky = document.querySelector<HTMLDivElement>('.mm-sky')!
 const village = document.querySelector<HTMLPreElement>('.mm-village')!
 village.textContent = VILLAGE
 
-// (le vol avance plus lentement que l'horloge : une murmuration flotte, elle ne file pas)
-const SLOW = 0.5
 // en vol (la boucle d'animation tourne) ou non (posés, ou vol figé) ; la boucle et son dernier instant
 let flying = false
 let frame = 0
@@ -51,10 +49,10 @@ const COUNT = 6000
 // le déroulé, en secondes de vol : au départ, ils sont posés ; un clic les fait s'envoler (étalés sur quelques
 // secondes, chacun mettant LIFT_TIME secondes à rejoindre le nuage) ; FLY secondes après, ils se reposent (étalés
 // sur LAND_SPREAD secondes, chacun mettant LAND_TIME secondes à descendre jusqu'à sa place) ; et ainsi de suite
-const LIFT_TIME = 4
+const LIFT_TIME = 2.5
 const FLY = 40
-const LAND_SPREAD = 10
-const LAND_TIME = 5
+const LAND_SPREAD = 8
+const LAND_TIME = 3.5
 // les instants (en secondes de vol) où on les a fait s'envoler
 let lifts: number[] = []
 // où en est le vol à l'instant clock : depuis quand ils sont partis (ou null), et quand ils se poseront
@@ -71,8 +69,9 @@ function cycle(clock: number) {
 }
 // tous posés ?
 const landed = (clock: number) => clock >= cycle(clock).landAt + LAND_SPREAD + LAND_TIME
-// le plus grand retard d'un oiseau sur ceux de devant (en temps du vol)
-const MAX_LAG = 1.6
+// le plus grand retard d'un oiseau sur ceux de devant, en secondes (un virage traverse le nuage en une
+// demi-seconde environ, comme chez les vrais étourneaux)
+const MAX_LAG = 0.6
 // (les retards sont rangés en quelques paliers : la pose de la nappe n'est calculée qu'une fois par palier)
 const LAGS = 48
 // chaque oiseau : sa place dans la nappe (u, v, dans un disque), son retard, et un peu de flottement à lui
@@ -120,8 +119,36 @@ const startled = new Float64Array(COUNT).fill(-1e9)
 // (de quel côté il part : décidé une fois, au moment où il s'envole, à l'opposé de la souris ; ensuite il finit
 // son tour sans s'occuper d'elle)
 const startledSide = new Int8Array(COUNT).fill(1)
+// (et chacun son tour, tiré au moment de l'envol : sa durée, sa hauteur, sa distance ; d'où il part, s'il change
+// de place en se reposant)
+const startledSpan = new Float32Array(COUNT)
+const startledLift = new Float32Array(COUNT)
+const startledDrift = new Float32Array(COUNT)
+const startledFromX = new Float32Array(COUNT)
+const startledFromY = new Float32Array(COUNT)
 const STARTLE_NEAR = 46 // (en pixels autour de la souris)
-const STARTLE_TIME = 3.2
+const STARTLE_TIME = 2.2
+// faire s'envoler l'oiseau i (posé, en x, y) à l'instant seconds, vers le côté side (1 : la droite, -1 : la
+// gauche) : la plupart font un petit saut, quelques-uns vont un peu plus loin et plus haut ; un sur cinq se
+// repose ailleurs, sur une place voisine
+function startle(i: number, x: number, y: number, seconds: number, side: number) {
+  const far = Math.random() ** 2 // (souvent petit, parfois grand)
+  startled[i] = seconds
+  startledSide[i] = side
+  startledSpan[i] = STARTLE_TIME * (0.75 + 0.7 * far + 0.2 * Math.random())
+  startledLift[i] = 40 + 110 * far + 25 * Math.random()
+  startledDrift[i] = (25 + 95 * Math.random() ** 2) * side
+  startledFromX[i] = x
+  startledFromY[i] = y
+  if (Math.random() < 0.2 && places.length) {
+    const here = places.findIndex(([c]) => c >= perchCol[i])
+    const reach = Math.round(places.length * (0.01 + 0.04 * far)) * side
+    const [c, r] =
+      places[Math.min(places.length - 1, Math.max(0, here + reach + Math.round((Math.random() - 0.5) * 6)))]
+    perchCol[i] = c
+    perchRow[i] = r
+  }
+}
 // combien sont en l'air en ce moment après avoir été dérangés (tant qu'il y en a, on continue de dessiner)
 let startledNow = 0
 // quand il se pose (secondes après le début de l'atterrissage : ils ne se posent pas tous ensemble)
@@ -199,6 +226,8 @@ OPEN.forEach((row, y) => {
 })
 // la dernière ligne de l'église (le bas de sa façade)
 const CHURCH_BASE = VILLAGE_LINES.findIndex((line) => line.includes('|________|'))
+// toutes les places (colonne, ligne), de gauche à droite
+let places: [number, number][] = []
 function perches() {
   const roofs: [number, number][] = []
   VILLAGE_LINES.forEach((line, y) => {
@@ -218,7 +247,7 @@ function perches() {
   // les oiseaux se répartissent sur toutes les places, autant sur chacune ; chacun va vers une place du même côté
   // que lui dans le nuage (de gauche à droite)
   const order = Array.from({ length: COUNT }, (_, i) => i).sort((a, b) => u[a] - u[b])
-  const places = [...ground, ...roofs].sort((a, b) => a[0] - b[0])
+  places = [...ground, ...roofs].sort((a, b) => a[0] - b[0])
   order.forEach((bird, k) => {
     const place = places[Math.floor((k / COUNT) * places.length)]
     perchCol[bird] = place[0]
@@ -245,14 +274,15 @@ interface Pose {
 }
 function pose(t: number, W: number, H: number): Pose {
   // le centre du vol dérive dans le haut du ciel, au-dessus du village
-  const cx = W * (0.46 + 0.18 * Math.sin(t * 0.05) + 0.07 * Math.sin(t * 0.137 + 1) + 0.03 * Math.sin(t * 0.31))
-  const cy = H * (0.36 + 0.08 * Math.sin(t * 0.07 + 1) + 0.04 * Math.sin(t * 0.193) + 0.02 * Math.sin(t * 0.41 + 2))
-  // la nappe tourne lentement sur elle-même (lacet, tangage, roulis)
-  const yaw = t * 0.07 + 1.4 * Math.sin(t * 0.05) + 0.5 * Math.sin(t * 0.171 + 2)
-  const pitch = 0.9 * Math.sin(t * 0.11 + 0.4) + 0.35 * Math.sin(t * 0.263)
-  const roll = 0.6 * Math.sin(t * 0.08 + 2) + 0.25 * Math.sin(t * 0.229 + 1)
-  // le faucon : toutes les vingt secondes environ, une vague traverse la nappe en trois secondes
-  const hunt = (t % 21) / 3
+  // (lentement : vu de loin, le nuage traverse le ciel en une minute ou deux)
+  const cx = W * (0.46 + 0.18 * Math.sin(t * 0.07) + 0.07 * Math.sin(t * 0.16 + 1) + 0.03 * Math.sin(t * 0.31))
+  const cy = H * (0.36 + 0.08 * Math.sin(t * 0.09 + 1) + 0.04 * Math.sin(t * 0.21) + 0.02 * Math.sin(t * 0.45 + 2))
+  // la nappe tourne sur elle-même (lacet, tangage, roulis) : comme un vrai vol, elle vire en quelques secondes
+  const yaw = t * 0.25 + 1.2 * Math.sin(t * 0.35) + 0.5 * Math.sin(t * 0.9 + 2)
+  const pitch = 0.9 * Math.sin(t * 0.5 + 0.4) + 0.35 * Math.sin(t * 1.1)
+  const roll = 0.6 * Math.sin(t * 0.4 + 2) + 0.25 * Math.sin(t * 0.95 + 1)
+  // le faucon : toutes les vingt secondes, une vague traverse la nappe en une seconde
+  const hunt = t % 20
   return {
     cx,
     cy,
@@ -263,9 +293,9 @@ function pose(t: number, W: number, H: number): Pose {
     cr: Math.cos(roll),
     sr: Math.sin(roll),
     // elle s'étire et se resserre, et se plie plus ou moins
-    stretchX: 1 + 0.25 * Math.sin(t * 0.17) + 0.1 * Math.sin(t * 0.43 + 1),
-    stretchY: 0.55 + 0.18 * Math.sin(t * 0.13 + 2) + 0.07 * Math.sin(t * 0.37),
-    bend: 1.0 * Math.sin(t * 0.12 + 1) + 0.4 * Math.sin(t * 0.29 + 3),
+    stretchX: 1 + 0.25 * Math.sin(t * 0.6) + 0.1 * Math.sin(t * 1.4 + 1),
+    stretchY: 0.55 + 0.18 * Math.sin(t * 0.5 + 2) + 0.07 * Math.sin(t * 1.2),
+    bend: 1.0 * Math.sin(t * 0.45 + 1) + 0.4 * Math.sin(t * 1.1 + 3),
     wave: hunt < 1 ? -1.6 + hunt * 3.2 : 99,
     t,
   }
@@ -313,29 +343,33 @@ function draw(t: number, now: number) {
           ? 1 - clamp((now - liftAt - settle[i] * 0.3) / LIFT_TIME)
           : 0
     if (land === 1) {
-      // posé : la souris passe tout près ? il s'envole en sursaut, fait un petit tour dans le ciel en s'écartant
-      // d'elle, et revient se poser à sa place
+      // posé : la souris passe tout près ? il s'envole en sursaut, fait un tour dans le ciel en s'écartant d'elle,
+      // et revient se poser (à sa place, ou ailleurs)
       const homeX = (perchCol[i] + 0.5) * cellW
       const homeY = skyTop + (perchRow[i] + 0.5) * cellH
       let age = seconds - startled[i]
-      const span = STARTLE_TIME * (0.75 + 0.5 * ((seed[i] * 3.7) % 1))
-      if (age > span + 0.5 && (homeX - mouseX) ** 2 + (homeY - mouseY) ** 2 < STARTLE_NEAR ** 2) {
-        startled[i] = seconds - Math.random() * 0.15
-        startledSide[i] = homeX >= mouseX ? 1 : -1
+      if (age > startledSpan[i] + 0.5 && (homeX - mouseX) ** 2 + (homeY - mouseY) ** 2 < STARTLE_NEAR ** 2) {
+        startle(i, homeX, homeY, seconds - Math.random() * 0.15, homeX >= mouseX ? 1 : -1)
         age = seconds - startled[i]
       }
+      const span = startledSpan[i]
       if (age >= span) {
         perched[perchRow[i] * cols + perchCol[i]]++
         continue
       }
       startledNow++
-      // un arc : il monte vite, plane, redescend ; du côté opposé à la souris (chacun un peu différemment)
+      // un arc : il monte vite, plane, redescend vers sa place (peut-être une autre que celle d'où il est parti)
       const f = Math.max(0, age) / span
-      const away = startledSide[i]
-      const lift = 50 + 90 * ((seed[i] * 1.9) % 1)
-      const drift = (30 + 60 * ((seed[i] * 5.3) % 1)) * away
-      const px = homeX + drift * Math.sin(Math.PI * f) + 6 * Math.sin(seed[i] + age * 7)
-      const py = homeY - lift * Math.sin(Math.PI * Math.pow(f, 0.7))
+      const e = f * f * (3 - 2 * f)
+      const toX = (perchCol[i] + 0.5) * cellW
+      const toY = skyTop + (perchRow[i] + 0.5) * cellH
+      const px =
+        startledFromX[i] +
+        (toX - startledFromX[i]) * e +
+        startledDrift[i] * Math.sin(Math.PI * f) +
+        6 * Math.sin(seed[i] + age * 7)
+      const py =
+        startledFromY[i] + (toY - startledFromY[i]) * e - startledLift[i] * Math.sin(Math.PI * Math.pow(f, 0.7))
       const c = Math.floor(px / cellW)
       const r = Math.floor((py - skyTop) / cellH)
       // (il compte double : seul dans sa case, c'est un v bien visible, pas un point pâle)
@@ -352,9 +386,9 @@ function draw(t: number, now: number) {
     // les ondulations qui parcourent la nappe
     let Z =
       R *
-      (0.3 * Math.sin(2.6 * a + tt * 0.9) +
-        0.22 * Math.sin(2.1 * b - tt * 0.7 + 1) +
-        0.12 * Math.sin(4 * (a + b) + tt * 1.3))
+      (0.3 * Math.sin(2.6 * a + tt * 2.2) +
+        0.22 * Math.sin(2.1 * b - tt * 1.7 + 1) +
+        0.12 * Math.sin(4 * (a + b) + tt * 3.1))
     // les vagues d'agitation lancées par la souris : un anneau qui s'élargit dans la nappe ; là où il passe, les
     // oiseaux plongent un instant (la nappe se plie : une bande plus sombre traverse le nuage)
     for (const w of waves) {
@@ -375,9 +409,9 @@ function draw(t: number, now: number) {
       st = Math.sin(th)
     ;[X, Z] = [X * ct - Z * st, X * st + Z * ct]
     // chaque oiseau flotte autour de sa place, à son rythme (lentement, et un peu plus vite)
-    X += 7 * Math.sin(s + tt * 0.6) + 3 * Math.sin(s * 2.3 + tt * 2.1)
-    Y += 6 * Math.cos(s * 1.7 + tt * 0.5) + 3 * Math.cos(s * 3.1 + tt * 1.8)
-    Z += 8 * Math.sin(s * 0.7 + tt * 0.4)
+    X += 7 * Math.sin(s + tt * 1.5) + 3 * Math.sin(s * 2.3 + tt * 4)
+    Y += 6 * Math.cos(s * 1.7 + tt * 1.3) + 3 * Math.cos(s * 3.1 + tt * 3.6)
+    Z += 8 * Math.sin(s * 0.7 + tt * 1)
     // la nappe tourne (roulis, tangage, lacet)
     const x1 = X * P.cr - Y * P.sr
     const y1 = X * P.sr + Y * P.cr
@@ -453,9 +487,9 @@ function draw(t: number, now: number) {
 
 // ——— Voler, ou rester figé, ou avancer image par image ———
 // clock : le temps de vol, en secondes (il n'avance que quand les oiseaux volent, ou quand on fait défiler) ; la
-// nappe, elle, vit plus lentement (SLOW), à partir d'un instant où elle est belle
+// nappe part d'un instant où elle est belle
 let clock = 0
-const show = () => draw(14 + clock * SLOW, clock)
+const show = () => draw(14 + clock, clock)
 // le vol arrêté (posés, ou figé), on dessine quand même tant que la souris bouge ou que des oiseaux dérangés
 // sont en l'air
 let idle = 0
@@ -474,9 +508,14 @@ function restless() {
     for (let k = 0, tries = 0; k < n && tries < 50; tries++) {
       const i = Math.floor(Math.random() * COUNT)
       // (sur un toit, pas sur le bas de la page ; et pas déjà en l'air)
-      if (perchRow[i] >= rows - 1 || seconds - startled[i] < STARTLE_TIME * 1.5) continue
-      startled[i] = seconds + k * 0.2
-      startledSide[i] = Math.random() < 0.5 ? 1 : -1
+      if (perchRow[i] >= rows - 1 || seconds - startled[i] < startledSpan[i] + 0.5) continue
+      startle(
+        i,
+        (perchCol[i] + 0.5) * cellW,
+        skyTop + (perchRow[i] + 0.5) * cellH,
+        seconds + k * 0.2,
+        Math.random() < 0.5 ? 1 : -1,
+      )
       k++
     }
     if (!idle) idle = requestAnimationFrame(idleFrame)
