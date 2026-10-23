@@ -148,11 +148,71 @@ function resize() {
   villageRow = rows - VILLAGE_LINES.length
   village.style.left = `${villageCol * cellW}px`
   village.style.top = `${skyTop + villageRow * cellH}px`
+  drawHills()
   perches()
 }
 
-// ——— Où se poser : sur les toits du village (les « _ » qui n'ont rien au-dessus d'eux) et la pointe du clocher,
-// et, pour ceux qui n'y trouvent pas de place, sur le bas de la page, à gauche du village ———
+// ——— Les collines derrière le village (d'après la photo) : à gauche, des collines basses et rondes, une bosse
+// puis un creux ; elles remontent vers le village, passent juste sous le clocher, redescendent à droite, puis une
+// crête plus lointaine remonte au bord. Une seule ligne, en gris clair, cachée par le village là où il est devant.
+const hills = document.createElement('pre')
+hills.className = 'mm-hills'
+sky.prepend(hills)
+// la crête : pour chaque colonne, sa ligne dans le ciel (ou -1 là où le village la cache) et son signe
+let ridgeRow = new Int16Array(0)
+let ridgeSign: string[] = []
+function drawHills() {
+  const H = VILLAGE_LINES.length
+  const church = villageCol + VILLAGE_LINES[0].indexOf('/')
+  // les points de la crête : (colonne, hauteur au-dessus du bas de la page, en lignes)
+  const points: [number, number][] = [
+    [0, 0.55 * H],
+    [cols * 0.07, 0.78 * H],
+    [cols * 0.15, 0.66 * H],
+    [cols * 0.24, 0.45 * H],
+    [cols * 0.34, 0.6 * H],
+    [villageCol, 0.8 * H],
+    [church, 0.88 * H],
+    [church + (cols - church) * 0.5, 0.68 * H],
+    [cols - 1, 1.25 * H],
+  ].sort((a, b) => a[0] - b[0]) as [number, number][]
+  // (entre deux points, une courbe douce)
+  const height = (c: number) => {
+    let k = 0
+    while (k < points.length - 2 && c > points[k + 1][0]) k++
+    const [x0, y0] = points[k]
+    const [x1, y1] = points[k + 1]
+    const f = x1 === x0 ? 0 : Math.min(1, Math.max(0, (c - x0) / (x1 - x0)))
+    return y0 + (y1 - y0) * (1 - Math.cos(f * Math.PI)) / 2
+  }
+  // le haut du village, colonne par colonne (la crête ne passe que derrière lui, au-dessus de ses toits)
+  const villageTop = (c: number) => {
+    const x = c - villageCol
+    if (x < 0 || x >= VILLAGE_W) return rows
+    const y = VILLAGE_LINES.findIndex((line) => (line[x] ?? ' ') !== ' ')
+    return y < 0 ? rows : villageRow + y
+  }
+  // la crête passe en bas, au milieu ou en haut de sa case : _ - ¯ (une ligne continue, sans marches) ; là où la
+  // pente est raide, / ou \\
+  ridgeRow = new Int16Array(cols)
+  ridgeSign = []
+  const grid = Array.from({ length: rows }, () => Array<string>(cols).fill(' '))
+  for (let c = 0; c < cols; c++) {
+    const h = height(c)
+    const r = rows - 1 - Math.floor(h)
+    const frac = h - Math.floor(h)
+    const slope = height(c + 0.5) - height(c - 0.5)
+    const sign = slope > 0.6 ? '/' : slope < -0.6 ? '\\' : frac < 0.34 ? '_' : frac < 0.67 ? '-' : '¯'
+    const hidden = r >= villageTop(c) - 1 || r < 0
+    ridgeRow[c] = hidden ? -1 : r
+    ridgeSign[c] = sign
+    if (!hidden) grid[r][c] = sign
+  }
+  hills.textContent = grid.map((line) => line.join('')).join('\n')
+}
+
+// ——— Où se poser : sur les toits du village et la pointe du clocher, sur la crête des collines, et sur le bas
+// de la page, à gauche du village ———
 let perched = new Uint16Array(0)
 // la place de chaque oiseau : sa case dans le ciel (colonne, ligne)
 const perchCol = new Int16Array(COUNT)
@@ -191,7 +251,13 @@ function perches() {
   // les oiseaux se répartissent sur toutes les places, autant sur chacune ; chacun va vers une place du même côté
   // que lui dans le nuage (de gauche à droite)
   const order = Array.from({ length: COUNT }, (_, i) => i).sort((a, b) => u[a] - u[b])
-  const places = [...ground, ...roofs].sort((a, b) => a[0] - b[0])
+  // la crête des collines : sur un « _ », dans la même case ; ailleurs (plus haut dans la case, ou en pente),
+  // juste au-dessus
+  const ridge: [number, number][] = []
+  for (let c = 0; c < cols; c++) {
+    if (ridgeRow[c] >= 0) ridge.push([c, ridgeRow[c] - (ridgeSign[c] === '_' ? 0 : 1)])
+  }
+  const places = [...ground, ...roofs, ...ridge].sort((a, b) => a[0] - b[0])
   order.forEach((bird, k) => {
     const place = places[Math.floor((k / COUNT) * places.length)]
     perchCol[bird] = place[0]

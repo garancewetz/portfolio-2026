@@ -9,15 +9,18 @@ import { projects } from '@/content/content'
 // de l'écran : coupées, elles disent qu'il y a une suite, on fait défiler. En faisant défiler, elles se rangent
 // en ligne.
 // La grille a toujours cinq colonnes : les cinq premiers projets sur la première ligne ; les suivants dessous, sur
-// une seconde ligne, à partir de la première colonne (ils arrivent après que la première ligne s'est rangée).
+// une seconde ligne, en partant de la dernière colonne (ils arrivent après que la première ligne s'est rangée).
 export const COLS = 5
 export const ROWS = Math.ceil(projects.length / COLS)
-export const cardPlace = (i: number) => ({ col: (i % COLS) + 1, row: Math.floor(i / COLS) })
+export const cardPlace = (i: number) => ({
+  col: i < COLS ? i + 1 : COLS - (i % COLS),
+  row: Math.floor(i / COLS),
+})
 const MID = (COLS - 1) / 2
 const V_TOP = 14 // la carte de tête
 const V_STEP = 34 // un cran plus bas à chaque pas vers un bord
 const FIRST_ROW = projects.slice(0, COLS).map((_, i) => V_TOP + Math.abs(i - MID) * V_STEP)
-const NEXT_ROWS_GAP = 40 // la seconde ligne : un peu après la dernière carte de la première
+const NEXT_ROWS_GAP = 70 // la seconde ligne : nettement après la dernière carte de la première, une fois rangée
 const STARTS = projects.map((_, i) =>
   i < COLS ? FIRST_ROW[i] : Math.max(...FIRST_ROW) + NEXT_ROWS_GAP + (i - COLS) * 20,
 )
