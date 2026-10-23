@@ -25,6 +25,11 @@ village.textContent = VILLAGE
 
 // (le vol avance plus lentement que l'horloge : une murmuration flotte, elle ne file pas)
 const SLOW = 0.5
+// en vol (la boucle d'animation tourne) ou non (posés, ou vol figé) ; la boucle et son dernier instant
+let flying = false
+let frame = 0
+let last = 0
+const clamp = (x: number) => Math.min(1, Math.max(0, x))
 
 // un oiseau seul est un point, à peine visible ; plus il y en a dans une case, plus le signe s'épaissit et plus
 // l'encre fonce (chaque signe a sa couche, avec sa couleur : voir murmuration.css)
@@ -176,7 +181,7 @@ const OPEN = VILLAGE_LINES.map((line) => Array.from({ length: VILLAGE_W }, (_, x
 const SKY = OPEN.map((row) => row.map(() => false))
 OPEN.forEach((row, y) => {
   row.forEach((open, x) => (SKY[y][x] = open && (y === 0 || SKY[y - 1][x])))
-  for (let changed = true; changed; ) {
+  for (let changed = true; changed;) {
     changed = false
     for (let x = 0; x < VILLAGE_W; x++) {
       if (row[x] && !SKY[y][x] && (SKY[y][x - 1] || SKY[y][x + 1])) changed = SKY[y][x] = true
@@ -290,7 +295,6 @@ function draw(t: number, now: number) {
   let touched = -1
   let touchedD2 = FEAR * FEAR
   startledNow = 0
-  const clamp = (x: number) => Math.min(1, Math.max(0, x))
   for (let i = 0; i < COUNT; i++) {
     // posé ou non : 0 en vol, 1 posé (en train de se poser, ou de redécoller : entre les deux)
     const land =
@@ -338,7 +342,10 @@ function draw(t: number, now: number) {
     let Y = b * R * P.stretchY
     // les ondulations qui parcourent la nappe
     let Z =
-      R * (0.3 * Math.sin(2.6 * a + tt * 0.9) + 0.22 * Math.sin(2.1 * b - tt * 0.7 + 1) + 0.12 * Math.sin(4 * (a + b) + tt * 1.3))
+      R *
+      (0.3 * Math.sin(2.6 * a + tt * 0.9) +
+        0.22 * Math.sin(2.1 * b - tt * 0.7 + 1) +
+        0.12 * Math.sin(4 * (a + b) + tt * 1.3))
     // les vagues d'agitation lancées par la souris : un anneau qui s'élargit dans la nappe ; là où il passe, les
     // oiseaux plongent un instant (la nappe se plie : une bande plus sombre traverse le nuage)
     for (const w of waves) {
@@ -355,7 +362,8 @@ function draw(t: number, now: number) {
     }
     // la nappe plie (plus loin du centre, plus elle se recourbe)
     const th = P.bend * a
-    const ct = Math.cos(th), st = Math.sin(th)
+    const ct = Math.cos(th),
+      st = Math.sin(th)
     ;[X, Z] = [X * ct - Z * st, X * st + Z * ct]
     // chaque oiseau flotte autour de sa place, à son rythme (lentement, et un peu plus vite)
     X += 7 * Math.sin(s + tt * 0.6) + 3 * Math.sin(s * 2.3 + tt * 2.1)
@@ -390,8 +398,8 @@ function draw(t: number, now: number) {
         ovx[i] += sideX * side * f + (dx / d) * near * 0.25 * fright
         ovy[i] += sideY * side * f + (dy / d) * near * 0.25 * fright
       }
-      // (l'élan retombe, et le ressort ramène l'oiseau vers sa place)
-      // (chacun à son rythme : le nuage ne se referme pas d'un bloc)
+      // (l'élan retombe, et le ressort ramène l'oiseau vers sa place, chacun à son rythme : le nuage ne se
+      // referme pas d'un bloc)
       const pull = 0.002 + 0.003 * ((seed[i] * 7.3) % 1)
       ovx[i] = (ovx[i] - ox[i] * pull) * 0.93
       ovy[i] = (ovy[i] - oy[i] * pull) * 0.93
@@ -435,8 +443,8 @@ function draw(t: number, now: number) {
 }
 
 // ——— Voler, ou rester figé, ou avancer image par image ———
-// clock : le temps de vol, en secondes (il n'avance que quand les oiseaux volent, ou quand
-// on fait défiler) ; la nappe, elle, vit plus lentement (SLOW), à partir d'un instant où elle est belle
+// clock : le temps de vol, en secondes (il n'avance que quand les oiseaux volent, ou quand on fait défiler) ; la
+// nappe, elle, vit plus lentement (SLOW), à partir d'un instant où elle est belle
 let clock = 0
 const show = () => draw(14 + clock * SLOW, clock)
 // le vol arrêté (posés, ou figé), on dessine quand même tant que la souris bouge ou que des oiseaux dérangés
@@ -473,9 +481,6 @@ function idleFrame() {
   show()
   if (startledNow > 0 || performance.now() - lastMove < 200) idle = requestAnimationFrame(idleFrame)
 }
-let flying = false
-let frame = 0
-let last = 0
 function loop(now: number) {
   // (le temps réel écoulé, mais pas plus d'un dixième de seconde d'un coup : après un onglet en arrière-plan,
   // le vol reprend où il en était)
@@ -488,7 +493,6 @@ function loop(now: number) {
 }
 function toggle() {
   flying = !flying
-  document.documentElement.classList.toggle('is-flying', flying)
   if (flying) {
     last = 0
     frame = requestAnimationFrame(loop)

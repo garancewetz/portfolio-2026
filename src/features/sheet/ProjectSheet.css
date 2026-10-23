@@ -193,7 +193,8 @@
   flex-direction: column;
   /* (tailles liées à la hauteur de l'écran : sur un écran plus bas, la capture est plus petite, et le texte
      doit tenir à sa hauteur) */
-  gap: clamp(9px, 1.45vh, 13px);
+  --text-gap: clamp(9px, 1.45vh, 13px);
+  gap: var(--text-gap);
   max-width: 34rem;
 }
 .rg-sheet-title {
