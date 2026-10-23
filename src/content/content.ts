@@ -94,7 +94,7 @@ export const projects: Project[] = [
   {
     id: 'murmuration',
     title: 'Murmuration',
-    short: 'Un vol d’étourneaux en ASCII, au-dessus d’un village des Pyrénées. Au clic, ils s’envolent.',
+    short: 'Une murmuration ascii à Eus',
     kind: 'Animation ASCII',
     stack: ['TypeScript'],
     image: '/shots/murmuration.webp', // capture de la page, en plein vol
