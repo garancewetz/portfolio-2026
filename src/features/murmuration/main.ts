@@ -5,7 +5,7 @@ import { VILLAGE } from './village'
 // Au départ, les oiseaux sont posés sur les toits du village et sur le bas de la page. Un clic n'importe où les
 // fait s'envoler : ils font leur murmuration, puis, au bout de vingt-cinq secondes, le nuage s'abaisse au-dessus
 // du village, se resserre, et les oiseaux plongent se poser par coulées. Un autre clic les fait repartir, et ainsi
-// de suite (en plein vol, un clic fige le vol, un autre le relance).
+// de suite.
 // Posés, ils s'envolent quand la souris passe sur eux, font un petit tour et reviennent à leur place ; et de
 // temps en temps, un ou deux s'envolent tout seuls.
 // En plein vol, la souris fait comme un faucon : le nuage s'écarte de chaque côté de sa route, une vague
@@ -58,7 +58,7 @@ const STREAMS = 6
 // avant de se poser, le nuage s'abaisse au-dessus du village et se resserre (pendant DESCENT secondes, à partir de
 // quelques secondes avant les premiers posés) ; à l'envol, il se forme d'abord là, bas et serré, puis monte
 const DESCENT = 7
-const RISE = 6
+const RISE = 8
 // les instants (en secondes de vol) où on les a fait s'envoler
 let lifts: number[] = []
 // où en est le vol à l'instant clock : depuis quand ils sont partis (ou null), et quand ils se poseront
@@ -157,6 +157,10 @@ function startle(i: number, x: number, y: number, seconds: number, side: number)
 }
 // combien sont en l'air en ce moment après avoir été dérangés (tant qu'il y en a, on continue de dessiner)
 let startledNow = 0
+// quand il s'envole (secondes après le clic : la plupart presque tout de suite, quelques retardataires) et combien
+// de temps il met à rejoindre le nuage (chacun le sien : l'envol n'est pas un bloc)
+const leave = new Float32Array(COUNT)
+const leaveTime = new Float32Array(COUNT)
 // quand il se pose (secondes après le début de l'atterrissage : ils ne se posent pas tous ensemble)
 const settle = new Float32Array(COUNT)
 for (let i = 0; i < COUNT; i++) {
@@ -174,6 +178,8 @@ for (let i = 0; i < COUNT; i++) {
   // posés le plus à droite) vers l'autre ; chaque groupe d'un bloc, à une seconde près
   const band = Math.min(STREAMS - 1, Math.floor((1 - (u[i] + 1.5) / 3) * STREAMS))
   settle[i] = Math.max(0, band) * (LAND_SPREAD / STREAMS) + Math.random() * 1
+  leave[i] = 2.5 * Math.random() ** 2
+  leaveTime[i] = LIFT_TIME * (0.7 + 0.8 * Math.random())
 }
 
 let cellW = 7
@@ -324,7 +330,7 @@ function draw(t: number, now: number) {
   }
   const low = Math.max(
     ease((now - (landAt - DESCENT + 2)) / DESCENT),
-    liftAt !== null && now < landAt ? 1 - ease((now - liftAt) / RISE) : 0,
+    liftAt !== null && now < landAt ? 0.6 * (1 - ease((now - liftAt) / RISE)) : 0,
   )
   const R = Math.min(W, H) * 0.5 * (1 - 0.5 * low)
   // (au-dessus du village : au milieu de ses toits, un peu plus haut que le clocher)
@@ -365,7 +371,7 @@ function draw(t: number, now: number) {
       now >= landAt
         ? clamp((now - landAt - settle[i]) / LAND_TIME)
         : liftAt !== null
-          ? 1 - clamp((now - liftAt - settle[i] * 0.3) / LIFT_TIME)
+          ? 1 - clamp((now - liftAt - leave[i]) / leaveTime[i])
           : 0
     if (land === 1) {
       // posé : la souris passe tout près ? il s'envole en sursaut, fait un tour dans le ciel en s'écartant d'elle,
@@ -576,16 +582,17 @@ function scrub(seconds: number) {
   clock = Math.max(0, clock + seconds)
   show()
 }
-// un clic : voler ou se figer ; quand tous sont posés, les faire redécoller
+// un clic : quand tous sont posés, les faire s'envoler ; en plein vol, il ne fait rien (sauf relancer le vol, s'il
+// a été figé en faisant défiler)
 function press() {
   if (landed(clock)) {
     lifts = [...lifts.filter((at) => at < clock), clock]
     if (!flying) toggle()
-  } else toggle()
+  } else if (!flying) toggle()
 }
 addEventListener('click', press)
 addEventListener('keydown', (e) => {
-  // Espace ou Entrée : voler ou se figer
+  // Espace ou Entrée : comme un clic
   if (e.key === ' ' || e.key === 'Enter') {
     e.preventDefault()
     press()
