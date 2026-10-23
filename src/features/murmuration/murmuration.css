@@ -57,26 +57,3 @@ body {
   line-height: 12px;
   color: var(--muted);
 }
-/* les flèches image par image, en haut à gauche : petites, en gris, l'encre au survol */
-.mm-steps {
-  position: absolute;
-  top: clamp(12px, 2vw, 24px);
-  left: clamp(12px, 2vw, 24px);
-  display: flex;
-  gap: 4px;
-}
-.mm-steps button {
-  padding: 4px 8px;
-  border: 0;
-  background: none;
-  font-family: var(--mono);
-  font-size: 14px;
-  line-height: 1;
-  color: var(--muted);
-  cursor: pointer;
-  touch-action: none;
-  transition: color 0.2s ease;
-}
-.mm-steps button:hover {
-  color: var(--ink);
-}

@@ -344,33 +344,6 @@ function press() {
   } else toggle()
 }
 addEventListener('click', press)
-// les flèches à l'écran : un appui, une image ; en restant appuyé, une image à chaque rafraîchissement
-document.querySelectorAll<HTMLButtonElement>('.mm-steps button').forEach((button) => {
-  const dir = Number(button.dataset.step)
-  let held = 0
-  const repeat = () => {
-    scrub(dir / 60)
-    held = requestAnimationFrame(repeat)
-  }
-  button.addEventListener('pointerdown', (e) => {
-    e.preventDefault()
-    scrub(dir / 60)
-    // (la répétition commence après un court instant : un simple appui reste une seule image)
-    held = window.setTimeout(() => (held = requestAnimationFrame(repeat)), 300)
-  })
-  const stop = () => {
-    clearTimeout(held)
-    cancelAnimationFrame(held)
-  }
-  button.addEventListener('pointerup', stop)
-  button.addEventListener('pointerleave', stop)
-  // (le clic ne fait pas voler les oiseaux ; au clavier, Entrée ou Espace sur la flèche : une image)
-  button.addEventListener('click', (e) => {
-    e.stopPropagation()
-    if (e.detail === 0) scrub(dir / 60)
-  })
-  button.addEventListener('keydown', (e) => e.stopPropagation())
-})
 addEventListener('keydown', (e) => {
   // Espace ou Entrée : voler ou se figer
   if (e.key === ' ' || e.key === 'Enter') {
