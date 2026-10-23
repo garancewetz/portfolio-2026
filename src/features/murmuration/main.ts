@@ -2,10 +2,9 @@ import './murmuration.css'
 import { VILLAGE } from './village'
 
 // Murmuration : un vol d'étourneaux, dessiné en caractères sur toute la page, au-dessus d'un village perché.
-// Au départ, le vol attend hors de la page, à gauche ; un clic n'importe où le fait arriver et voler (un autre
-// clic le fige, un autre encore le relance). Au bout d'une minute et quart, les oiseaux se posent, un par un, sur
-// les toits du village (et ceux qui n'y trouvent pas de place, sur le bas de la page). Un clic les fait redécoller,
-// et ils se reposent une minute plus tard.
+// Au départ, les oiseaux sont posés sur les toits du village et sur le bas de la page. Un clic n'importe où les
+// fait s'envoler : ils font leur murmuration, puis, au bout de quarante secondes, se reposent un par un. Un autre
+// clic les fait repartir, et ainsi de suite (en plein vol, un clic fige le vol, un autre le relance).
 // On peut aussi le regarder image par image : en faisant défiler (deux doigts sur le trackpad, ou la molette),
 // le temps avance ou recule ; avec les flèches ← →, une image à la fois.
 //
@@ -40,25 +39,23 @@ const layers = SIGNS.map((_, k) => {
 })
 
 const COUNT = 6000
-// le déroulé, en secondes de vol : l'arrivée par la gauche, puis l'atterrissage (étalé sur LAND_SPREAD secondes,
-// chaque oiseau mettant LAND_TIME secondes à descendre jusqu'à sa place)
-const ARRIVE = 12
-const LAND_AT = 75
-const LAND_SPREAD = 14
+// le déroulé, en secondes de vol : au départ, ils sont posés ; un clic les fait s'envoler (étalés sur quelques
+// secondes, chacun mettant LIFT_TIME secondes à rejoindre le nuage) ; FLY secondes après, ils se reposent (étalés
+// sur LAND_SPREAD secondes, chacun mettant LAND_TIME secondes à descendre jusqu'à sa place) ; et ainsi de suite
+const LIFT_TIME = 4
+const FLY = 40
+const LAND_SPREAD = 10
 const LAND_TIME = 5
-// une fois posés, un clic les fait redécoller (étalés sur quelques secondes) ; ils se reposent une minute après
-const LIFT_TIME = 3
-const FLY_AGAIN = 60
-// les instants (en secondes de vol) où on les a fait redécoller
+// les instants (en secondes de vol) où on les a fait s'envoler
 let lifts: number[] = []
-// où en est le vol à l'instant clock : depuis quand ils sont repartis (ou null), et quand ils se poseront
+// où en est le vol à l'instant clock : depuis quand ils sont partis (ou null), et quand ils se poseront
 function cycle(clock: number) {
-  let landAt = LAND_AT
+  let landAt = -Infinity
   let liftAt: number | null = null
   for (const at of lifts) {
     if (at <= clock && at >= landAt + LAND_SPREAD + LAND_TIME) {
       liftAt = at
-      landAt = at + FLY_AGAIN
+      landAt = at + FLY
     }
   }
   return { landAt, liftAt }
@@ -186,13 +183,9 @@ interface Pose {
   wave: number
   t: number
 }
-function pose(t: number, arrival: number, W: number, H: number, R: number): Pose {
+function pose(t: number, W: number, H: number): Pose {
   // le centre du vol dérive dans le haut du ciel, au-dessus du village
-  let cx = W * (0.46 + 0.18 * Math.sin(t * 0.05) + 0.07 * Math.sin(t * 0.137 + 1) + 0.03 * Math.sin(t * 0.31))
-  // l'arrivée : au départ, le vol attend hors de la page, à gauche (seuls quelques oiseaux isolés dépassent) ; au
-  // premier clic, il entre et rejoint sa route en ralentissant
-  const e = 1 - Math.pow(1 - Math.min(1, Math.max(0, arrival) / ARRIVE), 3)
-  cx = -R * 1.35 + (cx + R * 1.35) * e
+  const cx = W * (0.46 + 0.18 * Math.sin(t * 0.05) + 0.07 * Math.sin(t * 0.137 + 1) + 0.03 * Math.sin(t * 0.31))
   const cy = H * (0.36 + 0.08 * Math.sin(t * 0.07 + 1) + 0.04 * Math.sin(t * 0.193) + 0.02 * Math.sin(t * 0.41 + 2))
   // la nappe tourne lentement sur elle-même (lacet, tangage, roulis)
   const yaw = t * 0.07 + 1.4 * Math.sin(t * 0.05) + 0.5 * Math.sin(t * 0.171 + 2)
@@ -220,27 +213,27 @@ function pose(t: number, arrival: number, W: number, H: number, R: number): Pose
 
 // ——— Le ciel à l'instant t (temps du vol) ———
 const poses: Pose[] = []
-function draw(t: number, arrival: number) {
+function draw(t: number, now: number) {
   const W = innerWidth
   const H = innerHeight
   const R = Math.min(W, H) * 0.5
   // la pose pour chaque retard (ceux de derrière voient la nappe telle qu'elle était un peu plus tôt)
   for (let k = 0; k < LAGS; k++) {
     const late = (k / LAGS) * MAX_LAG
-    poses[k] = pose(t - late, arrival - late / SLOW, W, H, R)
+    poses[k] = pose(t - late, W, H)
   }
 
   density.fill(0)
   perched.fill(0)
-  const { landAt, liftAt } = cycle(arrival)
+  const { landAt, liftAt } = cycle(now)
   const clamp = (x: number) => Math.min(1, Math.max(0, x))
   for (let i = 0; i < COUNT; i++) {
     // posé ou non : 0 en vol, 1 posé (en train de se poser, ou de redécoller : entre les deux)
     const land =
-      arrival >= landAt
-        ? clamp((arrival - landAt - settle[i]) / LAND_TIME)
+      now >= landAt
+        ? clamp((now - landAt - settle[i]) / LAND_TIME)
         : liftAt !== null
-          ? 1 - clamp((arrival - liftAt - settle[i] * 0.25) / LIFT_TIME)
+          ? 1 - clamp((now - liftAt - settle[i] * 0.3) / LIFT_TIME)
           : 0
     if (land === 1) {
       perched[perchRow[i] * cols + perchCol[i]]++
@@ -309,7 +302,7 @@ function draw(t: number, arrival: number) {
 }
 
 // ——— Voler, ou rester figé, ou avancer image par image ———
-// clock : le temps de vol, en secondes, depuis le premier clic (il n'avance que quand les oiseaux volent, ou quand
+// clock : le temps de vol, en secondes (il n'avance que quand les oiseaux volent, ou quand
 // on fait défiler) ; la nappe, elle, vit plus lentement (SLOW), à partir d'un instant où elle est belle
 let clock = 0
 const show = () => draw(14 + clock * SLOW, clock)
@@ -322,6 +315,8 @@ function loop(now: number) {
   if (last) clock += Math.min(0.1, (now - last) / 1000)
   last = now
   show()
+  // (tous reposés : plus rien ne bouge, on s'arrête jusqu'au prochain clic)
+  if (landed(clock)) return toggle()
   frame = requestAnimationFrame(loop)
 }
 function toggle() {
