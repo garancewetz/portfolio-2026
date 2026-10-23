@@ -5,6 +5,7 @@ import { VILLAGE } from './village'
 // Au départ, les oiseaux sont posés sur les toits du village et sur le bas de la page. Un clic n'importe où les
 // fait s'envoler : ils font leur murmuration, puis, au bout de quarante secondes, se reposent un par un. Un autre
 // clic les fait repartir, et ainsi de suite (en plein vol, un clic fige le vol, un autre le relance).
+// Posés, ils s'envolent quand la souris passe sur eux, font un petit tour et reviennent à leur place.
 // En plein vol, la souris fait comme un faucon : le nuage s'écarte de chaque côté de sa route, une vague
 // d'agitation le traverse, puis il se referme.
 // On peut aussi le regarder image par image : en faisant défiler (deux doigts sur le trackpad, ou la molette),
@@ -97,10 +98,18 @@ let lastWave = 0
 addEventListener('pointermove', (e) => {
   mouseX = e.clientX
   mouseY = e.clientY
+  wake()
 })
 document.documentElement.addEventListener('pointerleave', () => {
   mouseX = mouseY = -1e5
 })
+// les oiseaux posés qu'on dérange en passant la souris dessus : quand ils se sont envolés (en secondes, horloge
+// réelle), et combien de temps dure leur petit tour avant de revenir à leur place
+const startled = new Float64Array(COUNT).fill(-1e9)
+const STARTLE_NEAR = 46 // (en pixels autour de la souris)
+const STARTLE_TIME = 3.2
+// combien sont en l'air en ce moment après avoir été dérangés (tant qu'il y en a, on continue de dessiner)
+let startledNow = 0
 // quand il se pose (secondes après le début de l'atterrissage : ils ne se posent pas tous ensemble)
 const settle = new Float32Array(COUNT)
 for (let i = 0; i < COUNT; i++) {
@@ -153,8 +162,8 @@ function resize() {
 }
 
 // ——— Les collines derrière le village (d'après la photo) : à gauche, des collines basses et rondes, une bosse
-// puis un creux ; elles remontent vers le village, passent juste sous le clocher, redescendent à droite, puis une
-// crête plus lointaine remonte au bord. Une seule ligne, en gris clair, cachée par le village là où il est devant.
+// puis un creux ; elles remontent vers le village, passent juste sous le clocher, redescendent à droite, puis
+// remontent doucement au bord. Une seule ligne, en gris clair, cachée par le village là où il est devant.
 const hills = document.createElement('pre')
 hills.className = 'mm-hills'
 sky.prepend(hills)
@@ -174,8 +183,9 @@ function drawHills() {
     [villageCol, H - 4],
     // (derrière l'église : juste au-dessus du toit de la nef, sous la pointe du clocher, qui seul la coupe)
     [church, H - 3],
-    [church + (cols - church) * 0.5, 0.68 * H],
-    [cols - 1, 1.25 * H],
+    [church + (cols - church) * 0.55, 0.66 * H],
+    // (au bord, une crête lointaine qui remonte doucement, à peine plus haut)
+    [cols - 1, 0.84 * H],
   ].sort((a, b) => a[0] - b[0]) as [number, number][]
   // (entre deux points, une courbe douce)
   const height = (c: number) => {
@@ -343,6 +353,7 @@ function draw(t: number, now: number) {
   waves = waves.filter((w) => seconds - w.at < WAVE_LIFE)
   let touched = -1
   let touchedD2 = FEAR * FEAR
+  startledNow = 0
   const clamp = (x: number) => Math.min(1, Math.max(0, x))
   for (let i = 0; i < COUNT; i++) {
     // posé ou non : 0 en vol, 1 posé (en train de se poser, ou de redécoller : entre les deux)
@@ -353,7 +364,31 @@ function draw(t: number, now: number) {
           ? 1 - clamp((now - liftAt - settle[i] * 0.3) / LIFT_TIME)
           : 0
     if (land === 1) {
-      perched[perchRow[i] * cols + perchCol[i]]++
+      // posé : la souris passe tout près ? il s'envole en sursaut, fait un petit tour dans le ciel en s'écartant
+      // d'elle, et revient se poser à sa place
+      const homeX = (perchCol[i] + 0.5) * cellW
+      const homeY = skyTop + (perchRow[i] + 0.5) * cellH
+      let age = seconds - startled[i]
+      const span = STARTLE_TIME * (0.75 + 0.5 * ((seed[i] * 3.7) % 1))
+      if (age > span + 0.5 && (homeX - mouseX) ** 2 + (homeY - mouseY) ** 2 < STARTLE_NEAR ** 2) {
+        startled[i] = seconds - Math.random() * 0.15
+        age = seconds - startled[i]
+      }
+      if (age >= span) {
+        perched[perchRow[i] * cols + perchCol[i]]++
+        continue
+      }
+      startledNow++
+      // un arc : il monte vite, plane, redescend ; du côté opposé à la souris (chacun un peu différemment)
+      const f = Math.max(0, age) / span
+      const away = homeX >= mouseX ? 1 : -1
+      const lift = 50 + 90 * ((seed[i] * 1.9) % 1)
+      const drift = (30 + 60 * ((seed[i] * 5.3) % 1)) * away
+      const px = homeX + drift * Math.sin(Math.PI * f) + 6 * Math.sin(seed[i] + age * 7)
+      const py = homeY - lift * Math.sin(Math.PI * Math.pow(f, 0.7))
+      const c = Math.floor(px / cellW)
+      const r = Math.floor((py - skyTop) / cellH)
+      if (c >= 0 && c < cols && r >= 0 && r < rows) density[r * cols + c]++
       continue
     }
     const P = poses[lag[i]]
@@ -466,6 +501,20 @@ function draw(t: number, now: number) {
 // on fait défiler) ; la nappe, elle, vit plus lentement (SLOW), à partir d'un instant où elle est belle
 let clock = 0
 const show = () => draw(14 + clock * SLOW, clock)
+// le vol arrêté (posés, ou figé), on dessine quand même tant que la souris bouge ou que des oiseaux dérangés
+// sont en l'air
+let idle = 0
+let lastMove = 0
+function wake() {
+  lastMove = performance.now()
+  if (!flying && !idle) idle = requestAnimationFrame(idleFrame)
+}
+function idleFrame() {
+  idle = 0
+  if (flying) return
+  show()
+  if (startledNow > 0 || performance.now() - lastMove < 200) idle = requestAnimationFrame(idleFrame)
+}
 let flying = false
 let frame = 0
 let last = 0
