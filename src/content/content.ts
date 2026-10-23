@@ -34,6 +34,18 @@ export const projects: Project[] = [
     code: 'https://github.com/garancewetz/signe-astronomique',
   },
   {
+    id: 'trame',
+    wip: true,
+    title: 'Trans-trame',
+    short: 'Une data visualisation des textes intersectionnels, pour rendre visibles les évolutions et les influences.',
+    kind: 'Visualisation de données',
+    stack: ['React', 'TypeScript', 'Supabase'],
+    image: '/shots/trame.webp', // capture faite avec des données de démo
+    alt: 'Graphe de Trans-trame sur fond sombre : des cercles colorés, un par livre, reliés par des lignes de citation, avec des titres comme Le Deuxième Sexe, Gender Trouble ou Sister Outsider, et une frise chronologique en bas.',
+    demo: null,
+    code: 'https://github.com/garancewetz/Trans-trame',
+  },
+  {
     id: 'synapso',
     title: 'Synapso',
     short:
@@ -50,18 +62,6 @@ export const projects: Project[] = [
     },
     demo: 'https://synapso.garancewetz.dev/',
     code: 'https://github.com/garancewetz/synapso-app-reeducation',
-  },
-  {
-    id: 'trame',
-    wip: true,
-    title: 'Trans-trame',
-    short: 'Une data visualisation des textes intersectionnels, pour rendre visibles les évolutions et les influences.',
-    kind: 'Visualisation de données',
-    stack: ['React', 'TypeScript', 'Supabase'],
-    image: '/shots/trame.webp', // capture faite avec des données de démo
-    alt: 'Graphe de Trans-trame sur fond sombre : des cercles colorés, un par livre, reliés par des lignes de citation, avec des titres comme Le Deuxième Sexe, Gender Trouble ou Sister Outsider, et une frise chronologique en bas.',
-    demo: null,
-    code: 'https://github.com/garancewetz/Trans-trame',
   },
   {
     id: 'mosaique',
