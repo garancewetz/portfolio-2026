@@ -117,22 +117,20 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
         <div className="rg-sheet-shot">
           <Shot project={p} eager sheet />
         </div>
-        {/* sous la capture, deux zones : à gauche ce qu'on lit (le titre, la phrase, le site), à droite la fiche
-            technique, qu'on consulte (une ligne par information, avec son étiquette) */}
         <div className="rg-sheet-text">
-          <div className="rg-sheet-main">
-            <h2 id="rg-sheet-title" className="rg-sheet-title">
-              {/* le numéro de la carte, pour garder le fil */}
-              <span className="rg-sheet-num">{num(index)}</span> {p.title}
-            </h2>
-            <p className="rg-sheet-short">{p.short}</p>
-            {/* le site, s'il est en ligne : le lien principal, en évidence sous la description */}
-            {p.demo && (
-              <p className="rg-sheet-site">
-                <ExternalLink href={p.demo}>{host(p.demo)}</ExternalLink>
-              </p>
-            )}
-          </div>
+          <h2 id="rg-sheet-title" className="rg-sheet-title">
+            {/* le numéro de la carte, pour garder le fil */}
+            <span className="rg-sheet-num">{num(index)}</span> {p.title}
+          </h2>
+          <p className="rg-sheet-short">{p.short}</p>
+          {/* le site, s'il est en ligne : le lien principal, en évidence sous la description */}
+          {p.demo && (
+            <p className="rg-sheet-site">
+              <ExternalLink href={p.demo}>{host(p.demo)}</ExternalLink>
+            </p>
+          )}
+          {/* en bas, au niveau du bord bas de la capture : la fiche technique, qu'on consulte (chaque information
+              avec son étiquette) */}
           <dl className="rg-sheet-facts">
             <div>
               <dt>Type</dt>
