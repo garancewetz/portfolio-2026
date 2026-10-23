@@ -1,11 +1,13 @@
 /* ——— Murmuration : le ciel en caractères sur toute la page, le village perché en bas à droite. En encre, sur un
-   page blanche, en couleurs de coucher de soleil ; rien d'autre. ——— */
+   ciel de crépuscule, en couleurs de coucher de soleil ; rien d'autre. ——— */
 @import '@/styles/base.css';
 
-/* une page blanche ; ce sont les caractères qui ont les couleurs d'un coucher de soleil : rose fluo en haut de la
-   page, orange vif vers le bas (le dégradé est fixé à la fenêtre : un oiseau change de couleur selon sa hauteur) */
+/* un ciel de crépuscule, indigo profond et uni ; ce sont les caractères qui ont les couleurs du coucher de soleil :
+   rose fluo en haut de la page, orange vif vers le bas (le dégradé est fixé à la fenêtre : un oiseau change de
+   couleur selon sa hauteur) */
 :root {
-  --bg: #fff;
+  --bg: #16132a;
+  color-scheme: dark;
   --sunset: linear-gradient(to bottom, #ff2d95, #ff5a6e 45%, #ff8a2a) fixed;
 }
 
@@ -54,16 +56,16 @@ body {
   color: transparent;
 }
 .mm-l0 {
-  opacity: 0.5;
+  opacity: 0.6;
 }
 .mm-l1 {
-  opacity: 0.65;
-}
-.mm-l2 {
   opacity: 0.8;
 }
-.mm-l3 {
+.mm-l2 {
   opacity: 0.92;
+}
+.mm-l3 {
+  opacity: 1;
 }
 .mm-l4 {
   font-weight: 700;
@@ -73,5 +75,5 @@ body {
   position: absolute;
   font-size: var(--mm-size, 12px);
   line-height: var(--mm-size, 12px);
-  opacity: 0.75;
+  opacity: 0.85;
 }
