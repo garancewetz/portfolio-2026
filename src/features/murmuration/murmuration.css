@@ -50,11 +50,11 @@ body {
 .mm-l4 {
   font-weight: 700;
 }
-/* le premier plan (le village et les oiseaux posés) : il glisse vers le bas quand la caméra monte (main.ts) */
+/* le premier plan (le village et les oiseaux posés) : il descend, par lignes entières, quand la caméra monte
+   (main.ts) */
 .mm-ground {
   position: absolute;
   inset: 0;
-  will-change: transform;
 }
 .mm-perched {
   position: absolute;

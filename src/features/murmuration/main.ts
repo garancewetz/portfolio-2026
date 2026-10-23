@@ -7,8 +7,8 @@ import { VILLAGE } from './village'
 // clic les fait repartir, et ainsi de suite (en plein vol, un clic fige le vol, un autre le relance).
 // Posés, ils s'envolent quand la souris passe sur eux, font un petit tour et reviennent à leur place ; et de
 // temps en temps, un ou deux s'envolent tout seuls.
-// Quand le nuage vole haut, la caméra le suit un peu : le village glisse vers le bas de l'écran, et revient quand
-// les oiseaux redescendent se poser.
+// Quand le nuage vole haut, la caméra le suit un peu : le village descend, ligne de caractères par ligne, vers le
+// bas de l'écran, et remonte quand les oiseaux redescendent se poser.
 // En plein vol, la souris fait comme un faucon : le nuage s'écarte de chaque côté de sa route, une vague
 // d'agitation le traverse, puis il se referme.
 // On peut aussi le regarder image par image : en faisant défiler (deux doigts sur le trackpad, ou la molette),
@@ -43,8 +43,8 @@ const layers = SIGNS.map((_, k) => {
   sky.append(layer)
   return layer
 })
-// le premier plan : le village et les oiseaux posés, sur un même plan qui glisse vers le bas quand la caméra
-// monte suivre le nuage (le ciel, lui, ne bouge pas)
+// le premier plan : le village et les oiseaux posés, sur un même plan qui descend, ligne par ligne, quand la
+// caméra monte suivre le nuage (le ciel, lui, ne bouge pas)
 const ground = document.createElement('div')
 ground.className = 'mm-ground'
 village.before(ground)
@@ -58,9 +58,11 @@ const perchedLayers = SIGNS.map((_, k) => {
   perchedSky.append(layer)
   return layer
 })
-// la caméra : de combien de pixels le premier plan est descendu (elle monte quand le nuage vole haut, avec
-// beaucoup de retard, jamais plus d'un tiers du village ; elle redescend quand les oiseaux se posent)
+// la caméra : de combien le premier plan est descendu, en lignes entières de caractères (elle monte quand le
+// nuage vole haut, avec beaucoup de retard, jamais plus d'un tiers du village ; elle redescend quand les oiseaux
+// se posent)
 let camera = 0
+let cameraSmooth = 0
 let lastFrame = 0
 
 const COUNT = 6000
@@ -302,8 +304,11 @@ function draw(t: number, now: number) {
     const inAir = liftAt !== null && now < landAt ? 1 : 0
     const high = Math.min(1, Math.max(0, (0.44 * H - poses[0].cy) / (0.14 * H)))
     const target = inAir * high * VILLAGE_LINES.length * cellH * 0.35
-    camera += (target - camera) * (1 - Math.exp(-dt / 1.8))
-    const y = `translateY(${camera.toFixed(1)}px)`
+    cameraSmooth += (target - cameraSmooth) * (1 - Math.exp(-dt / 1.8))
+    // (par lignes entières de caractères, sur la grille du ciel : le village est redessiné une ligne plus bas,
+    // il ne glisse pas)
+    camera = Math.round(cameraSmooth / cellH) * cellH
+    const y = `translateY(${camera}px)`
     if (ground.style.transform !== y) ground.style.transform = y
   }
   // la souris : sa vitesse sur cette image, et la direction de côté (perpendiculaire à sa route)
