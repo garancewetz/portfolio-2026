@@ -2,9 +2,11 @@
 // clocher carré au sommet, les maisons serrées en rangées qui descendent longtemps vers la gauche et peu vers la
 // droite, deux maisons à l'écart plus bas à droite, des cyprès
 export const VILLAGE = [
-  '                                                    /\\',
-  '                                            ________|^^|',
-  '                                           |  ::  ::|  |',
+  '                                                     /\\',
+  '                                                    |  |',
+  '                                                    |^^|',
+  '                                                    |  |',
+  '                                            ________|  |',
   '                                           |  ::  ::|::|',
   '                                           |________|__|_',
   '                                          | :: |:: |  :: |',
