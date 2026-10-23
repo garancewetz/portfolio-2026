@@ -2,7 +2,8 @@ import './murmuration.css'
 import { VILLAGE } from './village'
 
 // Murmuration : un vol d'étourneaux, dessiné en caractères sur toute la page, au-dessus d'un village perché.
-// Au départ, le vol est figé ; un clic n'importe où le fait voler (un autre clic le fige à nouveau).
+// Au départ, le vol attend hors de la page, à gauche ; un clic n'importe où le fait arriver et voler (un autre
+// clic le fige, un autre encore le relance).
 //
 // Vu de loin, un vol d'étourneaux est une grande nappe d'oiseaux en trois dimensions : là où elle se plie, ou
 // quand on la voit par la tranche, les oiseaux se superposent et le nuage s'assombrit ; quand elle s'ouvre, il
@@ -52,12 +53,16 @@ function resize() {
 }
 
 // ——— Le ciel à l'instant t (en secondes) ———
-function draw(t: number) {
+function draw(t: number, arrival: number) {
   const W = innerWidth
   const H = innerHeight
   const R = Math.min(W, H) * 0.36
   // le centre du vol dérive dans le haut du ciel, au-dessus du village
-  const cx = W * (0.46 + 0.2 * Math.sin(t * 0.05) + 0.06 * Math.sin(t * 0.13))
+  let cx = W * (0.46 + 0.2 * Math.sin(t * 0.05) + 0.06 * Math.sin(t * 0.13))
+  // l'arrivée : au départ, le vol attend hors de la page, à gauche (seuls quelques oiseaux isolés dépassent) ; au
+  // premier clic, il entre et rejoint sa route en ralentissant (huit secondes)
+  const e = 1 - Math.pow(1 - Math.min(1, arrival / 8), 3)
+  cx = -R * 1.35 + (cx + R * 1.35) * e
   const cy = H * (0.36 + 0.09 * Math.sin(t * 0.07 + 1) + 0.03 * Math.sin(t * 0.21))
   // la nappe tourne lentement sur elle-même (lacet, tangage, roulis)
   const yaw = t * 0.09 + 1.6 * Math.sin(t * 0.05)
@@ -124,15 +129,21 @@ function draw(t: number) {
 // ——— Voler, ou rester figé ———
 // t : le temps du vol (il n'avance que quand les oiseaux volent) ; on part d'un instant où la nappe est belle
 let t = 14
+// le temps de vol depuis le premier clic (pour l'arrivée par la gauche)
+let arrival = 0
 let flying = false
 let frame = 0
 let last = 0
 function loop(now: number) {
   // (le temps réel écoulé, mais pas plus d'un dixième de seconde d'un coup : après un onglet en arrière-plan,
   // le vol reprend où il en était)
-  if (last) t += Math.min(0.1, (now - last) / 1000)
+  if (last) {
+    const dt = Math.min(0.1, (now - last) / 1000)
+    t += dt
+    arrival += dt
+  }
   last = now
-  draw(t)
+  draw(t, arrival)
   frame = requestAnimationFrame(loop)
 }
 function toggle() {
@@ -153,10 +164,10 @@ addEventListener('keydown', (e) => {
 })
 addEventListener('resize', () => {
   resize()
-  draw(t)
+  draw(t, arrival)
 })
 
 document.fonts.ready.then(() => {
   resize()
-  draw(t)
+  draw(t, arrival)
 })

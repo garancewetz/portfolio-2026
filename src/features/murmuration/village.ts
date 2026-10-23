@@ -1,15 +1,21 @@
-// Le village perché, en bas à droite : le clocher en haut, les maisons qui descendent la colline vers la gauche,
-// la pente qui redescend à droite
-export const VILLAGE = String.raw`
-                                 +
-                                /_\
-                                |#|      __
-                           __ __|:|__  _|..|_
-                        __|..|..|  |..|  |..|__
-                   __ _|..|  |  |..|  |..|  |..|
-                __|..|..|  |..|..|  |..|  |__|  \
-            __ |..|  |  |..|  |  |..|__|..|      \
-        __|..||  |..|..|  |__|..|  |  |  |        \_
-     __|..|  ||..|  |  |..|  |  |..|__|             \__
-  __|  |..|..|  |..|__|  |..|__|                       \__
-_/  |..|  |  |..|                                         \___`.slice(1)
+// Le village perché, en bas à droite (d'après une photo d'Eus, dans les Pyrénées-Orientales) : la montagne
+// derrière, l'église et son clocher carré au sommet, les maisons serrées en gradins qui descendent la colline vers
+// la gauche, un cyprès, la pente qui redescend à droite
+export const VILLAGE = [
+  "               _,.--''``''--.,_                   _,.--''``''--..,__",
+  "       _,.--''`                `''--.,_  _,.--''`                    `''--.._",
+  '                                      _',
+  '                                     | |',
+  '                                    _|n|_',
+  '                                   |  _  |',
+  '                                   | |:| |        __',
+  '                           ________|_____|_______|::|',
+  '                      ____|  ::   ::   ::   ::  |  |__',
+  '                  ___|::  |____________________|::|  :|___',
+  '              ___|  ::|  ::|::  |  ::|::  |  ::|__|____|  :|__',
+  '          ___|::  |___|____|____|____|____|____|::  |  ::|___|   ^',
+  '       __|  ::|  ::|  ::|::  |  ::|  ::|::  |__|____|____|::|   /|\\',
+  '    __|::  |___|____|____|____|____|____|::  |  ::|    |___|__  |',
+  ' __|  ::|  ::|::  |  ::|::  |  ::|::  |____|____|              \\___',
+  '|____|____|_________|____|____|____|____|                          \\____',
+].join('\n')
