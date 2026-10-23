@@ -5,6 +5,7 @@ import { VILLAGE } from './village'
 // Au départ, les oiseaux sont posés sur les toits du village et sur le bas de la page. Un clic n'importe où les
 // fait s'envoler : ils font leur murmuration, puis, au bout de quarante secondes, se reposent un par un. Un autre
 // clic les fait repartir, et ainsi de suite (en plein vol, un clic fige le vol, un autre le relance).
+// En plein vol, la souris fait fuir les oiseaux comme un faucon : le nuage s'ouvre devant elle, puis se referme.
 // On peut aussi le regarder image par image : en faisant défiler (deux doigts sur le trackpad, ou la molette),
 // le temps avance ou recule ; avec les flèches ← →, une image à la fois.
 //
@@ -71,6 +72,22 @@ const u = new Float32Array(COUNT)
 const v = new Float32Array(COUNT)
 const seed = new Float32Array(COUNT)
 const lag = new Uint8Array(COUNT)
+// l'écart de chaque oiseau à sa place, quand la souris l'a fait fuir (en pixels), et son élan
+const ox = new Float32Array(COUNT)
+const oy = new Float32Array(COUNT)
+const ovx = new Float32Array(COUNT)
+const ovy = new Float32Array(COUNT)
+// la souris (loin de tout quand elle n'est pas sur la page), et la distance à laquelle les oiseaux la fuient
+let mouseX = -1e5
+let mouseY = -1e5
+const FEAR = 120
+addEventListener('pointermove', (e) => {
+  mouseX = e.clientX
+  mouseY = e.clientY
+})
+document.documentElement.addEventListener('pointerleave', () => {
+  mouseX = mouseY = -1e5
+})
 // quand il se pose (secondes après le début de l'atterrissage : ils ne se posent pas tous ensemble)
 const settle = new Float32Array(COUNT)
 for (let i = 0; i < COUNT; i++) {
@@ -276,6 +293,26 @@ function draw(t: number, now: number) {
     // vue de loin, de face : on garde x et y
     let px = P.cx + x3
     let py = P.cy + y2
+    // la souris, comme un faucon : les oiseaux proches s'en écartent (plus vite s'ils sont tout près), puis
+    // reviennent doucement à leur place dans le nuage, qui se referme
+    if (flying) {
+      const dx = px + ox[i] - mouseX
+      const dy = py + oy[i] - mouseY
+      const d2 = dx * dx + dy * dy
+      if (d2 < FEAR * FEAR) {
+        const d = Math.sqrt(d2) || 1
+        const f = (1 - d / FEAR) ** 2 * 3
+        ovx[i] += (dx / d) * f
+        ovy[i] += (dy / d) * f
+      }
+      // (l'élan retombe, et le ressort ramène l'oiseau vers sa place)
+      ovx[i] = (ovx[i] - ox[i] * 0.004) * 0.92
+      ovy[i] = (ovy[i] - oy[i] * 0.004) * 0.92
+      ox[i] += ovx[i]
+      oy[i] += ovy[i]
+    }
+    px += ox[i]
+    py += oy[i]
     // en descendant se poser : de sa place dans le nuage à sa place sur le toit, en douceur, avec un dernier
     // petit envol au-dessus avant de se poser
     if (land > 0) {
