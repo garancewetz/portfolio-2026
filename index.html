@@ -28,6 +28,14 @@
       href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter+Tight:wght@300..500&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    <!-- les captures des cartes, demandées dès la lecture de la page (sans attendre le script) : elles sont là dès
+         l'arrivée (les mêmes que dans src/content/content.ts) -->
+    <link rel="preload" as="image" href="/shots/signe.webp" />
+    <link rel="preload" as="image" href="/shots/trame.webp" />
+    <link rel="preload" as="image" href="/shots/synapso.webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/shots/mosaique.webp" />
+    <link rel="preload" as="image" href="/shots/journey-jeu.webp" />
+    <link rel="preload" as="image" href="/shots/murmuration.webp" />
   </head>
   <body>
     <div id="root"></div>

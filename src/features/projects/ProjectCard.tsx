@@ -31,7 +31,8 @@ export default function ProjectCard({ project: p, index: i, start, col, row, onO
           aria-label={`${p.title} : ouvrir la fiche`}
           onClick={() => onOpen(i)}
         >
-          <Shot project={p} />
+          {/* (chargée tout de suite : la carte est là dès l'arrivée, même si elle part hors de l'écran) */}
+          <Shot project={p} eager />
           <span className="rg-meta">
             <span className="rg-n">{projectNumber(i)}</span>
             <span className="rg-title">{p.title}</span>
