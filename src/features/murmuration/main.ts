@@ -7,8 +7,6 @@ import { VILLAGE } from './village'
 // clic les fait repartir, et ainsi de suite (en plein vol, un clic fige le vol, un autre le relance).
 // Posés, ils s'envolent quand la souris passe sur eux, font un petit tour et reviennent à leur place ; et de
 // temps en temps, un ou deux s'envolent tout seuls.
-// Quand le nuage vole haut, la caméra le suit un peu : le village descend, ligne de caractères par ligne, vers le
-// bas de l'écran, et remonte quand les oiseaux redescendent se poser.
 // En plein vol, la souris fait comme un faucon : le nuage s'écarte de chaque côté de sa route, une vague
 // d'agitation le traverse, puis il se referme.
 // On peut aussi le regarder image par image : en faisant défiler (deux doigts sur le trackpad, ou la molette),
@@ -43,27 +41,6 @@ const layers = SIGNS.map((_, k) => {
   sky.append(layer)
   return layer
 })
-// le premier plan : le village et les oiseaux posés, sur un même plan qui descend, ligne par ligne, quand la
-// caméra monte suivre le nuage (le ciel, lui, ne bouge pas)
-const ground = document.createElement('div')
-ground.className = 'mm-ground'
-village.before(ground)
-ground.append(village)
-const perchedSky = document.createElement('div')
-perchedSky.className = 'mm-perched'
-ground.append(perchedSky)
-const perchedLayers = SIGNS.map((_, k) => {
-  const layer = document.createElement('pre')
-  layer.className = `mm-layer mm-l${k}`
-  perchedSky.append(layer)
-  return layer
-})
-// la caméra : de combien le premier plan est descendu, en lignes entières de caractères (elle monte quand le
-// nuage vole haut, avec beaucoup de retard, jamais plus d'un tiers du village ; elle redescend quand les oiseaux
-// se posent)
-let camera = 0
-let cameraSmooth = 0
-let lastFrame = 0
 
 const COUNT = 6000
 // le déroulé, en secondes de vol : au départ, ils sont posés ; un clic les fait s'envoler (étalés sur quelques
@@ -177,7 +154,6 @@ function resize() {
   rows = Math.ceil(innerHeight / cellH)
   skyTop = innerHeight - rows * cellH
   sky.style.top = `${skyTop}px`
-  perchedSky.style.top = `${skyTop}px`
   density = new Float32Array(cols * rows)
   perched = new Uint16Array(cols * rows)
   // le village, sur la même grille que le ciel, en bas à droite (pour que les oiseaux se posent pile sur les toits)
@@ -296,21 +272,6 @@ function draw(t: number, now: number) {
   density.fill(0)
   perched.fill(0)
   const { landAt, liftAt } = cycle(now)
-  // la caméra suit la hauteur du nuage (seulement en vol : à l'atterrissage, elle redescend avec les oiseaux)
-  {
-    const t0 = performance.now() / 1000
-    const dt = lastFrame ? Math.min(0.1, t0 - lastFrame) : 0
-    lastFrame = t0
-    const inAir = liftAt !== null && now < landAt ? 1 : 0
-    const high = Math.min(1, Math.max(0, (0.44 * H - poses[0].cy) / (0.14 * H)))
-    const target = inAir * high * VILLAGE_LINES.length * cellH * 0.35
-    cameraSmooth += (target - cameraSmooth) * (1 - Math.exp(-dt / 1.8))
-    // (par lignes entières de caractères, sur la grille du ciel : le village est redessiné une ligne plus bas,
-    // il ne glisse pas)
-    camera = Math.round(cameraSmooth / cellH) * cellH
-    const y = `translateY(${camera}px)`
-    if (ground.style.transform !== y) ground.style.transform = y
-  }
   // la souris : sa vitesse sur cette image, et la direction de côté (perpendiculaire à sa route)
   const seconds = performance.now() / 1000
   if (flying) {
@@ -342,7 +303,7 @@ function draw(t: number, now: number) {
       // posé : la souris passe tout près ? il s'envole en sursaut, fait un petit tour dans le ciel en s'écartant
       // d'elle, et revient se poser à sa place
       const homeX = (perchCol[i] + 0.5) * cellW
-      const homeY = skyTop + (perchRow[i] + 0.5) * cellH + camera
+      const homeY = skyTop + (perchRow[i] + 0.5) * cellH
       let age = seconds - startled[i]
       const span = STARTLE_TIME * (0.75 + 0.5 * ((seed[i] * 3.7) % 1))
       if (age > span + 0.5 && (homeX - mouseX) ** 2 + (homeY - mouseY) ** 2 < STARTLE_NEAR ** 2) {
@@ -444,7 +405,7 @@ function draw(t: number, now: number) {
     if (land > 0) {
       const e = land * land * (3 - 2 * land)
       px += ((perchCol[i] + 0.5) * cellW - px) * e
-      py += (skyTop + (perchRow[i] + 0.5) * cellH + camera - py) * e - Math.sin(Math.PI * land) * 30
+      py += (skyTop + (perchRow[i] + 0.5) * cellH - py) * e - Math.sin(Math.PI * land) * 30
     }
     const c = Math.floor(px / cellW)
     const r = Math.floor((py - skyTop) / cellH)
@@ -457,29 +418,20 @@ function draw(t: number, now: number) {
     lastWave = seconds
   }
 
-  // chaque couche ne garde que ses signes (des espaces ailleurs) : les oiseaux en vol dans le ciel, les oiseaux
-  // posés sur le premier plan (serrés sur les toits : un signe plus lourd pour autant d'oiseaux)
+  // chaque couche ne garde que ses signes (des espaces ailleurs)
   const texts = SIGNS.map(() => '')
-  const perchedTexts = SIGNS.map(() => '')
   for (let r = 0; r < rows; r++) {
     const lines = SIGNS.map(() => '')
-    const perchedLines = SIGNS.map(() => '')
     for (let c = 0; c < cols; c++) {
-      const level = LEVEL[Math.min(15, density[r * cols + c])]
+      // les oiseaux posés comptent aussi (serrés sur les toits : un signe plus lourd pour autant d'oiseaux)
+      const d = density[r * cols + c]
       const p = perched[r * cols + c]
-      const perchedLevel = p ? PERCH_LEVEL[Math.min(PERCH_LEVEL.length - 1, p)] : -1
-      for (let k = 0; k < SIGNS.length; k++) {
-        lines[k] += k === level ? SIGNS[k] : ' '
-        perchedLines[k] += k === perchedLevel ? SIGNS[k] : ' '
-      }
+      const level = Math.max(LEVEL[Math.min(15, d)], p ? PERCH_LEVEL[Math.min(PERCH_LEVEL.length - 1, p)] : -1)
+      for (let k = 0; k < SIGNS.length; k++) lines[k] += k === level ? SIGNS[k] : ' '
     }
-    for (let k = 0; k < SIGNS.length; k++) {
-      texts[k] += lines[k] + '\n'
-      perchedTexts[k] += perchedLines[k] + '\n'
-    }
+    for (let k = 0; k < SIGNS.length; k++) texts[k] += lines[k] + '\n'
   }
   layers.forEach((layer, k) => (layer.textContent = texts[k]))
-  perchedLayers.forEach((layer, k) => (layer.textContent = perchedTexts[k]))
 }
 
 // ——— Voler, ou rester figé, ou avancer image par image ———
