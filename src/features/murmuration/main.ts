@@ -171,8 +171,9 @@ function drawHills() {
     [cols * 0.15, 0.66 * H],
     [cols * 0.24, 0.45 * H],
     [cols * 0.34, 0.6 * H],
-    [villageCol, 0.8 * H],
-    [church, 0.88 * H],
+    [villageCol, H - 4],
+    // (derrière l'église : juste au-dessus du toit de la nef, sous la pointe du clocher, qui seul la coupe)
+    [church, H - 3],
     [church + (cols - church) * 0.5, 0.68 * H],
     [cols - 1, 1.25 * H],
   ].sort((a, b) => a[0] - b[0]) as [number, number][]
@@ -203,7 +204,7 @@ function drawHills() {
     const frac = h - Math.floor(h)
     const slope = height(c + 0.5) - height(c - 0.5)
     const sign = slope > 0.6 ? '/' : slope < -0.6 ? '\\' : frac < 0.34 ? '_' : frac < 0.67 ? '-' : '¯'
-    const hidden = r >= villageTop(c) - 1 || r < 0
+    const hidden = r >= villageTop(c) || r < 0
     ridgeRow[c] = hidden ? -1 : r
     ridgeSign[c] = sign
     if (!hidden) grid[r][c] = sign
