@@ -10,9 +10,11 @@ body {
 .mm {
   position: fixed;
   inset: 0;
-  /* (tout le ciel se clique : c'est là qu'on fait voler les oiseaux) */
+  /* (tout le ciel se clique : c'est là qu'on fait voler les oiseaux ; au doigt, on peut le glisser sur les
+     oiseaux sans faire défiler ni zoomer la page) */
   cursor: pointer;
   user-select: none;
+  touch-action: none;
 }
 .mm pre {
   margin: 0;
@@ -24,8 +26,9 @@ body {
   position: absolute;
   inset: 0;
   font-family: var(--mono);
-  font-size: 12px;
-  line-height: 12px;
+  /* (12 px, ou moins sur un téléphone : main.ts règle --mm-size pour que le village tienne dans la largeur) */
+  font-size: var(--mm-size, 12px);
+  line-height: var(--mm-size, 12px);
   color: var(--ink);
 }
 /* une couche par signe, les unes sur les autres : un oiseau seul (le point) à peine visible, l'encre fonce à
@@ -53,7 +56,7 @@ body {
 /* le village, en gris, en bas à droite, sur la même grille que le ciel (placé par main.ts) */
 .mm-village {
   position: absolute;
-  font-size: 12px;
-  line-height: 12px;
+  font-size: var(--mm-size, 12px);
+  line-height: var(--mm-size, 12px);
   color: var(--muted);
 }

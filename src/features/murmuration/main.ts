@@ -109,6 +109,11 @@ addEventListener('pointermove', (e) => {
 document.documentElement.addEventListener('pointerleave', () => {
   mouseX = mouseY = -1e5
 })
+// (au doigt : quand il se lève, il n'est plus sur la page ; sinon, les oiseaux revenus à leur place sous le
+// dernier endroit touché s'envoleraient sans fin)
+addEventListener('pointerup', (e) => {
+  if (e.pointerType !== 'mouse') mouseX = mouseY = -1e5
+})
 // les oiseaux posés qu'on dérange en passant la souris dessus : quand ils se sont envolés (en secondes, horloge
 // réelle), et combien de temps dure leur petit tour avant de revenir à leur place
 const startled = new Float64Array(COUNT).fill(-1e9)
@@ -148,6 +153,10 @@ let density = new Float32Array(0)
 
 // la taille d'une case : la largeur d'un caractère et la hauteur d'une ligne du ciel
 function resize() {
+  // la taille des caractères : 12 px, ou moins sur un écran étroit (téléphone), pour que le village tienne en
+  // entier dans la largeur (un caractère de JetBrains Mono fait 0,6 fois sa taille de large)
+  const size = Math.max(5, Math.min(12, Math.floor((innerWidth - 16) / (VILLAGE_W + 2) / 0.6)))
+  document.documentElement.style.setProperty('--mm-size', `${size}px`)
   const probe = document.createElement('span')
   probe.textContent = 'M'.repeat(100)
   sky.append(probe)
@@ -162,7 +171,7 @@ function resize() {
   density = new Float32Array(cols * rows)
   perched = new Uint16Array(cols * rows)
   // le village, sur la même grille que le ciel, en bas à droite (pour que les oiseaux se posent pile sur les toits)
-  villageCol = cols - VILLAGE_W - Math.round(Math.min(32, Math.max(16, innerWidth * 0.024)) / cellW)
+  villageCol = Math.max(0, cols - VILLAGE_W - Math.round(Math.min(32, Math.max(8, innerWidth * 0.024)) / cellW))
   villageRow = rows - VILLAGE_LINES.length
   village.style.left = `${villageCol * cellW}px`
   village.style.top = `${skyTop + villageRow * cellH}px`
