@@ -50,6 +50,20 @@ body {
 .mm-l4 {
   font-weight: 700;
 }
+/* le premier plan (le village et les oiseaux posés) : il glisse vers le bas quand la caméra monte (main.ts) */
+.mm-ground {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+.mm-perched {
+  position: absolute;
+  inset: 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 12px;
+  color: var(--ink);
+}
 /* le village, en gris, en bas à droite, sur la même grille que le ciel (placé par main.ts) */
 .mm-village {
   position: absolute;
