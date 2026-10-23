@@ -7,6 +7,13 @@
   # Vite 8 demande Node 20.19+ ou 22.12+
   NODE_VERSION = "22"
 
+# L'ancienne adresse Netlify renvoie vers le domaine (redirection permanente, le chemin est gardé)
+[[redirects]]
+  from = "https://garancewetz.netlify.app/*"
+  to = "https://garancewetz.dev/:splat"
+  status = 301
+  force = true
+
 # Le jeu wwwetzel journey (dépôt garancewetz/wwwetzel-journey) a son propre site Netlify, que le public ne voit pas :
 # on le sert ici, sous /journey (Netlify ne distingue pas /journey de /journey/ : une seule règle)
 [[redirects]]

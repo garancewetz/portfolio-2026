@@ -31,7 +31,7 @@ export const projects: Project[] = [
       src: '/shots/signe-signe.webp',
       alt: 'Sur téléphone, le résultat : le vrai signe est Poissons, alors que l’horoscope dit Bélier, avec un schéma Terre, Soleil, constellation.',
     },
-    demo: 'https://signe-astronomique.netlify.app/',
+    demo: 'https://signe-astronomique.garancewetz.dev/',
     code: 'https://github.com/garancewetz/signe-astronomique',
   },
   {
@@ -50,7 +50,7 @@ export const projects: Project[] = [
       src: '/shots/synapso-home.webp',
       alt: 'Sur téléphone, l’accueil : « Bonjour, Calypso », 7 jours actifs sur 7, le bouton « Commencer ma séance » et les zones du corps.',
     },
-    demo: 'https://synapso.netlify.app/',
+    demo: 'https://synapso.garancewetz.dev/',
     code: 'https://github.com/garancewetz/synapso-app-reeducation',
   },
   {
@@ -93,7 +93,7 @@ export const projects: Project[] = [
       alt: "Sur téléphone, l'héroïne entre dans une maison : une bulle annonce « Formation · Sorbonne Nouvelle · Master de lettres · 2015 », un petit dragon orange la suit, un joystick en bas et le sac entre deux orbes.",
     },
     // Servi par ce site, à l'adresse /journey (voir netlify.toml)
-    demo: 'https://garancewetz.netlify.app/journey',
+    demo: 'https://garancewetz.dev/journey',
     code: 'https://github.com/garancewetz/wwwetzel-journey',
   },
 ]

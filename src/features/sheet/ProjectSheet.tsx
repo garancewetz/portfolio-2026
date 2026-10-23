@@ -16,7 +16,7 @@ const host = (url: string) => {
     .replace(/^https?:\/\//, '')
     .replace(/\/$/, '')
     .split('/')
-  return domain === 'garancewetz.netlify.app' && path.length ? `${domain}/${path.join('/')}` : domain
+  return domain === 'garancewetz.dev' && path.length ? `${domain}/${path.join('/')}` : domain
 }
 
 // La fiche d'un projet (ouverte au clic sur une carte) : une page du site, en plein écran,
