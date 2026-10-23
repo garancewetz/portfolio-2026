@@ -2,8 +2,7 @@ import { useEffect, useImperativeHandle, useLayoutEffect, useRef, useState, type
 import { ANAGRAMS, MIX_DUR, MIX_STAGGER, arrange } from './anagrams'
 import './Signature.css'
 
-// Effets cachés, au survol (rien ne les annonce), un par mot : le e de Garance ondule comme un liquide, et
-// Wetzel devient Marzal (l'autre nom de famille de Garance) avec ses propres lettres (voir morphOf).
+// Effet caché, au survol (rien ne l'annonce) : le e de Garance ondule comme un liquide.
 const HIDDEN: Record<string, Record<number, true>> = { Garance: { 6: true } }
 
 // L'ondulation du e : elle monte doucement puis fort au survol, et retombe tranquillement quand la souris part.
@@ -53,29 +52,6 @@ function Wave({ children }: { children: string }) {
 
 const lettersOf = (word: string) => [...word].map((ch, k) => (HIDDEN[word]?.[k] ? <Wave key={k}>{ch}</Wave> : ch))
 
-// Wetzel → Marzal, avec ses propres lettres, l'une après l'autre : le W se retourne de haut en bas (un M), les e
-// et le z font un demi-tour (les e donnent ə, comme un a ; le z reste un z), le l ne bouge pas, et le t bascule
-// pour montrer un r au dos (lui seul n'a pas d'équivalent)
-const MORPHS: Record<string, true> = { Wetzel: true }
-const MOVES: Record<string, string> = { W: 'rg-m-flip', e: 'rg-m-spin', z: 'rg-m-spin', t: 'rg-m-card' }
-const morphOf = (word: string) =>
-  [...word].map((ch, k) => {
-    const move = MOVES[ch]
-    if (!move) return ch
-    return (
-      <span key={k} className={`rg-m ${move}`} style={{ '--k': k, '--r': word.length - 1 - k }}>
-        {move === 'rg-m-card' ? (
-          <>
-            <span className="rg-m-front">{ch}</span>
-            <span className="rg-m-back">r</span>
-          </>
-        ) : (
-          ch
-        )}
-      </span>
-    )
-  })
-
 // Les anagrammes (voir anagrams.ts) : au changement, chaque lettre part de là où elle était et glisse jusqu'à sa
 // nouvelle place, l'une après l'autre (elle change de ligne, donc de police et de taille, si elle le doit).
 // Pendant ce temps, et sur une anagramme, chaque lettre est une boîte à part ; au repos sur le nom, on revient au
@@ -96,11 +72,10 @@ function measure(root: HTMLElement): Places {
       for (const el of boxes) places.set(el.dataset.l!, { x: el.getBoundingClientRect().left, base, fs })
       continue
     }
-    // le nom, en texte : lettre par lettre (sans le r caché au dos du t de Wetzel)
+    // le nom, en texte : lettre par lettre
     const walk = document.createTreeWalker(word, NodeFilter.SHOW_TEXT)
     let k = 0
     for (let node = walk.nextNode(); node; node = walk.nextNode()) {
-      if (node.parentElement?.closest('.rg-m-back')) continue
       for (let i = 0; i < (node.textContent ?? '').length; i++, k++) {
         range.setStart(node, i)
         range.setEnd(node, i + 1)
@@ -211,9 +186,7 @@ export default function Signature({ words, start, ref }: SignatureProps) {
                       {l.ch}
                     </span>
                   ))
-                : MORPHS[word]
-                  ? morphOf(word)
-                  : lettersOf(word)}
+                : lettersOf(word)}
               {/* repère de la ligne de base (pour placer les lettres qui voyagent) */}
               <i className="rg-base" />
             </span>
