@@ -4,7 +4,8 @@ import { VILLAGE } from './village'
 // Murmuration : un vol d'étourneaux, dessiné en caractères sur toute la page, au-dessus d'un village perché.
 // Au départ, le vol attend hors de la page, à gauche ; un clic n'importe où le fait arriver et voler (un autre
 // clic le fige, un autre encore le relance). Au bout d'une minute et quart, les oiseaux se posent, un par un, sur
-// les toits du village (et ceux qui n'y trouvent pas de place, sur le bas de la page).
+// les toits du village (et ceux qui n'y trouvent pas de place, sur le bas de la page). Un clic les fait redécoller,
+// et ils se reposent une minute plus tard.
 // On peut aussi le regarder image par image : en faisant défiler (deux doigts sur le trackpad, ou la molette),
 // le temps avance ou recule ; avec les flèches ← →, une image à la fois.
 //
@@ -29,6 +30,8 @@ const SIGNS = ['.', 'v', 'w', 'W', 'M']
 const FROM = [1, 2, 4, 6, 9]
 // le signe pour d oiseaux (son rang dans SIGNS), pour d de 0 à 15 (au-delà : M)
 const LEVEL = Array.from({ length: 16 }, (_, d) => FROM.filter((f) => d >= f).length - 1)
+// le signe des oiseaux posés, selon leur nombre dans la case (ils sont serrés : il en faut plus pour foncer)
+const PERCH_LEVEL = Array.from({ length: 61 }, (_, p) => (p === 0 ? -1 : p < 6 ? 1 : p < 16 ? 2 : p < 34 ? 3 : 4))
 const layers = SIGNS.map((_, k) => {
   const layer = document.createElement('pre')
   layer.className = `mm-layer mm-l${k}`
@@ -43,6 +46,25 @@ const ARRIVE = 12
 const LAND_AT = 75
 const LAND_SPREAD = 14
 const LAND_TIME = 5
+// une fois posés, un clic les fait redécoller (étalés sur quelques secondes) ; ils se reposent une minute après
+const LIFT_TIME = 3
+const FLY_AGAIN = 60
+// les instants (en secondes de vol) où on les a fait redécoller
+let lifts: number[] = []
+// où en est le vol à l'instant clock : depuis quand ils sont repartis (ou null), et quand ils se poseront
+function cycle(clock: number) {
+  let landAt = LAND_AT
+  let liftAt: number | null = null
+  for (const at of lifts) {
+    if (at <= clock && at >= landAt + LAND_SPREAD + LAND_TIME) {
+      liftAt = at
+      landAt = at + FLY_AGAIN
+    }
+  }
+  return { landAt, liftAt }
+}
+// tous posés ?
+const landed = (clock: number) => clock >= cycle(clock).landAt + LAND_SPREAD + LAND_TIME
 // le plus grand retard d'un oiseau sur ceux de devant (en temps du vol)
 const MAX_LAG = 1.6
 // (les retards sont rangés en quelques paliers : la pose de la nappe n'est calculée qu'une fois par palier)
@@ -93,7 +115,7 @@ function resize() {
   skyTop = innerHeight - rows * cellH
   sky.style.top = `${skyTop}px`
   density = new Float32Array(cols * rows)
-  perched = new Uint8Array(cols * rows)
+  perched = new Uint16Array(cols * rows)
   // le village, sur la même grille que le ciel, en bas à droite (pour que les oiseaux se posent pile sur les toits)
   villageCol = cols - VILLAGE_W - Math.round(Math.min(32, Math.max(16, innerWidth * 0.024)) / cellW)
   villageRow = rows - VILLAGE_LINES.length
@@ -104,7 +126,7 @@ function resize() {
 
 // ——— Où se poser : sur les toits du village (les « _ » qui n'ont rien au-dessus d'eux) et la pointe du clocher,
 // et, pour ceux qui n'y trouvent pas de place, sur le bas de la page, à gauche du village ———
-let perched = new Uint8Array(0)
+let perched = new Uint16Array(0)
 // la place de chaque oiseau : sa case dans le ciel (colonne, ligne)
 const perchCol = new Int16Array(COUNT)
 const perchRow = new Int16Array(COUNT)
@@ -136,16 +158,12 @@ function perches() {
   const ground: [number, number][] = []
   const end = villageCol - 2
   for (let col = 1; col < end; col++) ground.push([col, rows - 1])
-  // un oiseau par toit, deux pour les plus chanceux ; les autres sur le sol. Chacun va vers la place la plus
-  // proche de sa position dans le nuage (de gauche à droite)
+  // les oiseaux se répartissent sur toutes les places, autant sur chacune ; chacun va vers une place du même côté
+  // que lui dans le nuage (de gauche à droite)
   const order = Array.from({ length: COUNT }, (_, i) => i).sort((a, b) => u[a] - u[b])
-  const onRoofs = Math.min(COUNT, roofs.length * 2)
-  const roofsByX = [...roofs, ...roofs].sort((a, b) => a[0] - b[0])
+  const places = [...ground, ...roofs].sort((a, b) => a[0] - b[0])
   order.forEach((bird, k) => {
-    const place =
-      k < onRoofs
-        ? roofsByX[Math.floor((k / onRoofs) * roofsByX.length)]
-        : ground[Math.floor(((k - onRoofs) / Math.max(1, COUNT - onRoofs)) * ground.length)] ?? roofs[0]
+    const place = places[Math.floor((k / COUNT) * places.length)]
     perchCol[bird] = place[0]
     perchRow[bird] = place[1]
   })
@@ -214,11 +232,18 @@ function draw(t: number, arrival: number) {
 
   density.fill(0)
   perched.fill(0)
+  const { landAt, liftAt } = cycle(arrival)
+  const clamp = (x: number) => Math.min(1, Math.max(0, x))
   for (let i = 0; i < COUNT; i++) {
-    // l'atterrissage : 0 en vol, 1 posé
-    const land = Math.min(1, Math.max(0, (arrival - LAND_AT - settle[i]) / LAND_TIME))
+    // posé ou non : 0 en vol, 1 posé (en train de se poser, ou de redécoller : entre les deux)
+    const land =
+      arrival >= landAt
+        ? clamp((arrival - landAt - settle[i]) / LAND_TIME)
+        : liftAt !== null
+          ? 1 - clamp((arrival - liftAt - settle[i] * 0.25) / LIFT_TIME)
+          : 0
     if (land === 1) {
-      perched[perchRow[i] * cols + perchCol[i]] = 1
+      perched[perchRow[i] * cols + perchCol[i]]++
       continue
     }
     const P = poses[lag[i]]
@@ -272,9 +297,10 @@ function draw(t: number, arrival: number) {
   for (let r = 0; r < rows; r++) {
     const lines = SIGNS.map(() => '')
     for (let c = 0; c < cols; c++) {
-      // (un oiseau posé : un v, sur son toit)
+      // les oiseaux posés comptent aussi (serrés sur les toits : un signe plus lourd pour autant d'oiseaux)
       const d = density[r * cols + c]
-      const level = d === 0 && perched[r * cols + c] ? 1 : LEVEL[Math.min(15, d)]
+      const p = perched[r * cols + c]
+      const level = Math.max(LEVEL[Math.min(15, d)], p ? PERCH_LEVEL[Math.min(PERCH_LEVEL.length - 1, p)] : -1)
       for (let k = 0; k < SIGNS.length; k++) lines[k] += k === level ? SIGNS[k] : ' '
     }
     for (let k = 0; k < SIGNS.length; k++) texts[k] += lines[k] + '\n'
@@ -312,12 +338,46 @@ function scrub(seconds: number) {
   clock = Math.max(0, clock + seconds)
   show()
 }
-addEventListener('click', toggle)
+// un clic : voler ou se figer ; quand tous sont posés, les faire redécoller
+function press() {
+  if (landed(clock)) {
+    lifts = [...lifts.filter((at) => at < clock), clock]
+    if (!flying) toggle()
+  } else toggle()
+}
+addEventListener('click', press)
+// les flèches à l'écran : un appui, une image ; en restant appuyé, une image à chaque rafraîchissement
+document.querySelectorAll<HTMLButtonElement>('.mm-steps button').forEach((button) => {
+  const dir = Number(button.dataset.step)
+  let held = 0
+  const repeat = () => {
+    scrub(dir / 60)
+    held = requestAnimationFrame(repeat)
+  }
+  button.addEventListener('pointerdown', (e) => {
+    e.preventDefault()
+    scrub(dir / 60)
+    // (la répétition commence après un court instant : un simple appui reste une seule image)
+    held = window.setTimeout(() => (held = requestAnimationFrame(repeat)), 300)
+  })
+  const stop = () => {
+    clearTimeout(held)
+    cancelAnimationFrame(held)
+  }
+  button.addEventListener('pointerup', stop)
+  button.addEventListener('pointerleave', stop)
+  // (le clic ne fait pas voler les oiseaux ; au clavier, Entrée ou Espace sur la flèche : une image)
+  button.addEventListener('click', (e) => {
+    e.stopPropagation()
+    if (e.detail === 0) scrub(dir / 60)
+  })
+  button.addEventListener('keydown', (e) => e.stopPropagation())
+})
 addEventListener('keydown', (e) => {
   // Espace ou Entrée : voler ou se figer
   if (e.key === ' ' || e.key === 'Enter') {
     e.preventDefault()
-    toggle()
+    press()
   }
   // ← → : une image en arrière ou en avant (avec Maj : une demi-seconde)
   if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
