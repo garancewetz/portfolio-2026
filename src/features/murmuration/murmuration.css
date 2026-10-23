@@ -1,6 +1,11 @@
-/* ——— Murmuration : le ciel en caractères sur toute la page, le village perché en bas à droite. Sur le papier du
-   site, en encre ; rien d'autre. ——— */
+/* ——— Murmuration : le ciel en caractères sur toute la page, le village perché en bas à droite. En encre, sur une
+   page blanche ; rien d'autre. ——— */
 @import '@/styles/base.css';
+
+/* (une page blanche, rien d'autre : du blanc pur, pas le papier du site) */
+:root {
+  --bg: #fff;
+}
 
 html,
 body {
