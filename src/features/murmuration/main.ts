@@ -5,7 +5,8 @@ import { VILLAGE } from './village'
 // Au départ, les oiseaux sont posés sur les toits du village et sur le bas de la page. Un clic n'importe où les
 // fait s'envoler : ils font leur murmuration, puis, au bout de quarante secondes, se reposent un par un. Un autre
 // clic les fait repartir, et ainsi de suite (en plein vol, un clic fige le vol, un autre le relance).
-// Posés, ils s'envolent quand la souris passe sur eux, font un petit tour et reviennent à leur place.
+// Posés, ils s'envolent quand la souris passe sur eux, font un petit tour et reviennent à leur place ; et de
+// temps en temps, un ou deux s'envolent tout seuls.
 // En plein vol, la souris fait comme un faucon : le nuage s'écarte de chaque côté de sa route, une vague
 // d'agitation le traverse, puis il se referme.
 // On peut aussi le regarder image par image : en faisant défiler (deux doigts sur le trackpad, ou la molette),
@@ -324,7 +325,8 @@ function draw(t: number, now: number) {
       const py = homeY - lift * Math.sin(Math.PI * Math.pow(f, 0.7))
       const c = Math.floor(px / cellW)
       const r = Math.floor((py - skyTop) / cellH)
-      if (c >= 0 && c < cols && r >= 0 && r < rows) density[r * cols + c]++
+      // (il compte double : seul dans sa case, c'est un v bien visible, pas un point pâle)
+      if (c >= 0 && c < cols && r >= 0 && r < rows) density[r * cols + c] += 2
       continue
     }
     const P = poses[lag[i]]
@@ -445,6 +447,26 @@ function wake() {
   lastMove = performance.now()
   if (!flying && !idle) idle = requestAnimationFrame(idleFrame)
 }
+// des oiseaux qui ne tiennent pas en place : de temps en temps, quand tous sont posés, un ou deux s'envolent
+// d'un toit tout seuls, font leur petit tour et se reposent (comme dans un vrai dortoir d'étourneaux ; et ça dit,
+// sans un mot, qu'ils peuvent s'envoler)
+function restless() {
+  if (!flying && landed(clock) && cols) {
+    const seconds = performance.now() / 1000
+    const n = Math.random() < 0.4 ? 2 : 1
+    for (let k = 0, tries = 0; k < n && tries < 50; tries++) {
+      const i = Math.floor(Math.random() * COUNT)
+      // (sur un toit, pas sur le bas de la page ; et pas déjà en l'air)
+      if (perchRow[i] >= rows - 1 || seconds - startled[i] < STARTLE_TIME * 1.5) continue
+      startled[i] = seconds + k * 0.2
+      startledSide[i] = Math.random() < 0.5 ? 1 : -1
+      k++
+    }
+    if (!idle) idle = requestAnimationFrame(idleFrame)
+  }
+  setTimeout(restless, 4000 + Math.random() * 6000)
+}
+setTimeout(restless, 3000)
 function idleFrame() {
   idle = 0
   if (flying) return
