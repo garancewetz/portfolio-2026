@@ -91,4 +91,16 @@ export const projects: Project[] = [
     demo: 'https://garancewetz.dev/journey',
     code: 'https://github.com/garancewetz/wwwetzel-journey',
   },
+  {
+    id: 'murmuration',
+    title: 'Murmuration',
+    short: 'Un vol d’étourneaux en ASCII, au-dessus d’un village des Pyrénées. Au clic, ils s’envolent.',
+    kind: 'Animation ASCII',
+    stack: ['TypeScript'],
+    image: '/shots/murmuration.webp', // capture de la page, en plein vol
+    alt: 'Sur fond papier, un grand nuage d’oiseaux dessiné en caractères (des points, des v, des W plus foncés là où ils se croisent) au-dessus d’un village perché, son clocher et ses maisons en gradins, en bas à droite.',
+    // Une page de ce site, à l'adresse /murmuration
+    demo: 'https://garancewetz.dev/murmuration',
+    code: 'https://github.com/garancewetz/portfolio-2026/tree/main/src/features/murmuration',
+  },
 ]
