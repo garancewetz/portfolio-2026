@@ -5,7 +5,8 @@ import { VILLAGE } from './village'
 // Au départ, les oiseaux sont posés sur les toits du village et sur le bas de la page. Un clic n'importe où les
 // fait s'envoler : ils font leur murmuration, puis, au bout de quarante secondes, se reposent un par un. Un autre
 // clic les fait repartir, et ainsi de suite (en plein vol, un clic fige le vol, un autre le relance).
-// En plein vol, la souris fait fuir les oiseaux comme un faucon : le nuage s'ouvre devant elle, puis se referme.
+// En plein vol, la souris fait comme un faucon : le nuage s'écarte de chaque côté de sa route, une vague
+// d'agitation le traverse, puis il se referme.
 // On peut aussi le regarder image par image : en faisant défiler (deux doigts sur le trackpad, ou la molette),
 // le temps avance ou recule ; avec les flèches ← →, une image à la fois.
 //
@@ -80,7 +81,19 @@ const ovy = new Float32Array(COUNT)
 // la souris (loin de tout quand elle n'est pas sur la page), et la distance à laquelle les oiseaux la fuient
 let mouseX = -1e5
 let mouseY = -1e5
-const FEAR = 120
+const FEAR = 110
+// son mouvement, d'une image à l'autre (lissé) : les oiseaux réagissent à un faucon qui fonce, pas à un faucon
+// immobile (ils s'y habituent)
+let lastX = -1e5
+let lastY = -1e5
+let moveX = 0
+let moveY = 0
+// les vagues d'agitation : chaque fois que la souris fend le nuage, une vague part de l'endroit touché (sa place
+// dans la nappe : u, v) et traverse tout le nuage en s'affaiblissant
+const WAVE_SPEED = 0.8 // (en largeur de nappe par seconde)
+const WAVE_LIFE = 3.5
+let waves: { u: number; v: number; at: number }[] = []
+let lastWave = 0
 addEventListener('pointermove', (e) => {
   mouseX = e.clientX
   mouseY = e.clientY
@@ -246,6 +259,23 @@ function draw(t: number, now: number) {
   density.fill(0)
   perched.fill(0)
   const { landAt, liftAt } = cycle(now)
+  // la souris : sa vitesse sur cette image, et la direction de côté (perpendiculaire à sa route)
+  const seconds = performance.now() / 1000
+  if (flying) {
+    const jump = Math.abs(mouseX - lastX) > 300 || Math.abs(mouseY - lastY) > 300
+    moveX = jump ? 0 : moveX * 0.6 + (mouseX - lastX) * 0.4
+    moveY = jump ? 0 : moveY * 0.6 + (mouseY - lastY) * 0.4
+    lastX = mouseX
+    lastY = mouseY
+  }
+  const speed = Math.hypot(moveX, moveY)
+  const sideX = speed ? -moveY / speed : 0
+  const sideY = speed ? moveX / speed : 0
+  // (plus elle va vite, plus elle fait peur, jusqu'à une limite)
+  const fright = Math.min(1, speed / 25)
+  waves = waves.filter((w) => seconds - w.at < WAVE_LIFE)
+  let touched = -1
+  let touchedD2 = FEAR * FEAR
   const clamp = (x: number) => Math.min(1, Math.max(0, x))
   for (let i = 0; i < COUNT; i++) {
     // posé ou non : 0 en vol, 1 posé (en train de se poser, ou de redécoller : entre les deux)
@@ -269,6 +299,13 @@ function draw(t: number, now: number) {
     // les ondulations qui parcourent la nappe
     let Z =
       R * (0.3 * Math.sin(2.6 * a + tt * 0.9) + 0.22 * Math.sin(2.1 * b - tt * 0.7 + 1) + 0.12 * Math.sin(4 * (a + b) + tt * 1.3))
+    // les vagues d'agitation lancées par la souris : un anneau qui s'élargit dans la nappe ; là où il passe, les
+    // oiseaux plongent un instant (la nappe se plie : une bande plus sombre traverse le nuage)
+    for (const w of waves) {
+      const age = seconds - w.at
+      const ring = Math.hypot(a - w.u, b - w.v) - age * WAVE_SPEED
+      if (ring > -0.3 && ring < 0.3) Z += R * 0.22 * Math.exp(-ring * ring * 60) * (1 - age / WAVE_LIFE)
+    }
     // le passage du faucon : les oiseaux s'écartent, la nappe se creuse
     const dw = a - P.wave
     if (dw > -0.5 && dw < 0.5) {
@@ -293,21 +330,31 @@ function draw(t: number, now: number) {
     // vue de loin, de face : on garde x et y
     let px = P.cx + x3
     let py = P.cy + y2
-    // la souris, comme un faucon : les oiseaux proches s'en écartent (plus vite s'ils sont tout près), puis
-    // reviennent doucement à leur place dans le nuage, qui se referme
-    if (flying) {
+    // la souris, comme un faucon qui fend le nuage : les oiseaux proches s'écartent de chaque côté de sa route
+    // (comme l'eau devant une étrave), d'autant plus qu'elle va vite ; puis ils reviennent doucement à leur
+    // place, et le nuage se referme derrière elle
+    if (flying && land === 0) {
       const dx = px + ox[i] - mouseX
       const dy = py + oy[i] - mouseY
       const d2 = dx * dx + dy * dy
       if (d2 < FEAR * FEAR) {
+        if (d2 < touchedD2) {
+          touchedD2 = d2
+          touched = i
+        }
         const d = Math.sqrt(d2) || 1
-        const f = (1 - d / FEAR) ** 2 * 3
-        ovx[i] += (dx / d) * f
-        ovy[i] += (dy / d) * f
+        const near = (1 - d / FEAR) ** 2
+        // de quel côté de sa route est l'oiseau : il file de ce côté-là (et un peu devant lui, s'il est devant)
+        const side = dx * sideX + dy * sideY >= 0 ? 1 : -1
+        const f = near * fright * 2.2
+        ovx[i] += sideX * side * f + (dx / d) * near * 0.25 * fright
+        ovy[i] += sideY * side * f + (dy / d) * near * 0.25 * fright
       }
       // (l'élan retombe, et le ressort ramène l'oiseau vers sa place)
-      ovx[i] = (ovx[i] - ox[i] * 0.004) * 0.92
-      ovy[i] = (ovy[i] - oy[i] * 0.004) * 0.92
+      // (chacun à son rythme : le nuage ne se referme pas d'un bloc)
+      const pull = 0.002 + 0.003 * ((seed[i] * 7.3) % 1)
+      ovx[i] = (ovx[i] - ox[i] * pull) * 0.93
+      ovy[i] = (ovy[i] - oy[i] * pull) * 0.93
       ox[i] += ovx[i]
       oy[i] += ovy[i]
     }
@@ -323,6 +370,12 @@ function draw(t: number, now: number) {
     const c = Math.floor(px / cellW)
     const r = Math.floor((py - skyTop) / cellH)
     if (c >= 0 && c < cols && r >= 0 && r < rows) density[r * cols + c]++
+  }
+
+  // la souris a fendu le nuage (assez vite) : une vague d'agitation part de l'oiseau le plus proche
+  if (touched >= 0 && fright > 0.3 && seconds - lastWave > 0.6) {
+    waves.push({ u: u[touched], v: v[touched], at: seconds })
+    lastWave = seconds
   }
 
   // chaque couche ne garde que ses signes (des espaces ailleurs)
