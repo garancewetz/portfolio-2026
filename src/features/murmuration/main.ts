@@ -16,7 +16,7 @@ const sky = document.querySelector<HTMLDivElement>('.mm-sky')!
 document.querySelector<HTMLPreElement>('.mm-village')!.textContent = VILLAGE
 
 // (le vol avance plus lentement que l'horloge : une murmuration flotte, elle ne file pas)
-const SLOW = 0.4
+const SLOW = 0.5
 
 // un oiseau seul est un point, à peine visible ; plus il y en a dans une case, plus le signe s'épaissit et plus
 // l'encre fonce (chaque signe a sa couche, avec sa couleur : voir murmuration.css)
@@ -95,8 +95,8 @@ function pose(t: number, arrival: number, W: number, H: number, R: number): Pose
   // le centre du vol dérive dans le haut du ciel, au-dessus du village
   let cx = W * (0.46 + 0.18 * Math.sin(t * 0.05) + 0.07 * Math.sin(t * 0.137 + 1) + 0.03 * Math.sin(t * 0.31))
   // l'arrivée : au départ, le vol attend hors de la page, à gauche (seuls quelques oiseaux isolés dépassent) ; au
-  // premier clic, il entre lentement et rejoint sa route en ralentissant (vingt-cinq secondes)
-  const e = 1 - Math.pow(1 - Math.min(1, Math.max(0, arrival) / 25), 3)
+  // premier clic, il entre et rejoint sa route en ralentissant (douze secondes)
+  const e = 1 - Math.pow(1 - Math.min(1, Math.max(0, arrival) / 12), 3)
   cx = -R * 1.35 + (cx + R * 1.35) * e
   const cy = H * (0.36 + 0.08 * Math.sin(t * 0.07 + 1) + 0.04 * Math.sin(t * 0.193) + 0.02 * Math.sin(t * 0.41 + 2))
   // la nappe tourne lentement sur elle-même (lacet, tangage, roulis)
