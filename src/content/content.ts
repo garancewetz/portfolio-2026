@@ -12,7 +12,7 @@ export const experience: string[] = ['Okeiro', 'Colorz', 'Uptoo']
 
 // Les projets (une carte chacun). demo : lien du site s'il est en ligne ; sinon la carte mène à code.
 // wip : en cours, bientôt en ligne. short : la phrase qui dit ce que c'est, écrite par Garance (dans la fiche, et sur
-// mobile). year, kind, stack : les détails, affichés dans la fiche du projet (clic sur une carte).
+// mobile). kind, stack : les détails, affichés dans la fiche du projet (clic sur une carte).
 // image : capture 16/10 dans public/shots (WebP, 1200 px de large). phone : dans la fiche, un écran de téléphone
 // à côté (voir types.ts).
 export const projects: Project[] = [
@@ -21,7 +21,6 @@ export const projects: Project[] = [
     title: 'Signe astronomique',
     short:
       'Une application qui permet de visualiser l’aspect du ciel à la naissance, et donne le réel signe astrologique.',
-    year: '2026',
     kind: 'Application web 3D',
     stack: ['TypeScript', 'React', 'Cesium', 'SGP4'],
     image: '/shots/signe.webp',
@@ -39,7 +38,6 @@ export const projects: Project[] = [
     title: 'Synapso',
     short:
       'Une application de rééducation post-AVC, ou de rééducation tout court, pensée d’abord pour être simple d’utilisation.',
-    year: '2026',
     kind: 'Application mobile (PWA)',
     stack: ['Next.js', 'TypeScript', 'Prisma'],
     image: '/shots/synapso.webp', // capture faite avec un compte et des données de démo
@@ -58,7 +56,6 @@ export const projects: Project[] = [
     wip: true,
     title: 'Trans-trame',
     short: 'Une data visualisation des textes intersectionnels, pour rendre visibles les évolutions et les influences.',
-    year: '2025',
     kind: 'Visualisation de données',
     stack: ['React', 'TypeScript', 'Supabase'],
     image: '/shots/trame.webp', // capture faite avec des données de démo
@@ -70,7 +67,6 @@ export const projects: Project[] = [
     id: 'mosaique',
     title: 'Mosaïque',
     short: 'Une extension qui permet d’avoir un accès simplifié et facile d’utilisation aux favoris.',
-    year: '2025',
     kind: 'Extension Chrome',
     stack: ['React', 'TypeScript', 'API Chrome'],
     image: '/shots/mosaique.webp', // capture de la fiche Chrome Web Store
@@ -82,7 +78,6 @@ export const projects: Project[] = [
     id: 'journey',
     title: 'wwwetzel journey',
     short: 'Mon CV en mini-jeu pixel art.',
-    year: '2025',
     kind: 'Mini-jeu',
     stack: ['Next.js', 'TypeScript'],
     image: '/shots/journey-jeu.webp', // la vraie vue du jeu, en ligne : tout est noir, sauf autour du personnage

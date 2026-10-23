@@ -137,10 +137,6 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
               <dd>{p.kind}</dd>
             </div>
             <div>
-              <dt>Année</dt>
-              <dd>{p.year}</dd>
-            </div>
-            <div>
               <dt>Technos</dt>
               <dd>{p.stack.join(' · ')}</dd>
             </div>

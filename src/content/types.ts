@@ -12,7 +12,6 @@ export interface Project {
   title: string
   /** la phrase qui dit ce que c'est (dans la fiche, et sur mobile) */
   short: string
-  year: string
   /** le type de projet (« Application web 3D »…) */
   kind: string
   stack: string[]
