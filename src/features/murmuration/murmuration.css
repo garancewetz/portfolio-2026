@@ -2,12 +2,9 @@
    ciel bleu pâle ; rien d'autre. ——— */
 @import '@/styles/base.css';
 
-/* le ciel : un bleu léger en haut, qui pâlit vers l'horizon (le bas de la page), comme un vrai ciel */
+/* le ciel : un bleu pâle, uni */
 :root {
-  --bg: #e9f0f5;
-}
-html {
-  background: linear-gradient(to bottom, #c9dbe8, #e9f0f5 70%, #f3f6f8);
+  --bg: #dde8ef;
 }
 
 html,

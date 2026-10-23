@@ -9,11 +9,12 @@ import { projects } from '@/content/content'
 // de l'écran : coupées, elles disent qu'il y a une suite, on fait défiler. En faisant défiler, elles se rangent
 // en ligne.
 // La grille a toujours cinq colonnes : les cinq premiers projets sur la première ligne ; les suivants dessous, sur
-// une seconde ligne, en partant de la dernière colonne (ils arrivent après que la première ligne s'est rangée).
+// une seconde ligne, centrés sous elle (ils arrivent après que la première ligne s'est rangée).
 export const COLS = 5
 export const ROWS = Math.ceil(projects.length / COLS)
+const NEXT = projects.length - COLS // (combien sur la seconde ligne)
 export const cardPlace = (i: number) => ({
-  col: i < COLS ? i + 1 : COLS - (i % COLS),
+  col: i < COLS ? i + 1 : Math.floor((COLS - NEXT) / 2) + 1 + (i - COLS),
   row: Math.floor(i / COLS),
 })
 const MID = (COLS - 1) / 2
