@@ -170,6 +170,12 @@
 .rg-sheet-shot {
   grid-column: 1 / span calc(var(--n) - 2);
 }
+/* la capture, quand elle mène au site : un lien sans soulignement, la main au survol */
+.rg-sheet-shot > a {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
 .rg-sheet-shot .shot {
   /* comme sur les cartes : sans filet, coins à peine arrondis (la même image, en plus grand) */
   border: 0;

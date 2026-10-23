@@ -118,7 +118,14 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
 
       <div className="rg-sheet-in">
         <div className="rg-sheet-shot">
-          <Shot project={p} eager sheet />
+          {/* la capture mène au site (s'il est en ligne), comme le lien sous la description */}
+          {p.demo ? (
+            <a href={p.demo} target="_blank" rel="noreferrer" aria-label={`${p.title} : voir le site (nouvel onglet)`}>
+              <Shot project={p} eager sheet />
+            </a>
+          ) : (
+            <Shot project={p} eager sheet />
+          )}
         </div>
         <div className="rg-sheet-text">
           <h2 id="rg-sheet-title" className="rg-sheet-title">
