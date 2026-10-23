@@ -5,6 +5,7 @@ import Ripple from '@/shared/Ripple'
 import Guides from '@/shared/Guides'
 import ExternalLink from '@/shared/ExternalLink'
 import ProjectStatus from '@/shared/ProjectStatus'
+import Flipbook from './Flipbook'
 import { projectNumber as num } from '@/shared/projectNumber'
 import type { Project } from '@/content/types'
 import './ProjectSheet.css'
@@ -131,6 +132,8 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
           )}
           {/* en bas, au niveau du bord bas de la capture : la fiche technique, qu'on consulte (chaque information
               avec son étiquette) */}
+          {/* Totoro et un oiseau, debout sur le filet de la fiche technique */}
+          <Flipbook page={index} pages={projects.length} />
           <dl className="rg-sheet-facts">
             <div>
               <dt>Type</dt>
