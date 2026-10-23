@@ -12,12 +12,17 @@ interface ProjectCardProps {
   index: number
   /** hauteur de départ (vh) */
   start: number
+  /** sa colonne (de 1 à 5) et sa ligne (0 : la première) */
+  col: number
+  row: number
   onOpen: (index: number) => void
 }
 
-export default function ProjectCard({ project: p, index: i, start, onOpen }: ProjectCardProps) {
+export default function ProjectCard({ project: p, index: i, start, col, row, onOpen }: ProjectCardProps) {
   return (
-    <div className="rg-col" style={{ '--o': `${start}vh` }}>
+    // (toutes les colonnes sur la même rangée de la grille : une carte de la seconde ligne se colle plus bas, sous
+    // celle de la première)
+    <div className="rg-col" style={{ '--o': `${start}vh`, '--row': row, gridColumn: col, gridRow: 1 }}>
       <div className="rg-card" data-i={i} style={{ '--k': i /* ordre sur mobile */ }}>
         <button
           type="button"

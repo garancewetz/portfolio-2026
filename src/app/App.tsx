@@ -11,16 +11,16 @@ import Fireworks from '@/features/fireworks/Fireworks'
 import PageGuides from './layout/PageGuides'
 import ScrollHint from './layout/ScrollHint'
 import Footer from './layout/Footer'
-import { NAME, cardStart, fieldHeight, hintCol, nameStart } from './timeline'
+import { COLS, NAME, ROWS, cardPlace, cardStart, fieldHeight, hintCol, nameStart } from './timeline'
 import { useStickyLayout } from './useStickyLayout'
 import './App.css'
 
 // La page. D'abord les projets : les cartes montent une à une et se rangent sur une ligne, une colonne par
-// projet (position: sticky), sur la grille CSS en fond (colonnes, gap, rangée), comme dans les outils du
+// projet (position: sticky ; au-delà de cinq, une seconde ligne), sur la grille CSS en fond (colonnes, gap, rangée), comme dans les outils du
 // navigateur. Ensuite la signature : le nom, en très grand. Une fois tout rangé, la page continue juste ce qu'il
 // faut : la grille remonte d'un bloc, et le pied de page arrive dessous. Un clic sur une carte ouvre sa fiche.
 export default function App() {
-  const N = projects.length
+  const N = COLS
   // la mise en place au défilement ; phase : 'scroll' (les projets montent) → 'done' (tous rangés)
   const { root, top, hint, phase } = useStickyLayout()
   const sheet = useSheetRoute(projects, root)
@@ -36,7 +36,7 @@ export default function App() {
   }
 
   return (
-    <main className={`rg is-${phase}`} style={{ '--n': N, '--hint-col': hintCol }} ref={root}>
+    <main className={`rg is-${phase}`} style={{ '--n': N, '--rows': ROWS, '--hint-col': hintCol }} ref={root}>
       {/* l'ondulation au survol des captures (seulement l'image, pas toute la carte) */}
       <Ripple root={root} item=".rg-card .shot" />
 
@@ -54,7 +54,7 @@ export default function App() {
 
       <section className="rg-field" aria-label="Projets" style={{ '--field-h': fieldHeight }}>
         {projects.map((p, i) => (
-          <ProjectCard key={p.id} project={p} index={i} start={cardStart(i)} onOpen={sheet.open} />
+          <ProjectCard key={p.id} project={p} index={i} start={cardStart(i)} {...cardPlace(i)} onOpen={sheet.open} />
         ))}
         <Signature words={NAME} start={nameStart} ref={signature} />
         {/* (il se pose avec le dernier mot du nom : avant, il n'y a rien à mélanger) */}

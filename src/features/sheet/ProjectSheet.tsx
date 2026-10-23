@@ -12,7 +12,9 @@ import './ProjectSheet.css'
 
 // L'adresse d'un lien, sans « https:// » ni chemin (pour l'afficher)
 // Le domaine du lien ; pour une page de ce site (le jeu sous /journey), le chemin aussi
+// (une page de ce site, en lien relatif comme /murmuration/ : affichée avec le domaine)
 const host = (url: string) => {
+  if (url.startsWith('/')) return `garancewetz.dev${url.replace(/\/$/, '')}`
   const [domain, ...path] = url
     .replace(/^https?:\/\//, '')
     .replace(/\/$/, '')
