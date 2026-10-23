@@ -3,7 +3,7 @@ import { VILLAGE } from './village'
 
 // Murmuration : un vol d'étourneaux, dessiné en caractères sur toute la page, au-dessus d'un village perché.
 // Au départ, les oiseaux sont posés sur les toits du village et sur le bas de la page. Un clic n'importe où les
-// fait s'envoler : ils font leur murmuration, puis, au bout de quarante secondes, se reposent un par un. Un autre
+// fait s'envoler : ils font leur murmuration, puis, au bout de vingt-cinq secondes, se reposent un par un. Un autre
 // clic les fait repartir, et ainsi de suite (en plein vol, un clic fige le vol, un autre le relance).
 // Posés, ils s'envolent quand la souris passe sur eux, font un petit tour et reviennent à leur place ; et de
 // temps en temps, un ou deux s'envolent tout seuls.
@@ -50,7 +50,7 @@ const COUNT = 6000
 // secondes, chacun mettant LIFT_TIME secondes à rejoindre le nuage) ; FLY secondes après, ils se reposent (étalés
 // sur LAND_SPREAD secondes, chacun mettant LAND_TIME secondes à descendre jusqu'à sa place) ; et ainsi de suite
 const LIFT_TIME = 2.5
-const FLY = 40
+const FLY = 25
 const LAND_SPREAD = 8
 const LAND_TIME = 3.5
 // les instants (en secondes de vol) où on les a fait s'envoler
