@@ -122,7 +122,16 @@ document.documentElement.addEventListener('pointerleave', () => {
 })
 // (au doigt : quand il se lève, il n'est plus sur la page ; sinon, les oiseaux revenus à leur place sous le
 // dernier endroit touché s'envoleraient sans fin)
+// un appui (souris ou doigt) qui se relève sans avoir glissé : c'est un clic (au doigt, sur un téléphone, le « clic »
+// du navigateur n'arrive pas toujours sur une page sans lien ni bouton)
+let downX = 0
+let downY = 0
+addEventListener('pointerdown', (e) => {
+  downX = e.clientX
+  downY = e.clientY
+})
 addEventListener('pointerup', (e) => {
+  if (Math.hypot(e.clientX - downX, e.clientY - downY) < 12) press(e.clientX, e.clientY)
   if (e.pointerType !== 'mouse') mouseX = mouseY = -1e5
 })
 // les oiseaux posés qu'on dérange en passant la souris dessus : quand ils se sont envolés (en secondes, horloge
@@ -617,7 +626,6 @@ function press(x = (villageCol + VILLAGE_W / 2) * cellW, y = innerHeight) {
     if (!flying) toggle()
   } else if (!flying) toggle()
 }
-addEventListener('click', (e) => press(e.clientX, e.clientY))
 addEventListener('keydown', (e) => {
   // Espace ou Entrée : comme un clic
   if (e.key === ' ' || e.key === 'Enter') {
