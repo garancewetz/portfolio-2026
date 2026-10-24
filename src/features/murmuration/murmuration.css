@@ -6,7 +6,7 @@
    rose fluo en haut de la page, orange vif vers le bas (le dégradé est fixé à la fenêtre : un oiseau change de
    couleur selon sa hauteur) */
 :root {
-  --bg: #16132a;
+  --bg: #0d0b1c;
   color-scheme: dark;
   --sunset: linear-gradient(to bottom, #ff2d95, #ff5a6e 45%, #ff8a2a) fixed;
 }
