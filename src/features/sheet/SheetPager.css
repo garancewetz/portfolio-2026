@@ -1,0 +1,61 @@
+/* En bas : le projet précédent (à gauche), le suivant (à droite), par leur nom */
+.rg-sheet-pager {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--pad);
+  min-height: var(--pager-h);
+  padding: 0 var(--pad) var(--pad);
+}
+.rg-sheet-pager button {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+}
+.rg-sheet-pager button:last-child {
+  text-align: right;
+}
+.rg-pager-dir {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+.rg-pager-title {
+  font-family: var(--serif);
+  font-size: clamp(22px, 2.2vw, 30px);
+  line-height: 1.05;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  transition: text-decoration-color 0.2s ease;
+}
+/* le numéro de la carte, comme sur les cartes */
+.rg-pager-title span {
+  display: inline-block; /* (pas souligné avec le titre) */
+  margin-right: 6px;
+  font-family: var(--mono);
+  font-size: 12px;
+  vertical-align: 0.4em;
+  color: var(--muted);
+}
+.rg-sheet-pager button:is(:hover, :focus-visible) .rg-pager-dir {
+  color: var(--ink);
+}
+.rg-sheet-pager button:is(:hover, :focus-visible) .rg-pager-title {
+  text-decoration-color: currentColor;
+}
+@media (max-width: 900px) {
+  .rg-sheet-pager {
+    padding-top: 32px;
+  }
+}

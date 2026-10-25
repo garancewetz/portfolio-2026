@@ -45,6 +45,10 @@ src/
     sheet/useSheetRoute.ts     fiche ↔ adresse (#synapso), retour du navigateur
     sheet/morph.ts             transition carte ↔ fiche (View Transitions)
     signature/Signature        le nom en grand, et ses deux effets cachés
+    fireworks/                 le mode feu d'artifice : Fireworks (le spectacle), show + shells (étincelles),
+                               fluid + gl + shaders (halo liquide), salvos, stars
+    murmuration/               la page /murmuration : main (boucle, gestes), draw, flock, grid, perches,
+                               startle, pose
     abandoned/AbandonedBand    easter egg : les projets abandonnés en bandeau
     abandoned/GapMarker        son déclencheur, le repère « gap »
   shared/

@@ -9,6 +9,8 @@ import { projectNumber as num } from '@/shared/projectNumber'
 import type { Project } from '@/content/types'
 import Flipbook from './Flipbook'
 import './ProjectSheet.css'
+import './SheetBody.css'
+import './SheetPager.css'
 
 // L'adresse d'un lien, sans « https:// » ni chemin (pour l'afficher)
 // Le domaine du lien ; pour une page de ce site (le jeu sous /journey, ou un lien relatif comme /murmuration/),

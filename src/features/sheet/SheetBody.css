@@ -1,0 +1,150 @@
+/* ——— La fiche d'un projet : le contenu, calé sur les colonnes de la grille (la capture, puis le texte et la
+   fiche technique). Le cadre : ProjectSheet.css. ——— */
+/* le contenu, calé sur les colonnes de la grille */
+.rg-sheet-in {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  gap: var(--pad);
+  /* la rangée (capture et texte) au milieu de l'écran ; le texte aussi haut que la capture : il commence à son
+     bord haut et finit à son bord bas */
+  align-content: center;
+  align-items: stretch;
+  min-height: calc(100% - var(--pad) - var(--head-h) + 8px - var(--pager-h));
+  padding: 24px var(--pad) var(--pad);
+}
+.rg-sheet-shot {
+  grid-column: 1 / span calc(var(--n) - 2);
+}
+/* la capture, quand elle mène au site : un lien sans soulignement, la main au survol */
+.rg-sheet-shot > a {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+.rg-sheet-shot .shot {
+  /* comme sur les cartes : sans filet, coins à peine arrondis (la même image, en plus grand) */
+  border: 0;
+  border-radius: 4px;
+}
+/* grand écran : la fiche tient sur un écran, sans défiler. Sur un écran large et peu haut, la capture
+   (16/10) serait plus haute que la place entre le haut et le bas de la fiche : elle est limitée à cette
+   hauteur, et sa largeur suit. */
+@media (min-width: 901px) {
+  .rg-sheet {
+    /* la hauteur disponible pour la capture, entre le haut et le bas de la fiche */
+    --shot-max-h: calc(100dvh - 2 * var(--pad) - var(--head-h) + 8px - 24px - var(--pager-h));
+  }
+  .rg-sheet-shot .shot-frame {
+    width: min(100%, var(--shot-max-h) * 1.6);
+  }
+}
+.rg-sheet-text {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+  /* (tailles liées à la hauteur de l'écran : sur un écran plus bas, la capture est plus petite, et le texte
+     doit tenir à sa hauteur) */
+  --text-gap: clamp(9px, 1.45vh, 13px);
+  gap: var(--text-gap);
+  max-width: 34rem;
+}
+.rg-sheet-title {
+  /* (droit, comme les titres des cartes) */
+  font-family: var(--serif);
+  font-size: clamp(36px, min(4vw, 6.6vh), 60px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.rg-sheet-short {
+  font-size: clamp(15px, 2vh, 18px);
+  line-height: 1.4;
+}
+/* le numéro de la carte, devant le titre, comme sur les cartes */
+.rg-sheet-num {
+  margin-right: 4px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0;
+  vertical-align: 0.9em;
+  color: var(--muted);
+}
+/* le site : le lien principal, plus grand, en encre, souligné (le soulignement s'affirme au survol) */
+.rg-sheet-site {
+  margin-top: 6px;
+  font-size: clamp(16px, 2.1vh, 19px);
+  font-weight: 500;
+  line-height: 1.3;
+}
+.rg-sheet-site a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(26, 25, 23, 0.35);
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color 0.2s ease;
+}
+.rg-sheet-site a:hover {
+  text-decoration-color: var(--ink);
+}
+/* la fiche technique, en bas, au niveau du bord bas de la capture : sous un filet, deux informations par ligne,
+   l'étiquette en petit, la valeur dessous (en encre) */
+.rg-sheet-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(8px, 1.3vh, 12px) 24px;
+  margin: auto 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.rg-sheet-facts dt {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rg-sheet-facts dd {
+  margin: 0;
+  color: var(--ink);
+}
+.rg-sheet-facts a {
+  color: var(--ink);
+  text-decoration-color: var(--line);
+}
+.rg-sheet-facts a:hover {
+  text-decoration-color: var(--ink);
+}
+.rg-sheet-status {
+  color: var(--ink);
+}
+.rg-sheet-status.is-wip {
+  color: var(--violet);
+}
+
+/* écran étroit : une colonne, la capture au-dessus du texte */
+@media (max-width: 900px) {
+  .rg-sheet-in {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  .rg-sheet-shot,
+  .rg-sheet-text {
+    grid-column: 1;
+  }
+}
+/* écran tactile : les liens gardent leur taille à l'écran, mais leur zone à toucher fait au moins 44px de haut
+   (une zone invisible autour) */
+@media (pointer: coarse) {
+  .rg-sheet-facts a {
+    position: relative;
+  }
+  .rg-sheet-facts a::after {
+    content: '';
+    position: absolute;
+    inset: -12px -8px;
+  }
+}
