@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arc-en-ciel — Garance Wetzel</title>
+    <meta name="description" content="Une averse en ASCII ; la souris est le soleil, et l’arc-en-ciel apparaît dans la pluie." />
+    <meta name="theme-color" content="#15171d" />
+    <link rel="canonical" href="https://garancewetz.dev/arc-en-ciel" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- la pluie, le soleil et l'arc-en-ciel, en caractères (voir src/features/arc-en-ciel) -->
+    <main class="ac" aria-label="Arc-en-ciel : une averse en caractères. La souris est le soleil ; l’arc-en-ciel apparaît dans la pluie, à l’opposé.">
+      <canvas class="ac-sky" aria-hidden="true"></canvas>
+    </main>
+    <script type="module" src="/src/features/arc-en-ciel/main.ts"></script>
+  </body>
+</html>

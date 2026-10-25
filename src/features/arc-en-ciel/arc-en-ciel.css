@@ -1,0 +1,29 @@
+/* ——— Arc-en-ciel : une averse en caractères sur toute la page, sous un ciel d'orage (c'est sur les nuages sombres
+   qu'un arc-en-ciel ressort). Tout est dessiné dans le canvas par main.ts ——— */
+@import '@/styles/base.css';
+
+:root {
+  --bg: #15171d;
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+}
+.ac {
+  position: fixed;
+  inset: 0;
+  /* (la souris est le soleil : on ne voit que lui ; au doigt, on le fait glisser sans faire défiler la page) */
+  cursor: none;
+  user-select: none;
+  touch-action: none;
+}
+.ac-sky {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}

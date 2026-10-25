@@ -1,0 +1,88 @@
+/* ——— Le carnet (voir carnet.ts) : une ligne de texte en haut de la page, à peine visible, qui s'éclaire au survol.
+   Elle prend la couleur de l'encre de la page (currentColor) ——— */
+.carnet {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 18px;
+  font: 12px/1 var(--mono);
+  color: rgb(255 255 255 / 0.38);
+  /* (le carnet n'arrête que ses liens : le reste de la ligne laisse passer la souris vers la page) */
+  pointer-events: none;
+}
+.carnet a {
+  color: inherit;
+  text-decoration: none;
+  pointer-events: auto;
+  /* (sur l'arc-en-ciel la souris est cachée : on la retrouve sur les liens) */
+  cursor: pointer;
+  transition: color 0.4s;
+}
+.carnet a:hover,
+.carnet a:focus-visible {
+  color: rgb(255 255 255 / 0.85);
+}
+.carnet-page {
+  margin-left: 0.6em;
+}
+.carnet-turn {
+  display: flex;
+  gap: 2em;
+}
+
+/* ——— Tourner la page : la nouvelle glisse sur l'ancienne, qui recule un peu et s'assombrit ——— */
+@view-transition {
+  navigation: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+::view-transition-group(root) {
+  animation-duration: 0.9s;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.25, 1);
+}
+html:active-view-transition-type(forward)::view-transition-new(root) {
+  animation: carnet-in-right 0.9s cubic-bezier(0.65, 0, 0.25, 1) both;
+}
+html:active-view-transition-type(forward)::view-transition-old(root) {
+  animation: carnet-out-left 0.9s cubic-bezier(0.65, 0, 0.25, 1) both;
+}
+html:active-view-transition-type(backward)::view-transition-new(root) {
+  animation: carnet-in-left 0.9s cubic-bezier(0.65, 0, 0.25, 1) both;
+}
+html:active-view-transition-type(backward)::view-transition-old(root) {
+  animation: carnet-out-right 0.9s cubic-bezier(0.65, 0, 0.25, 1) both;
+}
+@keyframes carnet-in-right {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes carnet-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes carnet-out-left {
+  to {
+    transform: translateX(-25%);
+    filter: brightness(0.4);
+  }
+}
+@keyframes carnet-out-right {
+  to {
+    transform: translateX(25%);
+    filter: brightness(0.4);
+  }
+}
+/* (la nouvelle page passe au-dessus de l'ancienne) */
+::view-transition-new(root) {
+  z-index: 1;
+}

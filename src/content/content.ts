@@ -92,15 +92,16 @@ export const projects: Project[] = [
     code: 'https://github.com/garancewetz/wwwetzel-journey',
   },
   {
-    id: 'murmuration',
-    title: 'Murmuration',
-    short: 'Une murmuration ascii à Eus',
-    kind: 'Animation ASCII',
+    // le carnet d'expériences : des pages qu'on tourne, la première est la murmuration (voir features/carnet)
+    id: 'carnet',
+    title: 'Carnet',
+    short: 'Un carnet d’expériences en ascii : une murmuration à Eus, un arc-en-ciel sous la pluie.',
+    kind: 'Animations ASCII',
     stack: ['TypeScript'],
     image: '/shots/murmuration.webp', // capture de la page, en plein vol
     alt: 'Sur un ciel de crépuscule indigo, un grand nuage d’oiseaux dessiné en caractères aux couleurs d’un coucher de soleil, rose fluo en haut, orange en bas (des points, des v, des W plus denses là où ils se croisent) au-dessus d’un village perché, son clocher et ses maisons en escalier, en bas à droite.',
-    // Une page de ce site, à l'adresse /murmuration (lien relatif : il marche aussi en local)
+    // Des pages de ce site ; le carnet s'ouvre sur sa première, /murmuration (lien relatif : il marche aussi en local)
     demo: '/murmuration/',
-    code: 'https://github.com/garancewetz/portfolio-2026/tree/main/src/features/murmuration',
+    code: 'https://github.com/garancewetz/portfolio-2026/tree/main/src/features/carnet',
   },
 ]
