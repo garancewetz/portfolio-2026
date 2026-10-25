@@ -8,7 +8,7 @@ import './carnet.css'
 // les pages, dans l'ordre du carnet (pour en ajouter une : une ligne ici, et `mount()` dans son main.ts)
 const PAGES = [
   { path: '/murmuration/', name: 'murmuration' },
-  { path: '/arc-en-ciel/', name: 'arc-en-ciel' },
+  { path: '/fourrure/', name: 'fourrure' },
 ]
 
 const indexOf = (url: string) => PAGES.findIndex((p) => new URL(url, location.href).pathname.startsWith(p.path))
@@ -23,16 +23,18 @@ export function mount() {
   nav.className = 'carnet'
   nav.setAttribute('aria-label', 'Carnet')
   nav.innerHTML = `
-    <span><a href="/">carnet</a> <span class="carnet-page">${here + 1}/${PAGES.length}</span></span>
+    <span class="carnet-left"><a href="/">carnet</a> <span class="carnet-page">${here + 1}/${PAGES.length}</span></span>
     <span class="carnet-turn">
       ${prev ? `<a href="${prev.path}" rel="prev">← ${prev.name}</a>` : ''}
       ${next ? `<a href="${next.path}" rel="next">${next.name} →</a>` : ''}
     </span>`
-  // (les pages écoutent les clics et le clavier sur toute la fenêtre — un clic fait s'envoler les oiseaux, Entrée
-  // aussi : ce qui se passe sur le carnet ne les concerne pas)
-  for (const type of ['pointerdown', 'pointerup', 'click', 'keydown'])
+  // (les pages écoutent les clics, le clavier et la molette sur toute la fenêtre — un clic fait s'envoler les
+  // oiseaux, Entrée aussi : ce qui se passe sur le carnet, ou sur ce qu'une page y ajoute, ne les concerne pas)
+  for (const type of ['pointerdown', 'pointerup', 'click', 'keydown', 'wheel'])
     nav.addEventListener(type, (e) => e.stopPropagation())
   document.body.append(nav)
+  // (une page peut y ajouter ses propres outils, à gauche, après le numéro de page)
+  return nav.querySelector<HTMLElement>('.carnet-left')
 }
 
 // tourner la page : vers l'avant, la nouvelle page arrive par la droite ; vers l'arrière, par la gauche

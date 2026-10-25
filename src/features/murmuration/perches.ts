@@ -1,11 +1,11 @@
-import { COUNT, LAND_SPREAD, ZONES, settle, u } from './flock'
+import { MAX, LAND_SPREAD, ZONES, settle, u } from './flock'
 import { VILLAGE_LINES, VILLAGE_W, grid } from './grid'
 
 // ——— Où se poser : sur les toits du village et la pointe du clocher, et sur le bas de la page, à gauche du
 // village ———
 // la place de chaque oiseau : sa case dans le ciel (colonne, ligne)
-export const perchCol = new Int16Array(COUNT)
-export const perchRow = new Int16Array(COUNT)
+export const perchCol = new Int16Array(MAX)
+export const perchRow = new Int16Array(MAX)
 // le ciel dans le dessin du village : les espaces qu'on atteint depuis le haut en descendant ou en allant de côté
 // (pas l'intérieur des maisons, fermé par leurs murs et leur toit)
 const OPEN = VILLAGE_LINES.map((line) => Array.from({ length: VILLAGE_W }, (_, x) => (line[x] ?? ' ') === ' '))
@@ -42,11 +42,11 @@ export function perches() {
   for (let col = 1; col < end; col++) ground.push([col, rows - 1])
   // les oiseaux se répartissent sur toutes les places, autant sur chacune ; chacun va vers une place du même côté
   // que lui dans le nuage (de gauche à droite)
-  const order = Array.from({ length: COUNT }, (_, i) => i).sort((a, b) => u[a] - u[b])
+  const order = Array.from({ length: MAX }, (_, i) => i).sort((a, b) => u[a] - u[b])
   places.length = 0
   places.push(...[...ground, ...roofs].sort((a, b) => a[0] - b[0]))
   order.forEach((bird, k) => {
-    const place = places[Math.floor((k / COUNT) * places.length)]
+    const place = places[Math.floor((k / MAX) * places.length)]
     perchCol[bird] = place[0]
     perchRow[bird] = place[1]
   })
@@ -60,7 +60,7 @@ export function perches() {
     .map(({ z }) => z)
   const rank = zoneOrder.map((_, z) => zoneOrder.indexOf(z))
   const step = (LAND_SPREAD - 2) / (ZONES - 1)
-  for (let i = 0; i < COUNT; i++) {
+  for (let i = 0; i < MAX; i++) {
     const zone = Math.min(ZONES - 1, Math.floor((perchCol[i] / cols) * ZONES))
     settle[i] = rank[zone] * step + 2 * Math.random() ** 1.6
   }

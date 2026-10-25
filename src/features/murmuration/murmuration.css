@@ -9,6 +9,9 @@
   --bg: #0d0b1c;
   color-scheme: dark;
   --sunset: linear-gradient(to bottom, #ff2d95, #ff5a6e 45%, #ff8a2a) fixed;
+  /* (le panneau des réglages, voir carnet/gear.css : sur le ciel indigo, les réglettes en rose) */
+  --panel-bg: rgb(13 11 28 / 0.88);
+  --panel-accent: #ff5a6e;
 }
 
 html,
@@ -77,3 +80,4 @@ body {
   line-height: var(--mm-size, 12px);
   opacity: 0.85;
 }
+

@@ -1,6 +1,5 @@
 import {
   ALARM,
-  COUNT,
   DESCENT,
   LAGS,
   MAX_LAG,
@@ -15,6 +14,7 @@ import {
   ovx,
   ovy,
   seed,
+  settings,
   settle,
   u,
   v,
@@ -120,7 +120,7 @@ export function draw(t: number, now: number, flying: boolean) {
   let touched = -1
   let touchedD2 = FEAR * FEAR
   let startledNow = 0
-  for (let i = 0; i < COUNT; i++) {
+  for (let i = 0; i < settings.count; i++) {
     // posé ou non : 0 en vol, 1 posé (en train de se poser, ou de redécoller : entre les deux)
     const land =
       now >= landAt

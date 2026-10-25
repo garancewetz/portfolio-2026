@@ -1,0 +1,86 @@
+/* ——— La roue crantée du carnet (voir gear.ts) et son panneau de réglages. Une page le colore avec --panel-bg (le
+   fond du panneau) et --panel-accent (les réglettes) ——— */
+.carnet-left {
+  position: relative;
+}
+.carnet-gear {
+  margin-left: 1.1em;
+  padding: 0;
+  border: 0;
+  background: none;
+  /* (un peu plus présente que le reste de la ligne, pour qu'on ait envie de l'ouvrir) */
+  color: var(--carnet-ink-hover, rgb(255 255 255 / 0.85));
+  font: inherit;
+  font-size: 17px;
+  line-height: 1;
+  vertical-align: -2px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.6s;
+  /* (un tour sur elle-même, une seule fois, peu après l'ouverture de la page : un clin d'œil) */
+  animation: carnet-gear-wink 1.6s 1.2s cubic-bezier(0.45, 0, 0.2, 1) backwards;
+}
+@keyframes carnet-gear-wink {
+  from {
+    transform: rotate(-120deg);
+  }
+}
+.carnet-gear:hover,
+.carnet-gear:focus-visible {
+  transform: rotate(40deg);
+}
+.carnet-gear[aria-expanded='true'] {
+  transform: rotate(90deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .carnet-gear {
+    animation: none;
+  }
+}
+.carnet-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  display: grid;
+  grid-template-columns: auto 160px 6ch;
+  gap: 12px 14px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 6px;
+  background: var(--panel-bg, rgb(20 20 24 / 0.88));
+  color: rgb(255 255 255 / 0.7);
+  pointer-events: auto;
+}
+.carnet-panel[hidden] {
+  display: none;
+}
+.carnet-panel label {
+  display: contents;
+}
+.carnet-panel input {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--panel-accent, #fff);
+  cursor: pointer;
+}
+.carnet-panel output {
+  text-align: right;
+  color: rgb(255 255 255 / 0.9);
+}
+.carnet-swatches {
+  display: flex;
+  gap: 8px;
+}
+.carnet-swatches button {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 0.25);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: box-shadow 0.3s;
+}
+.carnet-swatches button[aria-pressed='true'] {
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 0.85);
+}

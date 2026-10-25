@@ -95,7 +95,7 @@ export const projects: Project[] = [
     // le carnet d'expériences : des pages qu'on tourne, la première est la murmuration (voir features/carnet)
     id: 'carnet',
     title: 'Carnet',
-    short: 'Un carnet d’expériences en ascii : une murmuration à Eus, un arc-en-ciel sous la pluie.',
+    short: 'Un carnet d’expériences en ascii : une murmuration à Eus, une fourrure dans le noir.',
     kind: 'Animations ASCII',
     stack: ['TypeScript'],
     image: '/shots/murmuration.webp', // capture de la page, en plein vol

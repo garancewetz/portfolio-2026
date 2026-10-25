@@ -1,10 +1,11 @@
 import './murmuration.css'
 import { mount } from '@/features/carnet/carnet'
-import { COUNT, landed, lift } from './flock'
+import { landed, lift, settings } from './flock'
 import { VILLAGE_W, grid, resize } from './grid'
 import { perchCol, perchRow, perches } from './perches'
 import { startle, startled, startledSpan } from './startle'
 import { draw, mouse } from './draw'
+import { settingsGear } from './settings'
 
 // Murmuration : un vol d'étourneaux, dessiné en caractères sur toute la page, au-dessus d'un village perché.
 // Au départ, les oiseaux sont posés sur les toits du village et sur le bas de la page. Un clic n'importe où les
@@ -79,7 +80,7 @@ function restless() {
     const seconds = performance.now() / 1000
     const n = Math.random() < 0.4 ? 2 : 1
     for (let k = 0, tries = 0; k < n && tries < 50; tries++) {
-      const i = Math.floor(Math.random() * COUNT)
+      const i = Math.floor(Math.random() * settings.count)
       // (sur un toit, pas sur le bas de la page ; et pas déjà en l'air)
       if (perchRow[i] >= grid.rows - 1 || seconds - startled[i] < startledSpan[i] + 0.5) continue
       startle(
@@ -105,7 +106,7 @@ function idleFrame() {
 function loop(now: number) {
   // (le temps réel écoulé, mais pas plus d'un dixième de seconde d'un coup : après un onglet en arrière-plan,
   // le vol reprend où il en était)
-  if (last) clock += Math.min(0.1, (now - last) / 1000)
+  if (last) clock += Math.min(0.1, (now - last) / 1000) * settings.speed
   last = now
   show()
   // (tous reposés : plus rien ne bouge, on s'arrête jusqu'au prochain clic)
@@ -170,5 +171,6 @@ document.fonts.ready.then(() => {
   show()
 })
 
-// la page dans le carnet (voir features/carnet)
-mount()
+// la page dans le carnet (voir features/carnet), avec sa roue crantée (voir settings.ts)
+const nav = mount()
+if (nav) settingsGear(nav, show)

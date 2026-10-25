@@ -1,0 +1,28 @@
+/* ——— Fourrure : le chat gris, en caractères très serrés, invisible dans le noir ; la souris est la seule
+   lumière. Tout est dessiné dans le canvas par main.ts ——— */
+@import '@/styles/base.css';
+
+:root {
+  --bg: #050506;
+  color-scheme: dark;
+  /* (le panneau des réglages, voir carnet/gear.css) */
+  --panel-bg: rgb(22 22 26 / 0.9);
+  --panel-accent: #c8ced8;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+}
+.cn {
+  position: fixed;
+  inset: 0;
+  user-select: none;
+  touch-action: none;
+}
+.cn-cat {
+  position: absolute;
+  inset: 0;
+}

@@ -1,19 +1,19 @@
-import { COUNT } from './flock'
+import { MAX } from './flock'
 import { perchCol, perchRow, places } from './perches'
 
 // les oiseaux posés qu'on dérange en passant la souris dessus : quand ils se sont envolés (en secondes, horloge
 // réelle), et combien de temps dure leur petit tour avant de revenir à leur place
-export const startled = new Float64Array(COUNT).fill(-1e9)
+export const startled = new Float64Array(MAX).fill(-1e9)
 // (de quel côté il part : décidé une fois, au moment où il s'envole, à l'opposé de la souris ; ensuite il finit
 // son tour sans s'occuper d'elle)
-const startledSide = new Int8Array(COUNT).fill(1)
+const startledSide = new Int8Array(MAX).fill(1)
 // (et chacun son tour, tiré au moment de l'envol : sa durée, sa hauteur, sa distance ; d'où il part, s'il change
 // de place en se reposant)
-export const startledSpan = new Float32Array(COUNT)
-export const startledLift = new Float32Array(COUNT)
-export const startledDrift = new Float32Array(COUNT)
-export const startledFromX = new Float32Array(COUNT)
-export const startledFromY = new Float32Array(COUNT)
+export const startledSpan = new Float32Array(MAX)
+export const startledLift = new Float32Array(MAX)
+export const startledDrift = new Float32Array(MAX)
+export const startledFromX = new Float32Array(MAX)
+export const startledFromY = new Float32Array(MAX)
 export const STARTLE_NEAR = 46 // (en pixels autour de la souris)
 const STARTLE_TIME = 2.2
 // faire s'envoler l'oiseau i (posé, en x, y) à l'instant seconds, vers le côté side (1 : la droite, -1 : la

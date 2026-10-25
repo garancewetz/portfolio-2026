@@ -1,5 +1,5 @@
 /* ——— Le carnet (voir carnet.ts) : une ligne de texte en haut de la page, à peine visible, qui s'éclaire au survol.
-   Elle prend la couleur de l'encre de la page (currentColor) ——— */
+   Blanche par défaut ; une page claire donne son encre (--carnet-ink, --carnet-ink-hover) ——— */
 .carnet {
   position: fixed;
   z-index: 10;
@@ -11,7 +11,7 @@
   gap: 24px;
   padding: 14px 18px;
   font: 12px/1 var(--mono);
-  color: rgb(255 255 255 / 0.38);
+  color: var(--carnet-ink, rgb(255 255 255 / 0.38));
   /* (le carnet n'arrête que ses liens : le reste de la ligne laisse passer la souris vers la page) */
   pointer-events: none;
 }
@@ -19,13 +19,13 @@
   color: inherit;
   text-decoration: none;
   pointer-events: auto;
-  /* (sur l'arc-en-ciel la souris est cachée : on la retrouve sur les liens) */
+  /* (une page peut cacher la souris : on la retrouve sur les liens) */
   cursor: pointer;
   transition: color 0.4s;
 }
 .carnet a:hover,
 .carnet a:focus-visible {
-  color: rgb(255 255 255 / 0.85);
+  color: var(--carnet-ink-hover, rgb(255 255 255 / 0.85));
 }
 .carnet-page {
   margin-left: 0.6em;
