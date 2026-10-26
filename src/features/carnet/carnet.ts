@@ -9,6 +9,7 @@ import './carnet.css'
 const PAGES = [
   { path: '/murmuration/', name: 'murmuration' },
   { path: '/fourrure/', name: 'fourrure' },
+  { path: '/yaya/', name: 'yaya' },
 ]
 
 const indexOf = (url: string) => PAGES.findIndex((p) => new URL(url, location.href).pathname.startsWith(p.path))
