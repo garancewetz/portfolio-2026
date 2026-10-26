@@ -40,4 +40,6 @@ body {
 }
 .yy-ask {
   color: var(--carnet-ink-hover);
+  /* (les espaces comptent : ils gardent le compteur en place, voir scene.ts) */
+  white-space: pre;
 }

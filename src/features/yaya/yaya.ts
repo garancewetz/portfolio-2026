@@ -1,5 +1,6 @@
 import './yaya.css'
 import { mount } from '@/features/carnet/carnet'
+import { local, sheet } from '@/features/carnet/sheet'
 import { scene } from './scene'
 
 // Où est Yaya ? en photos : le collage d'origine (voir scene.ts), dessiné tel quel.
@@ -13,8 +14,7 @@ let W = 0
 let H = 0
 function resize() {
   const dpr = Math.min(2, devicePixelRatio || 1)
-  W = innerWidth
-  H = innerHeight
+  ;({ w: W, h: H } = sheet())
   canvas.width = Math.round(W * dpr)
   canvas.height = Math.round(H * dpr)
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
@@ -22,11 +22,15 @@ function resize() {
 addEventListener('resize', resize)
 resize()
 
-addEventListener('pointermove', (e) => yaya.pointer(e.clientX, e.clientY))
+addEventListener('pointermove', (e) => {
+  const { x, y } = local(e)
+  yaya.pointer(x, y)
+})
 // (un clic sur Yaya : trouvée ; le doigt, sur un téléphone, compte aussi comme la souris)
 addEventListener('pointerdown', (e) => {
-  yaya.pointer(e.clientX, e.clientY)
-  yaya.click(e.clientX, e.clientY)
+  const { x, y } = local(e)
+  yaya.pointer(x, y)
+  yaya.click(x, y)
 })
 
 let last = performance.now()

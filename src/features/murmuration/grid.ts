@@ -1,7 +1,9 @@
+import { sheet as page } from '@/features/carnet/sheet'
 import { VILLAGE } from './village'
 
 // Le ciel est une grille de caractères (voir main.ts) : la taille d'une case, le nombre de cases, et où est le
-// village sur la même grille. Recalculé à chaque changement de taille de la fenêtre.
+// village sur la même grille. Recalculé à chaque changement de taille de la fenêtre (le ciel, c'est la feuille du
+// carnet : voir carnet/sheet.ts).
 
 export const sky = document.querySelector<HTMLDivElement>('.mm-sky')!
 const village = document.querySelector<HTMLPreElement>('.mm-village')!
@@ -25,9 +27,10 @@ export const grid = {
 
 // la taille d'une case : la largeur d'un caractère et la hauteur d'une ligne du ciel
 export function resize() {
+  const { w, h } = page()
   // la taille des caractères : 12 px, ou moins sur un écran étroit (téléphone), pour que le village tienne en
   // entier dans la largeur (un caractère de JetBrains Mono fait 0,6 fois sa taille de large)
-  const size = Math.max(5, Math.min(12, Math.floor((innerWidth - 16) / (VILLAGE_W + 2) / 0.6)))
+  const size = Math.max(5, Math.min(12, Math.floor((w - 16) / (VILLAGE_W + 2) / 0.6)))
   document.documentElement.style.setProperty('--mm-size', `${size}px`)
   const probe = document.createElement('span')
   probe.textContent = 'M'.repeat(100)
@@ -35,17 +38,17 @@ export function resize() {
   grid.cellW = probe.getBoundingClientRect().width / 100
   probe.remove()
   grid.cellH = parseFloat(getComputedStyle(sky).lineHeight)
-  grid.cols = Math.floor(innerWidth / grid.cellW)
+  grid.cols = Math.floor(w / grid.cellW)
   // (la dernière ligne du ciel touche le bas de la page ; la première est un peu coupée en haut)
-  grid.rows = Math.ceil(innerHeight / grid.cellH)
-  grid.skyTop = innerHeight - grid.rows * grid.cellH
+  grid.rows = Math.ceil(h / grid.cellH)
+  grid.skyTop = h - grid.rows * grid.cellH
   sky.style.top = `${grid.skyTop}px`
   grid.density = new Float32Array(grid.cols * grid.rows)
   grid.perched = new Uint16Array(grid.cols * grid.rows)
   // le village, sur la même grille que le ciel, en bas à droite (pour que les oiseaux se posent pile sur les toits)
   grid.villageCol = Math.max(
     0,
-    grid.cols - VILLAGE_W - Math.round(Math.min(32, Math.max(8, innerWidth * 0.024)) / grid.cellW),
+    grid.cols - VILLAGE_W - Math.round(Math.min(32, Math.max(8, w * 0.024)) / grid.cellW),
   )
   grid.villageRow = grid.rows - VILLAGE_LINES.length
   village.style.left = `${grid.villageCol * grid.cellW}px`

@@ -3,6 +3,7 @@ import { mount } from '@/features/carnet/carnet'
 import { gear, slider, swatches } from '@/features/carnet/gear'
 import { cover, load, RAMP, sample } from '@/features/carnet/photo'
 import { raster } from '@/features/carnet/raster'
+import { local, sheet } from '@/features/carnet/sheet'
 
 // Fourrure : un chat gris de profil, en caractères très serrés, plongé dans le noir complet. La souris
 // est la seule lumière : là où elle passe, le poil apparaît ; quand elle s'éloigne, la zone éclairée garde un peu
@@ -22,10 +23,10 @@ const COLOURS = [
 ]
 // les réglages : la couleur, la taille de la lumière (son rayon, en pixels : de la bougie à la lampe), et en
 // combien de secondes une zone éclairée s'éteint (à peu près)
-const settings = { colour: 0, light: Math.max(90, Math.min(innerWidth, innerHeight) * 0.16), fade: 12 }
+const settings = { colour: 0, light: Math.max(90, Math.min(sheet().w, sheet().h) * 0.16), fade: 12 }
 
 const canvas = document.querySelector<HTMLCanvasElement>('.cn-cat')!
-const grid = raster(canvas, RAMP, () => (innerWidth < 600 ? 3 : 4))
+const grid = raster(canvas, RAMP, () => (sheet().w < 600 ? 3 : 4))
 
 // la photo (600 × 365) : le cadrage qui remplit la fenêtre ; sur un écran en hauteur (un téléphone), on cadre
 // sur les pattes avant, de l'épaule au sol, plutôt qu'un morceau de ventre au milieu
@@ -81,8 +82,7 @@ document.fonts?.ready.then(build)
 let lightX = -1e5
 let lightY = -1e5
 addEventListener('pointermove', (e) => {
-  lightX = e.clientX
-  lightY = e.clientY
+  ;({ x: lightX, y: lightY } = local(e))
   dirty = true
 })
 document.documentElement.addEventListener('pointerleave', () => {

@@ -11,34 +11,54 @@ export const settings = { count: 6000, speed: 1, fly: 25 }
 const LIFT_TIME = 2.5
 export const LAND_SPREAD = 10
 // (le plus long : chacun met entre la moitié et la totalité de ce temps)
-const LAND_TIME = 5
+export const LAND_TIME = 5
 // les zones où ils se posent (des morceaux de toits et de sol), qui se remplissent l'une après l'autre
 export const ZONES = 8
 // avant de se poser, le nuage s'abaisse au-dessus du village et se resserre (pendant DESCENT secondes, à partir de
 // quelques secondes avant les premiers posés) ; à l'envol, il se forme d'abord là, bas et serré, puis monte
 export const DESCENT = 7
 export const RISE = 8
-// chaque envol : son instant (en secondes de vol) et l'endroit du clic (d'où part l'alarme)
-let lifts: { at: number; x: number; y: number }[] = []
+// chaque envol : son instant (en secondes de vol), l'endroit du clic (d'où part l'alarme), et, si un clic en plein
+// vol les a rappelés, quand ils se posent (sinon, settings.fly secondes après l'envol)
+let lifts: { at: number; x: number; y: number; land?: number }[] = []
 // un envol à l'instant clock, depuis (x, y) (ceux qui étaient prévus après sont oubliés)
 export function lift(clock: number, x: number, y: number) {
   lifts = [...lifts.filter(({ at }) => at < clock), { at: clock, x, y }]
 }
-// où en est le vol à l'instant clock : depuis quand ils sont partis (ou null), et quand ils se poseront
+// un clic en plein vol, à l'instant clock : le nuage s'abaisse tout de suite au-dessus du village et les oiseaux
+// se posent (s'ils ne sont pas déjà en train de le faire) ; renvoie vrai si c'est le cas
+export function land(clock: number) {
+  const { liftAt } = cycle(clock)
+  const current = lifts.find(({ at }) => at === liftAt)
+  if (!current || landing(clock)) return false
+  current.land = clock + DESCENT - 2
+  return true
+}
+// en train de se poser (le nuage descend, ou des oiseaux sont encore en l'air) : un clic les fait repartir
+export function landing(clock: number) {
+  const { liftAt, landAt } = cycle(clock)
+  return liftAt !== null && clock >= landAt - DESCENT + 2 && !landed(clock)
+}
+// où en est le vol à l'instant clock : depuis quand ils sont partis (ou null), quand ils se poseront, et quand ils
+// avaient commencé à se poser la fois d'avant (before : un envol peut interrompre un atterrissage, ceux qui étaient
+// encore en l'air repartent de là où ils sont)
 export function cycle(clock: number) {
   let landAt = -Infinity
+  let before = -Infinity
   let liftAt: number | null = null
   let fromX = 0
   let fromY = 0
-  for (const { at, x, y } of lifts) {
-    if (at <= clock && at >= landAt + LAND_SPREAD + LAND_TIME) {
+  for (const { at, x, y, land } of lifts) {
+    // (un nouvel envol, dès que le nuage a commencé à descendre se poser)
+    if (at <= clock && at >= landAt - DESCENT + 2) {
+      before = landAt
       liftAt = at
-      landAt = at + settings.fly
+      landAt = land ?? at + settings.fly
       fromX = x
       fromY = y
     }
   }
-  return { landAt, liftAt, fromX, fromY }
+  return { landAt, liftAt, fromX, fromY, before }
 }
 // tous posés ?
 export const landed = (clock: number) => clock >= cycle(clock).landAt + LAND_SPREAD + LAND_TIME

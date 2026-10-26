@@ -1,6 +1,7 @@
 import './murmuration.css'
 import { mount } from '@/features/carnet/carnet'
-import { landed, lift, settings } from './flock'
+import { local, sheet } from '@/features/carnet/sheet'
+import { land, landed, landing, lift, settings } from './flock'
 import { VILLAGE_W, grid, resize } from './grid'
 import { perchCol, perchRow, perches } from './perches'
 import { startle, startled, startledSpan } from './startle'
@@ -10,8 +11,8 @@ import { settingsGear } from './settings'
 // Murmuration : un vol d'étourneaux, dessiné en caractères sur toute la page, au-dessus d'un village perché.
 // Au départ, les oiseaux sont posés sur les toits du village et sur le bas de la page. Un clic n'importe où les
 // fait s'envoler : ils font leur murmuration, puis, au bout de vingt-cinq secondes, le nuage s'abaisse au-dessus
-// du village, se resserre, et les oiseaux plongent se poser par coulées. Un autre clic les fait repartir, et ainsi
-// de suite.
+// du village, se resserre, et les oiseaux plongent se poser par coulées. Un clic en plein vol les fait se poser
+// tout de suite ; posés, un autre clic les fait repartir, et ainsi de suite.
 // Posés, ils s'envolent quand la souris passe sur eux, font un petit tour et reviennent à leur place ; et de
 // temps en temps, un ou deux s'envolent tout seuls.
 // En plein vol, la souris fait comme un faucon : le nuage s'écarte de chaque côté de sa route, une vague
@@ -37,8 +38,7 @@ let last = 0
 let startledNow = 0
 
 addEventListener('pointermove', (e) => {
-  mouse.x = e.clientX
-  mouse.y = e.clientY
+  ;({ x: mouse.x, y: mouse.y } = local(e))
   wake()
 })
 document.documentElement.addEventListener('pointerleave', () => {
@@ -55,7 +55,10 @@ addEventListener('pointerdown', (e) => {
   downY = e.clientY
 })
 addEventListener('pointerup', (e) => {
-  if (Math.hypot(e.clientX - downX, e.clientY - downY) < 12) press(e.clientX, e.clientY)
+  if (Math.hypot(e.clientX - downX, e.clientY - downY) < 12) {
+    const { x, y } = local(e)
+    press(x, y)
+  }
   if (e.pointerType !== 'mouse') mouse.x = mouse.y = -1e5
 })
 
@@ -126,13 +129,14 @@ function scrub(seconds: number) {
   clock = Math.max(0, clock + seconds)
   show()
 }
-// un clic : quand tous sont posés, les faire s'envoler ; en plein vol, il ne fait rien (sauf relancer le vol, s'il
-// a été figé en faisant défiler)
-function press(x = (grid.villageCol + VILLAGE_W / 2) * grid.cellW, y = innerHeight) {
-  if (landed(clock)) {
+// un clic : posés (tous, ou en train de se poser), les faire s'envoler ; en plein vol, les faire se reposer (si le
+// vol a été figé en faisant défiler, il le relance)
+function press(x = (grid.villageCol + VILLAGE_W / 2) * grid.cellW, y = sheet().h) {
+  if (landed(clock) || landing(clock)) {
     lift(clock, x, y)
     if (!flying) toggle()
   } else if (!flying) toggle()
+  else land(clock)
 }
 addEventListener('keydown', (e) => {
   // Espace ou Entrée : comme un clic

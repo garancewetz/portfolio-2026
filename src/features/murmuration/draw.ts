@@ -2,6 +2,8 @@ import {
   ALARM,
   DESCENT,
   LAGS,
+  LAND_SPREAD,
+  LAND_TIME,
   MAX_LAG,
   RISE,
   cycle,
@@ -19,6 +21,7 @@ import {
   u,
   v,
 } from './flock'
+import { sheet } from '@/features/carnet/sheet'
 import { VILLAGE_W, grid, sky } from './grid'
 import { perchCol, perchRow } from './perches'
 import { pose, type Pose } from './pose'
@@ -74,18 +77,20 @@ let lastWave = 0
 const poses: Pose[] = []
 export function draw(t: number, now: number, flying: boolean) {
   const { cellW, cellH, skyTop, villageCol, villageRow, cols, rows, density, perched } = grid
-  const W = innerWidth
-  const H = innerHeight
-  const { landAt, liftAt, fromX, fromY } = cycle(now)
+  const { w: W, h: H } = sheet()
+  const { landAt, liftAt, fromX, fromY, before } = cycle(now)
   // près du village : 0 en plein ciel, 1 bas et serré au-dessus des toits (juste après l'envol, et avant de se
   // poser)
   const ease = (x: number) => {
     const c = clamp(x)
     return c * c * (3 - 2 * c)
   }
+  // (un envol qui interrompt un atterrissage repart d'aussi bas que le nuage était descendu)
+  const interrupted = liftAt !== null && liftAt < before + LAND_SPREAD + LAND_TIME
+  const lowAtLift = interrupted ? Math.max(0.6, ease((liftAt - (before - DESCENT + 2)) / DESCENT)) : 0.6
   const low = Math.max(
     ease((now - (landAt - DESCENT + 2)) / DESCENT),
-    liftAt !== null && now < landAt ? 0.6 * (1 - ease((now - liftAt) / RISE)) : 0,
+    liftAt !== null && now < landAt ? lowAtLift * (1 - ease((now - liftAt) / RISE)) : 0,
   )
   const R = Math.min(W, H) * 0.5 * (1 - 0.5 * low)
   // (au-dessus du village : au milieu de ses toits, un peu plus haut que le clocher)
@@ -126,13 +131,18 @@ export function draw(t: number, now: number, flying: boolean) {
       now >= landAt
         ? clamp((now - landAt - settle[i]) / landTime[i])
         : liftAt !== null
-          ? 1 -
-            clamp(
-              (now -
-                liftAt -
-                leave[i] -
-                Math.hypot((perchCol[i] + 0.5) * cellW - fromX, skyTop + (perchRow[i] + 0.5) * cellH - fromY) / ALARM) /
-                leaveTime[i],
+          ? Math.min(
+              // (s'il n'était pas encore posé quand l'envol a interrompu l'atterrissage : il repart d'où il en était)
+              clamp((liftAt - before - settle[i]) / landTime[i]),
+              1 -
+                clamp(
+                  (now -
+                    liftAt -
+                    leave[i] -
+                    Math.hypot((perchCol[i] + 0.5) * cellW - fromX, skyTop + (perchRow[i] + 0.5) * cellH - fromY) /
+                      ALARM) /
+                    leaveTime[i],
+                ),
             )
           : 0
     if (land === 1) {

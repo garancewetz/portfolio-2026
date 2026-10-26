@@ -1,9 +1,12 @@
 import './carnet.css'
+import './sheet'
 
 // Le carnet : les expériences, chacune sur sa page (sa propre adresse), qu'on parcourt comme un carnet. En haut de
 // chaque page, discrètement : « carnet » (retour au site) et le numéro de page à gauche ; la page d'avant et celle
-// d'après, par leur nom, à droite. On tourne la page en glissant d'une page à l'autre (une View Transition entre
-// documents, là où le navigateur la connaît ; ailleurs, on change simplement de page).
+// d'après, par leur nom, à droite. Chaque page prend tout l'écran, cornée en bas à droite (voir sheet.ts) : le coin
+// tourne la page (la dernière ramène à la première). En tournant la page, on voit le carnet : la page recule et se
+// pose sur la table, la suivante glisse par-dessus puis s'agrandit jusqu'à remplir l'écran (une View Transition
+// entre documents, là où le navigateur la connaît ; ailleurs, on change simplement de page).
 
 // les pages, dans l'ordre du carnet (pour en ajouter une : une ligne ici, et `mount()` dans son main.ts)
 const PAGES = [
@@ -34,6 +37,17 @@ export function mount() {
   for (const type of ['pointerdown', 'pointerup', 'click', 'keydown', 'wheel'])
     nav.addEventListener(type, (e) => e.stopPropagation())
   document.body.append(nav)
+
+  // le coin corné : la page suivante (après la dernière, on revient à la première)
+  const turn = next ?? PAGES[0]
+  const corner = document.createElement('a')
+  corner.className = 'carnet-corner'
+  corner.href = turn.path
+  corner.setAttribute('aria-label', `Tourner la page : ${turn.name}`)
+  corner.innerHTML = '<span></span>'
+  for (const type of ['pointerdown', 'pointerup', 'click', 'keydown', 'wheel'])
+    corner.addEventListener(type, (e) => e.stopPropagation())
+  document.body.append(corner)
   // (une page peut y ajouter ses propres outils, à gauche, après le numéro de page)
   return nav.querySelector<HTMLElement>('.carnet-left')
 }
@@ -47,6 +61,10 @@ addEventListener('pagereveal', (e) => {
   const a = indexOf(from)
   const b = indexOf(location.href)
   // (en arrivant d'ailleurs que du carnet, du site par exemple : pas de page qui tourne)
-  if (a < 0 || b < 0 || a === b) return transition.skipTransition()
+  if (a < 0 || b < 0 || a === b) {
+    // (sans quoi le navigateur signale, à tort, une erreur)
+    transition.ready.catch(() => {})
+    return transition.skipTransition()
+  }
   transition.types?.add(b > a ? 'forward' : 'backward')
 })

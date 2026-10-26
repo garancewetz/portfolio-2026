@@ -4,8 +4,8 @@
 // Un « Où est Charlie ? » : Yaya est cachée dans l'image. Quand on clique sur elle, on l'a trouvée ; elle s'efface
 // et va se cacher à la cachette suivante (voir spots.ts) : sur le clocher, toute petite sur une colline, la tête qui
 // dépasse d'un buisson, ou tout entière derrière un buisson ou l'église… On la compte ; trouvée dix fois, elle
-// apparaît en grand, devant ; un clic sur elle et on recommence. Les morceaux du collage flottent un peu, lentement,
-// comme des papiers posés sur l'eau, et s'écartent un peu sous la souris (voir push.ts) : il faut fouiller.
+// apparaît en grand, devant ; un clic sur elle et on recommence. Le collage est immobile, comme une page de carnet ;
+// ses morceaux s'écartent un peu sous la souris (voir push.ts) : il faut fouiller.
 
 import { house } from './cutouts'
 import { push, PUSH } from './push'
@@ -19,8 +19,6 @@ type Images = { sky: Picture; mountains: Picture[]; village: Picture[]; leaves: 
 // chacun (en part du premier plan)
 const HOUSES = [0.4, 0.5, 0.6, 0.7, 1, 0.8]
 const LEAVES = [1, 0.3, 0.5, 0.6, 1]
-// les morceaux flottent : de combien (en pixels) les montagnes, les maisons et les feuillages
-const DRIFT = { mountains: 2.5, houses: 1.8, leaves: 4 }
 // quand on l'a trouvée : elle reste encore WAIT secondes, puis s'efface (en GONE secondes) pendant qu'elle apparaît
 // ailleurs (en COME secondes, un peu après)
 const WAIT = 0.12
@@ -69,16 +67,9 @@ export function scene() {
 
   // la mise en page, pour une fenêtre W × H (comme dans le collage d'origine : chaque plan de montagne occupe le bas
   // du précédent, le village est posé sur le dernier, les feuillages couvrent le bas de l'écran)
-  // (chaque morceau flotte à sa façon : deux lentes ondulations, avec un rythme et un départ à lui, n)
-  function float(r: Rect, n: number, a: number): Rect {
-    const t = clock
-    const dx = a * Math.sin(t * (0.31 + 0.07 * (n % 5)) + n * 1.7)
-    const dy = a * Math.sin(t * (0.23 + 0.05 * (n % 3)) + n * 2.9)
-    return { x: r.x + dx, y: r.y + dy, w: r.w, h: r.h }
-  }
   function layout(W: number, H: number): Layout {
-    // (un peu plus larges que l'écran, et les feuillages un peu plus bas, pour que rien ne se découvre en flottant)
-    const M = DRIFT.leaves * 2
+    // (un peu plus larges que l'écran, et les feuillages un peu plus bas, pour qu'aucun bord ne se découvre)
+    const M = 8
     const m1: Rect = { x: -M, y: H * 0.15, w: W + 2 * M, h: H * 0.85 }
     const m2: Rect = { x: -M, y: H - m1.h * 0.85, w: W + 2 * M, h: m1.h * 0.85 }
     const m3: Rect = { x: -M, y: H - m2.h * 0.9, w: W + 2 * M, h: m2.h * 0.9 }
@@ -95,13 +86,8 @@ export function scene() {
       if (k === LEAVES.length - 1) return { ...r, w: r.w + edge }
       return r
     })
-    return {
-      m1: float(m1, 0, DRIFT.mountains),
-      m2: float(m2, 1, DRIFT.mountains),
-      m3: float(m3, 2, DRIFT.mountains),
-      village: village.map((r, k) => float(r, 10 + k, DRIFT.houses)),
-      leaves: leaves.map((r, k) => float(r, 20 + k, DRIFT.leaves)),
-    }
+    // (le collage ne bouge pas tout seul : seule la souris écarte un peu les morceaux, voir push.ts)
+    return { m1, m2, m3, village, leaves }
   }
 
   // l'état : la souris, la lumière de chaque maison (qui change en douceur), où est Yaya (au début, la première
@@ -164,7 +150,8 @@ export function scene() {
     caption: () => {
       if (spot === LAST) return 'Coucou !'
       const just = found !== null || (since < SAID && was !== LAST)
-      return `${just ? 'Trouvée !' : 'Où est Yaya ?'}  ${score}/${LAST}`
+      // (les deux phrases font la même largeur, en police à chasse fixe : le compteur ne bouge pas)
+      return `${(just ? 'Trouvée !' : 'Où est Yaya ?').padEnd(13)}  ${score}/${LAST}`
     },
     pointer(x: number, y: number) {
       mouseX = x
@@ -178,7 +165,7 @@ export function scene() {
       if (spot !== LAST) score++
       return true
     },
-    // avancer le temps (le collage flotte : la page redessine à chaque image)
+    // avancer le temps (Yaya qui s'efface et réapparaît, les morceaux poussés par la souris)
     tick(dt: number) {
       const L = layout(size.W, size.H)
       const ease = 1 - Math.exp(-dt * 5)
@@ -201,7 +188,7 @@ export function scene() {
     draw(ctx: CanvasRenderingContext2D, W: number, H: number) {
       size = { W, H }
       if (!images) return
-      // (Yaya se place selon les morceaux là où ils flottent ; on les dessine poussés par la souris)
+      // (Yaya se place selon les morceaux à leur place ; on les dessine poussés par la souris)
       const L = layout(W, H)
       const S = pushed.apply(L)
       const { sky, mountains, village, leaves, yaya } = images

@@ -5,6 +5,8 @@
 
 export type Raster = ReturnType<typeof raster>
 
+import { sheet } from './sheet'
+
 export function raster(canvas: HTMLCanvasElement, glyphs: string, size: () => number, lineHeight = 1.15) {
   const ctx = canvas.getContext('2d')!
   const off = document.createElement('canvas')
@@ -23,8 +25,8 @@ export function raster(canvas: HTMLCanvasElement, glyphs: string, size: () => nu
     dh: 0,
     resize() {
       const dpr = Math.min(2, devicePixelRatio || 1)
-      r.W = innerWidth
-      r.H = innerHeight
+      // (la grille couvre la feuille du carnet : voir sheet.ts)
+      ;({ w: r.W, h: r.H } = sheet())
       const px = size()
       const font = `${px * dpr}px 'JetBrains Mono', ui-monospace, monospace`
       offCtx.font = font

@@ -35,7 +35,8 @@
   gap: 2em;
 }
 
-/* ——— Tourner la page : la nouvelle glisse sur l'ancienne, qui recule un peu et s'assombrit ——— */
+/* ——— Tourner la page : la page recule et devient une feuille posée sur la table (le temps d'un souffle, on voit le
+   carnet et sa ligne) ; la suivante glisse par-dessus, puis s'agrandit jusqu'à remplir l'écran ——— */
 @view-transition {
   navigation: auto;
 }
@@ -44,45 +45,52 @@
     navigation: none;
   }
 }
-::view-transition-group(root) {
-  animation-duration: 0.9s;
+::view-transition-group(carnet-sheet) {
+  animation-duration: 1.3s;
+}
+::view-transition-old(carnet-sheet),
+::view-transition-new(carnet-sheet) {
+  animation-duration: 1.3s;
   animation-timing-function: cubic-bezier(0.65, 0, 0.25, 1);
+  animation-fill-mode: both;
+  /* (la feuille sur la table, à peine détachée) */
+  box-shadow: 0 2px 16px rgb(0 0 0 / 0.16);
 }
-html:active-view-transition-type(forward)::view-transition-new(root) {
-  animation: carnet-in-right 0.9s cubic-bezier(0.65, 0, 0.25, 1) both;
+::view-transition-old(carnet-sheet) {
+  animation-name: carnet-settle;
 }
-html:active-view-transition-type(forward)::view-transition-old(root) {
-  animation: carnet-out-left 0.9s cubic-bezier(0.65, 0, 0.25, 1) both;
+html:active-view-transition-type(forward)::view-transition-new(carnet-sheet) {
+  animation-name: carnet-from-right;
 }
-html:active-view-transition-type(backward)::view-transition-new(root) {
-  animation: carnet-in-left 0.9s cubic-bezier(0.65, 0, 0.25, 1) both;
+html:active-view-transition-type(backward)::view-transition-new(carnet-sheet) {
+  animation-name: carnet-from-left;
 }
-html:active-view-transition-type(backward)::view-transition-old(root) {
-  animation: carnet-out-right 0.9s cubic-bezier(0.65, 0, 0.25, 1) both;
-}
-@keyframes carnet-in-right {
-  from {
-    transform: translateX(100%);
-  }
-}
-@keyframes carnet-in-left {
-  from {
-    transform: translateX(-100%);
-  }
-}
-@keyframes carnet-out-left {
+/* l'ancienne page recule, se pose sur la table et y reste (la nouvelle la recouvre) */
+@keyframes carnet-settle {
+  30%,
   to {
-    transform: translateX(-25%);
-    filter: brightness(0.4);
+    transform: scale(0.8);
   }
 }
-@keyframes carnet-out-right {
-  to {
-    transform: translateX(25%);
-    filter: brightness(0.4);
+@keyframes carnet-from-right {
+  0%,
+  30% {
+    transform: translateX(100%) scale(0.8);
+  }
+  70% {
+    transform: scale(0.8);
+  }
+}
+@keyframes carnet-from-left {
+  0%,
+  30% {
+    transform: translateX(-100%) scale(0.8);
+  }
+  70% {
+    transform: scale(0.8);
   }
 }
 /* (la nouvelle page passe au-dessus de l'ancienne) */
-::view-transition-new(root) {
+::view-transition-new(carnet-sheet) {
   z-index: 1;
 }
