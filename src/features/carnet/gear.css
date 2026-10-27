@@ -55,7 +55,8 @@
 .carnet-panel[hidden] {
   display: none;
 }
-.carnet-panel label {
+.carnet-panel label,
+.carnet-panel > div {
   display: contents;
 }
 .carnet-panel input {
@@ -83,4 +84,32 @@
 }
 .carnet-swatches button[aria-pressed='true'] {
   box-shadow: 0 0 0 2px rgb(255 255 255 / 0.85);
+}
+/* des boutons à choisir (voir choices) : des mots, celui choisi sur un fond clair */
+.carnet-wide {
+  grid-column: span 2;
+}
+.carnet-choices {
+  display: flex;
+  gap: 4px;
+}
+.carnet-choices button {
+  padding: 3px 9px;
+  border: 1px solid rgb(255 255 255 / 0.18);
+  border-radius: 999px;
+  background: none;
+  color: rgb(255 255 255 / 0.7);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background 0.25s,
+    color 0.25s;
+}
+.carnet-choices button:hover {
+  color: #fff;
+}
+.carnet-choices button[aria-pressed='true'] {
+  border-color: transparent;
+  background: var(--panel-accent, #fff);
+  color: rgb(20 20 24);
 }

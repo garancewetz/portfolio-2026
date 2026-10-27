@@ -39,4 +39,6 @@
   [headers.values]
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    X-Frame-Options = "DENY"
+    # (SAMEORIGIN plutôt que DENY : le site peut se montrer lui-même dans une iframe, au fond de la page Abyme ;
+    # aucun autre site ne le peut)
+    X-Frame-Options = "SAMEORIGIN"

@@ -1,23 +1,31 @@
 import './carnet.css'
 import './sheet'
+import { remember } from '@/shared/trail'
 
 // Le carnet : les expériences, chacune sur sa page (sa propre adresse), qu'on parcourt comme un carnet. En haut de
 // chaque page, discrètement : « carnet » (retour au site) et le numéro de page à gauche ; la page d'avant et celle
-// d'après, par leur nom, à droite. Chaque page prend tout l'écran, cornée en bas à droite (voir sheet.ts) : le coin
-// tourne la page (la dernière ramène à la première). En tournant la page, on voit le carnet : la page recule et se
-// pose sur la table, la suivante glisse par-dessus puis s'agrandit jusqu'à remplir l'écran (une View Transition
-// entre documents, là où le navigateur la connaît ; ailleurs, on change simplement de page).
+// d'après, par leur nom, à droite. Chaque page prend tout l'écran (voir sheet.ts). En tournant la page, on voit le
+// carnet : la page recule et se pose sur la table, la suivante glisse par-dessus puis s'agrandit jusqu'à remplir
+// l'écran (une View Transition entre documents, là où le navigateur la connaît ; ailleurs, on change simplement de
+// page).
 
 // les pages, dans l'ordre du carnet (pour en ajouter une : une ligne ici, et `mount()` dans son main.ts)
 const PAGES = [
   { path: '/murmuration/', name: 'murmuration' },
   { path: '/fourrure/', name: 'fourrure' },
-  { path: '/yaya/', name: 'yaya' },
+  // (Yaya : cachée pour le moment ; sa page existe toujours, à /yaya/, sans lien)
+  { path: '/toupies/', name: 'toupies' },
+  // (Abyme à la fin : elle remonte la visite)
+  { path: '/abyme/', name: 'abyme' },
 ]
 
 const indexOf = (url: string) => PAGES.findIndex((p) => new URL(url, location.href).pathname.startsWith(p.path))
 
 export function mount() {
+  // (le chemin de la visite, pour la page Abyme)
+  remember()
+  // (montrée dans une fenêtre d'Abyme, dans une iframe : ses liens s'ouvrent dans la fenêtre entière)
+  if (window !== window.top) document.head.append(Object.assign(document.createElement('base'), { target: '_top' }))
   const here = indexOf(location.href)
   if (here < 0) return
   const prev = PAGES[here - 1]
@@ -38,16 +46,6 @@ export function mount() {
     nav.addEventListener(type, (e) => e.stopPropagation())
   document.body.append(nav)
 
-  // le coin corné : la page suivante (après la dernière, on revient à la première)
-  const turn = next ?? PAGES[0]
-  const corner = document.createElement('a')
-  corner.className = 'carnet-corner'
-  corner.href = turn.path
-  corner.setAttribute('aria-label', `Tourner la page : ${turn.name}`)
-  corner.innerHTML = '<span></span>'
-  for (const type of ['pointerdown', 'pointerup', 'click', 'keydown', 'wheel'])
-    corner.addEventListener(type, (e) => e.stopPropagation())
-  document.body.append(corner)
   // (une page peut y ajouter ses propres outils, à gauche, après le numéro de page)
   return nav.querySelector<HTMLElement>('.carnet-left')
 }

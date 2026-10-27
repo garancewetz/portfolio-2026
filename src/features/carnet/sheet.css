@@ -1,26 +1,8 @@
 /* ——— La feuille du carnet (voir sheet.ts) : la page prend tout l'écran ; c'est en tournant la page qu'on voit le
-   carnet (voir carnet.css). En bas à droite, le coin de la feuille est corné : on le prend pour tourner la page
-   (voir carnet.ts) ; dessous, on aperçoit la table ——— */
-@property --fold {
-  syntax: '<length>';
-  inherits: true;
-  initial-value: 30px;
-}
+   carnet, la page posée sur une table claire (voir carnet.css) ——— */
 :root {
   --table: #e2e0db;
-  /* le coin corné : il se soulève un peu sous la souris */
-  --fold: 30px;
-  transition: --fold 0.35s cubic-bezier(0.3, 0, 0.2, 1);
 }
-:root:has(.carnet-corner:hover, .carnet-corner:focus-visible) {
-  --fold: 44px;
-}
-@media (max-width: 600px) {
-  :root {
-    --fold: 24px;
-  }
-}
-
 html:has(.carnet-sheet),
 body:has(.carnet-sheet) {
   background: var(--table);
@@ -28,36 +10,6 @@ body:has(.carnet-sheet) {
 main.carnet-sheet {
   overflow: hidden;
   background: var(--bg);
-  /* (le coin corné manque à la feuille : il est replié dessus) */
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    100% calc(100% - var(--fold)),
-    calc(100% - var(--fold)) 100%,
-    0 100%
-  );
   /* (en tournant la page, c'est la feuille qui bouge : la table et la ligne du carnet restent en place) */
   view-transition-name: carnet-sheet;
-}
-
-/* le coin replié : le dos de la feuille, posé sur la page, avec son ombre */
-.carnet-corner {
-  position: fixed;
-  z-index: 10;
-  right: 0;
-  bottom: 0;
-  width: var(--fold);
-  height: var(--fold);
-  filter: drop-shadow(-1px -1px 2px rgb(0 0 0 / 0.28));
-  cursor: pointer;
-  outline: none;
-  view-transition-name: carnet-corner;
-}
-.carnet-corner span {
-  position: absolute;
-  inset: 0;
-  clip-path: polygon(0 0, 100% 0, 0 100%);
-  border-radius: 0 0 0 2px;
-  /* (le pli, un peu plus sombre, et le papier qui s'éclaire vers la pointe) */
-  background: linear-gradient(135deg, #fbfaf7 30%, #d9d6cf 50%);
 }

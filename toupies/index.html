@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Toupies — Garance Wetzel</title>
+    <meta name="description" content="Des toupies d’enfant à pompe, en tôle imprimée : on les lance, leurs couleurs se fondent, puis elles tombent." />
+    <meta name="theme-color" content="#f6f4ef" />
+    <link rel="canonical" href="https://garancewetz.dev/toupies" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- des toupies d'enfant, qu'on lance et qu'on va observer (voir src/features/toupies) -->
+    <main class="tp carnet-sheet" aria-label="Des toupies d’enfant à pompe. Appuyer sur une toupie pour la lancer, glisser ou utiliser les flèches pour la pousser ; leur pointe dessine sur la page.">
+      <canvas class="tp-scene" aria-hidden="true"></canvas>
+    </main>
+    <script type="module" src="/src/features/toupies/main.ts"></script>
+  </body>
+</html>

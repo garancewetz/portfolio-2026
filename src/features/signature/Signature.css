@@ -35,9 +35,9 @@
   margin-left: calc(var(--lh) * -0.043);
 }
 /* « Wetzel » : la même police que « Garance », à la même taille, juste un peu plus appuyée (le nom un cran
-   plus gras que le prénom), juste après le prénom (sa largeur, plus une espace) */
+   plus gras que le prénom), juste après le prénom (sa largeur, plus une espace serrée) */
 .rg-word[data-line='1'] {
-  margin-left: calc(var(--first-w, 0px) + var(--lh) * (0.3 - 0.043));
+  margin-left: calc(var(--first-w, 0px) + var(--lh) * (0.17 - 0.043));
   font-weight: 400;
 }
 

@@ -1,13 +1,15 @@
 import './gear.css'
 
 // La roue crantée, dans la ligne du carnet (après le numéro de page) : elle ouvre un petit panneau de réglages
-// propre à la page. Chaque ligne du panneau : un nom, un réglage (une réglette, ou des pastilles de couleur), et sa
-// valeur. Une page la colore avec --panel-bg et --panel-accent (voir gear.css).
+// propre à la page. Chaque ligne du panneau : un nom, un réglage (une réglette, des pastilles de couleur, ou des
+// boutons à choisir), et sa valeur. Une page la colore avec --panel-bg et --panel-accent (voir gear.css).
 
-export type Row = { label: string; control: HTMLElement; value?: HTMLElement }
+// (wide : le réglage prend aussi la place de la valeur — des boutons qui disent déjà ce qu'ils sont)
+export type Row = { label: string; control: HTMLElement; value?: HTMLElement; wide?: boolean }
 
-// la roue et son panneau, ajoutés dans slot (la ligne du carnet, voir carnet.ts)
-export function gear(slot: HTMLElement, name: string, rows: Row[]) {
+// la roue et son panneau, ajoutés dans slot (la ligne du carnet, voir carnet.ts) ; keep : le panneau reste ouvert
+// quand on clique ailleurs (pour essayer les réglages en jouant ; il se ferme avec la roue, ou Échap)
+export function gear(slot: HTMLElement, name: string, rows: Row[], { keep = false } = {}) {
   const button = document.createElement('button')
   button.className = 'carnet-gear'
   button.type = 'button'
@@ -19,11 +21,13 @@ export function gear(slot: HTMLElement, name: string, rows: Row[]) {
   const panel = document.createElement('div')
   panel.className = 'carnet-panel'
   panel.hidden = true
-  for (const { label, control, value } of rows) {
-    const row = document.createElement('label')
+  for (const { label, control, value, wide } of rows) {
+    // (une ligne de boutons n'est pas une étiquette : un clic sur son nom choisirait le premier bouton)
+    const row = document.createElement(wide ? 'div' : 'label')
     const title = document.createElement('span')
     title.textContent = label
-    row.append(title, control, value ?? document.createElement('span'))
+    if (wide) control.classList.add('carnet-wide')
+    row.append(title, control, ...(wide ? [] : [value ?? document.createElement('span')]))
     panel.append(row)
   }
 
@@ -39,7 +43,7 @@ export function gear(slot: HTMLElement, name: string, rows: Row[]) {
     'pointerdown',
     (e) => {
       closing = false
-      if (panel.hidden || slot.contains(e.target as Node)) return
+      if (keep || panel.hidden || slot.contains(e.target as Node)) return
       toggle(false)
       closing = true
       e.stopPropagation()
@@ -112,3 +116,24 @@ export function swatches(
   return { label, control: box, value }
 }
 
+
+// des boutons, un par choix, côte à côte : celui qui est choisi est marqué
+export function choices<T extends string>(label: string, names: readonly T[], current: T, onPick: (v: T) => void): Row {
+  const box = document.createElement('span')
+  box.className = 'carnet-choices'
+  box.setAttribute('role', 'group')
+  box.setAttribute('aria-label', label)
+  const buttons = names.map((name) => {
+    const b = document.createElement('button')
+    b.type = 'button'
+    b.textContent = name
+    b.setAttribute('aria-pressed', String(name === current))
+    b.addEventListener('click', () => {
+      for (const other of buttons) other.setAttribute('aria-pressed', String(other === b))
+      onPick(name)
+    })
+    return b
+  })
+  box.append(...buttons)
+  return { label, control: box, wide: true }
+}

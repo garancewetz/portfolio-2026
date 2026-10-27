@@ -95,13 +95,29 @@ export const projects: Project[] = [
     // le carnet d'expériences : des pages qu'on tourne, la première est la murmuration (voir features/carnet)
     id: 'carnet',
     title: 'Carnet',
-    short: 'Un carnet d’expériences en ascii : une murmuration à Eus, une fourrure dans le noir.',
-    kind: 'Animations ASCII',
+    section: 'Expériences',
+    short: 'Un carnet d’expériences : une murmuration à Eus, une fourrure dans le noir, et la visite qu’on remonte de fenêtre en fenêtre.',
+    kind: 'Expériences interactives',
     stack: ['TypeScript'],
-    image: '/shots/murmuration.webp', // capture de la page, en plein vol
-    alt: 'Sur un ciel de crépuscule indigo, un grand nuage d’oiseaux dessiné en caractères aux couleurs d’un coucher de soleil, rose fluo en haut, orange en bas (des points, des v, des W plus denses là où ils se croisent) au-dessus d’un village perché, son clocher et ses maisons en escalier, en bas à droite.',
+    image: '/shots/fourrure.webp', // sur l'accueil, le chat figure le carnet (dans la fiche : toutes ses pages)
+    alt: 'Dans le noir, un chat gris dessiné en caractères très serrés, à peine éclairé : ses pattes, son poitrail et son dos sortent de l’ombre là où la lumière est passée.',
     // Des pages de ce site ; le carnet s'ouvre sur sa première, /murmuration (lien relatif : il marche aussi en local)
     demo: '/murmuration/',
+    pages: [
+      { name: 'murmuration', href: '/murmuration/', src: '/shots/murmuration.webp', alt: 'Sur un ciel de crépuscule indigo, un grand nuage d’oiseaux dessiné en caractères aux couleurs d’un coucher de soleil, rose fluo en haut, orange en bas (des points, des v, des W plus denses là où ils se croisent) au-dessus d’un village perché, son clocher et ses maisons en escalier, en bas à droite.' },
+      {
+        name: 'fourrure',
+        href: '/fourrure/',
+        src: '/shots/fourrure.webp',
+        alt: 'Dans le noir, un chat gris dessiné en caractères très serrés, à peine éclairé : ses pattes, son poitrail et son dos sortent de l’ombre là où la lumière est passée.',
+      },
+      {
+        name: 'abyme',
+        href: '/abyme/',
+        src: '/shots/abyme.webp',
+        alt: 'Une fenêtre de navigateur ouverte sur la page Yaya ; dedans, une fenêtre plus petite sur la page Fourrure, puis une sur Murmuration, et tout au fond, l’accueil du site.',
+      },
+    ],
     code: 'https://github.com/garancewetz/portfolio-2026/tree/main/src/features/carnet',
   },
 ]

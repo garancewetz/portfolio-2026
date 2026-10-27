@@ -8,21 +8,31 @@ import { projects } from '@/content/content'
 // à la même distance du milieu, à la même hauteur : elles se rangent ensemble). Les plus basses dépassent du bas
 // de l'écran : coupées, elles disent qu'il y a une suite, on fait défiler. En faisant défiler, elles se rangent
 // en ligne.
-// La grille a toujours cinq colonnes : les cinq premiers projets sur la première ligne ; les suivants dessous, sur
-// une seconde ligne, en partant de la dernière colonne (ils arrivent après que la première ligne s'est rangée).
-export const COLS = 5
-export const ROWS = Math.ceil(projects.length / COLS)
-export const cardPlace = (i: number) => ({
-  col: i < COLS ? i + 1 : COLS - (i % COLS),
-  row: Math.floor(i / COLS),
+// La grille a six colonnes, tout sur une ligne : les projets personnels sur les cinq premières (au-delà, une
+// seconde ligne, en partant de la première colonne) ; la dernière colonne, sous son intitulé, pour les expériences
+// (le carnet : les projets qui ont une section). Les cartes d'une seconde ligne arriveraient après que la première
+// s'est rangée.
+export const COLS = 6
+const isExp = (i: number) => !!projects[i].section
+const own = projects.map((_, i) => i).filter((i) => !isExp(i))
+const exp = projects.map((_, i) => i).filter(isExp)
+const PLACES = projects.map((_, i) => {
+  if (isExp(i)) return { col: COLS, row: exp.indexOf(i) }
+  const k = own.indexOf(i)
+  return { col: (k % (COLS - 1)) + 1, row: Math.floor(k / (COLS - 1)) }
 })
+export const cardPlace = (i: number) => PLACES[i]
+export const ROWS = Math.max(...PLACES.map((p) => p.row)) + 1
 const MID = (COLS - 1) / 2
 const V_TOP = 14 // la carte de tête
 const V_STEP = 34 // un cran plus bas à chaque pas vers un bord
-const FIRST_ROW = projects.slice(0, COLS).map((_, i) => V_TOP + Math.abs(i - MID) * V_STEP)
+// (la première ligne : en V, selon la colonne)
+const V = (col: number) => V_TOP + Math.abs(col - 1 - MID) * V_STEP
+const FIRST_ROW = Array.from({ length: COLS }, (_, c) => V(c + 1))
 const NEXT_ROWS_GAP = 70 // la seconde ligne : nettement après la dernière carte de la première, une fois rangée
-const STARTS = projects.map((_, i) =>
-  i < COLS ? FIRST_ROW[i] : Math.max(...FIRST_ROW) + NEXT_ROWS_GAP + (i - COLS) * 20,
+let later = 0
+const STARTS = PLACES.map(({ col, row }) =>
+  row === 0 ? V(col) : Math.max(...FIRST_ROW) + NEXT_ROWS_GAP + later++ * 20,
 )
 export const cardStart = (i: number): number => STARTS[i]
 const LAST = Math.max(...STARTS) // (la dernière carte à se ranger)

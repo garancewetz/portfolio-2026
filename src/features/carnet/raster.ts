@@ -34,8 +34,9 @@ export function raster(canvas: HTMLCanvasElement, glyphs: string, size: () => nu
       r.dh = Math.max(1, Math.round(px * lineHeight * dpr))
       r.cw = r.dw / dpr
       r.ch = r.dh / dpr
-      r.cols = Math.ceil((r.W * dpr) / r.dw)
-      r.rows = Math.ceil((r.H * dpr) / r.dh)
+      // (au moins une case : une page encore sans taille, cachée, ne plante pas)
+      r.cols = Math.max(1, Math.ceil((r.W * dpr) / r.dw))
+      r.rows = Math.max(1, Math.ceil((r.H * dpr) / r.dh))
       canvas.width = r.cols * r.dw
       canvas.height = r.rows * r.dh
       canvas.style.width = `${(r.cols * r.dw) / dpr}px`

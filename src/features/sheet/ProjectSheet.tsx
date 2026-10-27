@@ -3,6 +3,7 @@ import { me } from '@/content/content'
 import Shot from '@/shared/Shot'
 import Ripple from '@/shared/Ripple'
 import Guides from '@/shared/Guides'
+import Pages from '@/shared/Pages'
 import ExternalLink from '@/shared/ExternalLink'
 import ProjectStatus from '@/shared/ProjectStatus'
 import { projectNumber as num } from '@/shared/projectNumber'
@@ -126,7 +127,9 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
       <div className="rg-sheet-in">
         <div className="rg-sheet-shot">
           {/* la capture mène au site (s'il est en ligne), comme le lien sous la description */}
-          {p.demo && inside(p.demo) ? (
+          {p.pages ? (
+            <Pages pages={p.pages} />
+          ) : p.demo && inside(p.demo) ? (
             <a href={p.demo} aria-label={`${p.title} : ouvrir`}>
               <Shot project={p} eager sheet />
             </a>
