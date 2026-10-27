@@ -3,7 +3,6 @@ import { me } from '@/content/content'
 import Shot from '@/shared/Shot'
 import Ripple from '@/shared/Ripple'
 import Guides from '@/shared/Guides'
-import Pages from '@/shared/Pages'
 import ExternalLink from '@/shared/ExternalLink'
 import ProjectStatus from '@/shared/ProjectStatus'
 import { projectNumber as num } from '@/shared/projectNumber'
@@ -14,7 +13,7 @@ import './SheetBody.css'
 import './SheetPager.css'
 
 // L'adresse d'un lien, sans « https:// » ni chemin (pour l'afficher)
-// Le domaine du lien ; pour une page de ce site (le jeu sous /journey, ou un lien relatif comme /murmuration/),
+// Le domaine du lien ; pour une page de ce site (le jeu sous /journey, ou un lien relatif),
 // le chemin aussi
 const host = (url: string) => {
   if (url.startsWith('/')) return `garancewetz.dev${url.replace(/\/$/, '')}`
@@ -25,7 +24,7 @@ const host = (url: string) => {
   return domain === 'garancewetz.dev' && path.length ? `${domain}/${path.join('/')}` : domain
 }
 
-// Un lien vers une page de ce site (le carnet : /murmuration/… ; le CV : garancewetz.dev/journey) : il s'ouvre dans
+// Un lien vers une page de ce site (le CV : garancewetz.dev/journey) : il s'ouvre dans
 // le même onglet, avec une flèche → ; un autre site s'ouvre dans un nouvel onglet, avec la flèche ↗ (voir
 // ExternalLink)
 const inside = (url: string) => url.startsWith('/') || /^https?:\/\/garancewetz\.dev\//.test(url)
@@ -127,9 +126,7 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
       <div className="rg-sheet-in">
         <div className="rg-sheet-shot">
           {/* la capture mène au site (s'il est en ligne), comme le lien sous la description */}
-          {p.pages ? (
-            <Pages pages={p.pages} />
-          ) : p.demo && inside(p.demo) ? (
+          {p.demo && inside(p.demo) ? (
             <a href={p.demo} aria-label={`${p.title} : ouvrir`}>
               <Shot project={p} eager sheet />
             </a>

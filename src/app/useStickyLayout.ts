@@ -38,6 +38,9 @@ export function useStickyLayout() {
       if (lift !== liftNow && top.current) {
         liftNow = lift
         top.current.style.transform = lift ? `translateY(${-lift}px)` : ''
+        // (la fiole du carnet, dans la marge à côté, remonte avec lui)
+        const fiole = r.querySelector<HTMLElement>('.rg-fiole')
+        if (fiole) fiole.style.transform = top.current.style.transform
       }
       // (sur l'élément lui-même : la classe de <main> est réécrite par React à chaque étape)
       hint.current?.classList.toggle('is-off', scrollY > 40)

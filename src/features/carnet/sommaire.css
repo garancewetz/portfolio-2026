@@ -1,0 +1,93 @@
+/* ——— Le sommaire du carnet (voir sommaire.ts) : la table des matières à gauche, la capture de la ligne survolée à
+   droite ; sur le fond clair du site, en encre sombre ——— */
+@import '@/styles/base.css';
+
+:root {
+  --bg: #f6f4ef;
+  color-scheme: light;
+  --carnet-ink: rgb(26 25 23 / 0.5);
+  --carnet-ink-hover: rgb(26 25 23 / 0.95);
+}
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+}
+.sm {
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  column-gap: clamp(24px, 5vw, 80px);
+  padding: clamp(64px, 14vh, 140px) clamp(20px, 5vw, 80px) 48px;
+  color: var(--ink);
+}
+.sm-list {
+  grid-column: 1;
+  align-self: start;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: 14px/1.5 var(--mono);
+}
+.sm-list a {
+  display: grid;
+  grid-template-columns: 2em auto 1fr;
+  align-items: baseline;
+  column-gap: 0.8em;
+  padding: 14px 0;
+  color: inherit;
+  text-decoration: none;
+}
+.sm-n {
+  color: var(--muted);
+}
+.sm-name {
+  font-weight: 500;
+}
+/* les points de conduite, du nom jusqu'au bout de la ligne */
+.sm-dots {
+  border-bottom: 1px dotted rgb(26 25 23 / 0.35);
+  transform: translateY(-0.3em);
+}
+/* la ligne montrée : son nom en violet (la teinte des guides du site) */
+.sm-list li[data-on] .sm-name {
+  color: var(--violet);
+}
+.sm-list a:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: 4px;
+}
+/* la capture, à droite (toutes au même endroit ; seule celle de la ligne montrée est visible) */
+.sm-list img {
+  position: absolute;
+  top: clamp(64px, 14vh, 140px);
+  right: clamp(20px, 5vw, 80px);
+  width: calc((100% - 2 * clamp(20px, 5vw, 80px) - clamp(24px, 5vw, 80px)) * 1.15 / 2.15);
+  height: auto;
+  aspect-ratio: 16 / 10;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.sm-list li[data-on] img {
+  opacity: 1;
+}
+
+/* petit écran : la liste seule, chaque capture sous sa ligne */
+@media (max-width: 760px) {
+  .sm {
+    display: block;
+    padding-top: 64px;
+  }
+  .sm-list img {
+    position: static;
+    display: block;
+    width: 100%;
+    margin-bottom: 18px;
+    opacity: 1;
+  }
+}

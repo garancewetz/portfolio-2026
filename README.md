@@ -6,7 +6,9 @@ Portfolio de projets personnels, en React + Vite + TypeScript (strict).
 
 Deux effets cachés dans la signature, au survol : les « a » de Garance deviennent creux, le W de Wetzel ondule.
 
-Easter egg : le repère « gap » de la grille est un bouton. Un clic fait défiler les projets abandonnés, écrits comme du code en commentaire, dans l'interstice entre les cartes et le nom (rien ne bouge dans la page).
+Easter egg : le repère « gap » de la grille est un bouton. Un clic mélange le nom en anagrammes ; le pied de page a un mode feu d'artifice.
+
+En haut à droite, dans la marge, une petite fiole dessinée en caractères mène au **carnet d'expériences** : son sommaire (`/carnet`), puis des pages qu'on tourne comme un carnet (Murmuration, Fourrure, Toupies, Abyme), chacune sa propre page HTML (voir `vite.config.ts`).
 
 
 ## Lancer le projet
@@ -41,16 +43,21 @@ src/
     layout/Footer              parcours et liens
   features/
     projects/ProjectCard       une carte projet (sticky, ouvre la fiche)
+    projects/Fiole             la petite fiole en caractères, dans la marge : elle mène au carnet
     sheet/ProjectSheet         la fiche d'un projet (précédent/suivant, Échap)
     sheet/useSheetRoute.ts     fiche ↔ adresse (#synapso), retour du navigateur
     sheet/morph.ts             transition carte ↔ fiche (View Transitions)
     signature/Signature        le nom en grand, et ses deux effets cachés
     fireworks/                 le mode feu d'artifice : Fireworks (le spectacle), show + shells (étincelles),
                                fluid + gl + shaders (halo liquide), salvos, stars
+    carnet/                    le carnet d'expériences : carnet (la ligne en haut, tourner la page), sheet (la
+                               feuille), sommaire (la page /carnet), gear (les réglages), raster + photo (ASCII)
     murmuration/               la page /murmuration : main (boucle, gestes), draw, flock, grid, perches,
-                               startle, pose
-    abandoned/AbandonedBand    easter egg : les projets abandonnés en bandeau
-    abandoned/GapMarker        son déclencheur, le repère « gap »
+                               startle, pose, village, settings
+    fourrure/                  la page /fourrure : un chat dans le noir, la souris pour lumière
+    toupies/                   la page /toupies (three.js) : stage, top + spin, bump, input, trace, settings…
+    abyme/                     la page /abyme : la visite remontée de fenêtre en fenêtre (path, door, drawn…)
+    yaya/                      la page /yaya (cachée, sans lien)
   shared/
     Shot                       capture d'un projet (ou « capture à venir »)
     Ripple + CardFX            effet three.js au survol (chargé à la demande, souris seulement)
@@ -59,7 +66,7 @@ src/
     ProjectStatus              « en cours · bientôt en ligne » / « pas en ligne »
     projectNumber.ts           0 → « 01 »
   content/content.ts           tout le contenu (textes, projets, parcours, liens)
-  content/types.ts             ses types (Project, AbandonedProject, Person)
+  content/types.ts             ses types (Project, Carnet, Page, Person)
   styles/base.css              base : couleurs, typo, accessibilité, touches du clavier
   env.d.ts                     types globaux (variables CSS dans style={{ '--o': … }})
 public/
@@ -74,7 +81,7 @@ scripts/og/                    la source de og.jpg, et comment la refaire
 - **Un projet** : `id` (l'adresse de sa fiche, ex. `#synapso`), `title`, `short` (la phrase simple, dans la fiche et sur mobile), `image` et `alt`.
 - **Projet en ligne** : `demo` (lien du site, dans la fiche) ; sinon la carte affiche « pas en ligne » et la fiche ne propose que `code` (GitHub).
 - **Projet bientôt en ligne** : `wip: true` (affiche « en cours · bientôt en ligne »).
-- **Projets abandonnés** (easter egg) : `abandoned`, une phrase très courte qui dit le fond du projet.
+- **Le carnet** : `carnet.pages`, une page chacune (nom, adresse, capture, description) ; l'ordre où on les tourne est dans `features/carnet/carnet.ts` (`PAGES`).
 - **Parcours** : `experience`, du poste actuel au plus ancien.
 
 ## Ajouter une capture
@@ -88,7 +95,7 @@ cwebp -q 82 -resize 1200 0 capture.png -o public/shots/nom.webp
 ## À savoir
 
 - Garder `overflow: clip` (et non `hidden`) sur `.rg` : `hidden` casse le sticky.
-- Les cartes ont une marge basse invisible (la place du nom) et la 1re ligne du nom aussi (une ligne) : à la fin, cartes et nom se décollent en même temps et la grille remonte d'un bloc. Chaque mot du nom, et le bandeau de l'easter egg, a sa propre colonne, sur toute la hauteur du champ (sinon le sticky ne tient pas).
+- Les cartes ont une marge basse invisible (la place du nom) et la 1re ligne du nom aussi (une ligne) : à la fin, cartes et nom se décollent en même temps et la grille remonte d'un bloc. Chaque mot du nom a sa propre colonne, sur toute la hauteur du champ (sinon le sticky ne tient pas).
 - Pendant le scroll, le script n'écrit que ce qui change (une variable réécrite sur toute la page à chaque image fait saccader).
 - Les captures de Trans-trame, Mosaïque (fiche Chrome Web Store) et Synapso montrent des données de démo.
 

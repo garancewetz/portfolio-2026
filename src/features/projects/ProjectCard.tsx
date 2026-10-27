@@ -24,8 +24,6 @@ export default function ProjectCard({ project: p, index: i, start, col, row, onO
     // celle de la première)
     <div className="rg-col" style={{ '--o': `${start}vh`, '--row': row, gridColumn: col, gridRow: 1 }}>
       <div className="rg-card" data-i={i} style={{ '--k': i /* ordre sur mobile */ }}>
-        {/* l'intitulé de sa section (une autre famille que les projets, sur sa propre ligne), juste au-dessus */}
-        {p.section && <h2 className="rg-section">{p.section}</h2>}
         <button
           type="button"
           className="rg-link"

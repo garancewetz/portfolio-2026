@@ -26,15 +26,16 @@ export interface Project {
   code: string
   /** en cours, bientôt en ligne */
   wip?: boolean
-  /** sur l'accueil, l'intitulé de la section que sa carte ouvre (une autre famille que les projets, sur la ligne
-      suivante : « Expériences ») */
-  section?: string
-  /** plusieurs pages (le carnet) : dans la fiche, leur mosaïque à la place de la capture (chacune mène à sa
-      page) ; sur l'accueil, la carte garde sa capture (image) */
-  pages?: Page[]
 }
 
-/** une page du carnet : son nom, son adresse, sa capture (16/10, WebP, 1200 px de large) et sa description */
+/** le carnet d'expériences : l'adresse de son sommaire, ses pages */
+export interface Carnet {
+  href: string
+  pages: Page[]
+}
+
+/** une page du carnet : son nom, son adresse, sa capture (16/10, WebP, 1200 px de large) et sa
+    description */
 export interface Page {
   name: string
   href: string

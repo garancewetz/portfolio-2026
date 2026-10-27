@@ -8,19 +8,10 @@ import { projects } from '@/content/content'
 // à la même distance du milieu, à la même hauteur : elles se rangent ensemble). Les plus basses dépassent du bas
 // de l'écran : coupées, elles disent qu'il y a une suite, on fait défiler. En faisant défiler, elles se rangent
 // en ligne.
-// La grille a six colonnes, tout sur une ligne : les projets personnels sur les cinq premières (au-delà, une
-// seconde ligne, en partant de la première colonne) ; la dernière colonne, sous son intitulé, pour les expériences
-// (le carnet : les projets qui ont une section). Les cartes d'une seconde ligne arriveraient après que la première
-// s'est rangée.
-export const COLS = 6
-const isExp = (i: number) => !!projects[i].section
-const own = projects.map((_, i) => i).filter((i) => !isExp(i))
-const exp = projects.map((_, i) => i).filter(isExp)
-const PLACES = projects.map((_, i) => {
-  if (isExp(i)) return { col: COLS, row: exp.indexOf(i) }
-  const k = own.indexOf(i)
-  return { col: (k % (COLS - 1)) + 1, row: Math.floor(k / (COLS - 1)) }
-})
+// La grille a cinq colonnes, une par projet, tout sur une ligne (au-delà, une seconde ligne, en partant de la
+// première colonne). Les cartes d'une seconde ligne arriveraient après que la première s'est rangée.
+export const COLS = 5
+const PLACES = projects.map((_, k) => ({ col: (k % COLS) + 1, row: Math.floor(k / COLS) }))
 export const cardPlace = (i: number) => PLACES[i]
 export const ROWS = Math.max(...PLACES.map((p) => p.row)) + 1
 const MID = (COLS - 1) / 2

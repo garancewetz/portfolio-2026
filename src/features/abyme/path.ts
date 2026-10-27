@@ -1,4 +1,4 @@
-import { me, projects } from '@/content/content'
+import { carnet, me, projects } from '@/content/content'
 import { trail, type Step } from '@/shared/trail'
 
 // Le chemin à remonter : les dernières pages vues pendant la visite (voir shared/trail), de la plus récente à la
@@ -7,7 +7,7 @@ import { trail, type Step } from '@/shared/trail'
 // rebours, jusqu'à l'accueil.
 
 // les pages du carnet (voir content.ts) : leur adresse, leur nom, leur capture
-const PAGES = projects.flatMap((p) => p.pages ?? [])
+const PAGES = carnet.pages
 const HOME: Step = { path: '/', title: me.name }
 const CARNET: Step[] = [
   ...PAGES.filter((p) => p.href !== '/abyme/')
