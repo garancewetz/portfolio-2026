@@ -96,7 +96,7 @@ export const projects: Project[] = [
     id: 'carnet',
     title: 'Carnet',
     section: 'Expériences',
-    short: 'Un carnet d’expériences : une murmuration à Eus, une fourrure dans le noir, et la visite qu’on remonte de fenêtre en fenêtre.',
+    short: 'Un carnet d’expériences : une murmuration à Eus, une fourrure dans le noir, des toupies qui mêlent leurs couleurs, et la visite qu’on remonte de fenêtre en fenêtre.',
     kind: 'Expériences interactives',
     stack: ['TypeScript'],
     image: '/shots/fourrure.webp', // sur l'accueil, le chat figure le carnet (dans la fiche : toutes ses pages)
@@ -112,10 +112,16 @@ export const projects: Project[] = [
         alt: 'Dans le noir, un chat gris dessiné en caractères très serrés, à peine éclairé : ses pattes, son poitrail et son dos sortent de l’ombre là où la lumière est passée.',
       },
       {
+        name: 'toupies',
+        href: '/toupies/',
+        src: '/shots/toupies.webp',
+        alt: 'Des toupies à pompe en tôle posées sur une page claire ; les deux de devant tournent : l’une, à quartiers de couleurs, fondue en pastels mêlés, l’autre, à rayures noires et blanches, devenue grise ; sous elles, sur la page, le trait fin de leur pointe, bleu et rouge ; au fond, les autres attendent, couchées.',
+      },
+      {
         name: 'abyme',
         href: '/abyme/',
         src: '/shots/abyme.webp',
-        alt: 'Une fenêtre de navigateur ouverte sur la page Yaya ; dedans, une fenêtre plus petite sur la page Fourrure, puis une sur Murmuration, et tout au fond, l’accueil du site.',
+        alt: 'Une fenêtre de navigateur ouverte sur la page Toupies ; dedans, une fenêtre plus petite sur la page Fourrure, toute noire, puis une sur Murmuration, et tout au fond, l’accueil du site.',
       },
     ],
     code: 'https://github.com/garancewetz/portfolio-2026/tree/main/src/features/carnet',

@@ -14,8 +14,9 @@ const DEPTH = 0.32
 export const FLOOR = -0.92
 // le temps pendant lequel l'œil garde la lumière (la persistance rétinienne) : un vingt-cinquième de seconde
 const EYE = 1 / 25
-// le sol (voir ground.ts) : loss, la vitesse que la toupie perd par seconde ; glide, ce qu'il freine son glissement
-export const feel = { loss: 0.3, glide: 0.6 }
+// la vitesse que la toupie perd par seconde ; et ce que la page freine son glissement
+const LOSS = 0.3
+const GLIDE = 0.6
 const UP = new THREE.Vector3(0, 1, 0)
 
 export function spinner(variant: Variant, x0: number, z0: number) {
@@ -40,7 +41,6 @@ export function spinner(variant: Variant, x0: number, z0: number) {
     rim: body.rim,
     tip: body.tip,
     pool: pool?.mesh ?? null,
-    reflect: body.reflect,
     pressed: false,
     // la poussée des flèches (de -1 à 1, sur la largeur et la profondeur), la place et la vitesse sur la page
     pushX: 0,
@@ -79,7 +79,7 @@ export function spinner(variant: Variant, x0: number, z0: number) {
       plunger.position.y = -t.depth * DEPTH
       t.angle += t.omega * dt
       // (elle ralentit lentement ; presque arrêtée, elle s'arrête tout à fait)
-      t.omega *= Math.exp(-dt * (t.omega < 0.4 ? 2 : feel.loss))
+      t.omega *= Math.exp(-dt * (t.omega < 0.4 ? 2 : LOSS))
       const s = t.omega
       // le vacillement : nul quand elle tourne vite ; en ralentissant, son axe penche de plus en plus et décrit son
       // cercle de plus en plus vite (la précession va comme l'inverse de la vitesse, comme sur une vraie toupie)
@@ -109,7 +109,7 @@ export function spinner(variant: Variant, x0: number, z0: number) {
       const drive = Math.min(1, s / 6) * (1 - t.fall)
       t.vx += (t.pushX * 7 + slope.x * 9) * drive * dt
       t.vz += (t.pushZ * 7 + slope.z * 9) * drive * dt
-      const grip = Math.exp(-dt * (feel.glide + 4 * t.fall))
+      const grip = Math.exp(-dt * (GLIDE + 4 * t.fall))
       t.vx *= grip
       t.vz *= grip
       t.px = t.x

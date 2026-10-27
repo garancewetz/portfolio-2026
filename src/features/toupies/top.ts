@@ -65,24 +65,17 @@ export function top(variant: Variant) {
   const d = VARIANTS[variant]
   const group = new THREE.Group()
   const { samples, edge, onSurface } = profile()
-  // le miroir : une tôle polie, sans rien d'imprimé, qui reflète ce qui l'entoure — la page, les autres toupies ; une
-  // caméra posée en son centre regarde tout autour (voir reflect)
-  const cube = d.kind === 'miroir' ? new THREE.CubeCamera(0.05, 200, new THREE.WebGLCubeRenderTarget(256)) : null
-  const print = cube ? null : motifs(edge, variant)
-  const skin = new THREE.MeshPhysicalMaterial(
-    !print
-      ? { color: '#ffffff', metalness: 1, roughness: 0.03 }
-      : {
-          map: print.map,
-          metalness: 0.25,
-          roughness: 0.35,
-          clearcoat: 1,
-          clearcoatRoughness: 0.1,
-          emissiveMap: print.glow,
-          emissive: print.glow ? '#ffffff' : '#000000',
-          emissiveIntensity: 0,
-        },
-  )
+  const print = motifs(edge, variant)
+  const skin = new THREE.MeshPhysicalMaterial({
+    map: print.map,
+    metalness: 0.25,
+    roughness: 0.35,
+    clearcoat: 1,
+    clearcoatRoughness: 0.1,
+    emissiveMap: print.glow,
+    emissive: print.glow ? '#ffffff' : '#000000',
+    emissiveIntensity: 0,
+  })
   const blur = { value: 0 }
   eyeBlur(skin, blur)
   // (le profil, du bas vers le haut : les faces regardent vers l'extérieur, et l'image a son haut en haut)
@@ -101,17 +94,6 @@ export function top(variant: Variant) {
       blur.value = d.blur ? b : 0
       slotsBlur(d.blur ? b : 0)
     },
-    // (le miroir : ce qu'il reflète, vu depuis son centre — sans lui-même)
-    reflect: cube
-      ? (renderer: THREE.WebGLRenderer, scene: THREE.Scene) => {
-          group.getWorldPosition(cube.position)
-          group.visible = false
-          cube.update(renderer, scene)
-          group.visible = true
-          // (avant sa première image, elle reflète la pièce de la scène : jamais un miroir noir)
-          skin.envMap = cube.renderTarget.texture
-        }
-      : null,
     // (une lampe qui tourne vite trace son anneau sans pâlir : la lumière d'un point se répartit sur tout le tour,
     // mais une vraie lampe est si vive que l'anneau reste éclatant)
     glow(l: number) {

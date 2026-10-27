@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { sheet } from '@/features/carnet/sheet'
-import { ground, type Ground } from './ground'
+import { ground } from './ground'
 import { FLOOR } from './spin'
 
 // La scène : la page est une table plate qui file au loin jusqu'à un horizon ; une lumière blanche au-dessus, un peu
@@ -30,8 +30,8 @@ export function stage(canvas: HTMLCanvasElement) {
   sun.shadow.radius = 6
   Object.assign(sun.shadow.camera, { left: -60, right: 60, top: 110, bottom: -80, near: 1, far: 200 })
   scene.add(sun, sun.target)
-  const floor = ground(scene)
-  const look = { ground: 'papier' as Ground, view: 'côté' as View }
+  ground(scene)
+  let view: View = 'côté'
 
   // où est l'œil, et ce qu'il regarde : là où il va, et là où il en est (il y glisse)
   const goal = { eye: new THREE.Vector3(), at: new THREE.Vector3() }
@@ -40,7 +40,7 @@ export function stage(canvas: HTMLCanvasElement) {
   const back = () => 11 * Math.max(1, 1.5 / camera.aspect)
   function aim() {
     const b = back()
-    if (look.view === 'côté') {
+    if (view === 'côté') {
       // (d'assez bas, presque à hauteur de toupie : le plan de la page file jusqu'à un horizon qu'on voit, en haut de
       // l'écran ; une toupie poussée au fond y devient toute petite, mais reste entière)
       goal.eye.set(0, 1.7, b)
@@ -71,19 +71,15 @@ export function stage(canvas: HTMLCanvasElement) {
   now.at.copy(goal.at)
   place()
 
-  // changer la vue ou le sol
-  const set = (change: Partial<typeof look>) => {
-    Object.assign(look, change)
-    floor(look.ground)
-    aim()
-  }
-  set({})
-
   return {
     renderer,
     scene,
     camera,
-    set,
+    // changer de vue (elle y glisse)
+    look(next: View) {
+      view = next
+      aim()
+    },
     // la vue glisse vers là où elle va
     step(dt: number) {
       const k = 1 - Math.exp(-dt * 3)

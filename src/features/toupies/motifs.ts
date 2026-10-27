@@ -9,17 +9,13 @@ import { birds } from './oiseau'
 // - pois : des pois de couleur sur fond crème, qui deviennent des anneaux ;
 // - benham : du noir et du blanc seulement, mais en tournant l'œil y voit de pâles couleurs qui n'existent pas
 //   (l'illusion de Benham, 1894) ; sans flou simulé : c'est l'œil qui la fait ;
-// - spirale : rouge et crème, comme un sucre d'orge ; elle semble grandir en tournant, et rentrer en elle-même quand
-//   elle s'arrête (sans flou simulé) ;
 // - oiseau : une ronde de huit oiseaux de profil, à huit moments d'un coup d'aile (voir oiseau.ts) ;
 // - lampes : sombre, avec de petites lampes qui s'allument en tournant ; en tournant vite, chaque point s'étire en
-//   trait, puis en anneau continu : trois fils de néon (voir top.ts) ;
-// - miroir : polie, sans décor, elle reflète la page et les autres toupies ; ronde tout autour de son axe, elle a
-//   l'air immobile même quand elle tourne à toute vitesse : seul son vacillement la trahit (voir top.ts).
+//   trait, puis en anneau continu : trois fils de néon (voir top.ts).
 // plastic : la couleur de ses pièces en plastique ; blur : si l'on simule le flou de l'œil ; max : sa vitesse la plus
 // haute (en radians par seconde). Toutes ont la même forme : c'est leur couleur et leur décor qui les distinguent.
 
-type Kind = 'bands' | 'pois' | 'benham' | 'spirale' | 'oiseau' | 'lampes' | 'miroir'
+type Kind = 'bands' | 'pois' | 'benham' | 'oiseau' | 'lampes'
 type Def = {
   kind: Kind
   colors: string[]
@@ -61,23 +57,7 @@ export const VARIANTS = {
     blur: false,
     max: 55,
   }),
-  spirale: def({
-    kind: 'spirale',
-    colors: ['#d8342b', '#f7efdc'],
-    rim: '#f7efdc',
-    dots: '#d8342b',
-    plastic: '#3fae6a',
-    blur: false,
-    max: 40,
-  }),
-  oiseau: def({
-    kind: 'oiseau',
-    colors: ['#f3ead8'],
-    rim: '#1f2a5c',
-    dots: '#f3ead8',
-    plastic: '#3ec5c8',
-  }),
-  miroir: def({ kind: 'miroir', colors: ['#ffffff'], plastic: '#f4f1ea', blur: false }),
+  oiseau: def({ kind: 'oiseau', colors: ['#f3ead8'], rim: '#1f2a5c', dots: '#f3ead8', plastic: '#3ec5c8' }),
   lampes: def({ kind: 'lampes', colors: ['#141a3a'], rim: '#0b0f26', dots: '#ffe7a3', plastic: '#c9b8ff' }),
 }
 export type Variant = keyof typeof VARIANTS
@@ -138,22 +118,6 @@ export function motifs(edge: number, variant: Variant) {
         g.fill()
       }
     })
-  } else if (d.kind === 'spirale') {
-    // une spirale : des bandes qui tournent en descendant le long du profil
-    g.fillStyle = d.colors[1]
-    g.fillRect(0, 0, W, H)
-    g.fillStyle = d.colors[0]
-    const N = 6
-    const slant = W * 1.5
-    for (let k = -N * 3; k < N * 3; k++) {
-      const x = (k * W) / N
-      g.beginPath()
-      g.moveTo(x, 0)
-      g.lineTo(x + W / N / 2, 0)
-      g.lineTo(x + W / N / 2 + slant, H)
-      g.lineTo(x + slant, H)
-      g.fill()
-    }
   } else {
     g.fillStyle = d.colors[0]
     g.fillRect(0, 0, W, H)
