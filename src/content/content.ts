@@ -93,11 +93,11 @@ export const projects: Project[] = [
   },
 ]
 
-// Le carnet d'expériences : sur l'accueil, une toute petite fiole dessinée en caractères ; elle mène à son
-// sommaire, /carnet/, puis on en tourne les pages (voir features/carnet). Chaque page : son nom, son adresse, sa
-// capture (16/10, WebP, 1200 px de large) et sa description.
+// Le labo (le carnet d'expériences) : sur l'accueil, une toute petite fiole dessinée en caractères ; elle mène à
+// son sommaire, /labo/, puis on en tourne les pages (voir features/carnet). Chaque page : son nom, son adresse,
+// sa capture (16/10, WebP, 1200 px de large) et sa description.
 export const carnet: Carnet = {
-  href: '/carnet/',
+  href: '/labo/',
   pages: [
     {
       name: 'murmuration',

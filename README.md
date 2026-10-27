@@ -8,7 +8,7 @@ Deux effets cachés dans la signature, au survol : les « a » de Garance devien
 
 Easter egg : le repère « gap » de la grille est un bouton. Un clic mélange le nom en anagrammes ; le pied de page a un mode feu d'artifice.
 
-En haut à droite, dans la marge, une petite fiole dessinée en caractères mène au **carnet d'expériences** : son sommaire (`/carnet`), puis des pages qu'on tourne comme un carnet (Murmuration, Fourrure, Toupies, Abyme), chacune sa propre page HTML (voir `vite.config.ts`).
+En haut à droite, dans la marge, une petite fiole dessinée en caractères mène au **labo**, mes expériences : son sommaire (`/labo`), puis des pages qu'on tourne comme un carnet (Murmuration, Fourrure, Toupies, Abyme), chacune sa propre page HTML (voir `vite.config.ts`).
 
 
 ## Lancer le projet
@@ -51,7 +51,7 @@ src/
     fireworks/                 le mode feu d'artifice : Fireworks (le spectacle), show + shells (étincelles),
                                fluid + gl + shaders (halo liquide), salvos, stars
     carnet/                    le carnet d'expériences : carnet (la ligne en haut, tourner la page), sheet (la
-                               feuille), sommaire (la page /carnet), gear (les réglages), raster + photo (ASCII)
+                               feuille), sommaire (la page /labo), gear (les réglages), raster + photo (ASCII)
     murmuration/               la page /murmuration : main (boucle, gestes), draw, flock, grid, perches,
                                startle, pose, village, settings
     fourrure/                  la page /fourrure : un chat dans le noir, la souris pour lumière

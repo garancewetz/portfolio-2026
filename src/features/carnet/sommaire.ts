@@ -2,14 +2,14 @@ import './sommaire.css'
 import { carnet } from '@/content/content'
 import { mount } from './carnet'
 
-// Le sommaire du carnet (/carnet/, là où mène la fiole de l'accueil) : sa page de garde, sans grand titre (il est
+// Le sommaire du labo (/labo/, là où mène la fiole de l'accueil) : sa page de garde, sans grand titre (il est
 // là pour les lecteurs d'écran). Pas une fiche de projet : les pages, une ligne chacune, comme une table des
 // matières (numéro, nom, points de conduite) ; la ligne survolée montre sa capture, à droite. Un clic tourne la
 // page jusqu'à elle.
 
 const main = document.querySelector<HTMLElement>('.sm')!
 main.innerHTML = `
-  <h1 id="sm-title" class="sr">Carnet d’expériences</h1>
+  <h1 id="sm-title" class="sr">Labo</h1>
   <ol class="sm-list">
     ${carnet.pages
       .map(

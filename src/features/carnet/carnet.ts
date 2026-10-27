@@ -2,17 +2,17 @@ import './carnet.css'
 import './sheet'
 import { remember } from '@/shared/trail'
 
-// Le carnet : les expériences, chacune sur sa page (sa propre adresse), qu'on parcourt comme un carnet. En haut de
-// chaque page, discrètement : « carnet » (retour au sommaire ; sur le sommaire, « accueil », retour au site) et le
-// numéro de page à gauche ; la page d'avant et celle d'après, par leur nom, à droite. Chaque page prend tout
+// Le carnet du labo : les expériences, chacune sur sa page (sa propre adresse), qu'on parcourt comme un carnet. En
+// haut de chaque page, discrètement : « labo » (retour au sommaire ; sur le sommaire, « accueil », retour au site)
+// et le numéro de page à gauche ; la page d'avant et celle d'après, par leur nom, à droite. Chaque page prend tout
 // l'écran (voir sheet.ts). En tournant la page, on voit le carnet : la page recule et se pose sur la table, la
-// suivante glisse par-dessus puis s'agrandit jusqu'à remplir l'écran (une View Transition entre documents, là où le navigateur la connaît ; ailleurs, on change simplement de
-// page).
+// suivante glisse par-dessus puis s'agrandit jusqu'à remplir l'écran (une View Transition entre documents, là où
+// le navigateur la connaît ; ailleurs, on change simplement de page).
 
 // les pages, dans l'ordre du carnet (pour en ajouter une : une ligne ici, et `mount()` dans son main.ts)
 // (la première, le sommaire : la page de garde, sans numéro ; voir sommaire.ts)
 const PAGES = [
-  { path: '/carnet/', name: 'sommaire' },
+  { path: '/labo/', name: 'sommaire' },
   { path: '/murmuration/', name: 'murmuration' },
   { path: '/fourrure/', name: 'fourrure' },
   // (Yaya : cachée pour le moment ; sa page existe toujours, à /yaya/, sans lien)
@@ -39,7 +39,7 @@ export function mount() {
   nav.innerHTML = `
     <span class="carnet-left">${
       here
-        ? `<a href="${PAGES[0].path}">carnet</a> <span class="carnet-page">${here}/${PAGES.length - 1}</span>`
+        ? `<a href="${PAGES[0].path}">labo</a> <span class="carnet-page">${here}/${PAGES.length - 1}</span>`
         : '<a href="/">← accueil</a>'
     }</span>
     <span class="carnet-turn">

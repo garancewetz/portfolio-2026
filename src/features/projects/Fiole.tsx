@@ -39,7 +39,7 @@ function Drawing({ lines, className }: { lines: string[]; className: string }) {
 
 export default function Fiole() {
   return (
-    <a className="rg-fiole" href={carnet.href} aria-label="Ouvrir le carnet d’expériences">
+    <a className="rg-fiole" href={carnet.href} aria-label="Ouvrir le labo">
       <span className="rg-fiole-draw">
         <Drawing lines={REST} className="rg-fiole-rest" />
         <Drawing lines={HOVER} className="rg-fiole-hover" />
