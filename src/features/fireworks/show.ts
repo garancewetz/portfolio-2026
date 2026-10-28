@@ -40,7 +40,9 @@ export function createShow(
   onBurst?: (x: number, y: number, size: number, colors: [number, number]) => void,
   palette?: () => readonly number[],
 ): Show | null {
-  const ctx = canvas.getContext('2d')
+  // (en couleurs flottantes, là où le navigateur le permet : en 8 bits, l'effacement des traînées s'arrondit et
+  // laisse pour toujours un fantôme de chaque trait, visible sur la nuit)
+  const ctx = canvas.getContext('2d', { colorType: 'float16' } as CanvasRenderingContext2DSettings)
   if (!ctx) return null
   let w = 0
   let h = 0

@@ -1,5 +1,4 @@
-/* ——— La feuille du carnet (voir sheet.ts) : la page prend tout l'écran ; c'est en tournant la page qu'on voit le
-   carnet, la page posée sur une table claire (voir carnet.css) ——— */
+/* ——— La feuille du carnet (voir sheet.ts) : la page prend tout l'écran, posée sur une table claire ——— */
 :root {
   --table: #e2e0db;
 }
@@ -10,6 +9,4 @@ body:has(.carnet-sheet) {
 main.carnet-sheet {
   overflow: hidden;
   background: var(--bg);
-  /* (en tournant la page, c'est la feuille qui bouge : la table et la ligne du carnet restent en place) */
-  view-transition-name: carnet-sheet;
 }
