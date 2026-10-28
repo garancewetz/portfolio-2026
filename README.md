@@ -8,7 +8,7 @@ Deux effets cachés dans la signature, au survol : les « a » de Garance devien
 
 Easter egg : le repère « gap » de la grille est un bouton. Un clic mélange le nom en anagrammes ; le pied de page a un mode feu d'artifice.
 
-En haut à droite, sur la ligne de l'intitulé, le mot « Labo », d'où montent de petites bulles, mène au **labo**, mes expériences : un carnet ouvert (`/labo`) dont on tourne les pages (Murmuration, Fourrure, Toupies, Feu d'artifice, Abyme), chacune sa propre page HTML (voir `vite.config.ts`).
+Dans le pied de page, « labo → » mène au **labo**, mes expériences : un carnet ouvert (`/labo`) dont on tourne les pages (Murmuration, Fourrure, Toupies, Feu d'artifice, Abyme), chacune sa propre page HTML (voir `vite.config.ts`).
 
 
 ## Lancer le projet
@@ -43,7 +43,6 @@ src/
     layout/Footer              parcours et liens
   features/
     projects/ProjectCard       une carte projet (sticky, ouvre la fiche)
-    projects/LaboLink          « Labo », à droite de l'intitulé (et ses bulles) : il mène au labo
     sheet/ProjectSheet         la fiche d'un projet (précédent/suivant, Échap)
     sheet/useSheetRoute.ts     fiche ↔ adresse (#synapso), retour du navigateur
     sheet/morph.ts             transition carte ↔ fiche (View Transitions)
@@ -57,6 +56,8 @@ src/
     fourrure/                  la page /fourrure : un chat dans le noir, la souris pour lumière
     toupies/                   la page /toupies (three.js) : stage, top + spin, bump, input, trace, settings…
     feu/                       la page /feu : le feu d'artifice de l'accueil, seul et sans fin, et ses réglages
+    escalade/                  la page /escalade : un bonhomme en caractères qui joue avec la fenêtre : body (bords,
+                               secousse), input (clavier, souris), intro, shake, tab (il dort), windows (deux fenêtres)
     abyme/                     la page /abyme : la visite remontée de fenêtre en fenêtre (path, door, drawn…)
     yaya/                      la page /yaya (cachée, sans lien)
   shared/

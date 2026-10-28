@@ -93,7 +93,7 @@ export const projects: Project[] = [
   },
 ]
 
-// Le labo (le carnet d'expériences) : sur l'accueil, « Labo », à droite de l'intitulé ; il mène à son sommaire,
+// Le labo (le carnet d'expériences) : sur l'accueil, un lien dans le pied de page ; il mène à son sommaire,
 // /labo/, puis on en tourne les pages (voir features/carnet). Chaque page : son nom, son adresse, sa capture
 // (16/10, WebP, 1200 px de large) et sa description.
 export const carnet: Carnet = {
@@ -116,6 +116,12 @@ export const carnet: Carnet = {
       href: '/toupies/',
       src: '/shots/toupies.webp',
       alt: 'Des toupies à pompe en tôle posées sur une page claire ; les deux de devant tournent : l’une, à quartiers de couleurs, fondue en pastels mêlés, l’autre, à rayures noires et blanches, devenue grise ; sous elles, sur la page, le trait fin de leur pointe, bleu et rouge ; au fond, les autres attendent, couchées.',
+    },
+    {
+      name: 'escalade',
+      href: '/escalade/',
+      src: '/shots/escalade.webp',
+      alt: 'Sur une page claire et vide, un petit bonhomme en caractères, une tête o et un corps #, suspendu par les mains au bord du haut de la fenêtre.',
     },
     {
       name: 'feu d’artifice',
