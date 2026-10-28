@@ -1,5 +1,5 @@
 // Tout le contenu du site : textes, projets, parcours, liens (le reste du code ne contient pas de texte à changer).
-import type { Person, Project } from './types'
+import type { Carnet, Person, Project } from './types'
 
 export const me: Person = {
   name: 'Garance Wetzel',
@@ -91,16 +91,49 @@ export const projects: Project[] = [
     demo: 'https://garancewetz.dev/journey',
     code: 'https://github.com/garancewetz/wwwetzel-journey',
   },
-  {
-    id: 'murmuration',
-    title: 'Murmuration',
-    short: 'Une murmuration ascii à Eus',
-    kind: 'Animation ASCII',
-    stack: ['TypeScript'],
-    image: '/shots/murmuration.webp', // capture de la page, en plein vol
-    alt: 'Sur un ciel de crépuscule indigo, un grand nuage d’oiseaux dessiné en caractères aux couleurs d’un coucher de soleil, rose fluo en haut, orange en bas (des points, des v, des W plus denses là où ils se croisent) au-dessus d’un village perché, son clocher et ses maisons en escalier, en bas à droite.',
-    // Une page de ce site, à l'adresse /murmuration (lien relatif : il marche aussi en local)
-    demo: '/murmuration/',
-    code: 'https://github.com/garancewetz/portfolio-2026/tree/main/src/features/murmuration',
-  },
 ]
+
+// Le labo (le carnet d'expériences) : sur l'accueil, un lien dans le pied de page ; il mène à son sommaire,
+// /labo/, puis on en tourne les pages (voir features/carnet). Chaque page : son nom, son adresse, sa capture
+// (16/10, WebP, 1200 px de large) et sa description.
+export const carnet: Carnet = {
+  href: '/labo/',
+  pages: [
+    {
+      name: 'murmuration',
+      href: '/murmuration/',
+      src: '/shots/murmuration.webp',
+      alt: 'Sur un ciel de crépuscule indigo, un grand nuage d’oiseaux dessiné en caractères aux couleurs d’un coucher de soleil, rose fluo en haut, orange en bas (des points, des v, des W plus denses là où ils se croisent) au-dessus d’un village perché, son clocher et ses maisons en escalier, en bas à droite.',
+    },
+    {
+      name: 'fourrure',
+      href: '/fourrure/',
+      src: '/shots/fourrure.webp',
+      alt: 'Dans le noir, un chat gris dessiné en caractères très serrés, à peine éclairé : ses pattes, son poitrail et son dos sortent de l’ombre là où la lumière est passée.',
+    },
+    {
+      name: 'toupies',
+      href: '/toupies/',
+      src: '/shots/toupies.webp',
+      alt: 'Des toupies à pompe en tôle posées sur une page claire ; les deux de devant tournent : l’une, à quartiers de couleurs, fondue en pastels mêlés, l’autre, à rayures noires et blanches, devenue grise ; sous elles, sur la page, le trait fin de leur pointe, bleu et rouge ; au fond, les autres attendent, couchées.',
+    },
+    {
+      name: 'escalade',
+      href: '/escalade/',
+      src: '/shots/escalade.webp',
+      alt: 'Sur une page claire, un petit bonhomme en caractères, une tête o et un corps #, escalade un trait multicolore qu’il a tracé depuis le bas de la page ; plus haut, à droite, une petite porte en caractères l’attend.',
+    },
+    {
+      name: 'feu d’artifice',
+      href: '/feu/',
+      src: '/shots/feu.webp',
+      alt: 'Sur un ciel de nuit étoilé, des gerbes de feu d’artifice en traits de lumière : une bleue et verte à gauche, une orange au milieu dans un halo de fumée cuivrée, et une pluie dorée qui retombe.',
+    },
+    {
+      name: 'abyme',
+      href: '/abyme/',
+      src: '/shots/abyme.webp',
+      alt: 'Une fenêtre de navigateur ouverte sur la page Toupies ; dedans, une fenêtre plus petite sur la page Fourrure, toute noire, puis une sur Murmuration, et tout au fond, l’accueil du site.',
+    },
+  ],
+}

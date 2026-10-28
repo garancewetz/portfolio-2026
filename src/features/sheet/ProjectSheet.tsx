@@ -9,9 +9,11 @@ import { projectNumber as num } from '@/shared/projectNumber'
 import type { Project } from '@/content/types'
 import Flipbook from './Flipbook'
 import './ProjectSheet.css'
+import './SheetBody.css'
+import './SheetPager.css'
 
 // L'adresse d'un lien, sans « https:// » ni chemin (pour l'afficher)
-// Le domaine du lien ; pour une page de ce site (le jeu sous /journey, ou un lien relatif comme /murmuration/),
+// Le domaine du lien ; pour une page de ce site (le jeu sous /journey, ou un lien relatif),
 // le chemin aussi
 const host = (url: string) => {
   if (url.startsWith('/')) return `garancewetz.dev${url.replace(/\/$/, '')}`
@@ -21,6 +23,11 @@ const host = (url: string) => {
     .split('/')
   return domain === 'garancewetz.dev' && path.length ? `${domain}/${path.join('/')}` : domain
 }
+
+// Un lien vers une page de ce site (le CV : garancewetz.dev/journey) : il s'ouvre dans
+// le même onglet, avec une flèche → ; un autre site s'ouvre dans un nouvel onglet, avec la flèche ↗ (voir
+// ExternalLink)
+const inside = (url: string) => url.startsWith('/') || /^https?:\/\/garancewetz\.dev\//.test(url)
 
 // La fiche d'un projet (ouverte au clic sur une carte) : une page du site, en plein écran,
 // sur la même grille. La capture occupe les premières colonnes, le texte les deux dernières.
@@ -119,7 +126,11 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
       <div className="rg-sheet-in">
         <div className="rg-sheet-shot">
           {/* la capture mène au site (s'il est en ligne), comme le lien sous la description */}
-          {p.demo ? (
+          {p.demo && inside(p.demo) ? (
+            <a href={p.demo} aria-label={`${p.title} : ouvrir`}>
+              <Shot project={p} eager sheet />
+            </a>
+          ) : p.demo ? (
             <a href={p.demo} target="_blank" rel="noreferrer" aria-label={`${p.title} : voir le site (nouvel onglet)`}>
               <Shot project={p} eager sheet />
             </a>
@@ -136,7 +147,11 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
           {/* le site, s'il est en ligne : le lien principal, en évidence sous la description */}
           {p.demo && (
             <p className="rg-sheet-site">
-              <ExternalLink href={p.demo}>{host(p.demo)}</ExternalLink>
+              {inside(p.demo) ? (
+                <a href={p.demo}>{host(p.demo)} →</a>
+              ) : (
+                <ExternalLink href={p.demo}>{host(p.demo)}</ExternalLink>
+              )}
             </p>
           )}
           {/* Totoro et un oiseau, debout sur le filet de la fiche technique */}

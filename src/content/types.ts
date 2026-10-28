@@ -28,6 +28,21 @@ export interface Project {
   wip?: boolean
 }
 
+/** le carnet d'expériences : l'adresse de son sommaire, ses pages */
+export interface Carnet {
+  href: string
+  pages: Page[]
+}
+
+/** une page du carnet : son nom, son adresse, sa capture (16/10, WebP, 1200 px de large) et sa
+    description */
+export interface Page {
+  name: string
+  href: string
+  src: string
+  alt: string
+}
+
 /** un écran : son image et sa description */
 export interface Screen {
   src: string

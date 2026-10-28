@@ -1,0 +1,45 @@
+/* ——— Abyme (voir abyme.ts) : la fenêtre du navigateur, dans la fenêtre du navigateur… Sur le fond clair du site,
+   en encre sombre ; la fenêtre est dessinée dans le canvas ——— */
+@import '@/styles/base.css';
+
+:root {
+  --bg: #f6f4ef;
+  color-scheme: light;
+  --carnet-ink: rgb(26 25 23 / 0.5);
+  --carnet-ink-hover: rgb(26 25 23 / 0.95);
+  --panel-bg: rgb(26 25 23 / 0.9);
+  --panel-accent: #f6f4ef;
+}
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+}
+.ab {
+  position: fixed;
+  inset: 0;
+  user-select: none;
+  touch-action: none;
+}
+.ab-drawn {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* les vraies pages, dans leurs fenêtres (voir door.ts) : posées sur leur fenêtre dessinée, à son échelle ; elles
+   apparaissent une fois chargées (avant, ce sont leurs captures qu'on voit) */
+.ab-door {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+  transform-origin: 0 0;
+  background: var(--bg);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.ab-door.is-ready {
+  opacity: 1;
+}

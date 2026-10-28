@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feu d’artifice — Garance Wetzel</title>
+    <meta name="description" content="Un feu d’artifice qui ne finit pas : des fusées, des bouquets, un halo de couleur liquide. Un clic fait éclater une gerbe." />
+    <meta name="theme-color" content="#04050f" />
+    <link rel="canonical" href="https://garancewetz.dev/feu" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- un feu d'artifice, sur un ciel de nuit (voir src/features/feu) -->
+    <main class="fe carnet-sheet" aria-label="Feu d’artifice : des fusées et des bouquets sur un ciel de nuit. Cliquer fait éclater une gerbe.">
+      <div class="fe-sky" aria-hidden="true"><i></i><i></i></div>
+      <canvas class="fe-fw" aria-hidden="true"></canvas>
+      <canvas class="fe-fw" aria-hidden="true"></canvas>
+      <canvas class="fe-fw" aria-hidden="true"></canvas>
+      <canvas class="fe-fw" aria-hidden="true"></canvas>
+      <canvas class="fe-fw" aria-hidden="true"></canvas>
+    </main>
+    <script type="module" src="/src/features/feu/main.ts"></script>
+  </body>
+</html>

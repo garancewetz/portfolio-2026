@@ -1,0 +1,77 @@
+/* ——— Escalade (voir main.ts) : la page claire du site, le bonhomme à l'encre, sur les bords de la fenêtre ——— */
+@import '@/styles/base.css';
+
+:root {
+  --bg: #f6f4ef;
+  color-scheme: light;
+  --carnet-ink: rgb(26 25 23 / 0.5);
+  --carnet-ink-hover: rgb(26 25 23 / 0.95);
+  /* (la roue crantée : un panneau d'encre, sur la page claire) */
+  --panel-bg: rgb(26 25 23 / 0.9);
+  --panel-accent: #f6f4ef;
+}
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+}
+.es {
+  position: fixed;
+  inset: 0;
+  user-select: none;
+  touch-action: none;
+}
+/* la traînée qu'il laisse (voir trail.ts), sous lui */
+.es-trail {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* le bonhomme : sa boîte, déplacée par le script (translate), dans le coin en haut à gauche de la page */
+.es-man {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  font: 500 22px / 1 var(--mono);
+  color: var(--ink);
+  white-space: pre;
+  will-change: transform;
+}
+/* l'arrivée : ses caractères en vrac, posés un par un (voir intro.ts) ; ils glissent à leur place */
+.es-loose span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font: 500 22px / 1 var(--mono);
+  color: var(--ink);
+  transition: transform 0.7s cubic-bezier(0.45, 0, 0.2, 1);
+}
+/* la porte (voir door.ts) : au milieu de la page, à l'encre, comme lui */
+.es-door {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  font: 500 22px / 1 var(--mono);
+  color: var(--ink);
+  white-space: pre;
+}
+/* les flèches, au milieu de la page, discrètes ; elles s'effacent au premier geste */
+.es-hint {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  font: 13px/1 var(--mono);
+  letter-spacing: 0.3em;
+  color: var(--muted);
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+.es-hint.is-off {
+  opacity: 0;
+}

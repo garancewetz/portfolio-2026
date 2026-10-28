@@ -1,0 +1,160 @@
+/* ——— Le sommaire du labo (voir sommaire.ts, book.ts) : un carnet ouvert, au format paysage, posé à plat sur la
+   table ; deux pages claires de part et d'autre de la reliure, sans ombre ni texture ——— */
+@import '@/styles/base.css';
+
+:root {
+  --bg: #f6f4ef;
+  color-scheme: light;
+  --carnet-ink: rgb(26 25 23 / 0.5);
+  --carnet-ink-hover: rgb(26 25 23 / 0.95);
+}
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--table);
+}
+/* (plus fort que la feuille du carnet, claire, chargée après : voir sheet.css) */
+main.sm.carnet-sheet {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 48px clamp(16px, 4vw, 64px);
+  background: var(--table);
+  color: var(--ink);
+}
+
+/* le carnet : deux pages au format paysage (4/3 chacune), aussi grand que l'écran le permet */
+.sm-book {
+  --page-w: min(calc((100vw - 2 * clamp(16px, 4vw, 64px)) / 2), calc((100dvh - 96px) * 4 / 3), 680px);
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--page-w) var(--page-w);
+  height: calc(var(--page-w) * 3 / 4);
+  perspective: calc(var(--page-w) * 4);
+}
+.sm-page {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  align-content: start;
+  gap: 12px;
+  height: 100%;
+  padding: 7% 8% 0;
+  background: var(--bg);
+  cursor: pointer;
+  user-select: none;
+}
+/* la reliure : un filet entre les deux pages */
+.sm-left {
+  border-right: 1px solid rgb(26 25 23 / 0.12);
+}
+.sm-book.is-first .sm-left,
+.sm-book.is-last .sm-right {
+  cursor: default;
+}
+
+.sm-shot {
+  display: block;
+}
+.sm-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  border-radius: 3px;
+  /* (un filet : les captures claires, Toupies, Abyme, ne se confondent pas avec la page) */
+  outline: 1px solid rgb(26 25 23 / 0.1);
+  outline-offset: -1px;
+}
+.sm-name {
+  justify-self: start;
+  font: 500 14px/1.4 var(--mono);
+  color: var(--ink);
+  text-decoration: none;
+}
+.sm-name:hover,
+.sm-name:focus-visible {
+  color: var(--violet);
+}
+.sm-page a:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: 4px;
+}
+/* le numéro, dans le coin du bas, du côté du bord */
+.sm-n {
+  position: absolute;
+  bottom: 5%;
+  font: 12px/1 var(--mono);
+  color: var(--muted);
+}
+[data-side='left'] > .sm-n {
+  left: 8%;
+}
+[data-side='right'] > .sm-n {
+  right: 8%;
+}
+/* le coin de la page de droite, à peine corné : c'est là qu'on tourne */
+.sm-right::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, rgb(26 25 23 / 0.08) 50%, var(--table) 50%);
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+.sm-right:hover::after {
+  width: 30px;
+  height: 30px;
+}
+.sm-book.is-last .sm-right::after {
+  content: none;
+}
+
+/* la feuille qui tourne, posée sur la page qu'elle quitte, pivote autour de la reliure */
+.sm-leaf {
+  position: absolute;
+  top: 0;
+  left: var(--page-w);
+  width: var(--page-w);
+  height: 100%;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+.sm-leaf.is-back {
+  left: 0;
+  transform-origin: right center;
+}
+.sm-leaf > .sm-page {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+}
+.sm-back {
+  transform: rotateY(180deg);
+}
+
+/* téléphone : une page à la fois, au format de l'écran */
+@media (max-width: 760px) {
+  .sm-book {
+    --page-w: calc(100vw - 32px);
+    grid-template-columns: var(--page-w);
+    height: auto;
+  }
+  .sm-page {
+    height: auto;
+    padding: 24px 20px 56px;
+  }
+  .sm-left {
+    border-right: 0;
+  }
+  .sm-right {
+    display: none;
+  }
+}

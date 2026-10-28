@@ -2,6 +2,9 @@ import { useEffect, useMemo, useRef } from 'react'
 import { MIX_LANDS } from '@/features/signature/anagrams'
 import type { Fluid } from './fluid'
 import type { Show } from './show'
+import { around, climb, lightCards, spread, type Planes } from './salvos'
+import { starField } from './stars'
+import { HALO, NEAR, SMOKE, STARS, rhythm } from './rhythm'
 import './Fireworks.css'
 
 // Le mode feu d'artifice (éteint par défaut, voir FireworksSwitch) : la nuit tombe sur la page (base.css), le ciel
@@ -10,106 +13,25 @@ import './Fireworks.css'
 // (grandes) devant. Chaque plan a ses étincelles, qui brillent (show.ts : fusées, gerbes en traits de lumière), et
 // son halo de couleur liquide qui fleurit et se dissout (fluid.ts). Derrière tout, la fumée des gerbes lointaines
 // s'accumule doucement au fil du spectacle (les proches n'en laissent pas : elle voilerait les captures).
-// Le rythme, comme un vrai spectacle : des fusées seules ou par deux, puis un bouquet, puis un court silence, le
-// tout réparti sur toute la page. Un clic dans le vide fait éclater une gerbe à cet endroit. À chaque anagramme (le
+// Le rythme, comme un vrai spectacle (rhythm.ts) : des fusées seules ou par deux, puis un bouquet, puis un court
+// silence, le tout réparti sur toute la page. Un clic dans le vide fait éclater une gerbe à cet endroit. À chaque anagramme (le
 // repère « gap »), des fusées montent pendant que les lettres voyagent, et une salve éclate partout quand elles ont
 // atterri. Au bout de SHOW ms, le bouquet final, partout, en vagues, puis la nuit calme, et le jour revient : le mode
 // s'éteint de lui-même (onEnd).
 // Les moteurs ne sont chargés qu'à la première mise en route. Éteint : plus de fusées, les dernières étincelles
 // s'éteignent, la fumée se dissipe, puis plus rien ne tourne.
 // on : mode allumé ; mix : l'anagramme affichée (à chaque changement, une salve).
-const SOLO = [650, 1300] // ms entre deux tirs (une ou deux fusées)
-const BOUQUET = [6, 10] // fusées dans un bouquet
-const REST = [1200, 1800] // ms de silence après un bouquet
 // comme un vrai spectacle, il a une fin : SHOW ms après la nuit, le bouquet final, puis CALM ms de nuit calme, et le
 // jour revient (on peut toujours l'éteindre avant)
 const SHOW = 30000
 const CALM = 4500
 const LINGER = 9000 // ms pour que la fumée se dissipe, une fois tout éteint
-// le halo liquide : peu de couleur, qui se dissout vite, sans tourbillons (une lueur, pas des marbrures)
-const HALO = { ink: 0.09, fade: 1.6, curl: 5 }
-// la fumée : gris-bleu, très légère, qui se dissipe lentement (elle s'accumule) en tournoyant un peu
-const SMOKE = { ink: 0.014, tint: [0.62, 0.64, 0.78], fade: 0.3, curl: 4 }
-const STARS = 170
-const NEAR = 1.45 // à partir de cette taille, une gerbe est proche : elle éclate devant les cartes
 
 interface FireworksProps {
   on: boolean
   mix: number
   /** le spectacle est fini (après le bouquet final) : on peut éteindre le mode */
   onEnd: () => void
-}
-
-const around = (a: number, b: number) => a + Math.random() * (b - a)
-
-// les deux plans ensemble : une gerbe, une fusée vont dans le plan qui convient à leur taille (near : forcer le
-// plan proche)
-interface Planes {
-  burst(x: number, y: number, size: number, near?: boolean): void
-  launch(x: number, y: number, size: number, trail?: number, near?: boolean): void
-}
-
-// les salves, en deux gestes : des fusées qui montent tout autour (climb), puis des gerbes en rafale réparties sur
-// tout l'écran (spread) ; alive : le mode est encore allumé
-const climb = (show: Planes, alive: () => boolean) => {
-  for (let i = 0; i < 6; i++) {
-    setTimeout(
-      () => alive() && show.launch(innerWidth * around(0.05, 0.95), innerHeight * around(0.06, 0.4), around(1, 1.8)),
-      150 + i * 160,
-    )
-  }
-}
-// la lumière des gerbes proches sur les cartes : chaque capture à portée reçoit un reflet de la couleur de
-// l'explosion, venu de son côté, d'autant plus fort qu'elle est près, et qui s'éteint avec elle (--glow, animé :
-// voir Fireworks.css). (x, y) : le centre de la gerbe ; size : sa taille ; color : sa couleur
-const LIGHT_REACH = 520 // px : jusqu'où porte la lumière d'une gerbe de taille 1
-const LIGHT_FADE = 1600 // ms
-function lightCards(x: number, y: number, size: number, color: string) {
-  const reach = LIGHT_REACH * size
-  for (const shot of document.querySelectorAll<HTMLElement>('.rg-card .shot')) {
-    const r = shot.getBoundingClientRect()
-    if (r.bottom < 0 || r.top > innerHeight) continue
-    // (la distance au bord le plus proche de la capture : une gerbe qui éclate dessus l'éclaire à fond)
-    const d = Math.hypot(Math.max(r.left - x, 0, x - r.right), Math.max(r.top - y, 0, y - r.bottom))
-    const k = 1 - d / reach
-    if (k < 0.05) continue
-    shot.style.setProperty('--gx', `${x - r.left}px`)
-    shot.style.setProperty('--gy', `${y - r.top}px`)
-    // (le reflet s'éteint en traversant la capture : plus fort du côté de la gerbe)
-    shot.style.setProperty('--gr', `${d + r.width * 1.1}px`)
-    shot.style.setProperty('--gc', color)
-    shot.animate([{ '--glow': k }, { '--glow': 0 }], { duration: LIGHT_FADE, easing: 'cubic-bezier(0.1, 0.6, 0.3, 1)' })
-  }
-}
-
-// n gerbes en rafale, réparties sur toute la largeur (une par tranche, placée au hasard dedans) et dans le haut de
-// l'écran, à quelques dixièmes de seconde d'écart
-const spread = (show: Planes, n: number, alive: () => boolean) => {
-  for (let i = 0; i < n; i++) {
-    setTimeout(
-      () =>
-        alive() &&
-        show.burst(
-          innerWidth * (0.04 + (0.92 * (i + Math.random())) / n),
-          innerHeight * around(0.1, 0.62),
-          around(0.9, 2),
-        ),
-      i * around(40, 110),
-    )
-  }
-}
-
-// les étoiles : des points (une ombre portée chacune), plus nombreux en haut du ciel ; deux groupes, qui
-// scintillent chacun à son rythme
-function starField(n: number): [string, string] {
-  const one = () => {
-    const x = (Math.random() * 100).toFixed(2)
-    const y = (Math.random() ** 1.6 * 100).toFixed(2)
-    const a = around(0.25, 0.9).toFixed(2)
-    return `${x}vw ${y}vh 0 ${Math.random() < 0.12 ? 1 : 0}px rgb(238 234 226 / ${a})`
-  }
-  const list = Array.from({ length: n }, one)
-  return [list.filter((_, i) => i % 2).join(','), list.filter((_, i) => !(i % 2)).join(',')]
 }
 
 export default function Fireworks({ on, mix, onEnd }: FireworksProps) {
@@ -168,13 +90,13 @@ export default function Fireworks({ on, mix, onEnd }: FireworksProps) {
       return
     }
     let cancelled = false
-    let timer = 0
+    let timer = 0 // (la fin, après le bouquet final)
+    let stop = () => {} // (le rythme du spectacle)
     // de la profondeur : des gerbes lointaines, petites, et d'autres toutes proches, immenses
     const rocket = () => {
       if (onRef.current)
         planes.current?.launch(innerWidth * around(0.04, 0.96), innerHeight * around(0.08, 0.6), around(0.5, 2.3))
     }
-    let shots = 0
     let nightAt = 0 // (quand la nuit est tombée : le spectacle dure SHOW ms à partir de là)
     const alive = () => onRef.current
     // le bouquet final, partout : des fusées qui montent tout autour, une rafale de fusées, puis trois vagues de
@@ -188,22 +110,6 @@ export default function Fireworks({ on, mix, onEnd }: FireworksProps) {
       setTimeout(() => spread(s, 10, alive), 1900)
       setTimeout(() => spread(s, 14, alive), 2700)
       timer = window.setTimeout(() => alive() && endRef.current(), 2700 + 1500 + CALM)
-    }
-    const program = () => {
-      if (performance.now() - nightAt > SHOW) return finale()
-      if (shots > 0) {
-        // une fusée, parfois deux à la fois
-        shots--
-        rocket()
-        if (Math.random() < 0.4) setTimeout(rocket, around(80, 240))
-        timer = window.setTimeout(program, around(SOLO[0], SOLO[1]))
-        return
-      }
-      // le bouquet, puis le silence, puis à nouveau quelques tirs
-      shots = 3 + Math.floor(Math.random() * 3)
-      const n = Math.round(around(BOUQUET[0], BOUQUET[1]))
-      for (let i = 0; i < n; i++) setTimeout(rocket, i * around(80, 180))
-      timer = window.setTimeout(program, around(REST[0], REST[1]))
     }
 
     Promise.all([import('./show'), import('./fluid')]).then(([{ createShow, COLORS }, { createFluid }]) => {
@@ -244,9 +150,8 @@ export default function Fireworks({ on, mix, onEnd }: FireworksProps) {
       paf.current = () => {
         html.classList.add('is-night', 'is-paf')
         setTimeout(() => html.classList.remove('is-paf'), 400)
-        shots = 2
         nightAt = performance.now()
-        timer = window.setTimeout(program, 500)
+        stop = rhythm(rocket, { after: () => performance.now() - nightAt > SHOW, then: finale })
       }
       // (en violet, la couleur de la grille : l'or se verrait à peine sur le fond clair)
       n.launch(innerWidth / 2, innerHeight * 0.36, 2, 0)
@@ -266,6 +171,7 @@ export default function Fireworks({ on, mix, onEnd }: FireworksProps) {
     return () => {
       cancelled = true
       paf.current = null
+      stop()
       clearTimeout(timer)
       removeEventListener('resize', onResize)
       removeEventListener('pointerdown', onDown)

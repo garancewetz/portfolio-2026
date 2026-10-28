@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Escalade — Garance Wetzel</title>
+    <meta name="description" content="Un petit bonhomme en caractères marche le long du bas de la fenêtre, escalade ses bords et la traverse, suspendu au bord du haut." />
+    <meta name="theme-color" content="#f6f4ef" />
+    <link rel="canonical" href="https://garancewetz.dev/escalade" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- un petit bonhomme sur les bords de la fenêtre (voir src/features/escalade) -->
+    <main class="es carnet-sheet" aria-label="Escalade : un petit bonhomme en caractères. Les flèches le font marcher, grimper le long des bords de la fenêtre et la traverser suspendu au bord du haut.">
+      <p class="es-hint" aria-hidden="true">← → ↑</p>
+      <canvas class="es-trail" aria-hidden="true"></canvas>
+      <pre class="es-man" aria-hidden="true"></pre>
+    </main>
+    <script type="module" src="/src/features/escalade/main.ts"></script>
+  </body>
+</html>

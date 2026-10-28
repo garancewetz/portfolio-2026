@@ -17,8 +17,9 @@ import './App.css'
 
 // La page. D'abord les projets : les cartes montent une à une et se rangent sur une ligne, une colonne par
 // projet (position: sticky ; au-delà de cinq, une seconde ligne), sur la grille CSS en fond (colonnes, gap,
-// rangée), comme dans les outils du navigateur. Ensuite la signature : le nom, en très grand. Une fois tout rangé, la page continue juste ce qu'il
-// faut : la grille remonte d'un bloc, et le pied de page arrive dessous. Un clic sur une carte ouvre sa fiche.
+// rangée), comme dans les outils du navigateur.
+// Ensuite la signature : le nom, en très grand. Une fois tout rangé, la page continue juste ce qu'il faut : la
+// grille remonte d'un bloc, et le pied de page arrive dessous. Un clic sur une carte ouvre sa fiche.
 export default function App() {
   const N = COLS
   // la mise en place au défilement ; phase : 'scroll' (les projets montent) → 'done' (tous rangés)

@@ -19,6 +19,30 @@
 .rg-foot a {
   color: var(--ink);
 }
+/* les deux groupes de droite (sur ce site / ailleurs) : plus écartés l'un de l'autre que leurs liens entre eux,
+   et un trait fin entre les deux */
+.rg-foot .rg-links {
+  align-items: center;
+  gap: 8px 0;
+}
+.rg-links > span {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.rg-links > span + span {
+  margin-left: 24px;
+  padding-left: 24px;
+  border-left: 1px solid var(--line);
+}
+/* téléphone : les deux groupes passent chacun sur sa ligne, ce qui suffit à les séparer (sans trait) */
+@media (max-width: 600px) {
+  .rg-links > span + span {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: 0;
+  }
+}
 /* le parcours : du contexte, au même niveau que le contact (une phrase, pas une rangée de liens ;
    les entreprises juste un peu plus foncées) */
 .rg-foot .rg-xp {

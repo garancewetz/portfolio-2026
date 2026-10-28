@@ -57,19 +57,24 @@
   z-index: 3;
 }
 
-/* son interrupteur, dans le pied de page : du texte en mono, comme les liens */
+/* son interrupteur, dans le pied de page : du texte en mono, mais un bouton, pas un lien (pas souligné, une
+   petite pastille et une étincelle devant : il fait quelque chose ici, il n'emmène nulle part) */
 .rg-fw-switch {
-  padding: 0;
-  border: 0;
+  padding: 1px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
   background: none;
   font: inherit;
   color: var(--ink);
-  text-decoration: underline;
-  text-underline-offset: 0.18em;
   cursor: pointer;
+  transition: border-color 0.15s ease;
 }
-.rg-fw-switch:hover {
-  text-decoration-thickness: 2px;
+.rg-fw-switch::before {
+  content: '✦ ';
+}
+.rg-fw-switch:hover,
+.rg-fw-switch[aria-pressed='true'] {
+  border-color: var(--ink);
 }
 
 /* la lumière des gerbes proches sur les captures des cartes (voir lightCards, dans Fireworks.tsx) : un reflet

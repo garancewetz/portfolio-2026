@@ -1,0 +1,32 @@
+/* ——— Toupies (voir main.ts) : la toupie d'enfant, en 3D, sur la page claire ——— */
+@import '@/styles/base.css';
+
+:root {
+  color-scheme: light;
+  /* (le carnet, en encre sombre sur le fond clair) */
+  --carnet-ink: rgb(26 25 23 / 0.5);
+  --carnet-ink-hover: rgb(26 25 23 / 0.95);
+  /* (le panneau des réglages, voir settings.ts) */
+  --panel-bg: rgb(26 25 23 / 0.88);
+  --panel-accent: #3ec5c8;
+}
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+}
+.tp {
+  position: fixed;
+  inset: 0;
+  user-select: none;
+  touch-action: none;
+}
+.tp-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* (on appuie sur la pompe) */
+  cursor: pointer;
+}

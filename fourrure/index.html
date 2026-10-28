@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fourrure — Garance Wetzel</title>
+    <meta name="description" content="Un chat gris en ASCII, plongé dans le noir : la souris l’éclaire, zone par zone." />
+    <meta name="theme-color" content="#050506" />
+    <link rel="canonical" href="https://garancewetz.dev/fourrure" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- la fourrure d'un chat dans le noir, en caractères (voir src/features/fourrure) -->
+    <main class="cn carnet-sheet" aria-label="Fourrure : un chat en caractères, invisible dans le noir. La souris est une lumière qui le révèle, zone par zone.">
+      <canvas class="cn-cat" aria-hidden="true"></canvas>
+    </main>
+    <script type="module" src="/src/features/fourrure/main.ts"></script>
+  </body>
+</html>

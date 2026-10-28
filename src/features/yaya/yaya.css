@@ -1,0 +1,45 @@
+/* ——— Où est Yaya ? (voir scene.ts) : la scène dessinée dans le canvas, sur toute la page, et le titre du voyage
+   en haut à gauche, sous le carnet ——— */
+@import '@/styles/base.css';
+
+:root {
+  --bg: #9cc3e6;
+  color-scheme: light;
+  /* (le carnet et le titre, en encre sombre sur le ciel) */
+  --carnet-ink: rgb(20 28 40 / 0.55);
+  --carnet-ink-hover: rgb(20 28 40 / 0.95);
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+}
+.yy {
+  position: fixed;
+  inset: 0;
+  user-select: none;
+  touch-action: none;
+}
+.yy-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.yy-title {
+  position: absolute;
+  z-index: 1;
+  top: 40px;
+  left: 18px;
+  margin: 0;
+  font: 12px/1.5 var(--mono);
+  color: var(--carnet-ink);
+  pointer-events: none;
+}
+.yy-ask {
+  color: var(--carnet-ink-hover);
+  /* (les espaces comptent : ils gardent le compteur en place, voir scene.ts) */
+  white-space: pre;
+}

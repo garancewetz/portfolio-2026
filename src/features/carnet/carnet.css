@@ -1,0 +1,96 @@
+/* ——— Le carnet (voir carnet.ts) : une ligne de texte en haut de la page, à peine visible, qui s'éclaire au survol.
+   Blanche par défaut ; une page claire donne son encre (--carnet-ink, --carnet-ink-hover) ——— */
+.carnet {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 18px;
+  font: 12px/1 var(--mono);
+  color: var(--carnet-ink, rgb(255 255 255 / 0.38));
+  /* (le carnet n'arrête que ses liens : le reste de la ligne laisse passer la souris vers la page) */
+  pointer-events: none;
+}
+.carnet a {
+  color: inherit;
+  text-decoration: none;
+  pointer-events: auto;
+  /* (une page peut cacher la souris : on la retrouve sur les liens) */
+  cursor: pointer;
+  transition: color 0.4s;
+}
+.carnet a:hover,
+.carnet a:focus-visible {
+  color: var(--carnet-ink-hover, rgb(255 255 255 / 0.85));
+}
+.carnet-page {
+  margin-left: 0.6em;
+}
+.carnet-turn {
+  display: flex;
+  gap: 2em;
+}
+
+/* ——— Tourner la page : la page recule et devient une feuille posée sur la table (le temps d'un souffle, on voit le
+   carnet et sa ligne) ; la suivante glisse par-dessus, puis s'agrandit jusqu'à remplir l'écran ——— */
+@view-transition {
+  navigation: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+::view-transition-group(carnet-sheet) {
+  animation-duration: 1.3s;
+}
+::view-transition-old(carnet-sheet),
+::view-transition-new(carnet-sheet) {
+  animation-duration: 1.3s;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.25, 1);
+  animation-fill-mode: both;
+  /* (la feuille sur la table, à peine détachée) */
+  box-shadow: 0 2px 16px rgb(0 0 0 / 0.16);
+}
+::view-transition-old(carnet-sheet) {
+  animation-name: carnet-settle;
+}
+html:active-view-transition-type(forward)::view-transition-new(carnet-sheet) {
+  animation-name: carnet-from-right;
+}
+html:active-view-transition-type(backward)::view-transition-new(carnet-sheet) {
+  animation-name: carnet-from-left;
+}
+/* l'ancienne page recule, se pose sur la table et y reste (la nouvelle la recouvre) */
+@keyframes carnet-settle {
+  30%,
+  to {
+    transform: scale(0.8);
+  }
+}
+@keyframes carnet-from-right {
+  0%,
+  30% {
+    transform: translateX(100%) scale(0.8);
+  }
+  70% {
+    transform: scale(0.8);
+  }
+}
+@keyframes carnet-from-left {
+  0%,
+  30% {
+    transform: translateX(-100%) scale(0.8);
+  }
+  70% {
+    transform: scale(0.8);
+  }
+}
+/* (la nouvelle page passe au-dessus de l'ancienne) */
+::view-transition-new(carnet-sheet) {
+  z-index: 1;
+}
