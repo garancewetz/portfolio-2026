@@ -5,9 +5,7 @@ import { remember } from '@/shared/trail'
 // Le carnet du labo : les expériences, chacune sur sa page (sa propre adresse), qu'on parcourt comme un carnet. En
 // haut de chaque page, discrètement : « labo » (retour au sommaire ; sur le sommaire, « accueil », retour au site)
 // et le numéro de page à gauche ; la page d'avant et celle d'après, par leur nom, à droite. Chaque page prend tout
-// l'écran (voir sheet.ts). En tournant la page, on voit le carnet : la page recule et se pose sur la table, la
-// suivante glisse par-dessus puis s'agrandit jusqu'à remplir l'écran (une View Transition entre documents, là où
-// le navigateur la connaît ; ailleurs, on change simplement de page).
+// l'écran (voir sheet.ts) ; on passe de l'une à l'autre simplement, sans animation.
 
 // les pages, dans l'ordre du carnet (pour en ajouter une : une ligne ici, et `mount()` dans son main.ts)
 // (la première, le sommaire : la page de garde, sans numéro ; voir sommaire.ts)
@@ -57,20 +55,3 @@ export function mount() {
   // (une page peut y ajouter ses propres outils, à gauche, après le numéro de page)
   return nav.querySelector<HTMLElement>('.carnet-left')
 }
-
-// tourner la page : vers l'avant, la nouvelle page arrive par la droite ; vers l'arrière, par la gauche
-addEventListener('pagereveal', (e) => {
-  const transition = (e as Event & { viewTransition?: ViewTransition | null }).viewTransition
-  const from = (globalThis as { navigation?: { activation?: { from?: { url: string } | null } } }).navigation
-    ?.activation?.from?.url
-  if (!transition || !from) return
-  const a = indexOf(from)
-  const b = indexOf(location.href)
-  // (en arrivant d'ailleurs que du carnet, du site par exemple : pas de page qui tourne)
-  if (a < 0 || b < 0 || a === b) {
-    // (sans quoi le navigateur signale, à tort, une erreur)
-    transition.ready.catch(() => {})
-    return transition.skipTransition()
-  }
-  transition.types?.add(b > a ? 'forward' : 'backward')
-})

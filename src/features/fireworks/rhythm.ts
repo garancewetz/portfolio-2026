@@ -25,6 +25,11 @@ export function rhythm(
   let timer = 0
   const next = () => {
     if (end?.after()) return end.then()
+    // (onglet caché : les images ne sont plus dessinées, les gerbes s'empileraient sans s'éteindre ; on attend)
+    if (document.hidden) {
+      timer = window.setTimeout(next, 500)
+      return
+    }
     if (shots > 0) {
       // une fusée, parfois deux à la fois
       shots--
