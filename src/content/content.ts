@@ -121,7 +121,7 @@ export const carnet: Carnet = {
       name: 'escalade',
       href: '/escalade/',
       src: '/shots/escalade.webp',
-      alt: 'Sur une page claire et vide, un petit bonhomme en caractères, une tête o et un corps #, suspendu par les mains au bord du haut de la fenêtre.',
+      alt: 'Sur une page claire, un petit bonhomme en caractères, une tête o et un corps #, escalade un trait multicolore qu’il a tracé depuis le bas de la page ; plus haut, à droite, une petite porte en caractères l’attend.',
     },
     {
       name: 'feu d’artifice',
