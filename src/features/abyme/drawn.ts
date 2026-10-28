@@ -56,7 +56,6 @@ export function drawn(canvas: HTMLCanvasElement) {
     () => u >= steps.length,
   )
 
-
   function resize() {
     const dpr = Math.min(2, devicePixelRatio || 1)
     W = canvas.clientWidth

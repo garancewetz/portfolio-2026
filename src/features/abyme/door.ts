@@ -1,8 +1,8 @@
-// Dans chaque fenêtre de l'abyme, la vraie page : une iframe par page du chemin, chargées dès l'arrivée (cachées),
-// puis posées exactement sur la page dessinée de leur fenêtre : même taille que la fenêtre du navigateur (W × H),
-// réduites à l'échelle de la fenêtre dessinée. Les captures dessinées dessous ne servent qu'en attendant.
-// La molette, au-dessus d'elles, sert à plonger (dive) ; sauf tout au fond, quand l'accueil remplit l'écran :
-// c'est lui qui défile, et, tout en haut de l'accueil, remonter fait ressortir de l'abyme.
+// Dans la fenêtre de l'accueil, tout au fond de l'abyme, la vraie page (les autres fenêtres gardent leur capture) :
+// une iframe, chargée dès l'arrivée (cachée), puis posée exactement sur la page dessinée de sa fenêtre : même taille
+// que la fenêtre du navigateur (W × H), réduite à l'échelle de la fenêtre dessinée. La capture dessinée dessous ne
+// sert qu'en attendant. La molette, au-dessus d'elle, sert à plonger (dive) ; sauf tout au fond, quand l'accueil
+// remplit l'écran : c'est lui qui défile, et, tout en haut de l'accueil, remonter fait ressortir de l'abyme.
 
 // sa place : coin haut gauche et échelle à l'écran, arrondi du bas ; et le trou où se pose la fenêtre suivante
 // (en pixels de la page : la page s'y efface, pour laisser voir la fenêtre dessinée, sa barre et son ombre)
@@ -14,8 +14,13 @@ export type Place = {
   hole?: { x: number; y: number; w: number; h: number }
 }
 
+// (seul l'accueil est une vraie page, vivante : les pages du labo, souvent lourdes — 3D, feu d'artifice —, restent
+// leurs captures, dessinées dans leurs fenêtres)
+const live = (path: string) => new URL(path, location.origin).pathname === '/'
+
 export function doors(main: HTMLElement, paths: string[], dive: (deltaY: number) => void, full: () => boolean) {
   const frames = paths.map((path, d) => {
+    if (!live(path)) return null
     const frame = document.createElement('iframe')
     frame.className = 'ab-door'
     frame.src = path
@@ -50,6 +55,7 @@ export function doors(main: HTMLElement, paths: string[], dive: (deltaY: number)
     // la place de chaque page à l'écran (null : pas en vue) ; W × H : la taille de la fenêtre du navigateur
     place(at: (Place | null)[], W: number, H: number) {
       frames.forEach((frame, d) => {
+        if (!frame) return
         const p = at[d]
         frame.style.visibility = p ? '' : 'hidden'
         if (!p) return
