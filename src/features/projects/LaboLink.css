@@ -1,0 +1,51 @@
+/* ——— Le lien du labo (voir LaboLink.tsx) : sur la ligne de l'intitulé, à droite, dans son style (même boîte que
+   .rg-top : le mot se pose sur la même ligne) ——— */
+.rg-labo {
+  position: fixed;
+  z-index: 4;
+  top: 0;
+  right: var(--pad);
+  height: calc(var(--pad) + var(--head-h) - 8px);
+  display: flex;
+  align-items: flex-end;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+}
+.rg-labo:hover,
+.rg-labo:focus-visible {
+  color: var(--violet);
+}
+.rg-labo:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: 4px;
+}
+/* la bulle : au bout du mot, elle n'apparaît qu'au survol */
+.rg-labo-bubble {
+  /* (posée à côté du mot, sans prendre de place : le mot reste aligné sur le bord) */
+  position: absolute;
+  right: -0.75em;
+  bottom: 1.1em;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--violet);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.rg-labo:is(:hover, :focus-visible) .rg-labo-bubble {
+  opacity: 1;
+}
+
+/* petit écran : en haut à droite de la page, il défile avec elle */
+@media (max-width: 900px) {
+  .rg-labo {
+    position: absolute;
+    height: auto;
+    top: 24px;
+  }
+}

@@ -13,8 +13,8 @@ export function book(el: HTMLElement, count: number, page: (i: number) => string
     <section class="sm-page sm-left" aria-live="polite"></section>
     <section class="sm-page sm-right" aria-live="polite"></section>
     <div class="sm-leaf" hidden><div class="sm-page sm-front"></div><div class="sm-page sm-back"></div></div>`
-  const [left, right, front, back] = ['.sm-left', '.sm-right', '.sm-front', '.sm-back'].map(
-    (s) => el.querySelector<HTMLElement>(s)!,
+  const [left, right, front, back] = ['.sm-left', '.sm-right', '.sm-front', '.sm-back'].map((s) =>
+    el.querySelector<HTMLElement>(s)!,
   )
   const leaf = el.querySelector<HTMLElement>('.sm-leaf')!
   const fill = (side: HTMLElement, i: number) => {

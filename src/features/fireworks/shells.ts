@@ -27,8 +27,18 @@ export const rand = (a: number, b: number) => a + Math.random() * (b - a)
 // une étincelle de plus (sans sa position précédente : elle part d'où elle est)
 export type Add = (s: Omit<Spark, 'px' | 'py'>) => void
 
-// les étincelles d'une gerbe de sorte shell en (x, y), lancées à la vitesse speed, dans les couleurs a et b
-export function shellOf(add: Add, x: number, y: number, speed: number, shell: Shell, a: number, b: number) {
+// les étincelles d'une gerbe de sorte shell en (x, y), lancées à la vitesse speed, dans les couleurs a et b ; gold :
+// la couleur des touches d'or (le saule, les éclats du palmier ; une autre si la palette n'a pas d'or)
+export function shellOf(
+  add: Add,
+  x: number,
+  y: number,
+  speed: number,
+  shell: Shell,
+  a: number,
+  b: number,
+  gold = GOLD,
+) {
   // l'éclair du départ : quelques éclats de la couleur de la gerbe, très rapides et très courts
   for (let i = 0; i < 24; i++) {
     const t = Math.random() * Math.PI * 2
@@ -64,7 +74,7 @@ export function shellOf(add: Add, x: number, y: number, speed: number, shell: Sh
           fall: 1,
           life,
           max: life,
-          color: k % 4 ? a : GOLD,
+          color: k % 4 ? a : gold,
           width: 3,
           crackle: k % 4 === 0,
         })
@@ -87,7 +97,7 @@ export function shellOf(add: Add, x: number, y: number, speed: number, shell: Sh
       fall: shell === 'willow' ? 1.3 : 0.8,
       life,
       max: life,
-      color: shell === 'willow' ? GOLD : i % 2 ? a : b,
+      color: shell === 'willow' ? gold : i % 2 ? a : b,
       width: shell === 'willow' ? 1.6 : 2.2,
       crackle: shell === 'chrysanthemum' || (shell === 'willow' && i % 3 === 0),
     })

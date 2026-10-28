@@ -5,7 +5,7 @@
      (contrairement à « hidden » : ne pas le remettre). */
   overflow: clip;
   --pad: clamp(16px, 2.4vw, 32px);
-  --head-h: 44px; /* hauteur de l'intitulé en haut */
+  --head-h: 30px; /* hauteur de l'intitulé en haut (peu de place au-dessus : il est juste au-dessus des cartes) */
   /* place du pied de page en bas de l'écran : les étiquettes de la grille se posent juste au-dessus */
   --foot-h: 72px;
   /* (couleurs des guides : dans base.css) */

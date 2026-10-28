@@ -33,10 +33,12 @@ export interface Show {
   clear(): void
 }
 
-// onBurst : prévenu à chaque explosion (pour le halo de couleur liquide, dessous), avec ses deux couleurs
+// onBurst : prévenu à chaque explosion (pour le halo de couleur liquide, dessous), avec ses deux couleurs ;
+// palette (facultatif) : les couleurs permises (leurs places dans COLORS), sinon toutes
 export function createShow(
   canvas: HTMLCanvasElement,
   onBurst?: (x: number, y: number, size: number, colors: [number, number]) => void,
+  palette?: () => readonly number[],
 ): Show | null {
   const ctx = canvas.getContext('2d')
   if (!ctx) return null
@@ -48,7 +50,15 @@ export function createShow(
   let max = MAX
   let time = 0
   const sparks: Spark[] = []
-  const pick = () => Math.floor(Math.random() * COLORS.length)
+  const pick = () => {
+    const p = palette?.()
+    return p?.length ? p[Math.floor(Math.random() * p.length)] : Math.floor(Math.random() * COLORS.length)
+  }
+  // l'or des fusées, des crépitements et des saules : de l'or, sauf si la palette n'en a pas (une de ses couleurs)
+  const gold = () => {
+    const p = palette?.()
+    return !p?.length || p.includes(GOLD) ? GOLD : pick()
+  }
 
   // (la profondeur : une gerbe proche, plus grande, a aussi des traits plus épais)
   let thick = 1
@@ -68,14 +78,16 @@ export function createShow(
     onBurst?.(x, y, size * scale, colors)
     thick = Math.min(1.6, Math.max(0.6, Math.sqrt(size)))
     try {
-      shellOf(add, x, y, rand(260, 380) * size * scale, shell, a, b)
+      shellOf(add, x, y, rand(260, 380) * size * scale, shell, a, b, gold())
     } finally {
       thick = 1
     }
   }
 
   // trail : la couleur de la fusée et de ce qu'elle sème (de l'or, d'habitude)
-  const launch = (x: number, y: number, size = 1, trail = GOLD) => {
+  const launch = (x: number, y: number, size = 1, given = GOLD) => {
+    // (l'or d'habitude : celui de la palette)
+    const trail = given === GOLD ? gold() : given
     // la fusée monte depuis le bas, à peu près à la verticale du point d'éclatement
     const x0 = x + rand(-60, 60)
     const y0 = h + 10
@@ -92,7 +104,7 @@ export function createShow(
       life: dur,
       max: dur,
       color: trail,
-      width: trail === GOLD ? 2.6 : 3.4,
+      width: given === GOLD ? 2.6 : 3.4,
       crackle: false,
       rocket: { shell: SHELLS[Math.floor(Math.random() * SHELLS.length)], size, colors: [pick(), pick()], trail },
     })
@@ -152,7 +164,7 @@ export function createShow(
           fall: 0.3,
           life: 0.12,
           max: 0.12,
-          color: GOLD,
+          color: gold(),
           width: 1.6,
           crackle: false,
         })

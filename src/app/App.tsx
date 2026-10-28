@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { me, projects } from '@/content/content'
 import Ripple from '@/shared/Ripple'
 import ProjectCard from '@/features/projects/ProjectCard'
-import Fiole from '@/features/projects/Fiole'
+import LaboLink from '@/features/projects/LaboLink'
 import ProjectSheet from '@/features/sheet/ProjectSheet'
 import { useSheetRoute } from '@/features/sheet/useSheetRoute'
 import Signature, { type SignatureHandle } from '@/features/signature/Signature'
@@ -18,7 +18,7 @@ import './App.css'
 
 // La page. D'abord les projets : les cartes montent une à une et se rangent sur une ligne, une colonne par
 // projet (position: sticky ; au-delà de cinq, une seconde ligne), sur la grille CSS en fond (colonnes, gap,
-// rangée), comme dans les outils du navigateur ; le carnet d'expériences, lui, est une petite fiole dans la marge.
+// rangée), comme dans les outils du navigateur ; le labo, lui, est un mot à droite de l'intitulé.
 // Ensuite la signature : le nom, en très grand. Une fois tout rangé, la page continue juste ce qu'il faut : la
 // grille remonte d'un bloc, et le pied de page arrive dessous. Un clic sur une carte ouvre sa fiche.
 export default function App() {
@@ -49,8 +49,8 @@ export default function App() {
         <strong className="sr">{me.name}</strong>
         <span>Projets personnels</span>
       </h1>
-      {/* le carnet d'expériences : une toute petite fiole, dans la marge */}
-      <Fiole />
+      {/* le labo : un mot, à droite sur la ligne de l'intitulé */}
+      <LaboLink />
 
       <ScrollHint ref={hint} />
       <Fireworks on={fireworks} mix={mix} onEnd={() => setFireworks(false)} />
