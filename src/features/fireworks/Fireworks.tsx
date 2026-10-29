@@ -112,7 +112,7 @@ export default function Fireworks({ on, mix, onEnd }: FireworksProps) {
       timer = window.setTimeout(() => alive() && endRef.current(), 2700 + 1500 + CALM)
     }
 
-    Promise.all([import('./show'), import('./fluid')]).then(([{ createShow, COLORS }, { createFluid }]) => {
+    import('./engines').then(({ createShow, COLORS, createFluid }) => {
       const canvases = [smokeCanvas, farHaloCanvas, farCanvas, nearHaloCanvas, nearCanvas].map((c) => c.current)
       if (cancelled || canvases.some((c) => !c)) return
       // (sur un petit écran, un téléphone : pas de fumée, et des halos moins fins, pour rester fluide)
