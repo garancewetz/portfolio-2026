@@ -130,6 +130,12 @@ export const carnet: Carnet = {
       alt: 'Sur une nuit bleue, au-dessus de collines en caractères, une lueur dorée laisse derrière elle le trait de la voix qui la guide ; devant elle flottent des notes ♪ à attraper, et sur le bord gauche, un petit clavier de piano debout allume la note chantée.',
     },
     {
+      name: 'morse',
+      href: '/morse/',
+      src: '/shots/morse.webp',
+      alt: 'Sur une page claire, le prénom « Garance » écrit en grand, en serif ; dessous, lettre à lettre, ses points et ses traits à l’encre, chaque lettre sous son code ; plus bas, un bouton « écouter » et une petite lampe ronde.',
+    },
+    {
       name: 'feu d’artifice',
       href: '/feu/',
       src: '/shots/feu.webp',
