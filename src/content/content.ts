@@ -124,6 +124,12 @@ export const carnet: Carnet = {
       alt: 'Sur une page claire, un petit bonhomme en caractères, une tête o et un corps #, escalade un trait multicolore qu’il a tracé depuis le bas de la page ; plus haut, à droite, une petite porte en caractères l’attend.',
     },
     {
+      name: 'vocalise',
+      href: '/vocalise/',
+      src: '/shots/vocalise.webp',
+      alt: 'Sur une nuit bleue, au-dessus de collines en caractères, une lueur dorée laisse derrière elle le trait de la voix qui la guide ; devant elle flottent des notes ♪ à attraper, et sur le bord gauche, un petit clavier de piano debout allume la note chantée.',
+    },
+    {
       name: 'feu d’artifice',
       href: '/feu/',
       src: '/shots/feu.webp',

@@ -16,6 +16,7 @@ const PAGES = [
   // (Yaya : cachée pour le moment ; sa page existe toujours, à /yaya/, sans lien)
   { path: '/toupies/', name: 'toupies' },
   { path: '/escalade/', name: 'escalade' },
+  { path: '/vocalise/', name: 'vocalise' },
   { path: '/feu/', name: 'feu d’artifice' },
   // (Abyme à la fin : elle remonte la visite)
   { path: '/abyme/', name: 'abyme' },
