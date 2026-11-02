@@ -161,3 +161,21 @@ body {
   color: rgb(238 234 226 / 0.6);
   pointer-events: none;
 }
+
+/* ——— les boutons (voir controls.ts), en bas au milieu ——— */
+.vo-controls {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  display: flex;
+  gap: 1.4em;
+  transform: translateX(-50%);
+}
+.vo-controls .vo-link {
+  font-size: 12px;
+  white-space: nowrap;
+}
+.vo-controls .vo-link:disabled {
+  opacity: 0.35;
+  cursor: default;
+}

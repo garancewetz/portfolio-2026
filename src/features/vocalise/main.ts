@@ -2,8 +2,10 @@ import './vocalise.css'
 import { mount } from '@/features/carnet/carnet'
 import { gear, slider } from '@/features/carnet/gear'
 import { local, sheet } from '@/features/carnet/sheet'
+import { controls } from './controls'
 import { intro } from './intro'
 import { hue, noteName, toHz, toMidi } from './pitch'
+import { replay, type Replay } from './replay'
 import { ribbons } from './ribbon'
 import { RULES } from './rules'
 import { scale } from './scale'
@@ -11,10 +13,11 @@ import { listen, MicError, type Heard, type Voice } from './voice'
 
 // Vocalise : un fond noir, et la voix qui y dessine un ruban de lumière. Les règles sont simples, et écrites dans le
 // coin de la page (rules.ts) : la note fait la hauteur (aigu en haut) et la couleur (un tour du cercle des couleurs
-// par octave), le volume fait l'épaisseur et l'éclat ; le ruban file vers la gauche et s'éteint, et un silence le
-// coupe (ribbon.ts). Sur le bord gauche, la gamme, à la même hauteur et de la même couleur (scale.ts). Sans micro,
-// on dessine au doigt (appuyer : plus haut, plus aigu). La roue crantée règle le registre (la note du milieu),
-// l'étendue, la durée de la traîne, et la sensibilité du micro.
+// par octave), le volume fait l'épaisseur et l'éclat, la voyelle la texture (« ou » doux, « i » qui scintille) ; le
+// ruban file vers la gauche et s'éteint, et un silence le coupe (ribbon.ts). Sur le bord gauche, la gamme, à la même
+// hauteur et de la même couleur (scale.ts). En bas, trois boutons (controls.ts) : figer le dessin, le réécouter (un
+// son doux le rejoue, replay.ts), l'enregistrer en image. Sans micro, on dessine au doigt (appuyer : plus haut, plus
+// aigu). La roue crantée règle le registre (la note du milieu), l'étendue, la durée de la traîne, et la sensibilité.
 
 const main = document.querySelector<HTMLElement>('.vo')!
 const canvas = main.querySelector<HTMLCanvasElement>('.vo-canvas')!
@@ -50,7 +53,7 @@ const speed = () => (headX() - 64) / settings.life
 
 let voice: Voice | null = null
 let playing = false
-// le doigt (ou la souris) appuyé : sa hauteur fait la note, à volume doux
+// le doigt (ou la souris) appuyé : sa hauteur fait la note, à volume doux, en « a »
 let finger: number | null = null
 main.addEventListener('pointerdown', (e) => {
   if (!playing) return
@@ -84,10 +87,48 @@ function play() {
   since = performance.now() / 1000
   door.close()
   main.classList.add('is-playing')
-  // les règles restent, dans le coin
+  // les règles restent, dans le coin ; les boutons apparaissent
   main.insertAdjacentHTML('beforeend', RULES)
+  buttons = controls(main, { freeze: () => freeze(frozenAt === null), replay: listenBack, save })
   settingsUp()
 }
+
+// ——— figer, réécouter, enregistrer ———
+
+// l'heure à laquelle le ruban s'est arrêté (null : il file), et la réécoute en cours
+let frozenAt: number | null = null
+let replaying: Replay | null = null
+let buttons: ReturnType<typeof controls> | null = null
+function freeze(on: boolean) {
+  frozenAt = on ? performance.now() / 1000 : null
+  if (!on) {
+    replaying?.stop()
+    replaying = null
+  }
+}
+function listenBack() {
+  if (replaying) {
+    replaying.stop()
+    return
+  }
+  if (frozenAt === null) freeze(true)
+  replaying = replay(ribbon.strokes, () => (replaying = null))
+}
+function save() {
+  canvas.toBlob((blob) => {
+    if (!blob) return
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = 'vocalise.png'
+    a.click()
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000)
+  })
+}
+addEventListener('keydown', (e) => {
+  if (e.code !== 'Space' || !playing || (e.target as HTMLElement).closest('button, input')) return
+  e.preventDefault()
+  freeze(frozenAt === null)
+})
 
 // la ligne du carnet (le labo, la page, les voisines), et la roue crantée, une fois qu'on chante
 const slot = mount()
@@ -129,17 +170,27 @@ function frame(now: number) {
   last = now
   const t = now / 1000
 
-  // ce qu'on entend : le doigt d'abord, sinon la voix
-  const heard: Heard | null =
-    finger !== null ? { midi: midiOf(finger), level: 0.3 } : voice ? voice.read(dt, settings.sensitivity) : null
-  if (heard) heardOnce = true
-  if (playing) ribbon.add(t, heard)
-  ribbon.prune(t, settings.life)
+  // ce qu'on entend : le doigt d'abord, sinon la voix ; figé, plus rien ne dessine
+  const read: Heard | null =
+    finger !== null
+      ? { midi: midiOf(finger), level: 0.3, bright: 0.5 }
+      : voice
+        ? voice.read(dt, settings.sensitivity)
+        : null
+  if (read) heardOnce = true
+  const heard = frozenAt === null ? read : null
+  // (l'heure du ruban : arrêtée quand il est figé)
+  const at = frozenAt ?? t
+  if (playing && frozenAt === null) {
+    ribbon.add(t, heard)
+    ribbon.prune(t, settings.life)
+  }
+  buttons?.set({ frozen: frozenAt !== null, replaying: !!replaying, empty: !ribbon.strokes.length })
 
   g.fillStyle = '#000'
   g.fillRect(0, 0, W, H)
   scale(g, W, lo(), hi(), yOf, heard?.midi ?? null)
-  ribbon.draw(g, t, settings.life, headX(), speed(), yOf)
+  ribbon.draw(g, at, t, settings.life, headX(), speed(), yOf, replaying?.at() ?? null)
   // la tête : un point blanc, et le nom de la note, de sa couleur
   if (heard) {
     const y = yOf(heard.midi)
@@ -155,9 +206,14 @@ function frame(now: number) {
   }
 
   // en bas à droite : la note entendue, en hertz, et le volume ; ou, si le micro n'a encore rien entendu, un indice
+  const vowel = (b: number) => (b < 0.33 ? '« ou »' : b < 0.66 ? '« a »' : '« i »')
   const text = heard
-    ? `${noteName(heard.midi)} · ${Math.round(toHz(heard.midi))} Hz · volume ${Math.round(heard.level * 100)} %`
-    : voice && !heardOnce && t - since > 6
+    ? `${noteName(heard.midi)} · ${Math.round(toHz(heard.midi))} Hz · volume ${Math.round(heard.level * 100)} % · ${vowel(heard.bright)}`
+    : replaying
+      ? 'réécoute'
+      : frozenAt !== null
+        ? 'figé · espace pour reprendre'
+        : voice && !heardOnce && t - since > 6
       ? 'le micro n’entend rien ? le cadenas, à côté de l’adresse, permet d’en choisir un autre'
       : playing
         ? 'silence'
