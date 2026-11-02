@@ -58,9 +58,10 @@ src/
     feu/                       la page /feu : le feu d'artifice de l'accueil, seul et sans fin, et ses réglages
     escalade/                  la page /escalade : un bonhomme en caractères qui joue avec la fenêtre : body (bords,
                                secousse), input (clavier, souris), intro, shake, tab (il dort), windows (deux fenêtres)
-    ruban/                     la page /ruban : la voix dessine un ruban de lumière sur le noir, et un petit bonhomme
+    ruban/                     la page /ruban : la voix dessine un ruban de lumière sur le noir, et un petit yéti
                                marche dessus : voice (le micro, la note, le volume), pitch (YIN, les noms, les couleurs),
-                               ribbon, rider (le bonhomme), scale (la gamme), controls (enregistrer l’image), intro
+                               ribbon, rider (le yéti ; ses dessins : yeti), scale (la gamme), controls (enregistrer
+                               l’image), intro
     morse/                     la page /morse : une phrase tapée, écrite en morse (code : la table, le temps),
                                player (le bip et la lampe)
     abyme/                     la page /abyme : la visite remontée de fenêtre en fenêtre (path, door, drawn…)

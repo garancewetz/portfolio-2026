@@ -10,10 +10,10 @@ import { rider } from './rider'
 import { scale } from './scale'
 import { listen, MicError, type Heard, type Voice } from './voice'
 
-// Ruban : un fond noir, et la voix qui y dessine un ruban de lumière. Rien n'est expliqué (l'arrivée dit seulement
-// « Chante. ») : on découvre que la note fait la hauteur (aigu en haut) et la couleur (un tour du cercle des couleurs
+// Ruban : un fond noir, et la voix qui y dessine un ruban de lumière. Rien n'est expliqué (l'arrivée n'a que le titre
+// et deux boutons) : on découvre que la note fait la hauteur (aigu en haut) et la couleur (un tour du cercle des couleurs
 // par octave), que le volume fait l'épaisseur et l'éclat, que le ruban file vers la gauche et reste, et qu'un silence
-// le coupe (ribbon.ts). Dessus, un petit bonhomme marche, glisse dans les descentes, grimpe quand c'est raide, et
+// le coupe (ribbon.ts). Dessus, un petit yéti marche, glisse dans les descentes, grimpe quand c'est raide, et
 // saute d'un ruban à l'autre (rider.ts). Sur le bord gauche, la gamme, à la même hauteur et de la même couleur
 // (scale.ts). En bas, un bouton (controls.ts) : enregistrer le dessin en image. Sans micro, on
 // dessine au doigt (appuyer : plus haut, plus aigu). La roue crantée règle le registre (la note du milieu),
