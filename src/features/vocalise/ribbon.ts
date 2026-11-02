@@ -18,7 +18,12 @@ export function ribbons() {
       if (!heard) return void (open = false)
       if (!open) strokes.push([])
       open = true
-      strokes[strokes.length - 1].push({ t, midi: heard.midi, level: heard.level })
+      // (la hauteur et le volume un peu lissés : le ruban ondule avec la voix, sans trembler d'un pixel à l'autre)
+      const s = strokes[strokes.length - 1]
+      const prev = s[s.length - 1]
+      const midi = prev ? prev.midi + (heard.midi - prev.midi) * 0.45 : heard.midi
+      const level = prev ? prev.level + (heard.level - prev.level) * 0.2 : heard.level
+      s.push({ t, midi, level })
     },
     // (on oublie ce qui s'est éteint)
     prune(t: number, life: number) {
@@ -36,11 +41,12 @@ export function ribbons() {
             const a = s[i - 1]
             const b = s[i]
             const fade = Math.max(0, 1 - (t - b.t) / life) ** 1.4
-            // l'épaisseur suit le volume ; la couleur, la note
-            const w = 2 + b.level * 26
-            const light = pass === 'halo' ? 14 * fade : (48 + b.level * 22) * fade
+            // l'épaisseur suit le volume (un fil quand on chante doucement, un trait franc quand on chante fort) ;
+            // la couleur, la note ; le halo, juste un peu de lumière autour
+            const w = 1.5 + b.level ** 1.5 * 9
+            const light = pass === 'halo' ? 9 * fade : (52 + b.level * 18) * fade
             g.strokeStyle = `hsl(${hue(b.midi)} 85% ${light}%)`
-            g.lineWidth = pass === 'halo' ? w * 2.6 + 6 : w
+            g.lineWidth = pass === 'halo' ? w + 7 : w
             g.beginPath()
             g.moveTo(headX - (t - a.t) * speed, yOf(a.midi))
             g.lineTo(headX - (t - b.t) * speed, yOf(b.midi))

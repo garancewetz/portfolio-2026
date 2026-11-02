@@ -50,7 +50,7 @@ const speed = () => (headX() - 64) / settings.life
 
 let voice: Voice | null = null
 let playing = false
-// le doigt (ou la souris) appuyé : sa hauteur fait la note, à mi-volume
+// le doigt (ou la souris) appuyé : sa hauteur fait la note, à volume doux
 let finger: number | null = null
 main.addEventListener('pointerdown', (e) => {
   if (!playing) return
@@ -131,7 +131,7 @@ function frame(now: number) {
 
   // ce qu'on entend : le doigt d'abord, sinon la voix
   const heard: Heard | null =
-    finger !== null ? { midi: midiOf(finger), level: 0.5 } : voice ? voice.read(dt, settings.sensitivity) : null
+    finger !== null ? { midi: midiOf(finger), level: 0.3 } : voice ? voice.read(dt, settings.sensitivity) : null
   if (heard) heardOnce = true
   if (playing) ribbon.add(t, heard)
   ribbon.prune(t, settings.life)
@@ -145,7 +145,7 @@ function frame(now: number) {
     const y = yOf(heard.midi)
     g.fillStyle = '#fff'
     g.beginPath()
-    g.arc(headX(), y, 2 + heard.level * 4, 0, Math.PI * 2)
+    g.arc(headX(), y, 1.5 + heard.level * 3, 0, Math.PI * 2)
     g.fill()
     g.font = `13px 'JetBrains Mono', ui-monospace, monospace`
     g.textAlign = 'left'

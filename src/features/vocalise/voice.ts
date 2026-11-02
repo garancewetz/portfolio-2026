@@ -63,7 +63,7 @@ export async function listen() {
         recent.push(toMidi(p.hz))
         if (recent.length > 5) recent.shift()
         const sorted = [...recent].sort((a, b) => a - b)
-        last = { midi: sorted[sorted.length >> 1], level: Math.min(1, (level - start) / (start * 8)) }
+        last = { midi: sorted[sorted.length >> 1], level: Math.min(1, (level - start) / (start * 25)) }
         return last
       }
       // (un trou bref, entre deux syllabes : on garde la note)
