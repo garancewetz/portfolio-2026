@@ -6,16 +6,18 @@ import { controls } from './controls'
 import { intro } from './intro'
 import { hue, noteName, toHz, toMidi } from './pitch'
 import { ribbons } from './ribbon'
+import { rider } from './rider'
 import { RULES } from './rules'
 import { scale } from './scale'
 import { listen, MicError, type Heard, type Voice } from './voice'
 
 // Vocalise : un fond noir, et la voix qui y dessine un ruban de lumière. Les règles sont simples, et écrites dans le
 // coin de la page (rules.ts) : la note fait la hauteur (aigu en haut) et la couleur (un tour du cercle des couleurs
-// par octave), le volume fait l'épaisseur et l'éclat ; le ruban file vers la gauche et s'éteint, et un silence le
-// coupe (ribbon.ts). Sur le bord gauche, la gamme, à la même hauteur et de la même couleur (scale.ts). En bas, deux
-// boutons (controls.ts) : figer le dessin, et l'enregistrer en image. Sans micro, on dessine au doigt (appuyer : plus haut, plus
-// aigu). La roue crantée règle le registre (la note du milieu), l'étendue, la durée de la traîne, et la sensibilité.
+// par octave), le volume fait l'épaisseur et l'éclat ; le ruban file vers la gauche et reste, et un silence le coupe
+// (ribbon.ts). Dessus, un petit bonhomme marche, glisse dans les descentes, et saute d'un ruban à l'autre
+// (rider.ts). Sur le bord gauche, la gamme, à la même hauteur et de la même couleur (scale.ts). En bas, deux boutons
+// (controls.ts) : figer le dessin, et l'enregistrer en image. Sans micro, on dessine au doigt (appuyer : plus haut,
+// plus aigu). La roue crantée règle le registre (la note du milieu), l'étendue, la vitesse, et la sensibilité.
 
 const main = document.querySelector<HTMLElement>('.vo')!
 const canvas = main.querySelector<HTMLCanvasElement>('.vo-canvas')!
@@ -36,16 +38,18 @@ resize()
 new ResizeObserver(resize).observe(main)
 
 // les réglages : la note du milieu de la page (MIDI ; par défaut, entre 90 et 750 Hz, de quoi chanter grave ou
-// aigu), l'étendue (en octaves, du bas au haut de la page), la traîne (en secondes) et la sensibilité du micro
-const settings = { centre: Math.round(toMidi(Math.sqrt(90 * 750))), span: 3, life: 8, sensitivity: 1 }
+// aigu), l'étendue (en octaves, du bas au haut de la page), la vitesse du ruban (en pixels par seconde, et le pas du
+// bonhomme) et la sensibilité du micro
+const settings = { centre: Math.round(toMidi(Math.sqrt(90 * 750))), span: 3, pace: 100, sensitivity: 1 }
 const lo = () => settings.centre - settings.span * 6
 const hi = () => settings.centre + settings.span * 6
 // la bande où passe le ruban : sous la ligne du carnet, au-dessus du bas de la page
 const yOf = (midi: number) => H - 40 - ((midi - lo()) / (hi() - lo())) * (H - 96)
 const midiOf = (y: number) => lo() + ((H - 40 - y) / (H - 96)) * (hi() - lo())
-// la tête du ruban, et sa vitesse : il traverse le reste de la page pendant sa traîne
+// la tête du ruban sur la page, où en est le défilement (en pixels du monde), et où tombe un point du monde sur la page
 const headX = () => W * 0.72
-const speed = () => (headX() - 64) / settings.life
+let scroll = 0
+const screenX = (x: number) => headX() - (scroll - x)
 
 // ——— ce qui chante ———
 
@@ -81,6 +85,8 @@ const door = intro(main, {
 })
 let since = 0
 function play() {
+  // (une seule fois)
+  if (playing) return
   playing = true
   since = performance.now() / 1000
   door.close()
@@ -98,6 +104,8 @@ let frozenAt: number | null = null
 let buttons: ReturnType<typeof controls> | null = null
 function freeze(on: boolean) {
   frozenAt = on ? performance.now() / 1000 : null
+  // (figé, le ruban qu'on chantait se termine : le bonhomme peut aller jusqu'au bout)
+  if (on) ribbon.add(scroll, null)
 }
 function save() {
   canvas.toBlob((blob) => {
@@ -135,9 +143,9 @@ function settingsUp() {
         (n) => (settings.span = n),
       ),
       slider(
-        'traîne',
-        { min: 3, max: 20, step: 1, value: settings.life, show: (n) => `${n} s` },
-        (n) => (settings.life = n),
+        'vitesse',
+        { min: 40, max: 220, step: 10, value: settings.pace, show: (n) => `${n} px/s` },
+        (n) => (settings.pace = n),
       ),
       slider(
         'sensibilité',
@@ -152,6 +160,7 @@ function settingsUp() {
 // ——— l'image ———
 
 const ribbon = ribbons()
+const man = rider()
 let heardOnce = false
 let last = performance.now()
 let shown = ''
@@ -165,18 +174,20 @@ function frame(now: number) {
     finger !== null ? { midi: midiOf(finger), level: 0.3 } : voice ? voice.read(dt, settings.sensitivity) : null
   if (read) heardOnce = true
   const heard = frozenAt === null ? read : null
-  // (l'heure du ruban : arrêtée quand il est figé)
-  const at = frozenAt ?? t
+  // le ruban défile (sauf figé), et ce qui sort à gauche est oublié
   if (playing && frozenAt === null) {
-    ribbon.add(t, heard)
-    ribbon.prune(t, settings.life)
+    scroll += settings.pace * dt
+    ribbon.add(scroll, heard)
+    ribbon.prune(scroll - headX() - 60)
   }
+  man.step(dt, ribbon, settings.pace, screenX, yOf, H)
   buttons?.set(frozenAt !== null, ribbon.empty)
 
   g.fillStyle = '#000'
   g.fillRect(0, 0, W, H)
   scale(g, W, lo(), hi(), yOf, heard?.midi ?? null)
-  ribbon.draw(g, at, settings.life, headX(), speed(), yOf)
+  ribbon.draw(g, scroll, headX(), yOf)
+  man.draw(g, screenX)
   // la tête : un point blanc, et le nom de la note, de sa couleur
   if (heard) {
     const y = yOf(heard.midi)
