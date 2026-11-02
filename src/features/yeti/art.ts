@@ -1,9 +1,12 @@
 // Le yéti sans bras (celui de Ruban), en caractères : une touffe entre deux grandes oreilles, un ventre de poils, deux
 // jambes. Sa tête et son corps ne bougent jamais d'un dessin à l'autre : seuls ses oreilles, ses yeux et ses jambes
-// changent. (Partagé par l'accueil, où il vole et se pose sur le filet du nom, et par le coin des fiches.)
+// changent. (Partagé par l'accueil, où il se tient sur le filet du nom, et par le coin des fiches.)
 
-// les oreilles : dressées, battantes (en haut, puis à plat : il vole), couchées
+// les oreilles : dressées, l'une ou l'autre qui se baisse (un frémissement), battantes (en haut, puis à plat : il
+// vole), couchées
 export const EARS = '(\\.:::./)'
+export const TWITCH_BACK = ' _.:::./)'
+export const TWITCH_FRONT = '(\\.:::._'
 export const FLAP_UP = '\\\\.:::.//'
 export const FLAP_FLAT = '--.:::.--'
 export const EARS_DOWN = ' _.:::._'
