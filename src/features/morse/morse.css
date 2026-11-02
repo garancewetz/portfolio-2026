@@ -2,12 +2,12 @@
 @import '@/styles/base.css';
 
 :root {
-  --bg: #f6f4ef;
+  --bg: #ffffff;
   color-scheme: light;
   --carnet-ink: rgb(26 25 23 / 0.5);
   --carnet-ink-hover: rgb(26 25 23 / 0.95);
   --panel-bg: rgb(26 25 23 / 0.9);
-  --panel-accent: #f6f4ef;
+  --panel-accent: #ffffff;
   /* l'unité du morse, dessinée : un point fait 1 de large, un trait 3, et 1 entre deux marques */
   --u: 9px;
   /* la lampe allumée */
