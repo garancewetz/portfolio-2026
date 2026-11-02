@@ -13,8 +13,9 @@ export class MicError extends Error {
   }
 }
 
-// (on : on fait un son ; level : son volume, de 0 à 1 au-dessus du seuil)
-export type Heard = { on: boolean; level: number }
+// (on : on fait un son ; level : son volume, de 0 à 1 au-dessus du seuil ; meter : le volume brut, pour une jauge,
+// le seuil à mi-hauteur)
+export type Heard = { on: boolean; level: number; meter: number }
 
 // le volume (la moyenne quadratique du signal)
 function rms(buf: Float32Array) {
@@ -31,8 +32,9 @@ export async function listen() {
   let stream: MediaStream
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      // (la réduction de bruit garde la voix et efface le ventilateur : ici, elle aide)
-      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: false },
+      // (la réduction de bruit garde la voix et efface le ventilateur, le gain automatique remonte une voix
+      // lointaine ou un micro faible : ici, ils aident)
+      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
     })
   } catch (e) {
     ctx.close()
@@ -48,9 +50,9 @@ export async function listen() {
   ctx.createMediaStreamSource(stream).connect(analyser)
   const buf = new Float32Array(analyser.fftSize)
 
-  // le bruit de fond : il descend vite vers le plus calme qu'on a entendu, remonte lentement (et seulement en
-  // silence, pas pendant qu'on fait un son)
-  let floor = 0.003
+  // le bruit de fond : il descend vite vers le plus calme qu'on a entendu, remonte lentement (et seulement sous le
+  // seuil, pas pendant qu'on fait un son)
+  let floor = 0.001
   let on = false
   let quiet = 0
 
@@ -59,14 +61,19 @@ export async function listen() {
     read(dt: number, sensitivity = 1): Heard {
       analyser.getFloatTimeDomainData(buf)
       const level = rms(buf)
-      const start = Math.max(0.012, floor * 4) / sensitivity
+      // (un seuil bas : la réduction de bruit du navigateur a déjà fait taire la pièce)
+      const start = Math.max(0.004, floor * 2.5) / sensitivity
       if (level < floor) floor += (level - floor) * 0.3
-      else if (!on) floor = Math.min(0.04, floor + (level - floor) * 0.005)
+      else if (!on && level < start) floor = Math.min(0.02, floor + (level - floor) * 0.02)
       if (level > (on ? start * 0.55 : start)) {
         on = true
         quiet = 0
       } else if (on && (quiet += dt) > 0.09) on = false
-      return { on, level: Math.max(0, Math.min(1, (level - start * 0.55) / (start * 6))) }
+      return {
+        on,
+        level: Math.max(0, Math.min(1, (level - start * 0.55) / (start * 6))),
+        meter: Math.min(1, (level / start) * 0.5),
+      }
     },
     stop() {
       for (const t of stream.getTracks()) t.stop()

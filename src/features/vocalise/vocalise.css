@@ -142,6 +142,31 @@ body {
   color: var(--gold);
   min-height: 1em;
 }
+/* (la jauge du volume : le trait du milieu, le seuil à partir duquel le son compte) */
+.vo-meter {
+  position: relative;
+  height: 6px;
+  background: rgb(238 234 226 / 0.08);
+}
+.vo-meter::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  bottom: -3px;
+  width: 1px;
+  background: var(--muted);
+}
+.vo-meter span {
+  display: block;
+  height: 100%;
+  background: rgb(238 234 226 / 0.45);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.vo-deaf[hidden] {
+  display: none;
+}
 .vo-bar {
   height: 2px;
   background: rgb(238 234 226 / 0.15);

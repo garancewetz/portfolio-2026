@@ -32,7 +32,10 @@ export function intro(main: HTMLElement, o: { mic: () => void; finger: () => voi
     <div class="vo-step" data-step="tune" hidden>
       <p>Pour essayer : dites « aaah », une seconde, comme chez le médecin.</p>
       <p class="vo-heard" aria-live="polite">…</p>
+      <div class="vo-meter" aria-hidden="true"><span></span></div>
       <div class="vo-bar" aria-hidden="true"><span></span></div>
+      <p class="vo-small vo-deaf" hidden>Le micro n’entend presque rien. Est-ce le bon ? (le cadenas, à côté de
+      l’adresse, permet d’en choisir un autre ; puis rechargez la page)</p>
       <div class="vo-actions">
         <button type="button" class="vo-link" data-do="skip">passer</button>
       </div>
@@ -50,6 +53,8 @@ export function intro(main: HTMLElement, o: { mic: () => void; finger: () => voi
   box.addEventListener('pointerdown', (e) => e.stopPropagation())
 
   const bar = $('.vo-bar span')
+  const meter = $('.vo-meter span')
+  const deaf = $('.vo-deaf')
   const heard = $('.vo-heard')
   return {
     // en attendant la réponse du navigateur
@@ -66,9 +71,12 @@ export function intro(main: HTMLElement, o: { mic: () => void; finger: () => voi
       $<HTMLButtonElement>('[data-do=mic]').hidden = why === 'unsupported'
       $('[data-do=finger]').className = 'vo-button'
     },
-    // l'essai : est-ce qu'on entend un son, et depuis combien de temps (de 0 à 1)
-    tune(on: boolean, held: number) {
+    // l'essai : est-ce qu'on entend un son, depuis combien de temps (de 0 à 1), le volume (la jauge : le seuil à
+    // mi-hauteur), et si le micro semble sourd
+    tune(on: boolean, held: number, volume: number, silent: boolean) {
       show('tune')
+      meter.style.transform = `scaleX(${volume})`
+      deaf.hidden = !silent
       heard.textContent = on ? 'a'.repeat(2 + Math.round(held * 6)) + 'h' : '…'
       bar.style.transform = `scaleX(${held})`
     },

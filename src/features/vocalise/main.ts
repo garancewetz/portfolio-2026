@@ -102,14 +102,14 @@ function respawn() {
 
 // ——— l'arrivée, et l'essai du micro ———
 
-let trying: { held: number } | null = null
+let trying: { held: number; since: number } | null = null
 const door = intro(main, {
   async mic() {
     door.asking(true)
     try {
       voice = await listen()
-      trying = { held: 0 }
-      door.tune(false, 0)
+      trying = { held: 0, since: 0 }
+      door.tune(false, 0, 0, false)
     } catch (e) {
       door.fail(e instanceof MicError ? e.why : 'unsupported')
     } finally {
@@ -173,7 +173,7 @@ function frame(now: number) {
   const K = k()
 
   // ce qu'on entend : le doigt (ou l'espace), sinon la voix
-  const heard: Heard = pressed ? { on: true, level: 0.6 } : voice ? voice.read(dt, settings.sensitivity) : { on: false, level: 0 }
+  const heard: Heard = pressed ? { on: true, level: 0.6, meter: 1 } : voice ? voice.read(dt, settings.sensitivity) : { on: false, level: 0, meter: 0 }
   const on = heard.on
   const onset = on && !was
   was = on
@@ -182,7 +182,10 @@ function frame(now: number) {
 
   if (trying) {
     if (on) trying.held += dt
-    door.tune(on, Math.min(1, trying.held / 0.8))
+    // (presque rien depuis quatre secondes : sans doute le mauvais micro)
+    trying.since += dt
+    if (heard.meter > 0.15) trying.since = 0
+    door.tune(on, Math.min(1, trying.held / 0.8), heard.meter, trying.since > 4)
     if (trying.held >= 0.8) play()
   }
 
