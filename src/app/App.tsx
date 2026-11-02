@@ -10,6 +10,7 @@ import MixSwitch from '@/features/signature/MixSwitch'
 import { ANAGRAMS } from '@/features/signature/anagrams'
 import Fireworks from '@/features/fireworks/Fireworks'
 import FireworksSwitch from '@/features/fireworks/FireworksSwitch'
+import HomeYeti from '@/features/yeti/HomeYeti'
 import ScrollHint from './layout/ScrollHint'
 import Links from './layout/Links'
 import { COLS, NAME, ROWS, cardPlace, cardStart, fieldHeight, hintCol, nameStart } from './timeline'
@@ -58,6 +59,8 @@ export default function App() {
       </header>
 
       <ScrollHint ref={hint} />
+      {/* le yéti : il tombe en volant à l'arrivée, descend en défilant, se pose sur le filet du nom */}
+      <HomeYeti />
       <Fireworks on={fireworks} mix={mix} onEnd={() => setFireworks(false)} />
 
       <section className="rg-field" aria-label="Projets" style={{ '--field-h': fieldHeight }}>

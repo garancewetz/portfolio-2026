@@ -150,7 +150,7 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
               <ExternalLink href={p.demo}>{host(p.demo)}</ExternalLink>
             )}
           </p>
-          {/* Totoro et un oiseau, debout sur le filet de la fiche technique */}
+          {/* le yéti, debout sur le filet de la fiche technique */}
           <Flipbook page={index} pages={projects.length} />
           {/* en bas, au niveau du bord bas de la capture, sous le filet : les technos et le code, en petit (le
               type est déjà dit par la description) ; toujours deux lignes */}
