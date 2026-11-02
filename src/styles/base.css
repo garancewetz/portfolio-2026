@@ -10,12 +10,15 @@
   --sans: 'Inter Tight', system-ui, sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  --bg: #f6f4ef;
-  --ink: #1a1917;
-  --muted: #5f5a52; /* contraste AA sur --bg */
-  --line: #1a19171c;
+  --bg: #ffffff;
+  --ink: #111111;
+  --muted: #6b6b6b; /* contraste AA sur --bg */
+  --line: #0000001a;
   --accent: var(--ink);
-  --empty: #ebe7df;
+  /* le bleu des liens du web, celui des navigateurs : le point de « hello, world. » et des projets déjà vus, la
+     seule couleur de la page (hors captures) */
+  --blue: #0000ee;
+  --empty: #f0f0f0;
   /* la teinte des guides de la grille (en canaux R G B) et celle du repère « gap » ; --violet : la même teinte
      que les guides, assez foncée pour du texte qui porte une information (contraste AA sur le fond) */
   --tint: 124 92 214;
@@ -35,22 +38,22 @@
 @property --bg {
   syntax: '<color>';
   inherits: true;
-  initial-value: #f6f4ef;
+  initial-value: #ffffff;
 }
 @property --ink {
   syntax: '<color>';
   inherits: true;
-  initial-value: #1a1917;
+  initial-value: #111111;
 }
 @property --muted {
   syntax: '<color>';
   inherits: true;
-  initial-value: #5f5a52;
+  initial-value: #6b6b6b;
 }
 @property --empty {
   syntax: '<color>';
   inherits: true;
-  initial-value: #ebe7df;
+  initial-value: #f0f0f0;
 }
 @property --violet {
   syntax: '<color>';
@@ -83,6 +86,7 @@
   --empty: #1b1d2e;
   --violet: #b4a3ff;
   --tint: 150 130 255;
+  --blue: #8f9bff;
   color-scheme: dark;
 }
 

@@ -2,7 +2,6 @@ import { useEffect, useLayoutEffect, useRef } from 'react'
 import { me } from '@/content/content'
 import Shot from '@/shared/Shot'
 import Ripple from '@/shared/Ripple'
-import Guides from '@/shared/Guides'
 import ExternalLink from '@/shared/ExternalLink'
 import ProjectStatus from '@/shared/ProjectStatus'
 import { projectNumber as num } from '@/shared/projectNumber'
@@ -30,7 +29,7 @@ const host = (url: string) => {
 const inside = (url: string) => url.startsWith('/') || /^https?:\/\/garancewetz\.dev\//.test(url)
 
 // La fiche d'un projet (ouverte au clic sur une carte) : une page du site, en plein écran,
-// sur la même grille. La capture occupe les premières colonnes, le texte les deux dernières.
+// sur la même grille (pas dessinée). La capture occupe les premières colonnes, le texte les deux dernières.
 // En bas, on passe au projet précédent ou suivant (aussi avec les flèches du clavier) sans revenir à la page.
 // Une vraie boîte de dialogue : le focus y reste, Échap la ferme (le focus revient sur la carte : voir
 // useSheetRoute).
@@ -103,23 +102,18 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
       {/* l'ondulation au passage de la souris sur la capture, comme sur les cartes */}
       <Ripple root={dialog} item=".rg-sheet-shot .shot" />
 
-      {/* les guides de la grille, comme sur la page */}
-      <Guides cols={cols} className="rg-sheet-guides" />
-
-      {/* en haut, dans le style de l'intitulé du site */}
+      {/* en haut, comme l'intitulé du site : « hello, world. » ramène à la page (ferme la fiche), « esc » à droite */}
       <div className="rg-sheet-top">
-        {/* fil d'Ariane : le nom et « Projets personnels » ramènent à la page (ferment la fiche) */}
-        <nav aria-label="Fil d’Ariane">
-          <button type="button" onClick={onClose}>
-            {me.name}
-          </button>
-          <button type="button" onClick={onClose}>
-            Projets personnels
-          </button>
-          <span aria-current="page">{p.title}</span>
-        </nav>
+        <button type="button" className="rg-sheet-home" onClick={onClose}>
+          <span aria-hidden>← </span>hello, world<span className="rg-sheet-dot">.</span>
+          <span className="sr"> (retour aux projets de {me.name})</span>
+        </button>
         <button type="button" className="rg-sheet-close" onClick={onClose}>
-          Fermer <kbd aria-hidden>esc</kbd>
+          {/* au clavier, la touche ; au doigt, le mot */}
+          <span className="rg-close-key" aria-hidden>
+            esc
+          </span>
+          <span className="rg-close-word">fermer</span>
         </button>
       </div>
 
@@ -144,46 +138,30 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
             <span className="rg-sheet-num">{num(index)}</span> {p.title}
           </h2>
           <p className="rg-sheet-short">{p.short}</p>
-          {/* le site, s'il est en ligne : le lien principal, en évidence sous la description */}
-          {p.demo && (
-            <p className="rg-sheet-site">
-              {inside(p.demo) ? (
-                <a href={p.demo}>{host(p.demo)} →</a>
-              ) : (
-                <ExternalLink href={p.demo}>{host(p.demo)}</ExternalLink>
-              )}
-            </p>
-          )}
+          {/* le site, s'il est en ligne : le lien principal, en évidence sous la description ; sinon, à sa place,
+              où en est le projet (en dessous, la fiche technique garde ainsi la même hauteur d'un projet à l'autre :
+              le filet et le dessin restent au même niveau quand on tourne les fiches) */}
+          <p className="rg-sheet-site">
+            {!p.demo ? (
+              <ProjectStatus project={p} className="rg-sheet-status" />
+            ) : inside(p.demo) ? (
+              <a href={p.demo}>{host(p.demo)} →</a>
+            ) : (
+              <ExternalLink href={p.demo}>{host(p.demo)}</ExternalLink>
+            )}
+          </p>
           {/* Totoro et un oiseau, debout sur le filet de la fiche technique */}
           <Flipbook page={index} pages={projects.length} />
-          {/* en bas, au niveau du bord bas de la capture : la fiche technique, qu'on consulte (chaque information
-              avec son étiquette) */}
-          <dl className="rg-sheet-facts">
-            <div>
-              <dt>Type</dt>
-              <dd>{p.kind}</dd>
-            </div>
-            <div>
-              <dt>Technos</dt>
-              <dd>{p.stack.join(' · ')}</dd>
-            </div>
-            {!p.demo && (
-              <div>
-                <dt>Statut</dt>
-                <dd>
-                  <ProjectStatus project={p} className="rg-sheet-status" />
-                </dd>
-              </div>
-            )}
-            <div>
-              <dt>Code</dt>
-              <dd>
-                <ExternalLink href={p.code} sr="sur GitHub">
-                  GitHub
-                </ExternalLink>
-              </dd>
-            </div>
-          </dl>
+          {/* en bas, au niveau du bord bas de la capture, sous le filet : les technos et le code, en petit (le
+              type est déjà dit par la description) ; toujours deux lignes */}
+          <div className="rg-sheet-facts">
+            <p>{p.stack.join(' · ')}</p>
+            <p>
+              <ExternalLink href={p.code} sr="sur GitHub">
+                GitHub
+              </ExternalLink>
+            </p>
+          </div>
         </div>
       </div>
 

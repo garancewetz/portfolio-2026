@@ -15,10 +15,12 @@ interface ProjectCardProps {
   /** sa colonne (de 1 à 5) et sa ligne (0 : la première) */
   col: number
   row: number
+  /** sa fiche a déjà été ouverte : un point bleu après son nom */
+  seen: boolean
   onOpen: (index: number) => void
 }
 
-export default function ProjectCard({ project: p, index: i, start, col, row, onOpen }: ProjectCardProps) {
+export default function ProjectCard({ project: p, index: i, start, col, row, seen, onOpen }: ProjectCardProps) {
   return (
     // (toutes les colonnes sur la même rangée de la grille : une carte de la seconde ligne se colle plus bas, sous
     // celle de la première)
@@ -35,7 +37,10 @@ export default function ProjectCard({ project: p, index: i, start, col, row, onO
           <Shot project={p} eager />
           <span className="rg-meta">
             <span className="rg-n">{projectNumber(i)}</span>
-            <span className="rg-title">{p.title}</span>
+            <span className="rg-title">
+              {p.title}
+              {seen && <span className="rg-seen">.</span>}
+            </span>
           </span>
           {/* Sur mobile seulement (sans fiche à côté) : la phrase courte et, s'il n'est pas en ligne, où il en est.
               Sur grand écran, c'est dans la fiche. */}

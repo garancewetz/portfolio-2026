@@ -3,6 +3,8 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  /* (sa largeur, toute la grille : la longueur du filet au-dessus du nom) */
+  container-type: inline-size;
 }
 .rg-line {
   position: absolute;
@@ -33,6 +35,16 @@
 /* (le g commence un peu après le bord de sa boîte : on le tire sur le bord de la colonne) */
 .rg-word[data-line='0'] {
   margin-left: calc(var(--lh) * -0.043);
+}
+/* le filet au-dessus du nom, sur toute la largeur, comme la ligne où l'on signe une lettre : il arrive avec le
+   prénom */
+.rg-word[data-line='0']::before {
+  content: '';
+  position: absolute;
+  top: calc(var(--lh) * -0.32);
+  left: calc(var(--lh) * 0.043);
+  width: 100cqw;
+  border-top: 1px solid var(--line);
 }
 /* « Wetzel » : la même police que « Garance », à la même taille, juste un peu plus appuyée (le nom un cran
    plus gras que le prénom), juste après le prénom (sa largeur, plus une espace serrée) */
@@ -78,6 +90,14 @@
   }
   .rg-word[data-line='1'] {
     margin: 0;
+  }
+  /* (le filet : au-dessus de la ligne du nom, plutôt que sur le prénom) */
+  .rg-word[data-line='0']::before {
+    content: none;
+  }
+  .rg-name {
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
   }
 }
 

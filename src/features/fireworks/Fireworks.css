@@ -57,24 +57,59 @@
   z-index: 3;
 }
 
-/* son interrupteur, dans le pied de page : du texte en mono, mais un bouton, pas un lien (pas souligné, une
-   petite pastille et une étincelle devant : il fait quelque chose ici, il n'emmène nulle part) */
-.rg-fw-switch {
-  padding: 1px 9px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: none;
-  font: inherit;
-  color: var(--ink);
-  cursor: pointer;
-  transition: border-color 0.15s ease;
+/* son interrupteur, au bout de la ligne du nom, à droite : comme les mots du nom (voir Signature.css), il colle
+   en bas de l'écran (--dock) après être monté depuis sa hauteur de départ (--o) ; sa ligne de base sur celle du
+   nom. Un petit feu d'artifice en ASCII, en gris comme les liens du haut (en encre au survol, ou allumé) : un
+   bouton, qui fait quelque chose ici, n'emmène nulle part */
+.rg-fw-place {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  pointer-events: none;
 }
-.rg-fw-switch::before {
-  content: '✦ ';
+.rg-fw-switch {
+  position: sticky;
+  top: var(--dock);
+  margin-top: var(--o);
+  /* (la hauteur d'une ligne du nom, le texte en bas : sur la ligne de base du nom, à peu près) */
+  height: calc(var(--lh) * 0.86);
+  display: flex;
+  align-items: flex-end;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  pointer-events: auto;
+  cursor: pointer;
+}
+.rg-fw-ascii {
+  display: block;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1;
+  white-space: pre;
+  /* (sans les ligatures de la police : « - * - » reste des signes séparés) */
+  font-variant-ligatures: none;
+  font-feature-settings: 'calt' 0;
 }
 .rg-fw-switch:hover,
+.rg-fw-switch:focus-visible,
 .rg-fw-switch[aria-pressed='true'] {
-  border-color: var(--ink);
+  color: var(--ink);
+}
+/* petit écran : sous le nom, à droite, sans animation */
+@media (max-width: 900px) {
+  .rg-fw-place {
+    position: static;
+    order: 999;
+  }
+  .rg-fw-switch {
+    position: static;
+    margin: 0;
+    height: auto;
+  }
 }
 
 /* la lumière des gerbes proches sur les captures des cartes (voir lightCards, dans Fireworks.tsx) : un reflet

@@ -1,53 +1,22 @@
-/* ——— Repère « gap » entre les deux premières colonnes, et déclencheur des anagrammes du nom : un vrai bouton,
-   dans le champ, sur toute sa hauteur (comme une colonne), qui monte et se colle dans la rangée des cartes ——— */
-.rg-gapcol {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: calc((100% - (var(--n) - 1) * var(--pad)) / var(--n));
-  width: var(--pad);
-  pointer-events: none;
-}
-.rg-gap {
-  --gap-h: min(120px, calc(var(--row-h, 300px) - 40px));
-  display: grid;
-  position: sticky;
-  /* dans la rangée des cartes, entre les deux premières, à mi-hauteur */
-  --gap-top: calc(var(--pad) + var(--head-h) + (var(--row-h, 300px) - var(--gap-h)) / 2);
-  top: var(--gap-top);
-  /* il part comme « Wetzel » (--o), mais se pose bien plus haut que lui : il part plus haut d'autant, pour se
-     poser au même moment */
-  margin-top: calc(var(--o) - var(--dock) + var(--gap-top));
-  /* marge basse invisible : à la fin, il se décolle en même temps que les cartes */
-  margin-bottom: calc(var(--grid-h) - (var(--row-h, 300px) + var(--gap-h)) / 2);
-  width: 100%;
-  height: var(--gap-h);
+/* ——— Le point bleu de « hello, world. », déclencheur des anagrammes du nom : un bouton qui a l'air d'un point.
+   Sa zone de clic déborde autour (un point seul est trop petit pour le doigt ou la souris). ——— */
+.rg-dot {
+  position: relative;
   padding: 0;
   border: 0;
-  border-radius: 2px;
-  writing-mode: vertical-rl;
-  place-items: center;
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--gap-pink);
-  background: repeating-linear-gradient(45deg, rgb(var(--tint-gap) / 0.12) 0 4px, transparent 4px 8px);
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--blue);
   pointer-events: auto;
   cursor: pointer;
-  transition: background 0.3s;
 }
-/* (désactivé tant que le nom n'est pas là : on le voit monter, sans main au survol) */
-.rg-gap:disabled {
+.rg-dot::after {
+  content: '';
+  position: absolute;
+  inset: -10px -12px;
+}
+/* (tant que le nom n'est pas là : un simple point, sans main au survol) */
+.rg-dot:disabled {
   cursor: default;
-}
-/* sur une anagramme : les rayures plus soutenues */
-.rg-gap:enabled:hover,
-.rg-gap.is-mixed {
-  background: repeating-linear-gradient(45deg, rgb(var(--tint-gap) / 0.24) 0 4px, transparent 4px 8px);
-}
-
-/* réservé aux grands écrans, avec la grille */
-@media (max-width: 900px) {
-  .rg-gapcol {
-    display: none;
-  }
 }

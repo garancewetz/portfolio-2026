@@ -1,0 +1,27 @@
+/* Indication « scroll ↓ » : en bas de la colonne de la carte la plus haute (--hint-col), en bas de l'écran, en
+   petit ; elle s'efface dès qu'on commence à faire défiler */
+.rg-hint {
+  position: fixed;
+  z-index: 2;
+  bottom: var(--pad);
+  /* au bout de cette colonne (vide en bas) */
+  --col-w: calc((100vw - 2 * var(--pad) - (var(--n) - 1) * var(--pad)) / var(--n));
+  left: calc(var(--pad) + var(--hint-col) * var(--col-w) + (var(--hint-col) - 1) * var(--pad) - 8px);
+  translate: -100% 0;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.rg-hint.is-off {
+  opacity: 0;
+}
+
+@media (max-width: 900px) {
+  .rg-hint {
+    display: none;
+  }
+}
