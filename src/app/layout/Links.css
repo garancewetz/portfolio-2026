@@ -1,0 +1,28 @@
+/* Les liens en haut à droite : en petit, en gris, comme du texte (l'encre au survol) */
+.rg-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 28px;
+  pointer-events: auto;
+}
+.rg-links a {
+  color: var(--muted);
+  text-decoration: none;
+}
+.rg-links a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+/* écran tactile : les liens gardent leur taille à l'écran, mais leur zone à toucher fait au moins 44px de haut */
+@media (pointer: coarse) {
+  .rg-links a {
+    position: relative;
+  }
+  .rg-links a::after {
+    content: '';
+    position: absolute;
+    inset: -12px -8px;
+  }
+}

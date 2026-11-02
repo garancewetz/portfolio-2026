@@ -2,13 +2,20 @@
 // pivote autour de la reliure et se pose à gauche, son verso est la page suivante ; sous elle, la page d'après
 // était déjà là. Un clic sur la page de gauche (ou ←) revient en arrière. Sur un téléphone, une page à la fois :
 // la suivante arrive en fondu. Les liens d'une page (la capture, le nom) ouvrent l'expérience, sans tourner.
+// onShow : appelé à chaque fois que les pages montrées changent (la première, et combien) ; go (renvoyé) : ouvrir
+// le carnet directement à une page (le sommaire du bas, voir sommaire.ts).
 
 const TURN = 900 // la durée d'une page qui tourne (ms)
 const EASE = 'cubic-bezier(0.45, 0, 0.2, 1)'
 const narrow = matchMedia('(max-width: 760px)')
 const still = matchMedia('(prefers-reduced-motion: reduce)')
 
-export function book(el: HTMLElement, count: number, page: (i: number) => string) {
+export function book(
+  el: HTMLElement,
+  count: number,
+  page: (i: number) => string,
+  onShow?: (first: number, shown: number) => void,
+) {
   el.innerHTML = `
     <section class="sm-page sm-left" aria-live="polite"></section>
     <section class="sm-page sm-right" aria-live="polite"></section>
@@ -32,6 +39,7 @@ export function book(el: HTMLElement, count: number, page: (i: number) => string
     fill(right, at + 1)
     el.classList.toggle('is-first', at === 0)
     el.classList.toggle('is-last', at + per() >= count)
+    onShow?.(at, per())
   }
 
   // tourner : dir 1, vers les pages suivantes ; -1, vers les précédentes
@@ -62,11 +70,14 @@ export function book(el: HTMLElement, count: number, page: (i: number) => string
     busy = false
   }
 
-  // (téléphone : la page s'efface, la suivante apparaît)
+  // (téléphone, ou saut depuis le sommaire : les pages s'effacent, les suivantes apparaissent ; le premier fondu
+  // est annulé une fois la page redessinée, sinon il la garderait invisible)
   async function fade() {
-    await left.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, fill: 'forwards' }).finished
+    const out = [left, right].map((p) => p.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, fill: 'forwards' }))
+    await Promise.all(out.map((a) => a.finished))
     draw()
-    left.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260 })
+    out.forEach((a) => a.cancel())
+    for (const p of [left, right]) p.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260 })
   }
 
   // un clic sur une page la tourne (pas sur ses liens) ; sur un téléphone, la page seule tourne vers la suivante
@@ -87,4 +98,14 @@ export function book(el: HTMLElement, count: number, page: (i: number) => string
   })
 
   draw()
+
+  // ouvrir le carnet à la double page qui contient la page i (sans tourner les pages une à une)
+  async function go(i: number) {
+    const to = i - (i % per())
+    if (busy || to === at) return
+    at = to
+    if (!still.matches) await fade()
+    else draw()
+  }
+  return { go }
 }

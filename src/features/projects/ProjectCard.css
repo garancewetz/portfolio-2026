@@ -57,6 +57,10 @@
   text-overflow: ellipsis;
   min-width: 0;
 }
+/* Projet déjà ouvert : un point bleu après son nom, le même que celui de « hello, world. » */
+.rg-seen {
+  color: var(--blue);
+}
 /* Projet pas encore en ligne : une petite ligne qui le dit, sous la phrase (sur mobile seulement, voir en bas) */
 .rg-status {
   display: none;
@@ -64,10 +68,6 @@
   font-family: var(--mono);
   font-size: 11px;
   color: var(--muted);
-}
-/* en cours : bientôt en ligne (couleur des guides de la grille, comme les TODO) */
-.rg-status.is-wip {
-  color: var(--violet);
 }
 /* Phrase courte : sur mobile seulement (voir en bas) ; 2 lignes max */
 .rg-short {

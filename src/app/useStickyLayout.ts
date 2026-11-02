@@ -9,7 +9,7 @@ export type Phase = 'scroll' | 'done'
 
 export function useStickyLayout() {
   const root = useRef<HTMLElement>(null)
-  const top = useRef<HTMLHeadingElement>(null)
+  const top = useRef<HTMLElement>(null)
   const hint = useRef<HTMLParagraphElement>(null)
   const [phase, setPhase] = useState<Phase>('scroll')
 
