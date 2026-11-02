@@ -3,30 +3,7 @@ import { art, type Creature } from './art'
 // Les créatures 1 à 10 : des bêtes qui existent (plus ou moins).
 export const C1: Creature[] = [
   {
-    name: 'gecko',
-    note: 'colle aux pentes, file au ras du fil',
-    idle: art`
- .  .
-~=(__)o>
- '  '
-`,
-    walk: art`
- '  .
-~=(__)o>
- .  '
-`,
-    jump: art`
-   .    .
-~~=(____)o>
-`,
-    climb: art`
- \o/
- -#-
- /#\
-  ~
-`,
-  },
-  {
+    n: 2,
     name: 'singe',
     note: 'se pend par les mains, ou par la queue',
     idle: art`
@@ -55,6 +32,7 @@ export const C1: Creature[] = [
 `,
   },
   {
+    n: 3,
     name: 'grenouille',
     note: 'sautille, bondit très loin, ventouses',
     idle: art`
@@ -79,6 +57,7 @@ export const C1: Creature[] = [
 `,
   },
   {
+    n: 4,
     name: 'renard',
     note: 'rusé, la queue en panache',
     idle: art`
@@ -104,6 +83,7 @@ export const C1: Creature[] = [
 `,
   },
   {
+    n: 5,
     name: 'chat',
     note: 'retombe toujours sur ses pattes',
     idle: art`
@@ -128,6 +108,7 @@ export const C1: Creature[] = [
 `,
   },
   {
+    n: 6,
     name: 'lapin',
     note: 'tout en bonds',
     idle: art`
@@ -152,30 +133,7 @@ export const C1: Creature[] = [
 `,
   },
   {
-    name: 'écureuil',
-    note: 'la grande queue fait balancier',
-    idle: art`
-  _  @@
- (o)@@@
- /|\ @
-`,
-    walk: art`
-  _  @@
- (o)@@@
- / \ @
-`,
-    jump: art`
- \_/ @@
- (o)@@@
- /   \
-`,
-    climb: art`
- \o/@
-  # @@
- / \@
-`,
-  },
-  {
+    n: 8,
     name: 'souris',
     note: 'minuscule, toujours pressée',
     idle: art`
@@ -200,6 +158,7 @@ export const C1: Creature[] = [
 `,
   },
   {
+    n: 9,
     name: 'araignée',
     note: 'huit pattes, et son propre fil',
     idle: art`
@@ -221,6 +180,7 @@ export const C1: Creature[] = [
 `,
   },
   {
+    n: 10,
     name: 'fourmi',
     note: 'porte dix fois son poids',
     idle: art`

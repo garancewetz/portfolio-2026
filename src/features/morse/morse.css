@@ -23,8 +23,9 @@ body {
   height: 100%;
   overflow: hidden;
 }
-/* (la feuille défile : une longue phrase passe à la ligne, et peut descendre plus bas que l'écran) */
-main.mo {
+/* (la feuille défile : une longue phrase passe à la ligne, et peut descendre plus bas que l'écran ; plus précis
+   que la feuille du carnet, qui garde les autres pages immobiles) */
+main.mo.carnet-sheet {
   position: fixed;
   inset: 0;
   overflow-y: auto;

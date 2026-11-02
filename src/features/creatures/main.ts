@@ -6,7 +6,7 @@ import { C2 } from './bestiary-2'
 import { C3 } from './bestiary-3'
 import { C4 } from './bestiary-4'
 
-// Créatures : une planche de quarante créatures en caractères, pour en choisir une qui habitera Ruban. Chacune passe
+// Créatures : une planche de créatures en caractères, pour en choisir une qui habitera Ruban. Chacune passe
 // en boucle par ses poses (au repos, en marche, au repos, en marche, en plein saut, en train de grimper), et dit
 // laquelle sous elle. Un clic la garde (et un autre la rend) ; celles qu'on garde sont rappelées en haut, par leur
 // numéro, et restent gardées dans ce navigateur.
@@ -36,6 +36,8 @@ try {
 } catch {
   // (pas de mémoire ici : on garde pour la visite)
 }
+// (une créature retirée de la planche n'est plus gardée)
+for (const n of kept) if (!CREATURES.some((c) => c.n === n)) kept.delete(n)
 function save() {
   try {
     localStorage.setItem(KEY, JSON.stringify([...kept]))
@@ -44,7 +46,7 @@ function save() {
   }
   const list = [...kept].sort((a, b) => a - b)
   picked.textContent = list.length
-    ? `gardées : ${list.map((n) => `${n} (${CREATURES[n - 1].name})`).join(', ')}`
+    ? `gardées : ${list.map((n) => `${n} (${CREATURES.find((c) => c.n === n)?.name})`).join(', ')}`
     : ''
 }
 
@@ -56,8 +58,8 @@ const box = (c: Creature) => {
 }
 const pad = (p: Pose, h: number) => [...Array(h - p.length).fill(''), ...p].join('\n')
 
-const cards = CREATURES.map((c, i) => {
-  const n = i + 1
+const cards = CREATURES.map((c) => {
+  const { n } = c
   const li = document.createElement('li')
   li.className = 'cr-card'
   const { w, h } = box(c)

@@ -3,6 +3,7 @@ import { art, type Creature } from './art'
 // Les créatures 21 à 30 : encore quelques bêtes.
 export const C3: Creature[] = [
   {
+    n: 21,
     name: 'axolotl',
     note: 'sourit tout le temps, branchies en couronne',
     idle: art`
@@ -27,6 +28,7 @@ export const C3: Creature[] = [
 `,
   },
   {
+    n: 22,
     name: 'paresseux',
     note: 'lent, mais ne lâche jamais prise',
     idle: art`
@@ -51,6 +53,7 @@ export const C3: Creature[] = [
 `,
   },
   {
+    n: 23,
     name: 'chauve-souris',
     note: 'se pend la tête en bas',
     idle: art`
@@ -74,6 +77,7 @@ export const C3: Creature[] = [
 `,
   },
   {
+    n: 24,
     name: 'lézard à collerette',
     note: 'ouvre sa collerette en sautant',
     idle: art`
@@ -95,6 +99,7 @@ export const C3: Creature[] = [
 `,
   },
   {
+    n: 25,
     name: 'grillon',
     note: 'chante quand il attend',
     idle: art`
@@ -119,6 +124,7 @@ export const C3: Creature[] = [
 `,
   },
   {
+    n: 26,
     name: 'sauterelle',
     note: 'des pattes-ressorts',
     idle: art`
@@ -144,6 +150,7 @@ export const C3: Creature[] = [
 `,
   },
   {
+    n: 27,
     name: 'ourson',
     note: 'pataud, mais grimpeur',
     idle: art`
@@ -172,6 +179,7 @@ export const C3: Creature[] = [
 `,
   },
   {
+    n: 28,
     name: 'panda roux',
     note: 'la queue rayée',
     idle: art`
@@ -196,6 +204,7 @@ export const C3: Creature[] = [
 `,
   },
   {
+    n: 29,
     name: 'tamia',
     note: 'les joues pleines',
     idle: art`
@@ -220,6 +229,7 @@ export const C3: Creature[] = [
 `,
   },
   {
+    n: 30,
     name: 'furet',
     note: 'tout en longueur, se faufile',
     idle: art`

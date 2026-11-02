@@ -3,6 +3,7 @@ import { art, type Creature } from './art'
 // Les créatures 31 à 40 : des créatures inventées.
 export const C4: Creature[] = [
   {
+    n: 31,
     name: 'petit raptor',
     note: 'court vite, saute loin',
     idle: art`
@@ -31,6 +32,7 @@ export const C4: Creature[] = [
 `,
   },
   {
+    n: 32,
     name: 'poulpe',
     note: 'huit bras pour s’accrocher',
     idle: art`
@@ -55,6 +57,7 @@ export const C4: Creature[] = [
 `,
   },
   {
+    n: 33,
     name: 'mille-pattes',
     note: 'ondule, ne tombe jamais',
     idle: art`
@@ -77,6 +80,7 @@ export const C4: Creature[] = [
 `,
   },
   {
+    n: 34,
     name: 'diablotin',
     note: 'des cornes, une queue en flèche',
     idle: art`
@@ -105,6 +109,7 @@ export const C4: Creature[] = [
 `,
   },
   {
+    n: 35,
     name: 'lutin',
     note: 'un bonnet pointu, très agile',
     idle: art`
@@ -137,6 +142,7 @@ export const C4: Creature[] = [
 `,
   },
   {
+    n: 36,
     name: 'yéti',
     note: 'une petite montagne de poils',
     idle: art`
@@ -165,6 +171,7 @@ export const C4: Creature[] = [
 `,
   },
   {
+    n: 37,
     name: 'robot',
     note: 'une antenne, des ressorts',
     idle: art`
@@ -193,6 +200,7 @@ export const C4: Creature[] = [
 `,
   },
   {
+    n: 38,
     name: 'gobelin',
     note: 'de grandes oreilles, un grand sourire',
     idle: art`
@@ -217,6 +225,7 @@ export const C4: Creature[] = [
 `,
   },
   {
+    n: 39,
     name: 'bestiole à antennes',
     note: 'venue d’ailleurs',
     idle: art`
@@ -245,6 +254,7 @@ export const C4: Creature[] = [
 `,
   },
   {
+    n: 40,
     name: 'cyclope',
     note: 'un grand œil, de longs bras',
     idle: art`

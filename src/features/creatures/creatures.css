@@ -17,7 +17,8 @@ body {
   overflow: hidden;
   background: var(--bg);
 }
-main.cr {
+/* (la planche défile : plus précis que la feuille du carnet, qui garde les autres pages immobiles) */
+main.cr.carnet-sheet {
   position: fixed;
   inset: 0;
   overflow-y: auto;

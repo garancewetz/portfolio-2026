@@ -63,7 +63,7 @@ src/
                                controls (figer, enregistrer), intro
     morse/                     la page /morse : une phrase tapée, écrite en morse (code : la table, le temps),
                                player (le bip et la lampe)
-    creatures/                 la page /creatures : une planche de 40 créatures en caractères, chacune en quatre poses,
+    creatures/                 la page /creatures : une planche de créatures en caractères, chacune en quatre poses,
                                pour choisir celle de Ruban : art (le format), bestiary-1..4 (dix chacun)
     abyme/                     la page /abyme : la visite remontée de fenêtre en fenêtre (path, door, drawn…)
     yaya/                      la page /yaya (cachée, sans lien)
