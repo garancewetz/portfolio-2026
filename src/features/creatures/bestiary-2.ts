@@ -3,61 +3,6 @@ import { art, type Creature } from './art'
 // Les créatures 11 à 20 : encore des bêtes.
 export const C2: Creature[] = [
   {
-    n: 11,
-    name: 'crabe',
-    note: 'marche de côté, pince au bord',
-    idle: art`
- v  v
-(o)(o)
-(____)
-/ /\ \
-`,
-    walk: art`
- V  V
-(o)(o)
-(____)
-\ \/ /
-`,
-    jump: art`
-\v  v/
-(o)(o)
-(____)
-/    \
-`,
-    climb: art`
- v  v
-(o)(o)
--(__)-
- /  \
-`,
-  },
-  {
-    n: 12,
-    name: 'caméléon',
-    note: 'un œil devant, un œil derrière',
-    idle: art`
-  ___
- (@  )>~
-  /  \@
-`,
-    walk: art`
-  ___
- (@  )>~
-  \  /@
-`,
-    jump: art`
-  ___
- (@  )>~~~~
- /    \@
-`,
-    climb: art`
-  ___
- (@  )
- /|  |\
-   @
-`,
-  },
-  {
     n: 13,
     name: 'hibou',
     note: 'sautille, plane un peu',
