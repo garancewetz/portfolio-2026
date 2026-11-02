@@ -1,7 +1,6 @@
 import './creatures.css'
 import { mount } from '@/features/carnet/carnet'
 import type { Creature } from './art'
-import { C1 } from './bestiary-1'
 import { C2 } from './bestiary-2'
 import { C3 } from './bestiary-3'
 import { C4 } from './bestiary-4'
@@ -16,7 +15,7 @@ import { stage } from './stage'
 // la ligne du carnet (le labo, la page, les voisines)
 mount()
 
-const CREATURES: Creature[] = [...C1, ...C2, ...C3, ...C4]
+const CREATURES: Creature[] = [...C2, ...C3, ...C4]
 const list = document.querySelector<HTMLElement>('.cr-list')!
 const picked = document.querySelector<HTMLElement>('.cr-picked')!
 

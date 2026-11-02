@@ -82,40 +82,4 @@ export const C4: Creature[] = [
  [_ _]
 `,
   },
-  {
-    n: 38,
-    name: 'gobelin',
-    note: 'de grandes oreilles, un grand sourire',
-    idle: art`
->(o.o)<
-  /#\
-  / \
-`,
-    walk: art`
->(o.o)<
-  /#\
-  |\
-`,
-    jump: art`
->(^.^)<
- \/#\/
-  / \
-`,
-    climb: art`
- |
->(o.o)<
-  /#|
-  / |
-`,
-    climb2: art`
-      |
->(o.o)<
-  |#\
-  | \
-`,
-    crouch: art`
->(o.o)<
- (/#\)
-`,
-  },
 ]
