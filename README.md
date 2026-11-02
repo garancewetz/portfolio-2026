@@ -58,8 +58,9 @@ src/
     feu/                       la page /feu : le feu d'artifice de l'accueil, seul et sans fin, et ses réglages
     escalade/                  la page /escalade : un bonhomme en caractères qui joue avec la fenêtre : body (bords,
                                secousse), input (clavier, souris), intro, shake, tab (il dort), windows (deux fenêtres)
-    vocalise/                  la page /vocalise : une lueur qu'on guide à la voix (aigu : elle monte) : voice (le micro,
-                               le lissage), pitch (la hauteur, YIN), intro (le micro, le réglage), draw, melodies
+    vocalise/                  la page /vocalise : la voix dessine un ruban de lumière sur le noir : voice (le micro, la
+                               note, le volume), pitch (YIN, les noms, les couleurs), ribbon, scale (la gamme), rules,
+                               controls (figer, enregistrer), intro
     morse/                     la page /morse : une phrase tapée, écrite en morse (code : la table, le temps),
                                player (le bip et la lampe)
     abyme/                     la page /abyme : la visite remontée de fenêtre en fenêtre (path, door, drawn…)

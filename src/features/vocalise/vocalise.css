@@ -1,17 +1,16 @@
-/* ——— Vocalise (voir main.ts) : une nuit bleue, des collines, une lueur dorée qui suit la voix. Le paysage est
-   dessiné dans le canvas ; par-dessus, l'arrivée (le principe, le micro), la note entendue et le nom de la
-   chanson ——— */
+/* ——— Vocalise (voir main.ts) : un fond noir, où la voix dessine un ruban de lumière (dans le canvas). Par-dessus,
+   l'arrivée (le principe, les règles, le micro), puis les règles dans le coin, et la note entendue ——— */
 @import '@/styles/base.css';
 
 :root {
-  --bg: #0e1128;
+  --bg: #000;
   --ink: #eeeae2;
-  --muted: #a7a4b4;
-  --gold: #ffd282;
+  --muted: #8f8c99;
+  --accent: #ffd282;
   color-scheme: dark;
-  /* (le panneau des réglages, voir carnet/gear.css : sur la nuit, les réglettes dorées) */
-  --panel-bg: rgb(14 17 40 / 0.9);
-  --panel-accent: var(--gold);
+  /* (le panneau des réglages, voir carnet/gear.css) */
+  --panel-bg: rgb(0 0 0 / 0.85);
+  --panel-accent: var(--accent);
 }
 
 html,
@@ -23,23 +22,22 @@ body {
 .vo {
   position: fixed;
   inset: 0;
-  /* (le ciel se gradue vers l'horizon, un peu plus clair derrière les collines) */
-  background: linear-gradient(to bottom, #090b1d, #141838 70%, #1b1f44);
+  background: var(--bg);
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
 }
 .vo.is-playing {
-  cursor: ns-resize;
+  cursor: crosshair;
 }
-.vo-sky {
+.vo-canvas {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
 
-/* ——— l'arrivée (voir intro.ts) : quelques lignes au milieu de la nuit ——— */
+/* ——— l'arrivée (voir intro.ts) ——— */
 .vo-intro {
   position: absolute;
   inset: 0;
@@ -47,9 +45,12 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 1em;
   overflow-y: auto;
   padding: 56px 16px 32px;
-  background: radial-gradient(closest-side, rgb(9 11 29 / 0.82), rgb(9 11 29 / 0.35));
+  background: rgb(0 0 0 / 0.8);
+  font-size: 17px;
+  line-height: 1.55;
   transition: opacity 0.9s ease;
   cursor: auto;
 }
@@ -63,22 +64,7 @@ body {
 .vo-title {
   font: 400 clamp(44px, 9vw, 72px) / 1 var(--serif);
   letter-spacing: -0.01em;
-  color: var(--gold);
-  margin-bottom: 0.4em;
-}
-.vo-step {
-  display: grid;
-  gap: 0.8em;
-  font-size: 17px;
-  line-height: 1.55;
-}
-.vo-step[hidden] {
-  display: none;
-}
-.vo-step em {
-  font-family: var(--serif);
-  font-size: 1.15em;
-  color: var(--gold);
+  color: var(--accent);
 }
 .vo-small {
   font: 11px/1.6 var(--mono);
@@ -86,23 +72,25 @@ body {
 }
 .vo-error {
   padding: 0.7em 0.9em;
-  border-left: 2px solid var(--gold);
+  border-left: 2px solid var(--accent);
   background: rgb(255 210 130 / 0.07);
   font-size: 15px;
+}
+.vo-error[hidden] {
+  display: none;
 }
 .vo-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 1em 1.6em;
-  margin-top: 0.4em;
 }
 .vo-button {
   padding: 0.75em 1.3em;
-  border: 1px solid var(--gold);
+  border: 1px solid var(--accent);
   border-radius: 999px;
   background: rgb(255 210 130 / 0.1);
-  color: var(--gold);
+  color: var(--accent);
   font: 500 14px/1 var(--mono);
   cursor: pointer;
   transition: background 0.3s;
@@ -134,70 +122,60 @@ body {
   color: var(--ink);
 }
 :focus-visible {
-  outline-color: var(--gold);
-}
-/* le réglage : la note entendue, en grand, et la note tenue qui remplit le trait */
-.vo-heard {
-  font: 400 44px/1 var(--serif);
-  color: var(--gold);
-  min-height: 1em;
-}
-.vo-bar {
-  height: 2px;
-  background: rgb(238 234 226 / 0.15);
-}
-.vo-bar span {
-  display: block;
-  height: 100%;
-  background: var(--gold);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.1s linear;
+  outline-color: var(--accent);
 }
 
-/* ——— pendant le jeu : la note entendue en bas à gauche, les notes attrapées à droite, et le nom de la chanson
-   qui passe, au milieu ——— */
-.vo-note,
-.vo-score {
+/* ——— les règles (voir rules.ts) : dans l'arrivée, puis en haut à droite pendant qu'on chante ——— */
+.vo-rules {
+  display: grid;
+  gap: 0.35em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: 12px/1.5 var(--mono);
+  color: var(--muted);
+}
+.vo-rules b {
+  font-weight: 500;
+  color: var(--ink);
+}
+.vo > .vo-rules {
   position: absolute;
+  top: 56px;
+  right: 18px;
+  width: min(330px, calc(100% - 100px));
+  font-size: 11px;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+/* ——— la note entendue, en bas à droite ——— */
+.vo-note {
+  position: absolute;
+  right: 18px;
   bottom: 14px;
   margin: 0;
-  font: 12px/1 var(--mono);
-  color: rgb(238 234 226 / 0.55);
+  max-width: calc(100% - 36px);
+  text-align: right;
+  font: 12px/1.4 var(--mono);
+  color: rgb(238 234 226 / 0.6);
   pointer-events: none;
 }
-.vo-note {
-  left: 18px;
-}
-.vo-score {
-  right: 18px;
-}
-.vo-caption {
+
+/* ——— les boutons (voir controls.ts), en bas au milieu ——— */
+.vo-controls {
   position: absolute;
-  top: 22%;
-  left: 16px;
-  right: 16px;
-  margin: 0;
-  text-align: center;
-  font: 400 clamp(22px, 4vw, 34px) / 1.2 var(--serif);
-  color: var(--ink);
-  opacity: 0;
-  transform: translateY(8px);
-  transition:
-    opacity 1.2s ease,
-    transform 1.2s ease;
-  pointer-events: none;
+  left: 50%;
+  bottom: 12px;
+  display: flex;
+  gap: 1.4em;
+  transform: translateX(-50%);
 }
-.vo-caption.is-on {
-  opacity: 1;
-  transform: none;
+.vo-controls .vo-link {
+  font-size: 12px;
+  white-space: nowrap;
 }
-.vo-caption em {
-  color: var(--gold);
-}
-.vo-caption span {
-  margin-left: 0.4em;
-  font: 12px/1 var(--mono);
-  color: var(--muted);
-  vertical-align: middle;
+.vo-controls .vo-link:disabled {
+  opacity: 0.35;
+  cursor: default;
 }

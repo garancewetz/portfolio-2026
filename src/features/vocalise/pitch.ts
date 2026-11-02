@@ -51,5 +51,6 @@ export function noteName(midi: number) {
   const m = Math.round(midi)
   return `${NAMES[((m % 12) + 12) % 12]}${Math.floor(m / 12) - 2}`
 }
-// (une touche noire du piano)
-export const isBlack = (midi: number) => [1, 3, 6, 8, 10].includes(((Math.round(midi) % 12) + 12) % 12)
+// la couleur d'une note : un tour du cercle chromatique par octave (do rouge, ré jaune, mi vert, sol bleu, la
+// violet, si rose), et entre deux notes, la couleur entre les deux
+export const hue = (midi: number) => ((((midi % 12) + 12) % 12) / 12) * 360
