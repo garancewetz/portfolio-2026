@@ -25,10 +25,16 @@ export const C4: Creature[] = [
 /     \
 `,
     climb: art`
-\.:::./
+ |.:::.
 :(o.o):
 :(   ):
- | | |
+ /  |
+`,
+    climb2: art`
+  .:::.|
+:(o.o):
+:(   ):
+  |  \
 `,
     crouch: art`
  .:::.
@@ -59,10 +65,16 @@ export const C4: Creature[] = [
  /   \
 `,
     climb: art`
- \_|_/
+ |_|_
  [o_o]
-  [_]
-  | |
+  [_]\
+  / |
+`,
+    climb2: art`
+  _|_|
+ [o_o]
+ /[_]
+  | \
 `,
     crouch: art`
   _|_
@@ -90,9 +102,16 @@ export const C4: Creature[] = [
   / \
 `,
     climb: art`
- \   /
+ |
 >(o.o)<
-  |#|
+  /#|
+  / |
+`,
+    climb2: art`
+      |
+>(o.o)<
+  |#\
+  | \
 `,
     crouch: art`
 >(o.o)<
@@ -119,9 +138,14 @@ export const C4: Creature[] = [
   / \
 `,
     climb: art`
- \.-./
+ |.-.
  ( O )
-  | |
+  / |
+`,
+    climb2: art`
+  .-.|
+ ( O )
+  | \
 `,
     crouch: art`
   .-.

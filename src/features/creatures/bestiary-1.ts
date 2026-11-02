@@ -25,10 +25,16 @@ export const C1: Creature[] = [
  / \
 `,
     climb: art`
- \ /
+ |
 (o.o)
- /#\@
- | |
+ (#\@
+ |  \
+`,
+    climb2: art`
+   |
+(o.o)
+ /#)@
+ /  |
 `,
     crouch: art`
  ° °
@@ -56,9 +62,16 @@ export const C1: Creature[] = [
 //    \\
 `,
     climb: art`
+ |
  o  o
 (\__/)
- |  |
+ /  |
+`,
+    climb2: art`
+     |
+ o  o
+(\__/)
+ |  \
 `,
     crouch: art`
  @..@
@@ -85,9 +98,17 @@ export const C1: Creature[] = [
  /    \
 `,
     climb: art`
+ |
  /\_/\
  (o.o)
- /| |\
+  |  \
+  ~~
+`,
+    climb2: art`
+     |
+ /\_/\
+ (o.o)
+ /  |
   ~~
 `,
     crouch: art`
@@ -115,9 +136,14 @@ export const C1: Creature[] = [
 //   \\
 `,
     climb: art`
- \/ \/
+ |/\_/\
 ( o.o )
- |   |~
+ /   |~
+`,
+    climb2: art`
+  /\_/\|
+( o.o )
+ |   \~
 `,
     crouch: art`
  /\_/\
@@ -145,9 +171,14 @@ export const C1: Creature[] = [
  /    \
 `,
     climb: art`
- (\(\
+ |(\(\
  (o.o)
- /| |\
+  |  \
+`,
+    climb2: art`
+  (\(\ |
+ (o.o)
+  /  |
 `,
     crouch: art`
  (\(\
@@ -174,9 +205,14 @@ export const C1: Creature[] = [
 /   \
 `,
     climb: art`
-\()()/
+ |()()
  (o.o)
-  | |~
+  / |~
+`,
+    climb2: art`
+  ()()|
+ (o.o)
+  | \~
 `,
     crouch: art`
  ()()

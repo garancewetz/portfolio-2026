@@ -25,9 +25,15 @@ export const C2: Creature[] = [
  " "
 `,
     climb: art`
- ,_,
+ |,_,
 (O,O)
-|( )|
+ ( )\
+ " "
+`,
+    climb2: art`
+  ,_,|
+(O,O)
+/( )
  " "
 `,
     crouch: art`
@@ -62,49 +68,23 @@ export const C2: Creature[] = [
  ^  ^
 `,
     climb: art`
- \_/
+ |_
  (o>
- |\\|
+ /\\
  \_/
+  ^
+`,
+    climb2: art`
+   _|
+ (o>
+ /\\
+ \_/
+   ^
 `,
     crouch: art`
  (o>
 (/\\)
  ^^
-`,
-  },
-  {
-    n: 17,
-    name: 'bouquetin',
-    note: 'à l’aise sur les pentes impossibles',
-    idle: art`
-  @@
- (oo)___
-  \_    )
-   || ||
-`,
-    walk: art`
-  @@
- (oo)___
-  \_    )
-   /| |\
-`,
-    jump: art`
-  @@
- (oo)___
-  \_    )
-  //   \\
-`,
-    climb: art`
-  @@
- (oo)
- |   |
- || ||
-`,
-    crouch: art`
-  @@
- (oo)___
-  (_____)
 `,
   },
   {
@@ -127,9 +107,16 @@ export const C2: Creature[] = [
  /   \
 `,
     climb: art`
-\(o o)/
+ |
+ (o o)
  (   )
-  | |~
+  / |~
+`,
+    climb2: art`
+     |
+ (o o)
+ (   )
+  | \~
 `,
     crouch: art`
  (o o)

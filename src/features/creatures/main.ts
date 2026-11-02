@@ -18,13 +18,12 @@ const CREATURES: Creature[] = [...C1, ...C2, ...C3, ...C4]
 const list = document.querySelector<HTMLElement>('.cr-list')!
 const picked = document.querySelector<HTMLElement>('.cr-picked')!
 
-type Key = keyof Pick<Creature, 'idle' | 'walk' | 'jump' | 'climb' | 'crouch'>
-// les quatre cases : leur geste, et les poses qui passent dedans, en boucle (une toutes les 420 ms) ; dans la case
-// « grimpe », la créature monte d'un cran à chaque image, puis redescend
-const CELLS: { label: string; poses: Key[]; climb?: boolean }[] = [
+type Key = keyof Pick<Creature, 'idle' | 'walk' | 'jump' | 'climb' | 'climb2' | 'crouch'>
+// les quatre cases : leur geste, et les poses qui passent dedans, en boucle (une toutes les 420 ms)
+const CELLS: { label: string; poses: Key[] }[] = [
   { label: 'marche', poses: ['idle', 'walk'] },
   { label: 'saute', poses: ['idle', 'crouch', 'jump', 'jump'] },
-  { label: 'grimpe', poses: ['climb'], climb: true },
+  { label: 'grimpe', poses: ['climb', 'climb2'] },
   { label: 's’accroupit', poses: ['idle', 'idle', 'crouch', 'crouch'] },
 ]
 
@@ -53,7 +52,7 @@ function save() {
 // (toutes les poses d'une créature dans la même boîte : la plus large, la plus haute ; elle ne saute pas d'une case
 // ou d'une pose à l'autre)
 const box = (c: Creature) => {
-  const poses = [c.idle, c.walk, c.jump, c.climb, c.crouch]
+  const poses = [c.idle, c.walk, c.jump, c.climb, c.climb2, c.crouch]
   return { w: Math.max(...poses.flat().map((l) => l.length)), h: Math.max(...poses.map((p) => p.length)) }
 }
 const pad = (p: Pose, h: number) => [...Array(h - p.length).fill(''), ...p].join('\n')
@@ -98,11 +97,8 @@ save()
 let step = 0
 function tick() {
   rows.forEach(({ c, h, arts }, i) => {
-    CELLS.forEach(({ poses, climb }, k) => {
-      const at = step + i
-      arts[k].textContent = pad(c[poses[at % poses.length]], h)
-      // (la grimpe : trois crans vers le haut, puis on recommence en bas)
-      if (climb) arts[k].style.transform = `translateY(${-(at % 4) * 0.35}em)`
+    CELLS.forEach(({ poses }, k) => {
+      arts[k].textContent = pad(c[poses[(step + i) % poses.length]], h)
     })
   })
   step++

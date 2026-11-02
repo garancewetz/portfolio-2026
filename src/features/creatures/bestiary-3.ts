@@ -22,9 +22,16 @@ export const C3: Creature[] = [
  /    \
 `,
     climb: art`
+ |
  }(o o){
- /(   )\
-  |  |~
+  (   )\
+  /  |~
+`,
+    climb2: art`
+       |
+ }(o o){
+ /(   )
+  |  \~
 `,
     crouch: art`
  }(o o){
@@ -51,43 +58,18 @@ export const C3: Creature[] = [
  /   \
 `,
     climb: art`
- \   /
- (-.-)
+ |
+ (-.-)\
+  ( )
+`,
+    climb2: art`
+     |
+ /(-.-)
   ( )
 `,
     crouch: art`
  (-.-)
  (/ \)
-`,
-  },
-  {
-    n: 25,
-    name: 'grillon',
-    note: 'chante quand il attend',
-    idle: art`
-  \\
- (oo)===
-  /\/\
-`,
-    walk: art`
-  \\
- (oo)===
-  \/\/
-`,
-    jump: art`
-  \\
- (oo)===
- //  \\
-`,
-    climb: art`
- \\//
- (oo)
- |==|
-`,
-    crouch: art`
-  \\
- (oo)===
-  ^^^^
 `,
   },
   {
@@ -113,10 +95,16 @@ export const C3: Creature[] = [
  /   \
 `,
     climb: art`
-\()_()/
+ |()_()
  (o.o)
- (   )
- |   |
+ (   )\
+ /   |
+`,
+    climb2: art`
+  ()_()|
+ (o.o)
+/(   )
+ |   \
 `,
     crouch: art`
  ()_()
@@ -144,44 +132,19 @@ export const C3: Creature[] = [
 //   \\~#~#
 `,
     climb: art`
-\/\_/\/
+ |/\_/\
 (=o.o=)
- |   |~#
+ /   |~#
+`,
+    climb2: art`
+  /\_/\|
+(=o.o=)
+ |   \~#
 `,
     crouch: art`
  /\_/\
 (=o.o=)
  (___)~#~#
-`,
-  },
-  {
-    n: 29,
-    name: 'tamia',
-    note: 'les joues pleines',
-    idle: art`
- ()_()
-(=o.o=)
- (") (")~
-`,
-    walk: art`
- ()_()
-(=o.o=)
- / \ ~
-`,
-    jump: art`
- ()_()
-(=^.^=)
-/     \~
-`,
-    climb: art`
-\()_()/
-(=o.o=)
- |   |~
-`,
-    crouch: art`
- ()_()
-(=o.o=)
- (___)~
 `,
   },
 ]
