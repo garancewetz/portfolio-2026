@@ -1,9 +1,8 @@
-import { rms, toMidi, yin } from './pitch'
-
-// La voix, au micro : à chaque image, la note qu'on chante (en demi-tons), ou rien. Le silence et le bruit de la
-// pièce ne comptent pas (un seuil de volume, qui suit le bruit de fond) ; une note isolée qui saute (une consonne,
-// une octave de travers) non plus (la médiane des dernières) ; et un petit trou entre deux syllabes ne coupe pas la
-// note. Rien n'est enregistré ni envoyé : le son reste dans le navigateur.
+// La voix, au micro : à chaque image, est-ce qu'on fait un son, et à quel volume. Pas de hauteur ni de note juste :
+// « aaah », « ooouh », un fredonnement, tout compte, dès que c'est plus fort que le bruit de la pièce (un seuil, qui
+// suit le bruit de fond, avec un peu d'écart entre « ça commence » et « ça s'arrête », pour ne pas clignoter). Un
+// petit trou entre deux souffles ne coupe pas le son. Rien n'est enregistré ni envoyé : le son reste dans le
+// navigateur.
 
 // pourquoi le micro ne vient pas : refusé (par la personne ou le navigateur), absent, ou impossible ici (une page
 // sans https, un vieux navigateur)
@@ -14,7 +13,15 @@ export class MicError extends Error {
   }
 }
 
-export type Heard = { midi: number; level: number }
+// (on : on fait un son ; level : son volume, de 0 à 1 au-dessus du seuil)
+export type Heard = { on: boolean; level: number }
+
+// le volume (la moyenne quadratique du signal)
+function rms(buf: Float32Array) {
+  let s = 0
+  for (let i = 0; i < buf.length; i++) s += buf[i] * buf[i]
+  return Math.sqrt(s / buf.length)
+}
 
 // (à appeler dans un geste, un clic : sans lui, iOS garde le son coupé)
 export async function listen() {
@@ -24,8 +31,8 @@ export async function listen() {
   let stream: MediaStream
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      // (la voix brute : l'annulation d'écho et la réduction de bruit abîment les notes tenues)
-      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+      // (la réduction de bruit garde la voix et efface le ventilateur : ici, elle aide)
+      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: false },
     })
   } catch (e) {
     ctx.close()
@@ -37,44 +44,29 @@ export async function listen() {
   }
   await ctx.resume()
   const analyser = ctx.createAnalyser()
-  // (2048 échantillons : de quoi voir deux périodes d'une voix d'homme très grave, et une image sur deux à peine)
-  analyser.fftSize = 2048
+  analyser.fftSize = 1024
   ctx.createMediaStreamSource(stream).connect(analyser)
   const buf = new Float32Array(analyser.fftSize)
 
-  // le bruit de fond : il descend vite vers le plus calme qu'on a entendu, remonte lentement (et seulement avec du
-  // bruit, pas avec une note)
-  let floor = 0.004
-  // les dernières notes entendues (pour la médiane), et depuis quand on n'entend plus rien
-  const recent: number[] = []
-  let last: Heard | null = null
+  // le bruit de fond : il descend vite vers le plus calme qu'on a entendu, remonte lentement (et seulement en
+  // silence, pas pendant qu'on fait un son)
+  let floor = 0.003
+  let on = false
   let quiet = 0
 
   return {
-    // la note chantée en ce moment (dt : le temps depuis l'image d'avant, en secondes)
-    read(dt: number): Heard | null {
+    // sensitivity : de 0,5 (il faut parler fort) à 2 (un murmure suffit) ; dt : le temps depuis l'image d'avant
+    read(dt: number, sensitivity = 1): Heard {
       analyser.getFloatTimeDomainData(buf)
       const level = rms(buf)
-      const loud = level > Math.max(0.01, floor * 3)
-      const p = loud ? yin(buf, ctx.sampleRate) : null
-      const sung = p !== null && p.clarity > 0.8
-      // (une note tenue n'est pas du bruit : le fond n'apprend que des sons sans hauteur)
+      const start = Math.max(0.012, floor * 4) / sensitivity
       if (level < floor) floor += (level - floor) * 0.3
-      else if (!sung) floor = Math.min(0.05, floor + (level - floor) * 0.01)
-      if (p && sung) {
+      else if (!on) floor = Math.min(0.04, floor + (level - floor) * 0.005)
+      if (level > (on ? start * 0.55 : start)) {
+        on = true
         quiet = 0
-        recent.push(toMidi(p.hz))
-        if (recent.length > 5) recent.shift()
-        const sorted = [...recent].sort((a, b) => a - b)
-        last = { midi: sorted[sorted.length >> 1], level: Math.min(1, (level - floor) / 0.12) }
-        return last
-      }
-      // (un trou bref, entre deux syllabes : on garde la note)
-      quiet += dt
-      if (quiet < 0.12 && last) return last
-      recent.length = 0
-      last = null
-      return null
+      } else if (on && (quiet += dt) > 0.09) on = false
+      return { on, level: Math.max(0, Math.min(1, (level - start * 0.55) / (start * 6))) }
     },
     stop() {
       for (const t of stream.getTracks()) t.stop()

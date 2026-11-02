@@ -1,8 +1,8 @@
 import type { Refusal } from './voice'
 
 // L'arrivée : quelques lignes au milieu de la nuit, qui disent le principe, et demandent le micro. Puis un court
-// réglage : on tient une note, confortable, et la lueur se règle sur cette voix (grave ou aiguë). Si le micro ne
-// vient pas (refusé, absent, impossible ici), on le dit simplement, et on peut jouer au doigt.
+// essai : on dit « aaah », une seconde, pour voir que le micro entend (le trait se remplit tant qu'il entend). Si le
+// micro ne vient pas (refusé, absent, impossible ici), on le dit simplement, et on peut jouer au doigt.
 
 const WHY: Record<Refusal, string> = {
   refused:
@@ -18,10 +18,10 @@ export function intro(main: HTMLElement, o: { mic: () => void; finger: () => voi
   box.innerHTML = `
     <h1 id="vo-title" class="vo-title">Vocalise</h1>
     <div class="vo-step" data-step="ask">
-      <p>Une petite lueur traverse la nuit. Elle avance seule ; vous, vous chantez.</p>
-      <p>Plus la note est <em>aiguë</em>, plus elle monte ; plus elle est <em>grave</em>, plus elle descend. En
-      silence, elle se pose doucement sur les collines.</p>
-      <p>Des notes flottent sur son chemin : attrapez-les. Elles cachent une chanson.</p>
+      <p>Une petite lueur court sur les collines, la nuit. Devant elle, des précipices.</p>
+      <p>Faites un son, n’importe lequel : elle <em>saute</em>. Tant que le son dure, elle <em>plane</em> ; quand il
+      s’arrête, elle retombe.</p>
+      <p>Au-dessus de chaque précipice, ce qu’il demande : « a », un saut ; « aaaaaaa », un long souffle.</p>
       <p class="vo-error" role="alert" hidden></p>
       <div class="vo-actions">
         <button type="button" class="vo-button" data-do="mic">chanter <span aria-hidden="true">→</span></button>
@@ -30,11 +30,11 @@ export function intro(main: HTMLElement, o: { mic: () => void; finger: () => voi
       <p class="vo-small">Le navigateur va demander le micro. Le son reste ici : rien n’est enregistré ni envoyé.</p>
     </div>
     <div class="vo-step" data-step="tune" hidden>
-      <p>Tenez une note, confortable, sans forcer : la lueur se règle sur votre voix.</p>
+      <p>Pour essayer : dites « aaah », une seconde, comme chez le médecin.</p>
       <p class="vo-heard" aria-live="polite">…</p>
       <div class="vo-bar" aria-hidden="true"><span></span></div>
       <div class="vo-actions">
-        <button type="button" class="vo-link" data-do="skip">passer (une voix grave ou aiguë, de 80 à 600 Hz)</button>
+        <button type="button" class="vo-link" data-do="skip">passer</button>
       </div>
     </div>`
   main.append(box)
@@ -60,16 +60,16 @@ export function intro(main: HTMLElement, o: { mic: () => void; finger: () => voi
     fail(why: Refusal) {
       show('ask')
       const error = $('.vo-error')
-      error.textContent = `${WHY[why]} Ou jouez au doigt : appuyez sur la page, plus haut pour monter.`
+      error.textContent = `${WHY[why]} Ou jouez au doigt : appuyez sur la page, et tenez pour planer (ou la barre d’espace).`
       error.hidden = false
       $('[data-do=mic]').textContent = why === 'unsupported' ? 'chanter' : 'réessayer'
       $<HTMLButtonElement>('[data-do=mic]').hidden = why === 'unsupported'
       $('[data-do=finger]').className = 'vo-button'
     },
-    // le réglage : la note entendue, et ce qu'il reste à la tenir (de 0 à 1)
-    tune(note: string | null, held: number) {
+    // l'essai : est-ce qu'on entend un son, et depuis combien de temps (de 0 à 1)
+    tune(on: boolean, held: number) {
       show('tune')
-      heard.textContent = note ?? '…'
+      heard.textContent = on ? 'a'.repeat(2 + Math.round(held * 6)) + 'h' : '…'
       bar.style.transform = `scaleX(${held})`
     },
     close() {

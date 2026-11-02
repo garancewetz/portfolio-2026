@@ -7,7 +7,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vocalise — Garance Wetzel</title>
-    <meta name="description" content="Une petite lueur traverse la nuit ; on la guide en chantant : plus la note est aiguë, plus elle monte. Sur son chemin, des notes à attraper, qui cachent une chanson." />
+    <meta name="description" content="Une petite lueur court sur les collines, la nuit, devant des précipices : un son la fait sauter, et tant qu’il dure, elle plane. Plus le précipice est large, plus il faut tenir la voix." />
     <meta name="theme-color" content="#0e1128" />
     <link rel="canonical" href="https://garancewetz.dev/vocalise" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -15,11 +15,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <!-- une lueur qu'on guide à la voix (voir src/features/vocalise) -->
-    <main class="vo carnet-sheet" aria-label="Vocalise : une lueur traverse la nuit au-dessus des collines. On la guide en chantant : plus la note est aiguë, plus elle monte. Sans micro, on joue au doigt.">
+    <!-- un petit saut à la voix (voir src/features/vocalise) -->
+    <main class="vo carnet-sheet" aria-label="Vocalise : une lueur court sur des collines coupées de précipices. Un son la fait sauter ; tant qu’il dure, elle plane. Sans micro, on joue au doigt ou à la barre d’espace.">
       <canvas class="vo-sky" aria-hidden="true"></canvas>
       <p class="vo-note" aria-hidden="true">—</p>
-      <p class="vo-score" aria-hidden="true">♪ 0</p>
+      <p class="vo-score" aria-hidden="true"></p>
       <p class="vo-caption" aria-live="polite"></p>
     </main>
     <script type="module" src="/src/features/vocalise/main.ts"></script>

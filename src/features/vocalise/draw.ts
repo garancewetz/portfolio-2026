@@ -1,8 +1,9 @@
-import { isBlack, noteName } from './pitch'
+// Le dessin de Vocalise, dans le canvas : le ciel étoilé, les collines du fond (elles défilent plus lentement), les
+// bouts de colline où court la lueur, séparés par des précipices (au-dessus de chacun, en lettres pâles, le son
+// qu'il demande : « a » pour un saut, « aaaaaaa » pour un long), le chemin de la lueur, et la lueur. Tout est en
+// caractères ou presque, à l'encre pâle sur la nuit.
 
-// Le dessin de Vocalise, dans le canvas : le ciel étoilé, les collines (deux rangées, la plus proche défile plus
-// vite), le petit clavier de piano debout sur le bord gauche (la touche qu'on chante s'allume), le chemin de la
-// voix, la lueur, et les notes à attraper. Tout est en caractères ou presque, à l'encre pâle sur la nuit.
+import type { Ledge } from './world'
 
 const INK = '238 234 226'
 const GOLD = '255 210 130'
@@ -19,11 +20,6 @@ export const backHill = (x: number, H: number, travelled: number) => {
   const w = x + travelled * 0.45
   return H * 0.8 + Math.sin(w * 0.0041) * H * 0.04 + Math.sin(w * 0.011 + 1) * H * 0.018
 }
-export const frontHill = (x: number, H: number, travelled: number) => {
-  const w = x + travelled
-  return H * 0.9 + Math.sin(w * 0.0057 + 2) * H * 0.03 + Math.sin(w * 0.017) * H * 0.012
-}
-
 // le ciel : des étoiles en caractères, qui défilent à peine, et scintillent
 const STARS = ['.', '·', '·', '+', '*']
 export function sky(g: CanvasRenderingContext2D, W: number, H: number, travelled: number, t: number) {
@@ -41,72 +37,73 @@ export function sky(g: CanvasRenderingContext2D, W: number, H: number, travelled
   }
 }
 
-// les collines : la rangée du fond, pleine ; celle de devant, avec une herbe en caractères sur sa crête, et çà et
-// là un petit arbre
+// les collines du fond, pleines, loin derrière
+export function far(g: CanvasRenderingContext2D, W: number, H: number, travelled: number) {
+  g.beginPath()
+  g.moveTo(0, H)
+  for (let x = 0; x <= W + 8; x += 8) g.lineTo(x, backHill(x, H, travelled))
+  g.lineTo(W, H)
+  g.fillStyle = '#161a35'
+  g.fill()
+}
+
+// le sommet d'un bout de colline, sur la page
+export const ground = (l: Ledge, H: number) => H * (0.72 + l.dy)
+
+// les bouts de colline : pleins jusqu'en bas, une herbe en caractères sur la crête, çà et là un petit arbre, et
+// les bords des précipices un peu effrités ; au-dessus de chaque précipice, le son qu'il demande (doré, une fois
+// franchi)
 const GRASS = [',', "'", '.', '`', ',', '.']
-export function hills(g: CanvasRenderingContext2D, W: number, H: number, travelled: number) {
-  const fill = (top: (x: number) => number, colour: string) => {
-    g.beginPath()
-    g.moveTo(0, H)
-    for (let x = 0; x <= W + 8; x += 8) g.lineTo(x, top(x))
-    g.lineTo(W, H)
-    g.fillStyle = colour
-    g.fill()
-  }
-  fill((x) => backHill(x, H, travelled), '#161a35')
-  fill((x) => frontHill(x, H, travelled), '#1d2244')
-  g.font = FONT(12)
+export function ledges(g: CanvasRenderingContext2D, W: number, H: number, list: Ledge[], travelled: number) {
   g.textAlign = 'center'
-  g.textBaseline = 'bottom'
-  const STEP = 9
-  const first = Math.floor(travelled / STEP)
-  for (let k = first; k * STEP - travelled < W + STEP; k++) {
-    const x = k * STEP - travelled
-    const y = frontHill(x, H, travelled) + 3
-    const r = hash(k)
-    if (r > 0.975) {
-      g.fillStyle = `rgb(${INK} / 0.32)`
-      g.font = FONT(20)
-      g.fillText('↟', x, y)
+  for (let i = 0; i < list.length; i++) {
+    const l = list[i]
+    const x0 = l.x0 - travelled
+    const x1 = l.x1 - travelled
+    const top = ground(l, H)
+    if (x1 > -20 && x0 < W + 20) {
+      g.fillStyle = '#1d2244'
+      g.fillRect(x0, top, x1 - x0, H - top)
+      g.textBaseline = 'bottom'
       g.font = FONT(12)
-    } else {
-      g.fillStyle = `rgb(${INK} / ${0.1 + r * 0.16})`
-      g.fillText(GRASS[Math.floor(r * GRASS.length)], x, y)
+      const STEP = 9
+      for (let k = Math.ceil(Math.max(l.x0, travelled - STEP) / STEP); k * STEP <= Math.min(l.x1, travelled + W + STEP); k++) {
+        const x = k * STEP - travelled
+        const r = hash(k)
+        if (r > 0.975 && x - x0 > 20 && x1 - x > 20) {
+          g.fillStyle = `rgb(${INK} / 0.32)`
+          g.font = FONT(20)
+          g.fillText('↟', x, top + 3)
+          g.font = FONT(12)
+        } else {
+          g.fillStyle = `rgb(${INK} / ${0.1 + r * 0.16})`
+          g.fillText(GRASS[Math.floor(r * GRASS.length)], x, top + 3)
+        }
+      }
+      // (les bords : quelques cailloux qui pendent)
+      g.textBaseline = 'middle'
+      g.fillStyle = `rgb(${INK} / 0.14)`
+      for (let j = 0; j < 5; j++) {
+        const y = top + 14 + j * 15
+        g.fillText(j % 2 ? ':' : '.', x0 + 3 + hash(i + j) * 3, y)
+        g.fillText(j % 2 ? '.' : ':', x1 - 3 - hash(i - j) * 3, y)
+      }
     }
+    // le son du précipice qui suit, centré au-dessus du vide
+    const next = list[i + 1]
+    if (!next) continue
+    const mid = (x1 + next.x0 - travelled) / 2
+    if (mid < -200 || mid > W + 200) continue
+    const word = 'a'.repeat(Math.max(1, Math.round(l.hold * 4)))
+    const y = Math.min(top, ground(next, H)) - H * 0.2
+    g.font = `italic ${Math.round(Math.min(30, 18 + l.hold * 3))}px 'Instrument Serif', serif`
+    g.textBaseline = 'middle'
+    g.fillStyle = l.crossed ? `rgb(${GOLD} / 0.75)` : `rgb(${INK} / 0.42)`
+    g.fillText(word, mid, y)
   }
 }
 
-// le clavier, debout sur le bord gauche : un demi-ton par bande (les touches noires plus courtes), un trait léger
-// à travers la page à chaque do, et son nom ; la touche chantée s'allume
-export function keys(
-  g: CanvasRenderingContext2D,
-  W: number,
-  lo: number,
-  hi: number,
-  yOf: (midi: number) => number,
-  lit: number | null,
-) {
-  g.font = FONT(10)
-  g.textAlign = 'left'
-  g.textBaseline = 'middle'
-  for (let m = Math.ceil(lo); m <= Math.floor(hi); m++) {
-    const y0 = yOf(m + 0.5)
-    const y1 = yOf(m - 0.5)
-    const black = isBlack(m)
-    const on = lit !== null && Math.round(lit) === m
-    g.fillStyle = on ? `rgb(${GOLD} / 0.9)` : black ? `rgb(${INK} / 0.05)` : `rgb(${INK} / 0.13)`
-    g.fillRect(0, y0 + 0.5, black ? 9 : 15, Math.max(1, y1 - y0 - 1))
-    if (m % 12 === 0) {
-      const y = yOf(m)
-      g.fillStyle = `rgb(${INK} / 0.05)`
-      g.fillRect(22, Math.round(y), W - 22, 1)
-      g.fillStyle = `rgb(${INK} / ${on ? 0.8 : 0.32})`
-      g.fillText(noteName(m), 21, y - 7)
-    }
-  }
-}
-
-// le chemin de la voix : un trait doré derrière la lueur, qui s'efface vers la gauche
+// le chemin de la lueur : un trait doré derrière elle, qui s'efface vers la gauche
 export function path(g: CanvasRenderingContext2D, pts: { x: number; y: number }[], lightX: number) {
   g.lineWidth = 2
   g.lineCap = 'round'
@@ -137,26 +134,4 @@ export function light(g: CanvasRenderingContext2D, x: number, y: number, glow: n
   g.textBaseline = 'middle'
   g.fillStyle = `rgb(255 244 220 / ${0.6 + glow * 0.4})`
   g.fillText('✦', x, y)
-}
-
-// une note à attraper : un ♪ pâle, qui se balance un peu ; attrapée (caught : depuis combien de secondes), elle
-// devient dorée, grossit, monte et s'efface, en laissant deux ou trois étincelles
-export function note(g: CanvasRenderingContext2D, x: number, y: number, t: number, caught: number | null) {
-  g.textAlign = 'center'
-  g.textBaseline = 'middle'
-  if (caught === null) {
-    g.font = FONT(22)
-    g.fillStyle = `rgb(${INK} / 0.7)`
-    g.fillText('♪', x, y + Math.sin(t * 2 + x * 0.05) * 2)
-    return
-  }
-  const k = Math.min(1, caught / 0.9)
-  g.font = FONT(22 + k * 14)
-  g.fillStyle = `rgb(${GOLD} / ${1 - k})`
-  g.fillText('♪', x, y - k * 26)
-  g.font = FONT(12)
-  for (let i = 0; i < 3; i++) {
-    const a = (i / 3) * Math.PI * 2 + 0.6
-    g.fillText('*', x + Math.cos(a) * k * 30, y - k * 10 + Math.sin(a) * k * 30)
-  }
 }

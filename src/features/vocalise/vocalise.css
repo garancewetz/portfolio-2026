@@ -1,6 +1,6 @@
-/* ——— Vocalise (voir main.ts) : une nuit bleue, des collines, une lueur dorée qui suit la voix. Le paysage est
-   dessiné dans le canvas ; par-dessus, l'arrivée (le principe, le micro), la note entendue et le nom de la
-   chanson ——— */
+/* ——— Vocalise (voir main.ts) : une nuit bleue, des collines coupées de précipices, une lueur dorée qui saute à la
+   voix. Le paysage est dessiné dans le canvas ; par-dessus, l'arrivée (le principe, le micro), le son qu'on tient,
+   les précipices franchis, et ce qu'il fallait tenir quand on tombe ——— */
 @import '@/styles/base.css';
 
 :root {
@@ -30,7 +30,7 @@ body {
   touch-action: none;
 }
 .vo.is-playing {
-  cursor: ns-resize;
+  cursor: pointer;
 }
 .vo-sky {
   position: absolute;
@@ -155,8 +155,8 @@ body {
   transition: transform 0.1s linear;
 }
 
-/* ——— pendant le jeu : la note entendue en bas à gauche, les notes attrapées à droite, et le nom de la chanson
-   qui passe, au milieu ——— */
+/* ——— pendant le jeu : le son tenu en bas à gauche, les précipices à droite, et, quand on tombe, ce qu'on a tenu
+   et ce qu'il fallait, au milieu ——— */
 .vo-note,
 .vo-score {
   position: absolute;
