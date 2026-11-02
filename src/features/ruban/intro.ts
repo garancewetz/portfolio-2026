@@ -1,8 +1,8 @@
-import { RULES } from './rules'
 import type { Refusal } from './voice'
 
-// L'arrivée : au milieu du noir, le principe et les règles du ruban, et la demande du micro. Si le micro ne vient
-// pas (refusé, absent, impossible ici), on le dit simplement, et on peut jouer au doigt.
+// L'arrivée : au milieu du noir, le titre, et deux boutons : chanter (la demande du micro) ou dessiner au doigt ; rien
+// d'autre (tout se découvre). Si le micro ne vient pas (refusé, absent, impossible ici), on le dit simplement, et on
+// peut jouer au doigt.
 
 const WHY: Record<Refusal, string> = {
   refused:
@@ -13,18 +13,15 @@ const WHY: Record<Refusal, string> = {
 
 export function intro(main: HTMLElement, o: { mic: () => void; finger: () => void }) {
   const box = document.createElement('section')
-  box.className = 'vo-intro'
-  box.setAttribute('aria-labelledby', 'vo-title')
+  box.className = 'ru-intro'
+  box.setAttribute('aria-labelledby', 'ru-title')
   box.innerHTML = `
-    <h1 id="vo-title" class="vo-title">Vocalise</h1>
-    <p>Chantez : votre voix dessine un ruban de lumière dans le noir.</p>
-    ${RULES}
-    <p class="vo-error" role="alert" hidden></p>
-    <div class="vo-actions">
-      <button type="button" class="vo-button" data-do="mic">chanter <span aria-hidden="true">→</span></button>
-      <button type="button" class="vo-link" data-do="finger">dessiner au doigt, sans micro</button>
-    </div>
-    <p class="vo-small">Le navigateur va demander le micro. Le son reste ici : rien n’est enregistré ni envoyé.</p>`
+    <h1 id="ru-title" class="ru-title">Ruban</h1>
+    <p class="ru-error" role="alert" hidden></p>
+    <div class="ru-actions">
+      <button type="button" class="ru-button" data-do="mic">chanter <span aria-hidden="true">→</span></button>
+      <button type="button" class="ru-link" data-do="finger">dessiner au doigt, sans micro</button>
+    </div>`
   main.append(box)
 
   const $ = <T extends HTMLElement>(s: string) => box.querySelector<T>(s)!
@@ -42,12 +39,12 @@ export function intro(main: HTMLElement, o: { mic: () => void; finger: () => voi
     },
     // le micro ne vient pas : pourquoi, et l'autre façon de jouer, mise en avant
     fail(why: Refusal) {
-      const error = $('.vo-error')
+      const error = $('.ru-error')
       error.textContent = `${WHY[why]} Ou dessinez au doigt : appuyez sur la page, plus haut pour une note plus aiguë.`
       error.hidden = false
       mic.textContent = 'réessayer'
       mic.hidden = why === 'unsupported'
-      finger.className = 'vo-button'
+      finger.className = 'ru-button'
     },
     close() {
       box.classList.add('is-off')

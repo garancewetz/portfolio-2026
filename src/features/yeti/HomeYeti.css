@@ -1,0 +1,18 @@
+/* ——— Le yéti de l'accueil (voir HomeYeti.tsx) : posé sur l'écran, par-dessus la page, petit, à l'encre ; placé par
+   le script (ses pieds au point voulu) ——— */
+.rg-yeti {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.05;
+  /* (sans les ligatures de la police : « ::: » ou « // » restent des signes séparés) */
+  font-variant-ligatures: none;
+  font-feature-settings: 'calt' 0;
+  color: var(--ink);
+  pointer-events: none;
+  user-select: none;
+}

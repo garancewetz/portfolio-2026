@@ -1,5 +1,5 @@
-/* ——— Vocalise (voir main.ts) : un fond noir, où la voix dessine un ruban de lumière (dans le canvas). Par-dessus,
-   l'arrivée (le principe, les règles, le micro), puis les règles dans le coin, et la note entendue ——— */
+/* ——— Ruban (voir main.ts) : un fond noir, où la voix dessine un ruban de lumière (dans le canvas). Par-dessus,
+   l'arrivée (un mot, le micro), puis la note entendue et les boutons ——— */
 @import '@/styles/base.css';
 
 :root {
@@ -19,7 +19,7 @@ body {
   overflow: hidden;
   background: var(--bg);
 }
-.vo {
+.ru {
   position: fixed;
   inset: 0;
   background: var(--bg);
@@ -27,10 +27,10 @@ body {
   -webkit-user-select: none;
   touch-action: none;
 }
-.vo.is-playing {
+.ru.is-playing {
   cursor: crosshair;
 }
-.vo-canvas {
+.ru-canvas {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -38,7 +38,7 @@ body {
 }
 
 /* ——— l'arrivée (voir intro.ts) ——— */
-.vo-intro {
+.ru-intro {
   position: absolute;
   inset: 0;
   display: flex;
@@ -54,38 +54,34 @@ body {
   transition: opacity 0.9s ease;
   cursor: auto;
 }
-.vo-intro.is-off {
+.ru-intro.is-off {
   opacity: 0;
   pointer-events: none;
 }
-.vo-intro > * {
+.ru-intro > * {
   width: min(540px, 100%);
 }
-.vo-title {
+.ru-title {
   font: 400 clamp(44px, 9vw, 72px) / 1 var(--serif);
   letter-spacing: -0.01em;
   color: var(--accent);
 }
-.vo-small {
-  font: 11px/1.6 var(--mono);
-  color: var(--muted);
-}
-.vo-error {
+.ru-error {
   padding: 0.7em 0.9em;
   border-left: 2px solid var(--accent);
   background: rgb(255 210 130 / 0.07);
   font-size: 15px;
 }
-.vo-error[hidden] {
+.ru-error[hidden] {
   display: none;
 }
-.vo-actions {
+.ru-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 1em 1.6em;
 }
-.vo-button {
+.ru-button {
   padding: 0.75em 1.3em;
   border: 1px solid var(--accent);
   border-radius: 999px;
@@ -95,18 +91,18 @@ body {
   cursor: pointer;
   transition: background 0.3s;
 }
-.vo-button:hover,
-.vo-button:focus-visible {
+.ru-button:hover,
+.ru-button:focus-visible {
   background: rgb(255 210 130 / 0.22);
 }
-.vo-button:disabled {
+.ru-button:disabled {
   opacity: 0.5;
   cursor: wait;
 }
-.vo-button[hidden] {
+.ru-button[hidden] {
   display: none;
 }
-.vo-link {
+.ru-link {
   padding: 0;
   border: 0;
   background: none;
@@ -117,40 +113,16 @@ body {
   text-underline-offset: 0.25em;
   cursor: pointer;
 }
-.vo-link:hover,
-.vo-link:focus-visible {
+.ru-link:hover,
+.ru-link:focus-visible {
   color: var(--ink);
 }
 :focus-visible {
   outline-color: var(--accent);
 }
 
-/* ——— les règles (voir rules.ts) : dans l'arrivée, puis en haut à droite pendant qu'on chante ——— */
-.vo-rules {
-  display: grid;
-  gap: 0.35em;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font: 12px/1.5 var(--mono);
-  color: var(--muted);
-}
-.vo-rules b {
-  font-weight: 500;
-  color: var(--ink);
-}
-.vo > .vo-rules {
-  position: absolute;
-  top: 56px;
-  right: 18px;
-  width: min(330px, calc(100% - 100px));
-  font-size: 11px;
-  opacity: 0.75;
-  pointer-events: none;
-}
-
 /* ——— la note entendue, en bas à droite ——— */
-.vo-note {
+.ru-note {
   position: absolute;
   right: 18px;
   bottom: 14px;
@@ -163,7 +135,7 @@ body {
 }
 
 /* ——— les boutons (voir controls.ts), en bas au milieu ——— */
-.vo-controls {
+.ru-controls {
   position: absolute;
   left: 50%;
   bottom: 12px;
@@ -171,11 +143,11 @@ body {
   gap: 1.4em;
   transform: translateX(-50%);
 }
-.vo-controls .vo-link {
+.ru-controls .ru-link {
   font-size: 12px;
   white-space: nowrap;
 }
-.vo-controls .vo-link:disabled {
+.ru-controls .ru-link:disabled {
   opacity: 0.35;
   cursor: default;
 }
