@@ -1,7 +1,8 @@
 import type { Refusal } from './voice'
 
-// L'arrivée : au milieu du noir, un seul mot, « chante » (le reste se découvre), et la demande du micro. Si le micro ne vient
-// pas (refusé, absent, impossible ici), on le dit simplement, et on peut jouer au doigt.
+// L'arrivée : au milieu du noir, le titre, et deux boutons : chanter (la demande du micro) ou dessiner au doigt ; rien
+// d'autre (tout se découvre). Si le micro ne vient pas (refusé, absent, impossible ici), on le dit simplement, et on
+// peut jouer au doigt.
 
 const WHY: Record<Refusal, string> = {
   refused:
@@ -16,13 +17,11 @@ export function intro(main: HTMLElement, o: { mic: () => void; finger: () => voi
   box.setAttribute('aria-labelledby', 'ru-title')
   box.innerHTML = `
     <h1 id="ru-title" class="ru-title">Ruban</h1>
-    <p class="ru-say">Chante.</p>
     <p class="ru-error" role="alert" hidden></p>
     <div class="ru-actions">
       <button type="button" class="ru-button" data-do="mic">chanter <span aria-hidden="true">→</span></button>
       <button type="button" class="ru-link" data-do="finger">dessiner au doigt, sans micro</button>
-    </div>
-    <p class="ru-small">Le navigateur va demander le micro. Le son reste ici : rien n’est enregistré ni envoyé.</p>`
+    </div>`
   main.append(box)
 
   const $ = <T extends HTMLElement>(s: string) => box.querySelector<T>(s)!

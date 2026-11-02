@@ -66,10 +66,6 @@ body {
   letter-spacing: -0.01em;
   color: var(--accent);
 }
-.ru-small {
-  font: 11px/1.6 var(--mono);
-  color: var(--muted);
-}
 .ru-error {
   padding: 0.7em 0.9em;
   border-left: 2px solid var(--accent);
@@ -123,12 +119,6 @@ body {
 }
 :focus-visible {
   outline-color: var(--accent);
-}
-
-/* « Chante. » : le seul mot de l'arrivée */
-.ru-say {
-  font: 400 clamp(22px, 4vw, 30px) / 1.2 var(--serif);
-  color: var(--ink);
 }
 
 /* ——— la note entendue, en bas à droite ——— */
