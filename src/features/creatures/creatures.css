@@ -47,8 +47,7 @@ main.cr.carnet-sheet {
   color: var(--keep);
 }
 
-/* la planche : une ligne par créature, son nom à gauche, ses quatre cases à la suite (deux par deux sur un
-   téléphone) */
+/* la planche : une ligne par créature, son nom à gauche, sa piste à droite (dessous, sur un téléphone) */
 .cr-list {
   display: grid;
   gap: 10px;
@@ -59,20 +58,17 @@ main.cr.carnet-sheet {
 }
 .cr-row {
   display: grid;
-  grid-template-columns: minmax(150px, 1.1fr) repeat(4, minmax(0, 1fr));
+  grid-template-columns: minmax(150px, 220px) 1fr;
   gap: 8px;
   align-items: stretch;
 }
 @media (max-width: 720px) {
   .cr-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .cr-pick {
-    grid-column: 1 / -1;
+    grid-template-columns: 1fr;
   }
 }
 .cr-pick,
-.cr-cell {
+.cr-lane {
   margin: 0;
   border: 1px solid rgb(26 25 23 / 0.12);
   border-radius: 6px;
@@ -118,25 +114,52 @@ main.cr.carnet-sheet {
   line-height: 1.4;
   color: var(--muted);
 }
-/* une case : la créature, en bas (posée), et son geste dessous */
-.cr-cell {
-  display: grid;
-  justify-items: center;
-  align-content: end;
-  gap: 8px;
-  padding: 14px 8px 10px;
+/* la piste : un sol, un petit mur à chaque bout, la créature posée dessus (elle s'y déplace, voir stage.ts), et son
+   geste dessous */
+.cr-lane {
+  position: relative;
+  min-height: calc(var(--h) * 1.15em + 76px);
+  padding: 0;
   overflow: hidden;
+  font-size: 16px;
 }
-.cr-cell figcaption {
+.cr-lane::before,
+.cr-lane::after {
+  content: '';
+  position: absolute;
+  bottom: 30px;
+  width: 2px;
+  height: 64px;
+  background: rgb(26 25 23 / 0.25);
+}
+.cr-lane::before {
+  left: 10px;
+}
+.cr-lane::after {
+  right: 10px;
+}
+.cr-lane figcaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  border-top: 1px solid rgb(26 25 23 / 0.15);
+  padding-top: 8px;
+  margin: 0 10px;
+  text-align: center;
   font: 10px/1 var(--mono);
   letter-spacing: 0.06em;
   color: var(--muted);
 }
 /* la créature : sa boîte fait la taille de sa plus grande pose */
 .cr-art {
+  position: absolute;
+  left: 0;
+  bottom: 30px;
   width: var(--w);
   min-height: calc(var(--h) * 1.15em);
   margin: 0;
+  will-change: transform;
   font: 500 16px / 1.15 var(--mono);
   white-space: pre;
   text-align: left;

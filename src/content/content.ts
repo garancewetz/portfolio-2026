@@ -139,7 +139,7 @@ export const carnet: Carnet = {
       name: 'créatures',
       href: '/creatures/',
       src: '/shots/creatures.webp',
-      alt: 'Sur une page claire, une planche de créatures dessinées en caractères, une par ligne (un singe, une grenouille, un renard, un chat…) : à gauche son numéro, son nom en serif et un mot sur elle ; à côté, quatre cases où elle marche, saute, grimpe et s’accroupit.',
+      alt: 'Sur une page claire, une planche de créatures dessinées en caractères, une par ligne (une souris, un hibou, un pingouin…) : à gauche son numéro, son nom en serif et un mot sur elle ; à droite, sa piste entre deux petits murs, où elle marche, tantôt vers la droite, tantôt vers la gauche.',
     },
     {
       name: 'feu d’artifice',
