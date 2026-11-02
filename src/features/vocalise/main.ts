@@ -2,18 +2,22 @@ import './vocalise.css'
 import { mount } from '@/features/carnet/carnet'
 import { gear, slider } from '@/features/carnet/gear'
 import { sheet } from '@/features/carnet/sheet'
-import { far, ground, ledges, light, path, sky } from './draw'
+import { colours, sun } from './dawn'
+import { far, ledges, light, path, sky } from './draw'
+import { hero } from './hero'
 import { intro } from './intro'
 import { listen, MicError, type Heard, type Voice } from './voice'
-import { fly, physics, world, type Ledge } from './world'
+import { DAWN, physics, world } from './world'
 
-// Vocalise : une petite lueur court sur les collines, la nuit, et devant elle s'ouvrent des précipices (world.ts).
-// On joue à la voix : un son, n'importe lequel, la fait sauter ; tant qu'il dure, elle plane ; quand il s'arrête,
-// elle retombe. Au-dessus de chaque précipice, le son qu'il demande, en lettres (« a » : un saut ; « aaaaaaa » : un
-// long souffle) ; ils s'élargissent peu à peu. Tombée, elle reprend un peu avant le bord, et l'on voit combien de
-// temps on a tenu, et combien il fallait. À l'arrivée, le principe et la demande du micro, puis un court essai
-// (intro.ts) ; sans micro, on joue au doigt, ou à la barre d'espace (appuyer : le son). La roue crantée règle la
-// sensibilité du micro et la vitesse.
+// Vocalise : une petite lueur court sur les collines, la nuit, et devant elle s'ouvrent quarante précipices, jusqu'à
+// l'aube (world.ts). On joue à la voix : un son, n'importe lequel, la fait sauter ; tant qu'il dure, elle plane ;
+// quand il s'arrête, elle retombe (hero.ts). Au-dessus de chaque précipice, le son qu'il demande, en lettres
+// (« a » : un saut ; « aaaaaaa » : un long souffle) ; en chemin, des pics, des corniches, des marches, et elle court
+// de plus en plus vite. Tombée, elle reprend un peu avant le bord, et l'on voit combien de temps on a tenu, et
+// combien il fallait. De précipice en précipice, la nuit s'éclaircit (dawn.ts) ; au quarantième, le soleil se lève,
+// et un son repart pour une autre nuit. À l'arrivée sur la page, le principe et la demande du micro, puis un court
+// essai (intro.ts) ; sans micro, on joue au doigt, ou à la barre d'espace (appuyer : le son). La roue crantée règle
+// la sensibilité du micro et la vitesse.
 
 const main = document.querySelector<HTMLElement>('.vo')!
 const canvas = main.querySelector<HTMLCanvasElement>('.vo-sky')!
@@ -29,7 +33,6 @@ let H = 0
 const scale = () => Math.max(0.55, Math.min(1.3, H / 700))
 const lightX = () => Math.max(70, W * 0.24)
 const settings = { sensitivity: 1, pace: 1 }
-const k = () => physics(scale(), settings.pace)
 
 function resize() {
   ;({ w: W, h: H } = sheet())
@@ -57,47 +60,86 @@ addEventListener('keydown', (e) => {
 })
 addEventListener('keyup', (e) => e.code === 'Space' && (pressed = false))
 
-const land = world()
-// la lueur, dans le monde : x, sa hauteur sur la page (y) et sa vitesse verticale (vers le bas)
-// (from : le bout de colline qu'elle a quitté en dernier, d'où elle repart si elle tombe)
-const me = { x: 0, y: 0, vy: 0, on: null as Ledge | null, from: null as Ledge | null, air: 0, stuck: false }
-// le son : est-ce qu'il dure, depuis quand (pour le saut), et depuis quand on l'a lancé (un son lancé juste avant
-// d'atterrir fait sauter à l'atterrissage)
+// la nuit en cours (chaque nuit a ses précipices), et la lueur
+let night = 0
+let land = world(night)
+const lueur = hero()
+const me = lueur.me
+// le son : est-ce qu'il dure, depuis quand, et depuis quand on l'a lancé (un son lancé juste avant d'atterrir fait
+// sauter à l'atterrissage)
 let was = false
 let held = 0
 let asked = 9
-// (combien de temps le son a tenu pendant le dernier saut)
-let airHeld = 0
 let glow = 0
+// la partie : les précipices franchis, les chutes, l'aube (quand), et où en est le ciel (de 0 à 1, qui suit les
+// précipices franchis sans à-coups)
+let crossed = 0
+let falls = 0
 let fallen = 0
-let record = 0
+let dawnAt = 0
+let sky01 = 0
+let best = Infinity
 try {
-  record = Number(localStorage.getItem('vocalise.record')) || 0
+  best = Number(localStorage.getItem('vocalise.aube')) || Infinity
 } catch {
   // (pas de mémoire ici : un record pour la visite)
 }
 const trail: { x: number; y: number }[] = []
 
-function tell(html: string) {
+function tell(html: string, ms = 2800) {
   caption.innerHTML = html
   caption.classList.add('is-on')
   clearTimeout(tell.timer)
-  tell.timer = setTimeout(() => caption.classList.remove('is-on'), 2800)
+  if (ms < Infinity) tell.timer = setTimeout(() => caption.classList.remove('is-on'), ms)
 }
 tell.timer = 0 as ReturnType<typeof setTimeout> | 0
 const seconds = (s: number) => `${s.toFixed(1).replace('.', ',')} s`
+const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`
+
+// une nouvelle nuit : d'autres précipices, et la lueur au départ, avec de l'élan devant elle
+function restart() {
+  land = world(++night)
+  land.grow(W * 2, H, scale(), settings.pace)
+  const first = land.ledges[0]
+  lueur.place(first, first.x1 - first.run * 2, H)
+  crossed = falls = fallen = dawnAt = 0
+  trail.length = 0
+  caption.classList.remove('is-on')
+}
 
 // (repartir un peu avant le bord du bout de colline d'où l'on est tombé)
 function respawn() {
   const from = me.from ?? land.before(me.x)
-  me.x = Math.max(from.x0 + 10, from.x1 - k().run * 1.1)
-  me.y = ground(from, H)
-  me.vy = 0
-  me.on = from
-  me.from = from
-  me.stuck = false
+  lueur.place(from, Math.max(from.x0 + 10, from.x1 - from.run * 1.1), H)
   trail.length = 0
   fallen = 0
+}
+
+// tombée : pourquoi, en quelques mots (cognée aux pics, trop loin, trop court)
+function why() {
+  const from = me.from ?? land.before(me.x)
+  const over = (land.after(from)?.x0 ?? Infinity) < me.x
+  if (me.bumped) return `<em>trop long</em> <span>sous les pics, un « a » bref</span>`
+  if (over) return `<em>trop long</em> <span>tenu ${seconds(me.held)}, il fallait ≈ ${seconds(from.hold)}</span>`
+  if (from.hold < 0.25) return `un petit « a », <em>au bord</em>`
+  return `tenu <em>${seconds(me.held)}</em> <span>il fallait ≈ ${seconds(from.hold)}</span>`
+}
+
+// l'aube : le compte, le record (le moins de chutes), et l'invitation à repartir
+function dawn(t: number) {
+  dawnAt = t
+  const record = falls < best
+  if (record) {
+    best = falls
+    try {
+      localStorage.setItem('vocalise.aube', String(falls))
+    } catch {
+      // (pas de mémoire ici)
+    }
+  }
+  const tally = falls ? plural(falls, 'chute') : 'sans tomber'
+  const note = record && night > 1 ? ' · record' : best < Infinity && !record ? ` · record : ${best}` : ''
+  tell(`<em>l’aube</em> <span>${tally}${note}</span><br><span>un son pour une autre nuit</span>`, Infinity)
 }
 
 // ——— l'arrivée, et l'essai du micro ———
@@ -126,12 +168,7 @@ const door = intro(main, {
 function play() {
   trying = null
   playing = true
-  // (on part du début d'un bout de colline, avec de l'élan devant soi)
-  land.grow(me.x + W * 1.5, k())
-  me.x = Math.max(me.x, (me.on ?? land.before(me.x)).x1 - k().run * 2)
-  me.on = land.before(me.x)
-  me.y = ground(me.on, H)
-  me.vy = 0
+  restart()
   door.close()
   main.classList.add('is-playing')
   gearUp()
@@ -166,14 +203,19 @@ function gearUp() {
 
 let last = performance.now()
 let shown = ''
+let painted = ''
 function frame(now: number) {
   const dt = Math.max(0, Math.min(0.05, (now - last) / 1000))
   last = now
   const t = now / 1000
-  const K = k()
+  const s = scale()
 
   // ce qu'on entend : le doigt (ou l'espace), sinon la voix
-  const heard: Heard = pressed ? { on: true, level: 0.6, meter: 1 } : voice ? voice.read(dt, settings.sensitivity) : { on: false, level: 0, meter: 0 }
+  const heard: Heard = pressed
+    ? { on: true, level: 0.6, meter: 1 }
+    : voice
+      ? voice.read(dt, settings.sensitivity)
+      : { on: false, level: 0, meter: 0 }
   const on = heard.on
   const onset = on && !was
   was = on
@@ -188,84 +230,30 @@ function frame(now: number) {
     door.tune(on, Math.min(1, trying.held / 0.8), heard.meter, trying.since > 4)
     if (trying.held >= 0.8) play()
   }
+  // (à l'aube, un son repart pour une autre nuit)
+  if (dawnAt && t - dawnAt > 2.5 && onset) restart()
 
-  // le monde, devant et derrière
-  land.grow(me.x + W * 1.5, K)
+  // le monde devant et derrière, et un pas de la lueur (à la vitesse du bout de colline qu'elle a quitté)
+  land.grow(me.x + W * 1.5, H, s, settings.pace)
   land.prune(me.x - W * 1.5)
-  if (!me.y) respawn()
-
-  // la lueur : elle court (avant de jouer, au pas)
-  const step = K.run * dt * (playing ? 1 : 0.35)
-  if (!me.stuck) me.x += step
-  if (me.on) {
-    me.air = 0
-    me.from = me.on
-    // (au bout de la colline, elle part dans le vide)
-    if (me.x > me.on.x1) me.on = null
-    else if (playing && asked < 0.15) {
-      me.vy = -K.jump
-      me.on = null
-      asked = 9
-      airHeld = 0
-    } else if (!playing && me.x > me.on.x1 - K.run * 0.5) {
-      // (avant de jouer, elle saute toute seule)
-      me.vy = -K.jump * 0.8
-      me.on = null
+  if (!me.y) lueur.place(land.ledges[0], 0, H)
+  const k = { ...physics(s, settings.pace), run: (me.from ?? land.ledges[0]).run }
+  const event = lueur.step(dt, { on, onset, asked }, land, k, H, s, playing)
+  if (event && 'landed' in event) {
+    const prev = land.ledges[land.ledges.indexOf(event.landed) - 1]
+    if (prev && !prev.crossed && playing) {
+      prev.crossed = true
+      crossed++
     }
-  } else {
-    // (un son lancé juste après le bord compte encore)
-    me.air += dt
-    if (playing && onset && me.air < 0.12 && me.vy >= 0) {
-      me.vy = -K.jump
-      asked = 9
-      airHeld = 0
+    if (event.landed.final && playing && !dawnAt) dawn(t)
+  } else if (event) {
+    fallen += dt
+    if (fallen === dt && playing) {
+      falls++
+      tell(why())
     }
-    if (on) airHeld += dt
-    const before = me.y
-    me.vy = fly(me.vy, on || !playing, dt, K)
-    me.y += me.vy * dt
-    const below = land.under(me.x)
-    if (below) {
-      const top = ground(below, H)
-      if (me.vy >= 0 && before <= top + 2 && me.y >= top) {
-        me.y = top
-        me.vy = 0
-        me.on = below
-        // le précipice d'avant est franchi
-        const prev = land.ledges[land.ledges.indexOf(below) - 1]
-        if (prev && !prev.crossed && playing) {
-          prev.crossed = true
-          const n = land.number(prev)
-          if (n > record) {
-            record = n
-            try {
-              localStorage.setItem('vocalise.record', String(n))
-            } catch {
-              // (pas de mémoire ici)
-            }
-          }
-        }
-      } else if (me.y > top + 4) me.stuck = true
-    }
-    // tombée : ce qu'on a tenu, et ce qu'il fallait ; puis on reprend
-    if (me.y > H + 40) {
-      fallen += dt
-      if (fallen === dt && playing) {
-        const from = me.from ?? land.before(me.x)
-        // (passée par-dessus le bout de colline d'en face : trop long)
-        const over = (land.ledges[land.ledges.indexOf(from) + 1]?.x0 ?? Infinity) < me.x
-        tell(
-          over
-            ? `<em>trop long</em> <span>tenu ${seconds(airHeld)}, il fallait ≈ ${seconds(from.hold)}</span>`
-            : from.hold < 0.25
-              ? `un petit « a », <em>au bord</em>`
-              : `tenu <em>${seconds(airHeld)}</em> <span>il fallait ≈ ${seconds(from.hold)}</span>`,
-        )
-      }
-      if (fallen > 0.6) respawn()
-    }
+    if (fallen > 0.6) respawn()
   }
-  if (me.on) me.y = ground(me.on, H)
   glow += ((on && playing ? 0.35 + heard.level * 0.65 : 0) - glow) * (1 - Math.exp(-dt * 8))
 
   const travelled = me.x - lightX()
@@ -273,11 +261,19 @@ function frame(now: number) {
   if (!tip || me.x - tip.x > 3) trail.push({ x: me.x, y: me.y - 10 })
   while (trail.length && trail[0].x - travelled < -10) trail.shift()
 
+  // la nuit qui avance : le ciel (le fond de la page), les étoiles, les collines, et le soleil
+  sky01 += ((playing ? crossed / DAWN : 0) - sky01) * (1 - Math.exp(-dt * 1.5))
+  const c = colours(sky01)
+  const bg = `linear-gradient(to bottom, ${c.top}, ${c.mid} 70%, ${c.low})`
+  if (bg !== painted) main.style.background = painted = bg
+  const rise = Math.max(0, (sky01 - 0.85) / 0.15) * 0.35 + (dawnAt ? Math.min(1, (t - dawnAt) / 5) * 0.65 : 0)
+
   // le dessin
   g.clearRect(0, 0, W, H)
-  sky(g, W, H, travelled, t)
-  far(g, W, H, travelled)
-  ledges(g, W, H, land.ledges, travelled)
+  sky(g, W, H, travelled, t, 1 - sky01 ** 1.5)
+  sun(g, W, H, rise)
+  far(g, W, H, travelled, c.far)
+  ledges(g, W, H, s, land.ledges, travelled, c.ledge)
   path(
     g,
     trail.map((p) => ({ x: p.x - travelled, y: p.y })),
@@ -285,12 +281,12 @@ function frame(now: number) {
   )
   light(g, lightX(), me.y - 10, glow, t)
 
-  // en bas : le son qu'on tient (et depuis combien de temps), et les précipices franchis
-  const ahead = me.on ?? land.before(me.x)
+  // en bas : le son qu'on tient (et depuis combien de temps), et où l'on en est de la nuit
   const text = on && playing ? `${'a'.repeat(1 + Math.min(14, Math.floor(held * 4)))} · ${seconds(held)}` : '—'
   if (text !== shown) hud.textContent = shown = text
-  const s = `précipice ${land.number(ahead)} · record ${record}`
-  if (score.textContent !== s) score.textContent = s
+  const at = dawnAt ? 'l’aube' : `précipice ${Math.min(DAWN, crossed + 1)} / ${DAWN}`
+  const line = playing ? `${at} · ${plural(falls, 'chute')}` : ''
+  if (score.textContent !== line) score.textContent = line
   requestAnimationFrame(frame)
 }
 requestAnimationFrame(frame)

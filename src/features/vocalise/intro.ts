@@ -21,7 +21,8 @@ export function intro(main: HTMLElement, o: { mic: () => void; finger: () => voi
       <p>Une petite lueur court sur les collines, la nuit. Devant elle, des précipices.</p>
       <p>Faites un son, n’importe lequel : elle <em>saute</em>. Tant que le son dure, elle <em>plane</em> ; quand il
       s’arrête, elle retombe.</p>
-      <p>Au-dessus de chaque précipice, ce qu’il demande : « a », un saut ; « aaaaaaa », un long souffle.</p>
+      <p>Au-dessus de chaque précipice, ce qu’il demande : « a », un saut ; « aaaaaaa », un long souffle. Sous les
+      pics, un « a » bref. Quarante précipices, et c’est l’aube.</p>
       <p class="vo-error" role="alert" hidden></p>
       <div class="vo-actions">
         <button type="button" class="vo-button" data-do="mic">chanter <span aria-hidden="true">→</span></button>

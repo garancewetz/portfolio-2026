@@ -1,9 +1,9 @@
 // Le dessin de Vocalise, dans le canvas : le ciel étoilé, les collines du fond (elles défilent plus lentement), les
 // bouts de colline où court la lueur, séparés par des précipices (au-dessus de chacun, en lettres pâles, le son
-// qu'il demande : « a » pour un saut, « aaaaaaa » pour un long), le chemin de la lueur, et la lueur. Tout est en
-// caractères ou presque, à l'encre pâle sur la nuit.
+// qu'il demande : « a » pour un saut, « aaaaaaa » pour un long ; certains ont des pics qui pendent), le chemin de la
+// lueur, et la lueur. Tout est en caractères ou presque, à l'encre pâle ; les couleurs suivent la nuit (dawn.ts).
 
-import type { Ledge } from './world'
+import { ground, roofOf, type Ledge } from './world'
 
 const INK = '238 234 226'
 const GOLD = '255 210 130'
@@ -22,7 +22,9 @@ export const backHill = (x: number, H: number, travelled: number) => {
 }
 // le ciel : des étoiles en caractères, qui défilent à peine, et scintillent
 const STARS = ['.', '·', '·', '+', '*']
-export function sky(g: CanvasRenderingContext2D, W: number, H: number, travelled: number, t: number) {
+// (fade : de 1, la nuit, à 0, quand le jour se lève)
+export function sky(g: CanvasRenderingContext2D, W: number, H: number, travelled: number, t: number, fade: number) {
+  if (fade <= 0) return
   g.font = FONT(11)
   g.textAlign = 'center'
   g.textBaseline = 'middle'
@@ -31,30 +33,35 @@ export function sky(g: CanvasRenderingContext2D, W: number, H: number, travelled
     const x = (((hash(i) * W * 1.5 - travelled * 0.03) % (W * 1.5)) + W * 1.5) % (W * 1.5)
     if (x > W) continue
     const y = hash(i + 0.5) ** 1.4 * H * 0.75
-    const a = 0.18 + 0.32 * hash(i + 0.25) * (0.6 + 0.4 * Math.sin(t * (0.6 + hash(i + 0.75)) + i))
+    const a = fade * (0.18 + 0.32 * hash(i + 0.25) * (0.6 + 0.4 * Math.sin(t * (0.6 + hash(i + 0.75)) + i)))
     g.fillStyle = `rgb(${INK} / ${a})`
     g.fillText(STARS[Math.floor(hash(i + 0.9) * STARS.length)], x, y)
   }
 }
 
 // les collines du fond, pleines, loin derrière
-export function far(g: CanvasRenderingContext2D, W: number, H: number, travelled: number) {
+export function far(g: CanvasRenderingContext2D, W: number, H: number, travelled: number, colour: string) {
   g.beginPath()
   g.moveTo(0, H)
   for (let x = 0; x <= W + 8; x += 8) g.lineTo(x, backHill(x, H, travelled))
   g.lineTo(W, H)
-  g.fillStyle = '#161a35'
+  g.fillStyle = colour
   g.fill()
 }
 
-// le sommet d'un bout de colline, sur la page
-export const ground = (l: Ledge, H: number) => H * (0.72 + l.dy)
-
 // les bouts de colline : pleins jusqu'en bas, une herbe en caractères sur la crête, çà et là un petit arbre, et
 // les bords des précipices un peu effrités ; au-dessus de chaque précipice, le son qu'il demande (doré, une fois
-// franchi)
+// franchi), et parfois des pics, accrochés à un bout de roche (alors le son s'écrit dessous, et il est bref)
 const GRASS = [',', "'", '.', '`', ',', '.']
-export function ledges(g: CanvasRenderingContext2D, W: number, H: number, list: Ledge[], travelled: number) {
+export function ledges(
+  g: CanvasRenderingContext2D,
+  W: number,
+  H: number,
+  s: number,
+  list: Ledge[],
+  travelled: number,
+  colour: string,
+) {
   g.textAlign = 'center'
   for (let i = 0; i < list.length; i++) {
     const l = list[i]
@@ -62,7 +69,7 @@ export function ledges(g: CanvasRenderingContext2D, W: number, H: number, list: 
     const x1 = l.x1 - travelled
     const top = ground(l, H)
     if (x1 > -20 && x0 < W + 20) {
-      g.fillStyle = '#1d2244'
+      g.fillStyle = colour
       g.fillRect(x0, top, x1 - x0, H - top)
       g.textBaseline = 'bottom'
       g.font = FONT(12)
@@ -95,7 +102,19 @@ export function ledges(g: CanvasRenderingContext2D, W: number, H: number, list: 
     const mid = (x1 + next.x0 - travelled) / 2
     if (mid < -200 || mid > W + 200) continue
     const word = 'a'.repeat(Math.max(1, Math.round(l.hold * 4)))
-    const y = Math.min(top, ground(next, H)) - H * 0.2
+    let y = Math.min(top, ground(next, H)) - H * 0.2
+    if (l.roof) {
+      const roof = roofOf(l, next, H, s)
+      const a = x1 - 30 * s
+      const b = next.x0 - travelled + 30 * s
+      g.fillStyle = colour
+      g.fillRect(a, roof - 40 * s, b - a, 40 * s)
+      g.font = FONT(14)
+      g.textBaseline = 'top'
+      g.fillStyle = `rgb(${INK} / 0.55)`
+      for (let x = a + 6; x < b - 3; x += 11) g.fillText('V', x, roof - 3)
+      y = roof + 45 * s
+    }
     g.font = `italic ${Math.round(Math.min(30, 18 + l.hold * 3))}px 'Instrument Serif', serif`
     g.textBaseline = 'middle'
     g.fillStyle = l.crossed ? `rgb(${GOLD} / 0.75)` : `rgb(${INK} / 0.42)`

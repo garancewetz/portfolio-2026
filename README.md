@@ -58,8 +58,9 @@ src/
     feu/                       la page /feu : le feu d'artifice de l'accueil, seul et sans fin, et ses réglages
     escalade/                  la page /escalade : un bonhomme en caractères qui joue avec la fenêtre : body (bords,
                                secousse), input (clavier, souris), intro, shake, tab (il dort), windows (deux fenêtres)
-    vocalise/                  la page /vocalise : une lueur qui saute à la voix par-dessus des précipices : voice (le
-                               micro, le volume), world (les collines, le saut, le vol plané), intro (le micro, l'essai), draw
+    vocalise/                  la page /vocalise : une lueur qui saute à la voix par-dessus quarante précipices, jusqu'à
+                               l'aube : voice (le micro, le volume), world (les précipices, les motifs, le saut), hero (la
+                               lueur), dawn (le ciel qui s'éclaircit), intro (le micro, l'essai), draw
     morse/                     la page /morse : une phrase tapée, écrite en morse (code : la table, le temps),
                                player (le bip et la lampe)
     abyme/                     la page /abyme : la visite remontée de fenêtre en fenêtre (path, door, drawn…)
