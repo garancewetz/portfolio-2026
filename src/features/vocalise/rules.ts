@@ -4,7 +4,6 @@ export const RULES = `
     <li><b>la note</b> → la hauteur : aigu en haut, grave en bas</li>
     <li><b>la note</b> → la couleur : do rouge, ré jaune, mi vert, sol bleu, la violet, si rose</li>
     <li><b>le volume</b> → l’épaisseur et l’éclat</li>
-    <li><b>la voyelle</b> → la texture : « ou » doux et voilé, « a » entre les deux, « i » qui scintille</li>
     <li><b>le temps</b> → le ruban file vers la gauche, et s’éteint</li>
     <li><b>le silence</b> → le ruban se coupe</li>
   </ul>`

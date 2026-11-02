@@ -1,9 +1,7 @@
 import { rms, toMidi, yin } from './pitch'
 
-// La voix, au micro : à chaque image, la note qu'on chante (en demi-tons, sans l'arrondir : un glissando glisse), son
-// volume, et sa couleur de voyelle ; ou rien. La voyelle : « ou » garde son énergie dans le grave, « i » en a beaucoup
-// dans l'aigu (vers 2 à 3 kHz), « a » entre les deux ; on compare l'aigu au grave, et on le ramène entre 0 et 1 sur
-// ce que cette voix-là a déjà fait (le plus sombre et le plus clair entendus). Le silence et le bruit de la pièce ne comptent pas (un seuil, qui suit le bruit de fond) ;
+// La voix, au micro : à chaque image, la note qu'on chante (en demi-tons, sans l'arrondir : un glissando glisse), et
+// son volume ; ou rien. Le silence et le bruit de la pièce ne comptent pas (un seuil, qui suit le bruit de fond) ;
 // une note isolée qui saute (une consonne, une octave de travers) non plus (la médiane des dernières) ; et un petit
 // trou entre deux syllabes ne coupe pas la note. Rien n'est enregistré ni envoyé : le son reste dans le navigateur.
 
@@ -16,8 +14,8 @@ export class MicError extends Error {
   }
 }
 
-// (midi : la note ; level : le volume, de 0 à 1 ; bright : la voyelle, de 0 (« ou ») à 1 (« i »))
-export type Heard = { midi: number; level: number; bright: number }
+// (midi : la note ; level : le volume, de 0 à 1)
+export type Heard = { midi: number; level: number }
 
 // (à appeler dans un geste, un clic : sans lui, iOS garde le son coupé)
 export async function listen() {
@@ -44,19 +42,6 @@ export async function listen() {
   analyser.fftSize = 2048
   ctx.createMediaStreamSource(stream).connect(analyser)
   const buf = new Float32Array(analyser.fftSize)
-  const spectrum = new Float32Array(analyser.frequencyBinCount)
-  const bin = (hz: number) => Math.round((hz / ctx.sampleRate) * analyser.fftSize)
-  // l'énergie entre deux fréquences (le spectre est en décibels)
-  const energy = (a: number, b: number) => {
-    let e = 0
-    for (let i = bin(a); i <= bin(b); i++) e += 10 ** (spectrum[i] / 10)
-    return e
-  }
-  // la voyelle : l'aigu contre le grave (en décibels), et ce qu'on a déjà entendu de plus sombre et de plus clair
-  // (au départ, une plage raisonnable, qui s'élargit avec la voix)
-  let dark = -22
-  let clear = -6
-  let bright = 0.5
 
   // le bruit de fond : il descend vite vers le plus calme qu'on a entendu, remonte lentement (seulement sous le seuil)
   let floor = 0.001
@@ -75,15 +60,10 @@ export async function listen() {
       const p = level > start ? yin(buf, ctx.sampleRate) : null
       if (p && p.clarity > 0.75) {
         quiet = 0
-        analyser.getFloatFrequencyData(spectrum)
-        const ratio = 10 * Math.log10(energy(1600, 3600) / (energy(200, 1100) || 1e-12) || 1e-12)
-        dark = Math.min(dark, ratio)
-        clear = Math.max(clear, ratio)
-        bright += (Math.max(0, Math.min(1, (ratio - dark) / (clear - dark))) - bright) * 0.25
         recent.push(toMidi(p.hz))
         if (recent.length > 5) recent.shift()
         const sorted = [...recent].sort((a, b) => a - b)
-        last = { midi: sorted[sorted.length >> 1], level: Math.min(1, (level - start) / (start * 25)), bright }
+        last = { midi: sorted[sorted.length >> 1], level: Math.min(1, (level - start) / (start * 25)) }
         return last
       }
       // (un trou bref, entre deux syllabes : on garde la note)
