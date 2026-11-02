@@ -118,39 +118,4 @@ export const C4: Creature[] = [
  (/#\)
 `,
   },
-  {
-    n: 40,
-    name: 'cyclope',
-    note: 'un grand œil, de longs bras',
-    idle: art`
-  .-.
- ( O )
- /\ /\
-`,
-    walk: art`
-  .-.
- ( O )
-  /\ |\
-`,
-    jump: art`
-  .-.
-\( O )/
-  / \
-`,
-    climb: art`
- |.-.
- ( O )
-  / |
-`,
-    climb2: art`
-  .-.|
- ( O )
-  | \
-`,
-    crouch: art`
-  .-.
- ( O )
- (/ \)
-`,
-  },
 ]
