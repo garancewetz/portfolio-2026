@@ -124,9 +124,9 @@ export const carnet: Carnet = {
       alt: 'Sur une page claire, un petit bonhomme en caractères, une tête o et un corps #, escalade un trait multicolore qu’il a tracé depuis le bas de la page ; plus haut, à droite, une petite porte en caractères l’attend.',
     },
     {
-      name: 'vocalise',
-      href: '/vocalise/',
-      src: '/shots/vocalise.webp',
+      name: 'ruban',
+      href: '/ruban/',
+      src: '/shots/ruban.webp',
       alt: 'Sur un fond noir, un ruban de lumière ondule de gauche à droite, plus épais par endroits, changeant de couleur avec la note ; sur le bord gauche, la gamme, chaque note à sa hauteur et de sa couleur.',
     },
     {

@@ -8,7 +8,7 @@ Deux effets cachés dans la signature, au survol : les « a » de Garance devien
 
 Easter egg : le repère « gap » de la grille est un bouton. Un clic mélange le nom en anagrammes ; le pied de page a un mode feu d'artifice.
 
-Dans le pied de page, « labo → » mène au **labo**, mes expériences : un carnet ouvert (`/labo`) dont on tourne les pages (Murmuration, Fourrure, Toupies, Escalade, Vocalise, Morse, Feu d'artifice, Abyme), chacune sa propre page HTML (voir `vite.config.ts`).
+Dans le pied de page, « labo → » mène au **labo**, mes expériences : un carnet ouvert (`/labo`) dont on tourne les pages (Murmuration, Fourrure, Toupies, Escalade, Ruban, Morse, Feu d'artifice, Abyme), chacune sa propre page HTML (voir `vite.config.ts`).
 
 
 ## Lancer le projet
@@ -58,9 +58,9 @@ src/
     feu/                       la page /feu : le feu d'artifice de l'accueil, seul et sans fin, et ses réglages
     escalade/                  la page /escalade : un bonhomme en caractères qui joue avec la fenêtre : body (bords,
                                secousse), input (clavier, souris), intro, shake, tab (il dort), windows (deux fenêtres)
-    vocalise/                  la page /vocalise : la voix dessine un ruban de lumière sur le noir : voice (le micro, la
-                               note, le volume), pitch (YIN, les noms, les couleurs), ribbon, rider (le bonhomme qui
-                               glisse dessus), scale (la gamme), rules, controls (figer, enregistrer), intro
+    ruban/                     la page /ruban : la voix dessine un ruban de lumière sur le noir, et un petit bonhomme
+                               marche dessus : voice (le micro, la note, le volume), pitch (YIN, les noms, les couleurs),
+                               ribbon, rider (le bonhomme), scale (la gamme), controls (figer, enregistrer), intro
     morse/                     la page /morse : une phrase tapée, écrite en morse (code : la table, le temps),
                                player (le bip et la lampe)
     abyme/                     la page /abyme : la visite remontée de fenêtre en fenêtre (path, door, drawn…)

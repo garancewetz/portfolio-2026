@@ -3,10 +3,10 @@
 
 export function controls(main: HTMLElement, o: { freeze: () => void; save: () => void }) {
   const bar = document.createElement('div')
-  bar.className = 'vo-controls'
+  bar.className = 'ru-controls'
   bar.innerHTML = `
-    <button type="button" class="vo-link" data-do="freeze"></button>
-    <button type="button" class="vo-link" data-do="save">enregistrer l’image</button>`
+    <button type="button" class="ru-link" data-do="freeze"></button>
+    <button type="button" class="ru-link" data-do="save">enregistrer l’image</button>`
   main.append(bar)
   // (les appuis sur ces boutons ne dessinent pas)
   bar.addEventListener('pointerdown', (e) => e.stopPropagation())

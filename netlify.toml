@@ -22,6 +22,12 @@
   status = 200
   force = true
 
+# Vocalise s'appelle maintenant Ruban : l'ancienne adresse y mène
+[[redirects]]
+  from = "/vocalise/*"
+  to = "/ruban/:splat"
+  status = 301
+
 # Les fichiers du build ont un nom qui change à chaque version : on peut les garder en cache longtemps
 [[headers]]
   for = "/assets/*"

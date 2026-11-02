@@ -1,4 +1,4 @@
-import './vocalise.css'
+import './ruban.css'
 import { mount } from '@/features/carnet/carnet'
 import { gear, slider } from '@/features/carnet/gear'
 import { local, sheet } from '@/features/carnet/sheet'
@@ -7,22 +7,22 @@ import { intro } from './intro'
 import { hue, noteName, toHz, toMidi } from './pitch'
 import { ribbons } from './ribbon'
 import { rider } from './rider'
-import { RULES } from './rules'
 import { scale } from './scale'
 import { listen, MicError, type Heard, type Voice } from './voice'
 
-// Vocalise : un fond noir, et la voix qui y dessine un ruban de lumière. Les règles sont simples, et écrites dans le
-// coin de la page (rules.ts) : la note fait la hauteur (aigu en haut) et la couleur (un tour du cercle des couleurs
-// par octave), le volume fait l'épaisseur et l'éclat ; le ruban file vers la gauche et reste, et un silence le coupe
-// (ribbon.ts). Dessus, un petit bonhomme marche, glisse dans les descentes, et saute d'un ruban à l'autre
-// (rider.ts). Sur le bord gauche, la gamme, à la même hauteur et de la même couleur (scale.ts). En bas, deux boutons
-// (controls.ts) : figer le dessin, et l'enregistrer en image. Sans micro, on dessine au doigt (appuyer : plus haut,
-// plus aigu). La roue crantée règle le registre (la note du milieu), l'étendue, la vitesse, et la sensibilité.
+// Ruban : un fond noir, et la voix qui y dessine un ruban de lumière. Rien n'est expliqué (l'arrivée dit seulement
+// « Chante. ») : on découvre que la note fait la hauteur (aigu en haut) et la couleur (un tour du cercle des couleurs
+// par octave), que le volume fait l'épaisseur et l'éclat, que le ruban file vers la gauche et reste, et qu'un silence
+// le coupe (ribbon.ts). Dessus, un petit bonhomme marche, glisse dans les descentes, grimpe quand c'est raide, et
+// saute d'un ruban à l'autre (rider.ts). Sur le bord gauche, la gamme, à la même hauteur et de la même couleur
+// (scale.ts). En bas, deux boutons (controls.ts) : figer le dessin, et l'enregistrer en image. Sans micro, on
+// dessine au doigt (appuyer : plus haut, plus aigu). La roue crantée règle le registre (la note du milieu),
+// l'étendue, la vitesse, et la sensibilité.
 
-const main = document.querySelector<HTMLElement>('.vo')!
-const canvas = main.querySelector<HTMLCanvasElement>('.vo-canvas')!
+const main = document.querySelector<HTMLElement>('.ru')!
+const canvas = main.querySelector<HTMLCanvasElement>('.ru-canvas')!
 const g = canvas.getContext('2d')!
-const readout = main.querySelector<HTMLElement>('.vo-note')!
+const readout = main.querySelector<HTMLElement>('.ru-note')!
 
 let W = 0
 let H = 0
@@ -91,8 +91,7 @@ function play() {
   since = performance.now() / 1000
   door.close()
   main.classList.add('is-playing')
-  // les règles restent, dans le coin ; les boutons apparaissent
-  main.insertAdjacentHTML('beforeend', RULES)
+  // les boutons apparaissent
   buttons = controls(main, { freeze: () => freeze(frozenAt === null), save })
   settingsUp()
 }
@@ -112,7 +111,7 @@ function save() {
     if (!blob) return
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = 'vocalise.png'
+    a.download = 'ruban.png'
     a.click()
     setTimeout(() => URL.revokeObjectURL(a.href), 1000)
   })
@@ -130,7 +129,7 @@ function settingsUp() {
   if (!slot) return
   gear(
     slot,
-    'Réglages de Vocalise',
+    'Réglages de Ruban',
     [
       slider(
         'registre',
@@ -180,7 +179,7 @@ function frame(now: number) {
     ribbon.add(scroll, heard)
     ribbon.prune(scroll - headX() - 60)
   }
-  man.step(dt, ribbon, settings.pace, screenX, yOf, H)
+  man.step(dt, ribbon, settings.pace, screenX, headX(), yOf, H)
   buttons?.set(frozenAt !== null, ribbon.empty)
 
   g.fillStyle = '#000'
