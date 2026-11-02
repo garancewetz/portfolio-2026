@@ -106,6 +106,12 @@ export const carnet: Carnet = {
       alt: 'Sur un ciel de crépuscule indigo, un grand nuage d’oiseaux dessiné en caractères aux couleurs d’un coucher de soleil, rose fluo en haut, orange en bas (des points, des v, des W plus denses là où ils se croisent) au-dessus d’un village perché, son clocher et ses maisons en escalier, en bas à droite.',
     },
     {
+      name: 'ruban',
+      href: '/ruban/',
+      src: '/shots/ruban.webp',
+      alt: 'Sur un fond noir, un ruban de lumière, coupé par deux silences, ondule de gauche à droite en changeant de couleur avec la note ; un petit yéti en caractères, aux grandes oreilles, grimpe dessus ; sur le bord gauche, la gamme, chaque note à sa hauteur et de sa couleur.',
+    },
+    {
       name: 'fourrure',
       href: '/fourrure/',
       src: '/shots/fourrure.webp',
@@ -122,18 +128,6 @@ export const carnet: Carnet = {
       href: '/escalade/',
       src: '/shots/escalade.webp',
       alt: 'Sur une page claire, un petit bonhomme en caractères, une tête o et un corps #, escalade un trait multicolore qu’il a tracé depuis le bas de la page ; plus haut, à droite, une petite porte en caractères l’attend.',
-    },
-    {
-      name: 'ruban',
-      href: '/ruban/',
-      src: '/shots/ruban.webp',
-      alt: 'Sur un fond noir, un ruban de lumière ondule de gauche à droite, plus épais par endroits, changeant de couleur avec la note ; sur le bord gauche, la gamme, chaque note à sa hauteur et de sa couleur.',
-    },
-    {
-      name: 'morse',
-      href: '/morse/',
-      src: '/shots/morse.webp',
-      alt: 'Sur une page claire, le prénom « Garance » écrit en grand, en serif ; dessous, lettre à lettre, ses points et ses traits à l’encre, chaque lettre sous son code ; plus bas, un bouton « écouter » et une petite lampe ronde.',
     },
     {
       name: 'feu d’artifice',
