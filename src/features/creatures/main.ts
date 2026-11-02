@@ -1,9 +1,11 @@
 import './creatures.css'
 import { mount } from '@/features/carnet/carnet'
 import type { Creature } from './art'
-import { C2 } from './bestiary-2'
 import { C3 } from './bestiary-3'
 import { C4 } from './bestiary-4'
+import { C5 } from './bestiary-5'
+import { C7 } from './bestiary-7'
+import { C8 } from './bestiary-8'
 import { stage } from './stage'
 
 // Créatures : une planche de créatures en caractères, pour en choisir une qui habitera Ruban. Une ligne par
@@ -15,7 +17,7 @@ import { stage } from './stage'
 // la ligne du carnet (le labo, la page, les voisines)
 mount()
 
-const CREATURES: Creature[] = [...C2, ...C3, ...C4]
+const CREATURES: Creature[] = [...C3, ...C4, ...C5, ...C7, ...C8]
 const list = document.querySelector<HTMLElement>('.cr-list')!
 const picked = document.querySelector<HTMLElement>('.cr-picked')!
 

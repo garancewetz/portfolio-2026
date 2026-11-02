@@ -2,7 +2,7 @@
 @import '@/styles/base.css';
 
 :root {
-  --bg: #f6f4ef;
+  --bg: #ffffff;
   --ink: #1a1917;
   --muted: rgb(26 25 23 / 0.5);
   --keep: #c2410c;

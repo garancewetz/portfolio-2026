@@ -25,13 +25,13 @@ export const C4: Creature[] = [
 /     \
 `,
     climb: art`
- |.:::.
+|.:::.
 :(o.o):
 :(   ):
  /  |
 `,
     climb2: art`
-  .:::.|
+ .:::.|
 :(o.o):
 :(   ):
   |  \
