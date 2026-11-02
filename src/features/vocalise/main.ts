@@ -1,39 +1,28 @@
 import './vocalise.css'
 import { mount } from '@/features/carnet/carnet'
 import { gear, slider } from '@/features/carnet/gear'
-import { sheet } from '@/features/carnet/sheet'
-import { colours, sun } from './dawn'
-import { far, ledges, light, path, sky } from './draw'
-import { hero } from './hero'
+import { local, sheet } from '@/features/carnet/sheet'
 import { intro } from './intro'
+import { hue, noteName, toHz, toMidi } from './pitch'
+import { ribbons } from './ribbon'
+import { RULES } from './rules'
+import { scale } from './scale'
 import { listen, MicError, type Heard, type Voice } from './voice'
-import { DAWN, physics, world } from './world'
 
-// Vocalise : une petite lueur court sur les collines, la nuit, et devant elle s'ouvrent quarante précipices, jusqu'à
-// l'aube (world.ts). On joue à la voix : un son, n'importe lequel, la fait sauter ; tant qu'il dure, elle plane ;
-// quand il s'arrête, elle retombe (hero.ts). Au-dessus de chaque précipice, le son qu'il demande, en lettres
-// (« a » : un saut ; « aaaaaaa » : un long souffle) ; en chemin, des pics, des corniches, des marches, et elle court
-// de plus en plus vite. Tombée, elle reprend un peu avant le bord, et l'on voit combien de temps on a tenu, et
-// combien il fallait. De précipice en précipice, la nuit s'éclaircit (dawn.ts) ; au quarantième, le soleil se lève,
-// et un son repart pour une autre nuit. À l'arrivée sur la page, le principe et la demande du micro, puis un court
-// essai (intro.ts) ; sans micro, on joue au doigt, ou à la barre d'espace (appuyer : le son). La roue crantée règle
-// la sensibilité du micro et la vitesse.
+// Vocalise : un fond noir, et la voix qui y dessine un ruban de lumière. Les règles sont simples, et écrites dans le
+// coin de la page (rules.ts) : la note fait la hauteur (aigu en haut) et la couleur (un tour du cercle des couleurs
+// par octave), le volume fait l'épaisseur et l'éclat ; le ruban file vers la gauche et s'éteint, et un silence le
+// coupe (ribbon.ts). Sur le bord gauche, la gamme, à la même hauteur et de la même couleur (scale.ts). Sans micro,
+// on dessine au doigt (appuyer : plus haut, plus aigu). La roue crantée règle le registre (la note du milieu),
+// l'étendue, la durée de la traîne, et la sensibilité du micro.
 
 const main = document.querySelector<HTMLElement>('.vo')!
-const canvas = main.querySelector<HTMLCanvasElement>('.vo-sky')!
+const canvas = main.querySelector<HTMLCanvasElement>('.vo-canvas')!
 const g = canvas.getContext('2d')!
-const hud = main.querySelector<HTMLElement>('.vo-note')!
-const score = main.querySelector<HTMLElement>('.vo-score')!
-const caption = main.querySelector<HTMLElement>('.vo-caption')!
+const readout = main.querySelector<HTMLElement>('.vo-note')!
 
 let W = 0
 let H = 0
-// l'échelle (une page de 700 pixels de haut : 1), et la lueur : son abscisse sur la page (fixe : c'est le monde qui
-// défile)
-const scale = () => Math.max(0.55, Math.min(1.3, H / 700))
-const lightX = () => Math.max(70, W * 0.24)
-const settings = { sensitivity: 1, pace: 1 }
-
 function resize() {
   ;({ w: W, h: H } = sheet())
   const dpr = Math.min(2, devicePixelRatio || 1)
@@ -45,154 +34,84 @@ resize()
 // (en développement, la feuille de style arrive après le script : on remesure quand la page prend sa taille)
 new ResizeObserver(resize).observe(main)
 
-// ——— ce qui joue ———
+// les réglages : la note du milieu de la page (MIDI ; par défaut, entre 90 et 750 Hz, de quoi chanter grave ou
+// aigu), l'étendue (en octaves, du bas au haut de la page), la traîne (en secondes) et la sensibilité du micro
+const settings = { centre: Math.round(toMidi(Math.sqrt(90 * 750))), span: 3, life: 8, sensitivity: 1 }
+const lo = () => settings.centre - settings.span * 6
+const hi = () => settings.centre + settings.span * 6
+// la bande où passe le ruban : sous la ligne du carnet, au-dessus du bas de la page
+const yOf = (midi: number) => H - 40 - ((midi - lo()) / (hi() - lo())) * (H - 96)
+const midiOf = (y: number) => lo() + ((H - 40 - y) / (H - 96)) * (hi() - lo())
+// la tête du ruban, et sa vitesse : il traverse le reste de la page pendant sa traîne
+const headX = () => W * 0.72
+const speed = () => (headX() - 64) / settings.life
+
+// ——— ce qui chante ———
 
 let voice: Voice | null = null
 let playing = false
-// le doigt, la souris ou la barre d'espace, appuyés : comme un son
-let pressed = false
-main.addEventListener('pointerdown', () => playing && (pressed = true))
-for (const type of ['pointerup', 'pointercancel'] as const) main.addEventListener(type, () => (pressed = false))
-addEventListener('keydown', (e) => {
-  if (e.code !== 'Space' || !playing) return
-  e.preventDefault()
-  pressed = true
-})
-addEventListener('keyup', (e) => e.code === 'Space' && (pressed = false))
-
-// la nuit en cours (chaque nuit a ses précipices), et la lueur
-let night = 0
-let land = world(night)
-const lueur = hero()
-const me = lueur.me
-// le son : est-ce qu'il dure, depuis quand, et depuis quand on l'a lancé (un son lancé juste avant d'atterrir fait
-// sauter à l'atterrissage)
-let was = false
-let held = 0
-let asked = 9
-let glow = 0
-// la partie : les précipices franchis, les chutes, l'aube (quand), et où en est le ciel (de 0 à 1, qui suit les
-// précipices franchis sans à-coups)
-let crossed = 0
-let falls = 0
-let fallen = 0
-let dawnAt = 0
-let sky01 = 0
-let best = Infinity
-try {
-  best = Number(localStorage.getItem('vocalise.aube')) || Infinity
-} catch {
-  // (pas de mémoire ici : un record pour la visite)
-}
-const trail: { x: number; y: number }[] = []
-
-function tell(html: string, ms = 2800) {
-  caption.innerHTML = html
-  caption.classList.add('is-on')
-  clearTimeout(tell.timer)
-  if (ms < Infinity) tell.timer = setTimeout(() => caption.classList.remove('is-on'), ms)
-}
-tell.timer = 0 as ReturnType<typeof setTimeout> | 0
-const seconds = (s: number) => `${s.toFixed(1).replace('.', ',')} s`
-const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`
-
-// une nouvelle nuit : d'autres précipices, et la lueur au départ, avec de l'élan devant elle
-function restart() {
-  land = world(++night)
-  land.grow(W * 2, H, scale(), settings.pace)
-  const first = land.ledges[0]
-  lueur.place(first, first.x1 - first.run * 2, H)
-  crossed = falls = fallen = dawnAt = 0
-  trail.length = 0
-  caption.classList.remove('is-on')
-}
-
-// (repartir un peu avant le bord du bout de colline d'où l'on est tombé)
-function respawn() {
-  const from = me.from ?? land.before(me.x)
-  lueur.place(from, Math.max(from.x0 + 10, from.x1 - from.run * 1.1), H)
-  trail.length = 0
-  fallen = 0
-}
-
-// tombée : pourquoi, en quelques mots (cognée aux pics, trop loin, trop court)
-function why() {
-  const from = me.from ?? land.before(me.x)
-  const over = (land.after(from)?.x0 ?? Infinity) < me.x
-  if (me.bumped) return `<em>trop long</em> <span>sous les pics, un « a » bref</span>`
-  if (over) return `<em>trop long</em> <span>tenu ${seconds(me.held)}, il fallait ≈ ${seconds(from.hold)}</span>`
-  if (from.hold < 0.25) return `un petit « a », <em>au bord</em>`
-  return `tenu <em>${seconds(me.held)}</em> <span>il fallait ≈ ${seconds(from.hold)}</span>`
-}
-
-// l'aube : le compte, le record (le moins de chutes), et l'invitation à repartir
-function dawn(t: number) {
-  dawnAt = t
-  const record = falls < best
-  if (record) {
-    best = falls
-    try {
-      localStorage.setItem('vocalise.aube', String(falls))
-    } catch {
-      // (pas de mémoire ici)
-    }
+// le doigt (ou la souris) appuyé : sa hauteur fait la note, à mi-volume
+let finger: number | null = null
+main.addEventListener('pointerdown', (e) => {
+  if (!playing) return
+  finger = local(e).y
+  try {
+    main.setPointerCapture(e.pointerId)
+  } catch {
+    // (un appui déjà relâché)
   }
-  const tally = falls ? plural(falls, 'chute') : 'sans tomber'
-  const note = record && night > 1 ? ' · record' : best < Infinity && !record ? ` · record : ${best}` : ''
-  tell(`<em>l’aube</em> <span>${tally}${note}</span><br><span>un son pour une autre nuit</span>`, Infinity)
-}
+})
+main.addEventListener('pointermove', (e) => finger !== null && (finger = local(e).y))
+for (const type of ['pointerup', 'pointercancel'] as const) main.addEventListener(type, () => (finger = null))
 
-// ——— l'arrivée, et l'essai du micro ———
-
-let trying: { held: number; since: number } | null = null
 const door = intro(main, {
   async mic() {
     door.asking(true)
     try {
       voice = await listen()
-      trying = { held: 0, since: 0 }
-      door.tune(false, 0, 0, false)
+      play()
     } catch (e) {
       door.fail(e instanceof MicError ? e.why : 'unsupported')
     } finally {
       door.asking(false)
     }
   },
-  finger() {
-    voice?.stop()
-    voice = null
-    play()
-  },
-  skip: () => play(),
+  finger: () => play(),
 })
+let since = 0
 function play() {
-  trying = null
   playing = true
-  restart()
+  since = performance.now() / 1000
   door.close()
   main.classList.add('is-playing')
-  gearUp()
+  // les règles restent, dans le coin
+  main.insertAdjacentHTML('beforeend', RULES)
+  settingsUp()
 }
 
-// la roue crantée (dans la ligne du carnet) : la sensibilité du micro, et la vitesse de course
+// la ligne du carnet (le labo, la page, les voisines), et la roue crantée, une fois qu'on chante
 const slot = mount()
-let geared = false
-function gearUp() {
-  if (!slot || geared) return
-  geared = true
+function settingsUp() {
+  if (!slot) return
   gear(
     slot,
     'Réglages de Vocalise',
     [
       slider(
+        'registre',
+        { min: 40, max: 76, step: 1, value: settings.centre, show: (n) => `${noteName(n)} au milieu` },
+        (n) => (settings.centre = n),
+      ),
+      slider(
+        'étendue',
+        { min: 1, max: 4, step: 0.5, value: settings.span, show: (n) => `${n} oct.` },
+        (n) => (settings.span = n),
+      ),
+      slider('traîne', { min: 3, max: 20, step: 1, value: settings.life, show: (n) => `${n} s` }, (n) => (settings.life = n)),
+      slider(
         'sensibilité',
         { min: 0.5, max: 2.5, step: 0.25, value: settings.sensitivity, show: (n) => `×${n}` },
         (n) => (settings.sensitivity = n),
-      ),
-      slider(
-        'vitesse',
-        { min: 0.6, max: 1.4, step: 0.1, value: settings.pace, show: (n) => `×${n}` },
-        (n) => (settings.pace = n),
       ),
     ],
     { keep: true },
@@ -201,92 +120,49 @@ function gearUp() {
 
 // ——— l'image ———
 
+const ribbon = ribbons()
+let heardOnce = false
 let last = performance.now()
 let shown = ''
-let painted = ''
 function frame(now: number) {
   const dt = Math.max(0, Math.min(0.05, (now - last) / 1000))
   last = now
   const t = now / 1000
-  const s = scale()
 
-  // ce qu'on entend : le doigt (ou l'espace), sinon la voix
-  const heard: Heard = pressed
-    ? { on: true, level: 0.6, meter: 1 }
-    : voice
-      ? voice.read(dt, settings.sensitivity)
-      : { on: false, level: 0, meter: 0 }
-  const on = heard.on
-  const onset = on && !was
-  was = on
-  held = on ? held + dt : 0
-  asked = onset ? 0 : asked + dt
+  // ce qu'on entend : le doigt d'abord, sinon la voix
+  const heard: Heard | null =
+    finger !== null ? { midi: midiOf(finger), level: 0.5 } : voice ? voice.read(dt, settings.sensitivity) : null
+  if (heard) heardOnce = true
+  if (playing) ribbon.add(t, heard)
+  ribbon.prune(t, settings.life)
 
-  if (trying) {
-    if (on) trying.held += dt
-    // (presque rien depuis quatre secondes : sans doute le mauvais micro)
-    trying.since += dt
-    if (heard.meter > 0.15) trying.since = 0
-    door.tune(on, Math.min(1, trying.held / 0.8), heard.meter, trying.since > 4)
-    if (trying.held >= 0.8) play()
+  g.fillStyle = '#000'
+  g.fillRect(0, 0, W, H)
+  scale(g, W, lo(), hi(), yOf, heard?.midi ?? null)
+  ribbon.draw(g, t, settings.life, headX(), speed(), yOf)
+  // la tête : un point blanc, et le nom de la note, de sa couleur
+  if (heard) {
+    const y = yOf(heard.midi)
+    g.fillStyle = '#fff'
+    g.beginPath()
+    g.arc(headX(), y, 2 + heard.level * 4, 0, Math.PI * 2)
+    g.fill()
+    g.font = `13px 'JetBrains Mono', ui-monospace, monospace`
+    g.textAlign = 'left'
+    g.textBaseline = 'middle'
+    g.fillStyle = `hsl(${hue(heard.midi)} 85% 70%)`
+    g.fillText(noteName(heard.midi), headX() + 22, y)
   }
-  // (à l'aube, un son repart pour une autre nuit)
-  if (dawnAt && t - dawnAt > 2.5 && onset) restart()
 
-  // le monde devant et derrière, et un pas de la lueur (à la vitesse du bout de colline qu'elle a quitté)
-  land.grow(me.x + W * 1.5, H, s, settings.pace)
-  land.prune(me.x - W * 1.5)
-  if (!me.y) lueur.place(land.ledges[0], 0, H)
-  const k = { ...physics(s, settings.pace), run: (me.from ?? land.ledges[0]).run }
-  const event = lueur.step(dt, { on, onset, asked }, land, k, H, s, playing)
-  if (event && 'landed' in event) {
-    const prev = land.ledges[land.ledges.indexOf(event.landed) - 1]
-    if (prev && !prev.crossed && playing) {
-      prev.crossed = true
-      crossed++
-    }
-    if (event.landed.final && playing && !dawnAt) dawn(t)
-  } else if (event) {
-    fallen += dt
-    if (fallen === dt && playing) {
-      falls++
-      tell(why())
-    }
-    if (fallen > 0.6) respawn()
-  }
-  glow += ((on && playing ? 0.35 + heard.level * 0.65 : 0) - glow) * (1 - Math.exp(-dt * 8))
-
-  const travelled = me.x - lightX()
-  const tip = trail[trail.length - 1]
-  if (!tip || me.x - tip.x > 3) trail.push({ x: me.x, y: me.y - 10 })
-  while (trail.length && trail[0].x - travelled < -10) trail.shift()
-
-  // la nuit qui avance : le ciel (le fond de la page), les étoiles, les collines, et le soleil
-  sky01 += ((playing ? crossed / DAWN : 0) - sky01) * (1 - Math.exp(-dt * 1.5))
-  const c = colours(sky01)
-  const bg = `linear-gradient(to bottom, ${c.top}, ${c.mid} 70%, ${c.low})`
-  if (bg !== painted) main.style.background = painted = bg
-  const rise = Math.max(0, (sky01 - 0.85) / 0.15) * 0.35 + (dawnAt ? Math.min(1, (t - dawnAt) / 5) * 0.65 : 0)
-
-  // le dessin
-  g.clearRect(0, 0, W, H)
-  sky(g, W, H, travelled, t, 1 - sky01 ** 1.5)
-  sun(g, W, H, rise)
-  far(g, W, H, travelled, c.far)
-  ledges(g, W, H, s, land.ledges, travelled, c.ledge)
-  path(
-    g,
-    trail.map((p) => ({ x: p.x - travelled, y: p.y })),
-    lightX(),
-  )
-  light(g, lightX(), me.y - 10, glow, t)
-
-  // en bas : le son qu'on tient (et depuis combien de temps), et où l'on en est de la nuit
-  const text = on && playing ? `${'a'.repeat(1 + Math.min(14, Math.floor(held * 4)))} · ${seconds(held)}` : '—'
-  if (text !== shown) hud.textContent = shown = text
-  const at = dawnAt ? 'l’aube' : `précipice ${Math.min(DAWN, crossed + 1)} / ${DAWN}`
-  const line = playing ? `${at} · ${plural(falls, 'chute')}` : ''
-  if (score.textContent !== line) score.textContent = line
+  // en bas à droite : la note entendue, en hertz, et le volume ; ou, si le micro n'a encore rien entendu, un indice
+  const text = heard
+    ? `${noteName(heard.midi)} · ${Math.round(toHz(heard.midi))} Hz · volume ${Math.round(heard.level * 100)} %`
+    : voice && !heardOnce && t - since > 6
+      ? 'le micro n’entend rien ? le cadenas, à côté de l’adresse, permet d’en choisir un autre'
+      : playing
+        ? 'silence'
+        : ''
+  if (text !== shown) readout.textContent = shown = text
   requestAnimationFrame(frame)
 }
 requestAnimationFrame(frame)

@@ -127,7 +127,7 @@ export const carnet: Carnet = {
       name: 'vocalise',
       href: '/vocalise/',
       src: '/shots/vocalise.webp',
-      alt: 'Sur une nuit bleue, une lueur dorée court sur des collines en caractères, coupées de précipices ; au-dessus de chaque précipice, en lettres pâles, le son qu’il faut tenir pour le franchir : « a », « aaaa », « aaaaaaaa ».',
+      alt: 'Sur un fond noir, un ruban de lumière ondule de gauche à droite, plus épais par endroits, changeant de couleur avec la note ; sur le bord gauche, la gamme, chaque note à sa hauteur et de sa couleur.',
     },
     {
       name: 'morse',

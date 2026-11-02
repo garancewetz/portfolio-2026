@@ -7,20 +7,18 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vocalise — Garance Wetzel</title>
-    <meta name="description" content="Une petite lueur court sur les collines, la nuit, devant des précipices : un son la fait sauter, et tant qu’il dure, elle plane. Plus le précipice est large, plus il faut tenir la voix ; au quarantième, c’est l’aube." />
-    <meta name="theme-color" content="#0e1128" />
+    <meta name="description" content="Un fond noir ; on chante, et la voix y dessine un ruban de lumière : la note fait sa hauteur et sa couleur, le volume son épaisseur." />
+    <meta name="theme-color" content="#000000" />
     <link rel="canonical" href="https://garancewetz.dev/vocalise" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <!-- un petit saut à la voix (voir src/features/vocalise) -->
-    <main class="vo carnet-sheet" aria-label="Vocalise : une lueur court sur des collines coupées de précipices. Un son la fait sauter ; tant qu’il dure, elle plane. Sans micro, on joue au doigt ou à la barre d’espace.">
-      <canvas class="vo-sky" aria-hidden="true"></canvas>
-      <p class="vo-note" aria-hidden="true">—</p>
-      <p class="vo-score" aria-hidden="true"></p>
-      <p class="vo-caption" aria-live="polite"></p>
+    <!-- un ruban de lumière dessiné à la voix (voir src/features/vocalise) -->
+    <main class="vo carnet-sheet" aria-label="Vocalise : sur un fond noir, la voix dessine un ruban de lumière. La note fait sa hauteur (aigu en haut) et sa couleur, le volume son épaisseur ; le ruban file vers la gauche et s’éteint. Sans micro, on dessine au doigt.">
+      <canvas class="vo-canvas" aria-hidden="true"></canvas>
+      <p class="vo-note" aria-hidden="true"></p>
     </main>
     <script type="module" src="/src/features/vocalise/main.ts"></script>
   </body>
