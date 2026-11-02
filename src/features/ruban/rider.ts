@@ -29,7 +29,7 @@ const GRAVITY = 1900
 // laquelle il décroche en descendant, et à laquelle il ne tient plus au bord ; sa vitesse de grimpe (en hauteur, une
 // part de son pas)
 const STEEP = 1
-const SLIP = 1.7
+const SLIP = 2.5
 const EDGE = 0.6
 const CLIMB_RATE = 1
 // sa place sur la page (une part de la largeur jusqu'à la tête du ruban) : en retard, il presse le pas (jusqu'à
@@ -159,23 +159,27 @@ export function rider() {
       }
 
       if (me.mode === 'air') {
+        const beforeX = me.x
         me.x += me.vx * dt
         me.vy += GRAVITY * dt
         const before = me.y
         me.y += me.vy * dt
         if (pose !== SLIDE || me.vy > 200) pose = me.vy < 0 ? RISE : FALL
-        // il atterrit sur un ruban s'il passe dessus en tombant (le sien d'abord) ; sinon, s'il en a un à portée de
-        // main (le fil entre ses pieds et ses mains, et pas trop raide : il faut pouvoir se hisser dessus), il s'y
-        // accroche
+        // il retrouve un ruban dès qu'il le traverse : en tombant dessus, ou quand le fil remonte et le rattrape par
+        // en dessous (une descente raide qui repart vers le haut) ; on compare où il était par rapport au fil à
+        // l'image d'avant, et maintenant. Sinon, s'il en a un à portée de main (le fil entre ses pieds et ses mains,
+        // et pas trop raide : il faut pouvoir se hisser dessus), il s'y accroche
         const strokes = me.on ? [me.on, ...ribbon.strokes] : ribbon.strokes
         for (const s of strokes) {
           const y = yAt(s, me.x)
-          if (y === null || me.vy <= 0) continue
-          if (before <= y + 2 && me.y >= y) {
+          if (y === null) continue
+          const was = yAt(s, beforeX)
+          const crossed = was === null ? me.vy > 0 && me.y >= y && me.y - y < 8 : before <= was + 2 && me.y >= y
+          if (crossed) {
             Object.assign(me, { mode: 'ride', on: s, y, vy: 0 })
             break
           }
-          if (me.y > y + 4 && me.y - REACH < y && Math.abs(slopeAt(s, me.x)) < STEEP) {
+          if (me.vy > 0 && me.y > y + 4 && me.y - REACH < y && Math.abs(slopeAt(s, me.x)) < STEEP) {
             Object.assign(me, { mode: 'hang', on: s, hung: 0, vx: 0, vy: 0, speed: 0 })
             break
           }
