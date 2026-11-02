@@ -64,61 +64,6 @@ export const C2: Creature[] = [
 `,
   },
   {
-    n: 15,
-    name: 'lémurien',
-    note: 'de grands yeux, des bonds immenses',
-    idle: art`
- (O O)
-  (#)  @
-  / \ @@
-`,
-    walk: art`
- (O O)
-  (#)  @
-  |\  @@
-`,
-    jump: art`
-\(O O)/
-  (#)  @
- /   \@@
-`,
-    climb: art`
- \   /
- (O O)
-  (#) @
-  | |@@
-`,
-  },
-  {
-    n: 16,
-    name: 'kangourou',
-    note: 'ne marche pas : il bondit',
-    idle: art`
-  /)
- (o.)
- /#\
- \_)\__
-`,
-    walk: art`
-  /)
- (o.)
- /#\
- \_)/__
-`,
-    jump: art`
-   /)
-  (o.)
-  /#\
- /_/  \__
-`,
-    climb: art`
- \/)
- (o.)
- |#|
- \_)__
-`,
-  },
-  {
     n: 17,
     name: 'bouquetin',
     note: 'à l’aise sur les pentes impossibles',
@@ -170,35 +115,6 @@ export const C2: Creature[] = [
 \(o o)/
  (   )
   | |~
-`,
-  },
-  {
-    n: 20,
-    name: 'petit dragon',
-    note: 'ses ailes l’aident à se rattraper',
-    idle: art`
-  ^ ^ /\
- (o o)\/
- (   )~>
-  " "
-`,
-    walk: art`
-  ^ ^ /\
- (o o)\/
- (   )~>
-  / \
-`,
-    jump: art`
-  ^ ^  /\/\
- (o o)/\/\
- (   )~>
- /   \
-`,
-    climb: art`
- \^ ^/
- (o o)
- (   )>
- /   \
 `,
   },
 ]

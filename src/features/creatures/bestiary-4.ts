@@ -80,35 +80,6 @@ export const C4: Creature[] = [
 `,
   },
   {
-    n: 34,
-    name: 'diablotin',
-    note: 'des cornes, une queue en flèche',
-    idle: art`
- }   {
-(o v o)
- /|_|\
-  / \ ~>
-`,
-    walk: art`
- }   {
-(o v o)
- /|_|\
-  |\ ~>
-`,
-    jump: art`
-  }   {
-\(o v o)/
-   |_|
-  /   \ ~>
-`,
-    climb: art`
- \}  {/
-(o v o)
-  |_|
- /   \~>
-`,
-  },
-  {
     n: 35,
     name: 'lutin',
     note: 'un bonnet pointu, très agile',
