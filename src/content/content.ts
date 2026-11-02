@@ -136,6 +136,12 @@ export const carnet: Carnet = {
       alt: 'Sur une page claire, le prénom « Garance » écrit en grand, en serif ; dessous, lettre à lettre, ses points et ses traits à l’encre, chaque lettre sous son code ; plus bas, un bouton « écouter » et une petite lampe ronde.',
     },
     {
+      name: 'créatures',
+      href: '/creatures/',
+      src: '/shots/creatures.webp',
+      alt: 'Une planche de cartes sur une page claire : dans chacune, une petite créature dessinée en caractères (un gecko, un singe, une grenouille, un renard, un chat…), son numéro, son nom en serif et un mot sur elle ; certaines sont en train de marcher, de sauter ou de grimper.',
+    },
+    {
       name: 'feu d’artifice',
       href: '/feu/',
       src: '/shots/feu.webp',

@@ -1,5 +1,5 @@
 import './creatures.css'
-import '@/features/carnet/sheet'
+import { mount } from '@/features/carnet/carnet'
 import type { Creature, Pose } from './art'
 import { C1 } from './bestiary-1'
 import { C2 } from './bestiary-2'
@@ -9,7 +9,10 @@ import { C4 } from './bestiary-4'
 // Créatures : une planche de quarante créatures en caractères, pour en choisir une qui habitera Ruban. Chacune passe
 // en boucle par ses poses (au repos, en marche, au repos, en marche, en plein saut, en train de grimper), et dit
 // laquelle sous elle. Un clic la garde (et un autre la rend) ; celles qu'on garde sont rappelées en haut, par leur
-// numéro, et restent gardées dans ce navigateur. La page est cachée : elle n'est dans aucun lien du carnet.
+// numéro, et restent gardées dans ce navigateur.
+
+// la ligne du carnet (le labo, la page, les voisines)
+mount()
 
 const CREATURES: Creature[] = [...C1, ...C2, ...C3, ...C4]
 const grid = document.querySelector<HTMLElement>('.cr-grid')!

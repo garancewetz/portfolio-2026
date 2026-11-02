@@ -7,6 +7,9 @@
   --muted: rgb(26 25 23 / 0.5);
   --keep: #c2410c;
   color-scheme: light;
+  /* (la ligne du carnet, à l'encre de la page) */
+  --carnet-ink: rgb(26 25 23 / 0.5);
+  --carnet-ink-hover: rgb(26 25 23 / 0.95);
 }
 html,
 body {
@@ -18,21 +21,13 @@ main.cr {
   position: fixed;
   inset: 0;
   overflow-y: auto;
-  padding: 40px 16px 72px;
+  /* (sous la ligne du carnet) */
+  padding: 72px 16px 72px;
   color: var(--ink);
 }
 .cr-head {
   max-width: 1100px;
   margin: 0 auto 32px;
-}
-.cr-back {
-  font: 12px/1 var(--mono);
-  color: var(--muted);
-  text-decoration: none;
-}
-.cr-back:hover,
-.cr-back:focus-visible {
-  color: var(--ink);
 }
 .cr-title {
   margin: 18px 0 10px;
