@@ -3,62 +3,6 @@ import { art, type Creature } from './art'
 // Les créatures 31 à 40 : des créatures inventées.
 export const C4: Creature[] = [
   {
-    n: 33,
-    name: 'mille-pattes',
-    note: 'ondule, ne tombe jamais',
-    idle: art`
- (o)OOOOO
-  ///////
-`,
-    walk: art`
- (o)OOOOO
-  \\\\\\\
-`,
-    jump: art`
-  (o)OOOOO
- // / / //
-`,
-    climb: art`
- (o)
- -O-
- -O-
- -O-
-`,
-  },
-  {
-    n: 35,
-    name: 'lutin',
-    note: 'un bonnet pointu, très agile',
-    idle: art`
-   /\
-  /__\
- (o o)
-  /|\
-  / \
-`,
-    walk: art`
-   /\
-  /__\
- (o o)
-  /|\
-  |\
-`,
-    jump: art`
-   /\
-  /__\
-\(o o)/
-   |
-  / \
-`,
-    climb: art`
-   /\
- \/__\/
- (o o)
-  |||
-  / \
-`,
-  },
-  {
     n: 36,
     name: 'yéti',
     note: 'une petite montagne de poils',
@@ -139,35 +83,6 @@ export const C4: Creature[] = [
  \   /
 >(o.o)<
   |#|
-`,
-  },
-  {
-    n: 39,
-    name: 'bestiole à antennes',
-    note: 'venue d’ailleurs',
-    idle: art`
- \   /
-  (oo)
- /(  )\
-  "  "
-`,
-    walk: art`
- \   /
-  (oo)
- /(  )\
-  / \
-`,
-    jump: art`
- \   /
-  (OO)
- /(  )\
- /    \
-`,
-    climb: art`
- \   /
- \(oo)/
-  (  )
-  |  |
 `,
   },
   {
