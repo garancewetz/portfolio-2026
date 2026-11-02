@@ -8,7 +8,7 @@ import { path as walked, picture } from './path'
 // dans cette page, une fenêtre avec la page d'avant… jusqu'à la première page de la visite, tout au fond. En
 // faisant défiler (ou en glissant le doigt), on plonge : on remonte son propre chemin dans le site.
 
-const BG = '#f6f4ef'
+const BG = '#ffffff'
 // la place autour de la première fenêtre : en haut, celle de la ligne du carnet ; sur les côtés et en bas, un
 // liseré. Les suivantes, plus petites, laissent voir la page où elles sont posées.
 const TOP = 40
