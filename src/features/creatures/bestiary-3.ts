@@ -77,28 +77,6 @@ export const C3: Creature[] = [
 `,
   },
   {
-    n: 24,
-    name: 'lézard à collerette',
-    note: 'ouvre sa collerette en sautant',
-    idle: art`
- {*o*}__
-  /  \ ~~
-`,
-    walk: art`
- {*o*}__
-  \  / ~~
-`,
-    jump: art`
- {*O*}___
- /    \ ~~
-`,
-    climb: art`
- {*o*}
- |   |
-  ~~
-`,
-  },
-  {
     n: 25,
     name: 'grillon',
     note: 'chante quand il attend',
@@ -121,32 +99,6 @@ export const C3: Creature[] = [
  \\//
  (oo)
  |==|
-`,
-  },
-  {
-    n: 26,
-    name: 'sauterelle',
-    note: 'des pattes-ressorts',
-    idle: art`
-   ,
- (o)>==-
-  /^\^
-`,
-    walk: art`
-   ,
- (o)>==-
-  \^/^
-`,
-    jump: art`
-   ,
- (o)>==-
- /^  ^\
-`,
-    climb: art`
-  ,
- (o)
- |=|
- /^\
 `,
   },
   {

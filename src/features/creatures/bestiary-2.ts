@@ -173,31 +173,6 @@ export const C2: Creature[] = [
 `,
   },
   {
-    n: 19,
-    name: 'hérisson',
-    note: 'se roule en boule pour tomber',
-    idle: art`
-  ,/\/\/\
- (o  ///\
-  "  "
-`,
-    walk: art`
-  ,/\/\/\
- (o  ///\
-  /  \
-`,
-    jump: art`
- ,/\/\/\
-(o  ///\
-/     \
-`,
-    climb: art`
- /\/\/\
-(o ///)
- |  |
-`,
-  },
-  {
     n: 20,
     name: 'petit dragon',
     note: 'ses ailes l’aident à se rattraper',
