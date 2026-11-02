@@ -8,7 +8,7 @@ Deux effets cachés dans la signature, au survol : les « a » de Garance devien
 
 Easter egg : le repère « gap » de la grille est un bouton. Un clic mélange le nom en anagrammes ; le pied de page a un mode feu d'artifice.
 
-Dans le pied de page, « labo → » mène au **labo**, mes expériences : un carnet ouvert (`/labo`) dont on tourne les pages (Murmuration, Fourrure, Toupies, Escalade, Ruban, Morse, Feu d'artifice, Abyme), chacune sa propre page HTML (voir `vite.config.ts`).
+Dans le pied de page, « labo → » mène au **labo**, mes expériences : un carnet ouvert (`/labo`) dont on tourne les pages (Murmuration, Ruban, Fourrure, Toupies, Escalade, Créatures, Feu d'artifice, Abyme), chacune sa propre page HTML (voir `vite.config.ts`).
 
 
 ## Lancer le projet
@@ -64,6 +64,8 @@ src/
                                l’image), intro
     morse/                     la page /morse : une phrase tapée, écrite en morse (code : la table, le temps),
                                player (le bip et la lampe)
+    creatures/                 la page /creatures : une planche de créatures en caractères, chacune sur sa piste
+                               (allers-retours), pour choisir celle de Ruban : art, bestiary-2..4, stage (la piste)
     abyme/                     la page /abyme : la visite remontée de fenêtre en fenêtre (path, door, drawn…)
     yaya/                      la page /yaya (cachée, sans lien)
   shared/

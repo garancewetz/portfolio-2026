@@ -130,6 +130,12 @@ export const carnet: Carnet = {
       alt: 'Sur une page claire, un petit bonhomme en caractères, une tête o et un corps #, escalade un trait multicolore qu’il a tracé depuis le bas de la page ; plus haut, à droite, une petite porte en caractères l’attend.',
     },
     {
+      name: 'créatures',
+      href: '/creatures/',
+      src: '/shots/creatures.webp',
+      alt: 'Sur une page blanche, une planche de créatures dessinées en caractères, une par ligne (un ourson, un yéti, un robot…) : à gauche son numéro, son nom en serif et un mot sur elle ; à droite, sa piste entre deux petits murs, où elle marche, tantôt vers la droite, tantôt vers la gauche.',
+    },
+    {
       name: 'feu d’artifice',
       href: '/feu/',
       src: '/shots/feu.webp',

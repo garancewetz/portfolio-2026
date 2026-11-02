@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Créatures — Garance Wetzel</title>
+    <meta
+      name="description"
+      content="Une planche de petites créatures dessinées en caractères, qui marchent, sautent et grimpent : laquelle habitera Ruban ?"
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="canonical" href="https://garancewetz.dev/creatures" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- une planche de créatures en caractères, pour en choisir une (voir src/features/creatures) -->
+    <main class="cr carnet-sheet">
+      <header class="cr-head">
+        <h1 class="cr-title">Créatures</h1>
+        <p class="cr-lead">Des propositions pour habiter Ruban. Chacune fait des allers-retours sur sa piste : elle marche, grimpe un peu au mur du bout, saute, s’accroupit en se recevant, et repart. Clique sur le nom de celles qui te plaisent.</p>
+        <p class="cr-picked" aria-live="polite"></p>
+      </header>
+      <ol class="cr-list"></ol>
+    </main>
+    <script type="module" src="/src/features/creatures/main.ts"></script>
+  </body>
+</html>

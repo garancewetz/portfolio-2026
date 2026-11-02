@@ -8,7 +8,7 @@ export default defineConfig({
   // « @/ » : le dossier src (des imports qui ne dépendent pas de l'endroit où l'on est)
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   // les pages : le site, et celles du carnet : son sommaire (/labo), Murmuration (servie à l'adresse /murmuration),
-  // Fourrure (/fourrure), Yaya (/yaya), Toupies (/toupies), Feu d'artifice (/feu), Escalade (/escalade), Ruban (/ruban), Morse (/morse) et Abyme (/abyme)
+  // Fourrure (/fourrure), Yaya (/yaya), Toupies (/toupies), Feu d'artifice (/feu), Escalade (/escalade), Ruban (/ruban), Morse (/morse), Créatures (/creatures) et Abyme (/abyme)
   build: {
     rollupOptions: {
       input: {
@@ -23,6 +23,7 @@ export default defineConfig({
         escalade: fileURLToPath(new URL('./escalade/index.html', import.meta.url)),
         ruban: fileURLToPath(new URL('./ruban/index.html', import.meta.url)),
         morse: fileURLToPath(new URL('./morse/index.html', import.meta.url)),
+        creatures: fileURLToPath(new URL('./creatures/index.html', import.meta.url)),
       },
     },
   },
