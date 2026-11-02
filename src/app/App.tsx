@@ -59,7 +59,7 @@ export default function App() {
       </header>
 
       <ScrollHint ref={hint} />
-      {/* le yéti : il tombe en volant à l'arrivée, descend en défilant, se pose sur le filet du nom */}
+      {/* le yéti : posé sur la dernière carte à l'arrivée, il s'envole quand on défile et se pose sur le filet du nom */}
       <HomeYeti />
       <Fireworks on={fireworks} mix={mix} onEnd={() => setFireworks(false)} />
 
