@@ -62,7 +62,7 @@ export function rider() {
   const walking = (by: number) => WALK[Math.floor((me.step += by) / 9) % WALK.length]
 
   return {
-    // walk : son pas (le défilement, en pixels par seconde, même quand le ruban est figé) ; screenX : où il est sur la
+    // walk : son pas (le défilement, en pixels par seconde) ; screenX : où il est sur la
     // page ; headX : où naît le ruban ; yOf : la hauteur d'une note
     step(
       dt: number,

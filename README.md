@@ -60,7 +60,7 @@ src/
                                secousse), input (clavier, souris), intro, shake, tab (il dort), windows (deux fenêtres)
     ruban/                     la page /ruban : la voix dessine un ruban de lumière sur le noir, et un petit bonhomme
                                marche dessus : voice (le micro, la note, le volume), pitch (YIN, les noms, les couleurs),
-                               ribbon, rider (le bonhomme), scale (la gamme), controls (figer, enregistrer), intro
+                               ribbon, rider (le bonhomme), scale (la gamme), controls (enregistrer l’image), intro
     morse/                     la page /morse : une phrase tapée, écrite en morse (code : la table, le temps),
                                player (le bip et la lampe)
     abyme/                     la page /abyme : la visite remontée de fenêtre en fenêtre (path, door, drawn…)

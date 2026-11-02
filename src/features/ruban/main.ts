@@ -15,7 +15,7 @@ import { listen, MicError, type Heard, type Voice } from './voice'
 // par octave), que le volume fait l'épaisseur et l'éclat, que le ruban file vers la gauche et reste, et qu'un silence
 // le coupe (ribbon.ts). Dessus, un petit bonhomme marche, glisse dans les descentes, grimpe quand c'est raide, et
 // saute d'un ruban à l'autre (rider.ts). Sur le bord gauche, la gamme, à la même hauteur et de la même couleur
-// (scale.ts). En bas, deux boutons (controls.ts) : figer le dessin, et l'enregistrer en image. Sans micro, on
+// (scale.ts). En bas, un bouton (controls.ts) : enregistrer le dessin en image. Sans micro, on
 // dessine au doigt (appuyer : plus haut, plus aigu). La roue crantée règle le registre (la note du milieu),
 // l'étendue, la vitesse, et la sensibilité.
 
@@ -91,21 +91,14 @@ function play() {
   since = performance.now() / 1000
   door.close()
   main.classList.add('is-playing')
-  // les boutons apparaissent
-  buttons = controls(main, { freeze: () => freeze(frozenAt === null), save })
+  // le bouton apparaît
+  button = controls(main, { save })
   settingsUp()
 }
 
-// ——— figer, enregistrer ———
+// ——— enregistrer ———
 
-// l'heure à laquelle le ruban s'est arrêté (null : il file)
-let frozenAt: number | null = null
-let buttons: ReturnType<typeof controls> | null = null
-function freeze(on: boolean) {
-  frozenAt = on ? performance.now() / 1000 : null
-  // (figé, le ruban qu'on chantait se termine : le bonhomme peut aller jusqu'au bout)
-  if (on) ribbon.add(scroll, null)
-}
+let button: ReturnType<typeof controls> | null = null
 function save() {
   canvas.toBlob((blob) => {
     if (!blob) return
@@ -116,12 +109,6 @@ function save() {
     setTimeout(() => URL.revokeObjectURL(a.href), 1000)
   })
 }
-addEventListener('keydown', (e) => {
-  // (sur un bouton ou une réglette, l'espace reste à eux)
-  if (e.code !== 'Space' || !playing || (e.target instanceof Element && e.target.closest('button, input'))) return
-  e.preventDefault()
-  freeze(frozenAt === null)
-})
 
 // la ligne du carnet (le labo, la page, les voisines), et la roue crantée, une fois qu'on chante
 const slot = mount()
@@ -168,19 +155,18 @@ function frame(now: number) {
   last = now
   const t = now / 1000
 
-  // ce qu'on entend : le doigt d'abord, sinon la voix ; figé, plus rien ne dessine
-  const read: Heard | null =
+  // ce qu'on entend : le doigt d'abord, sinon la voix
+  const heard: Heard | null =
     finger !== null ? { midi: midiOf(finger), level: 0.3 } : voice ? voice.read(dt, settings.sensitivity) : null
-  if (read) heardOnce = true
-  const heard = frozenAt === null ? read : null
-  // le ruban défile (sauf figé), et ce qui sort à gauche est oublié
-  if (playing && frozenAt === null) {
+  if (heard) heardOnce = true
+  // le ruban défile, et ce qui sort à gauche est oublié
+  if (playing) {
     scroll += settings.pace * dt
     ribbon.add(scroll, heard)
     ribbon.prune(scroll - headX() - 60)
   }
   man.step(dt, ribbon, settings.pace, screenX, headX(), yOf, H)
-  buttons?.set(frozenAt !== null, ribbon.empty)
+  button?.set(ribbon.empty)
 
   g.fillStyle = '#000'
   g.fillRect(0, 0, W, H)
@@ -204,13 +190,11 @@ function frame(now: number) {
   // en bas à droite : la note entendue, en hertz, et le volume ; ou, si le micro n'a encore rien entendu, un indice
   const text = heard
     ? `${noteName(heard.midi)} · ${Math.round(toHz(heard.midi))} Hz · volume ${Math.round(heard.level * 100)} %`
-    : frozenAt !== null
-      ? 'figé · espace pour reprendre'
-      : voice && !heardOnce && t - since > 6
-        ? 'le micro n’entend rien ? le cadenas, à côté de l’adresse, permet d’en choisir un autre'
-        : playing
-          ? 'silence'
-          : ''
+    : voice && !heardOnce && t - since > 6
+      ? 'le micro n’entend rien ? le cadenas, à côté de l’adresse, permet d’en choisir un autre'
+      : playing
+        ? 'silence'
+        : ''
   if (text !== shown) readout.textContent = shown = text
   requestAnimationFrame(frame)
 }
