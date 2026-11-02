@@ -6,29 +6,29 @@ import { C2 } from './bestiary-2'
 import { C3 } from './bestiary-3'
 import { C4 } from './bestiary-4'
 
-// Créatures : une planche de créatures en caractères, pour en choisir une qui habitera Ruban. Chacune passe
-// en boucle par ses poses (au repos, en marche, au repos, en marche, en plein saut, en train de grimper), et dit
-// laquelle sous elle. Un clic la garde (et un autre la rend) ; celles qu'on garde sont rappelées en haut, par leur
-// numéro, et restent gardées dans ce navigateur.
+// Créatures : une planche de créatures en caractères, pour en choisir une qui habitera Ruban. Une ligne par
+// créature : son numéro, son nom et un mot sur elle, puis quatre cases qui bougent en boucle, chacune pour un geste
+// (elle marche, elle saute, elle grimpe, elle s'accroupit). Un clic sur le nom la garde (et un autre la rend) ;
+// celles qu'on garde sont rappelées en haut, par leur numéro, et restent gardées dans ce navigateur.
 
 // la ligne du carnet (le labo, la page, les voisines)
 mount()
 
 const CREATURES: Creature[] = [...C1, ...C2, ...C3, ...C4]
-const grid = document.querySelector<HTMLElement>('.cr-grid')!
+const list = document.querySelector<HTMLElement>('.cr-list')!
 const picked = document.querySelector<HTMLElement>('.cr-picked')!
 
-// les poses, dans l'ordre où on les voit, et leur nom
-const CYCLE: { key: keyof Pick<Creature, 'idle' | 'walk' | 'jump' | 'climb'>; label: string }[] = [
-  { key: 'idle', label: 'repos' },
-  { key: 'walk', label: 'marche' },
-  { key: 'idle', label: 'marche' },
-  { key: 'walk', label: 'marche' },
-  { key: 'jump', label: 'saut' },
-  { key: 'climb', label: 'grimpe' },
+type Key = keyof Pick<Creature, 'idle' | 'walk' | 'jump' | 'climb' | 'crouch'>
+// les quatre cases : leur geste, et les poses qui passent dedans, en boucle (une toutes les 420 ms) ; dans la case
+// « grimpe », la créature monte d'un cran à chaque image, puis redescend
+const CELLS: { label: string; poses: Key[]; climb?: boolean }[] = [
+  { label: 'marche', poses: ['idle', 'walk'] },
+  { label: 'saute', poses: ['idle', 'crouch', 'jump', 'jump'] },
+  { label: 'grimpe', poses: ['climb'], climb: true },
+  { label: 's’accroupit', poses: ['idle', 'idle', 'crouch', 'crouch'] },
 ]
 
-// les créatures gardées (leur numéro, à partir de 1)
+// les créatures gardées (leur numéro)
 const KEY = 'creatures.gardees'
 let kept = new Set<number>()
 try {
@@ -44,33 +44,38 @@ function save() {
   } catch {
     // (pas de mémoire ici)
   }
-  const list = [...kept].sort((a, b) => a - b)
-  picked.textContent = list.length
-    ? `gardées : ${list.map((n) => `${n} (${CREATURES.find((c) => c.n === n)?.name})`).join(', ')}`
+  const nums = [...kept].sort((a, b) => a - b)
+  picked.textContent = nums.length
+    ? `gardées : ${nums.map((n) => `${n} (${CREATURES.find((c) => c.n === n)?.name})`).join(', ')}`
     : ''
 }
 
-// (toutes les poses d'une créature dans la même boîte : la plus large, la plus haute ; elle ne saute pas d'une pose à
-// l'autre)
+// (toutes les poses d'une créature dans la même boîte : la plus large, la plus haute ; elle ne saute pas d'une case
+// ou d'une pose à l'autre)
 const box = (c: Creature) => {
-  const poses = [c.idle, c.walk, c.jump, c.climb]
+  const poses = [c.idle, c.walk, c.jump, c.climb, c.crouch]
   return { w: Math.max(...poses.flat().map((l) => l.length)), h: Math.max(...poses.map((p) => p.length)) }
 }
 const pad = (p: Pose, h: number) => [...Array(h - p.length).fill(''), ...p].join('\n')
 
-const cards = CREATURES.map((c) => {
+const rows = CREATURES.map((c) => {
   const { n } = c
-  const li = document.createElement('li')
-  li.className = 'cr-card'
   const { w, h } = box(c)
+  const li = document.createElement('li')
+  li.className = 'cr-row'
   li.innerHTML = `
     <button type="button" class="cr-pick" aria-pressed="false">
       <span class="cr-num">${String(n).padStart(2, '0')}</span>
-      <pre class="cr-art" aria-hidden="true" style="--w: ${w}ch; --h: ${h}"></pre>
-      <span class="cr-pose" aria-hidden="true"></span>
       <span class="cr-name">${c.name}</span>
       <span class="cr-note">${c.note}</span>
-    </button>`
+    </button>
+    ${CELLS.map(
+      ({ label }) => `
+      <figure class="cr-cell">
+        <pre class="cr-art" aria-hidden="true" style="--w: ${w}ch; --h: ${h}"></pre>
+        <figcaption>${label}</figcaption>
+      </figure>`,
+    ).join('')}`
   const button = li.querySelector<HTMLButtonElement>('.cr-pick')!
   const show = () => {
     button.setAttribute('aria-pressed', String(kept.has(n)))
@@ -83,21 +88,25 @@ const cards = CREATURES.map((c) => {
     save()
   })
   show()
-  grid.append(li)
-  return { c, h, art: li.querySelector<HTMLElement>('.cr-art')!, pose: li.querySelector<HTMLElement>('.cr-pose')! }
+  list.append(li)
+  return { c, h, arts: [...li.querySelectorAll<HTMLElement>('.cr-art')] }
 })
 save()
 
-// l'animation : une pose toutes les 420 ms ; chaque créature un peu décalée, pour que la planche vive sans marcher au pas
+// l'animation : chaque case passe à sa pose suivante ; chaque ligne un peu décalée, pour que la planche vive sans
+// marcher au pas
 let step = 0
 function tick() {
-  cards.forEach(({ c, h, art, pose }, i) => {
-    const { key, label } = CYCLE[(step + i) % CYCLE.length]
-    art.textContent = pad(c[key], h)
-    pose.textContent = label
+  rows.forEach(({ c, h, arts }, i) => {
+    CELLS.forEach(({ poses, climb }, k) => {
+      const at = step + i
+      arts[k].textContent = pad(c[poses[at % poses.length]], h)
+      // (la grimpe : trois crans vers le haut, puis on recommence en bas)
+      if (climb) arts[k].style.transform = `translateY(${-(at % 4) * 0.35}em)`
+    })
   })
   step++
 }
 tick()
-// (sans animation si on l'a demandé au système : la pose de repos seulement)
+// (sans animation si on l'a demandé au système : la première pose de chaque case)
 if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(tick, 420)

@@ -30,6 +30,11 @@ export const C1: Creature[] = [
  /#\@
  | |
 `,
+    crouch: art`
+ ° °
+(o.o)
+/(#)\@
+`,
   },
   {
     n: 3,
@@ -54,6 +59,10 @@ export const C1: Creature[] = [
  o  o
 (\__/)
  |  |
+`,
+    crouch: art`
+ @..@
+(>__<)
 `,
   },
   {
@@ -81,6 +90,10 @@ export const C1: Creature[] = [
  /| |\
   ~~
 `,
+    crouch: art`
+ /\_/\__
+ (o.o)__)~
+`,
   },
   {
     n: 5,
@@ -105,6 +118,11 @@ export const C1: Creature[] = [
  \/ \/
 ( o.o )
  |   |~
+`,
+    crouch: art`
+ /\_/\
+( o.o )
+ (_ _)~
 `,
   },
   {
@@ -131,6 +149,10 @@ export const C1: Creature[] = [
  (o.o)
  /| |\
 `,
+    crouch: art`
+ (\(\
+(o.o)")
+`,
   },
   {
     n: 8,
@@ -155,6 +177,10 @@ export const C1: Creature[] = [
 \()()/
  (o.o)
   | |~
+`,
+    crouch: art`
+ ()()
+(o.o)~
 `,
   },
 ]
