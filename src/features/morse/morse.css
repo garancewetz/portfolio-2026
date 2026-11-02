@@ -1,0 +1,236 @@
+/* ——— Morse (voir main.ts) : la page claire du site ; la phrase à l'encre, ses points et ses traits dessous ——— */
+@import '@/styles/base.css';
+
+:root {
+  --bg: #f6f4ef;
+  color-scheme: light;
+  --carnet-ink: rgb(26 25 23 / 0.5);
+  --carnet-ink-hover: rgb(26 25 23 / 0.95);
+  --panel-bg: rgb(26 25 23 / 0.9);
+  --panel-accent: #f6f4ef;
+  /* l'unité du morse, dessinée : un point fait 1 de large, un trait 3, et 1 entre deux marques */
+  --u: 9px;
+  /* la lampe allumée */
+  --glow: #f2b632;
+}
+@media (max-width: 600px) {
+  :root {
+    --u: 7px;
+  }
+}
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+/* (la feuille défile : une longue phrase passe à la ligne, et peut descendre plus bas que l'écran) */
+main.mo {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+}
+.mo-page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: clamp(72px, 14vh, 140px) 24px 72px;
+}
+
+/* le champ : grand, en serif, un simple filet dessous */
+.mo-field {
+  display: block;
+  width: 100%;
+  padding: 0 0 8px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: none;
+  color: var(--ink);
+  font: clamp(34px, 6vw, 60px) / 1.15 var(--serif);
+  outline: none;
+  transition: border-color 0.3s;
+}
+.mo-field::placeholder {
+  color: var(--muted);
+  opacity: 0.55;
+}
+.mo-field:focus-visible {
+  border-bottom-color: var(--ink);
+}
+
+/* ——— la phrase en morse : des mots, côte à côte, qui passent à la ligne ; dans chaque mot, les lettres ——— */
+.mo-out {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--u) * 3.5) calc(var(--u) * 7);
+  margin-top: calc(var(--u) * 5);
+  min-height: calc(var(--u) * 6);
+  transition: opacity 0.4s;
+}
+.mo-out.is-ghost {
+  opacity: 0.22;
+}
+.mo-word {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--u) * 2.5) calc(var(--u) * 3.2);
+}
+/* une lettre : ses marques en haut, la lettre tapée dessous, alignées au milieu */
+.mo-sign {
+  display: grid;
+  justify-items: center;
+  gap: calc(var(--u) * 1.1);
+  min-width: calc(var(--u) * 1.6);
+  cursor: default;
+}
+.mo-marks {
+  display: flex;
+  align-items: center;
+  gap: var(--u);
+  height: var(--u);
+}
+.mo-dot,
+.mo-dash {
+  display: block;
+  height: var(--u);
+  border-radius: var(--u);
+  background: var(--ink);
+  transition:
+    background-color 0.25s,
+    box-shadow 0.25s;
+}
+.mo-dot {
+  width: var(--u);
+}
+.mo-dash {
+  width: calc(var(--u) * 3);
+}
+/* (œ : deux lettres, O puis E ; entre les deux, la place d'une lettre) */
+.mo-gap {
+  width: var(--u);
+}
+.mo-letter {
+  font: 500 15px / 1 var(--mono);
+  color: var(--muted);
+  white-space: pre;
+  transition: color 0.25s;
+}
+/* au survol : la lettre et son code ressortent */
+.mo-sign:hover .mo-letter {
+  color: var(--violet);
+}
+.mo-sign:hover :is(.mo-dot, .mo-dash) {
+  background: var(--violet);
+}
+/* ce que le morse ne sait pas dire : la lettre, pâle, et un petit « ? » à la place des marques */
+.mo-what {
+  font: 11px / 1 var(--mono);
+  color: var(--muted);
+}
+.mo-sign.is-unknown .mo-letter {
+  color: var(--muted);
+  opacity: 0.55;
+  text-decoration: underline dotted;
+  text-underline-offset: 4px;
+}
+.mo-unknown {
+  min-height: 1.6em;
+  margin-top: 20px;
+  font: 12px / 1.6 var(--mono);
+  color: var(--muted);
+}
+
+/* ——— la lecture : la lettre qu'on lit, et la marque allumée ——— */
+.mo.is-playing .mo-sign:not(.is-reading) {
+  opacity: 0.35;
+}
+.mo-sign {
+  transition: opacity 0.25s;
+}
+.mo-sign.is-reading .mo-letter {
+  color: var(--ink);
+}
+/* (allumée tout de suite, éteinte en douceur) */
+.mo-sign .mo-dot.is-lit,
+.mo-sign .mo-dash.is-lit {
+  background: var(--glow);
+  box-shadow: 0 0 calc(var(--u) * 1.4) var(--glow);
+  transition: none;
+}
+
+/* la barre du bas : le bouton, la lampe, le morse en texte (à copier) */
+.mo-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 18px;
+  margin-top: 12px;
+}
+.mo-play,
+.mo-copy {
+  padding: 9px 16px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: none;
+  color: var(--ink);
+  font: 500 13px / 1 var(--mono);
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+.mo-play[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--bg);
+}
+/* (au doigt, pas de survol : le bouton resterait noir après qu'on l'a touché) */
+@media (hover: hover) {
+  .mo-play:hover:not(:disabled) {
+    background: var(--ink);
+    color: var(--bg);
+  }
+}
+.mo-play:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.mo-copy {
+  padding: 6px 12px;
+  border-color: var(--line);
+  color: var(--muted);
+  font-size: 11px;
+}
+.mo-copy:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.mo-copy[hidden] {
+  display: none;
+}
+/* la lampe : éteinte, un cercle de verre ; allumée, elle brille */
+.mo-lamp {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--empty);
+  transition:
+    background-color 0.18s,
+    box-shadow 0.18s;
+}
+.mo-lamp.is-lit {
+  background: var(--glow);
+  box-shadow:
+    0 0 10px var(--glow),
+    0 0 28px rgb(242 182 50 / 0.55);
+  transition: none;
+}
+.mo-text {
+  flex: 1 1 200px;
+  min-width: 0;
+  font: 500 14px / 1.6 var(--mono);
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  user-select: text;
+}

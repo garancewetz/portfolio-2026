@@ -8,7 +8,7 @@ Deux effets cachés dans la signature, au survol : les « a » de Garance devien
 
 Easter egg : le repère « gap » de la grille est un bouton. Un clic mélange le nom en anagrammes ; le pied de page a un mode feu d'artifice.
 
-Dans le pied de page, « labo → » mène au **labo**, mes expériences : un carnet ouvert (`/labo`) dont on tourne les pages (Murmuration, Fourrure, Toupies, Escalade, Vocalise, Feu d'artifice, Abyme), chacune sa propre page HTML (voir `vite.config.ts`).
+Dans le pied de page, « labo → » mène au **labo**, mes expériences : un carnet ouvert (`/labo`) dont on tourne les pages (Murmuration, Fourrure, Toupies, Escalade, Vocalise, Morse, Feu d'artifice, Abyme), chacune sa propre page HTML (voir `vite.config.ts`).
 
 
 ## Lancer le projet
@@ -60,6 +60,8 @@ src/
                                secousse), input (clavier, souris), intro, shake, tab (il dort), windows (deux fenêtres)
     vocalise/                  la page /vocalise : une lueur qu'on guide à la voix (aigu : elle monte) : voice (le micro,
                                le lissage), pitch (la hauteur, YIN), intro (le micro, le réglage), draw, melodies
+    morse/                     la page /morse : une phrase tapée, écrite en morse (code : la table, le temps),
+                               player (le bip et la lampe)
     abyme/                     la page /abyme : la visite remontée de fenêtre en fenêtre (path, door, drawn…)
     yaya/                      la page /yaya (cachée, sans lien)
   shared/

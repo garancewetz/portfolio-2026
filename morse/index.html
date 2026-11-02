@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Morse — Garance Wetzel</title>
+    <meta
+      name="description"
+      content="On tape son prénom, ou une phrase, et elle s’écrit en morse, lettre à lettre, en points et en traits ; on peut aussi l’écouter, et la voir clignoter."
+    />
+    <meta name="theme-color" content="#f6f4ef" />
+    <link rel="canonical" href="https://garancewetz.dev/morse" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- une phrase en morse (voir src/features/morse) -->
+    <main
+      class="mo carnet-sheet"
+      aria-label="Morse : on tape son prénom, ou une phrase, et elle s’écrit en morse ; on peut l’écouter, et la voir clignoter."
+    >
+      <div class="mo-page">
+        <label class="sr" for="mo-field">Ton prénom, ou une phrase</label>
+        <input
+          id="mo-field"
+          class="mo-field"
+          type="text"
+          placeholder="ton prénom, ou une phrase…"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          maxlength="200"
+        />
+        <!-- les points et les traits, lettre à lettre (le texte, pour les lecteurs d'écran : plus bas) -->
+        <div class="mo-out" aria-hidden="true"></div>
+        <p class="mo-unknown" aria-live="polite"></p>
+        <div class="mo-bar">
+          <button class="mo-play" type="button">▶ écouter</button>
+          <span class="mo-lamp" aria-hidden="true"></span>
+          <p class="mo-text"></p>
+          <button class="mo-copy" type="button">copier</button>
+        </div>
+      </div>
+    </main>
+    <script type="module" src="/src/features/morse/main.ts"></script>
+  </body>
+</html>

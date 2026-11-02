@@ -17,6 +17,7 @@ const PAGES = [
   { path: '/toupies/', name: 'toupies' },
   { path: '/escalade/', name: 'escalade' },
   { path: '/vocalise/', name: 'vocalise' },
+  { path: '/morse/', name: 'morse' },
   { path: '/feu/', name: 'feu d’artifice' },
   // (Abyme à la fin : elle remonte la visite)
   { path: '/abyme/', name: 'abyme' },
