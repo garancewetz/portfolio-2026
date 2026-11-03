@@ -1,4 +1,4 @@
-/* En bas : le projet précédent (à gauche), le suivant (à droite), par leur nom */
+/* En bas : le projet précédent (à gauche), le suivant (à droite), par leur nom, sous un filet */
 .rg-sheet-pager {
   position: relative;
   display: flex;
@@ -7,6 +7,23 @@
   gap: var(--pad);
   min-height: var(--pager-h);
   padding: 0 var(--pad) var(--pad);
+}
+/* le filet, d'un bord de la grille à l'autre */
+.rg-sheet-pager::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--pad);
+  right: var(--pad);
+  border-top: 1px solid var(--line);
+}
+/* grand écran : le bas de la fiche commence là où l'accueil trace le filet du nom (voir --dock, App.css, et
+   Signature.css : le filet, 0,32 ligne au-dessus du nom) ; en passant de l'un à l'autre, il ne bouge pas */
+@media (min-width: 901px) {
+  /* (plus fort que la hauteur par défaut, dans ProjectSheet.css) */
+  .rg .rg-sheet {
+    --pager-h: calc(42px + 1.32 * var(--lh));
+  }
 }
 .rg-sheet-pager button {
   display: flex;
