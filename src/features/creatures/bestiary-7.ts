@@ -1,6 +1,6 @@
 import { art, type Creature } from './art'
 
-// Les créatures 51 à 55, et 67 : des variantes du yéti (36).
+// Le yéti sans bras (67), celui de Ruban : il grimpe, et vole en battant des oreilles.
 export const C7: Creature[] = [
   {
     n: 67,
@@ -41,5 +41,20 @@ export const C7: Creature[] = [
  :(o.o):
  :(___):
 `,
+    // il vole en battant des oreilles (en haut, puis à plat), ravi, les jambes pendantes, comme dans Ruban
+    fly: [
+      art`
+\\.:::.//
+ :(^.^):
+ :(   ):
+  /   \
+`,
+      art`
+--.:::.--
+ :(^.^):
+ :(   ):
+  /   \
+`,
+    ],
   },
 ]

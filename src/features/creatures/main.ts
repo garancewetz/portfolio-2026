@@ -1,96 +1,62 @@
 import './creatures.css'
 import { mount } from '@/features/carnet/carnet'
 import type { Creature } from './art'
+import { C1 } from './bestiary-1'
+import { C2 } from './bestiary-2'
 import { C3 } from './bestiary-3'
 import { C4 } from './bestiary-4'
-import { C5 } from './bestiary-5'
 import { C7 } from './bestiary-7'
-import { C8 } from './bestiary-8'
-import { stage } from './stage'
+import { watch } from './presence'
+import { landscape } from './land'
+import { trails } from './trails'
+import { roam, type Body } from './stage'
+import { switcher } from './theme'
 
-// Créatures : une planche de créatures en caractères, pour en choisir une qui habitera Ruban. Une ligne par
-// créature : son numéro, son nom et un mot sur elle, puis sa piste, où elle fait des allers-retours (elle marche,
-// grimpe un peu au mur du bout, saute, s'accroupit en se recevant, et repart ; voir stage.ts). Un clic sur le nom la
-// garde (et un autre la rend) ; celles qu'on garde sont rappelées en haut, par leur numéro, et restent gardées dans
-// ce navigateur.
+// Créatures : les créatures en caractères, en liberté sur les trois lignes d'un paysage (des collines, un fil entre
+// des poteaux : voir land.ts), de la largeur de la page. Chacune va de son côté : elle marche, s'arrête, saute, grimpe, glisse dans les descentes, vole, fait
+// attention aux autres et au visiteur, tire un trait de sa couleur, dort la nuit (voir stage.ts).
 
-// la ligne du carnet (le labo, la page, les voisines)
-mount()
+// la ligne du carnet (le labo, la page, les voisines), et le bouton du jour et de la nuit
+switcher(mount())
 
-const CREATURES: Creature[] = [...C3, ...C4, ...C5, ...C7, ...C8]
-const list = document.querySelector<HTMLElement>('.cr-list')!
-const picked = document.querySelector<HTMLElement>('.cr-picked')!
-
-// les créatures gardées (leur numéro)
-const KEY = 'creatures.gardees'
-let kept = new Set<number>()
-try {
-  kept = new Set(JSON.parse(localStorage.getItem(KEY) ?? '[]') as number[])
-} catch {
-  // (pas de mémoire ici : on garde pour la visite)
-}
-// (une créature retirée de la planche n'est plus gardée)
-for (const n of kept) if (!CREATURES.some((c) => c.n === n)) kept.delete(n)
-function save() {
-  try {
-    localStorage.setItem(KEY, JSON.stringify([...kept]))
-  } catch {
-    // (pas de mémoire ici)
-  }
-  const nums = [...kept].sort((a, b) => a - b)
-  picked.textContent = nums.length
-    ? `gardées : ${nums.map((n) => `${n} (${CREATURES.find((c) => c.n === n)?.name})`).join(', ')}`
-    : ''
-}
+const CREATURES: Creature[] = [...C1, ...C2, ...C3, ...C4, ...C7]
+const room = document.querySelector<HTMLElement>('.cr')!
+const land = landscape(room)
+// (où chacune se trouve : pour qu'elles se remarquent)
+const bodies: Body[] = []
+const draw = trails(room, CREATURES.length)
+// (le visiteur : elles le remarquent)
+watch(room)
 
 // (toutes les poses d'une créature dans la même boîte : la plus large, la plus haute ; elle ne saute pas d'une pose
 // à l'autre)
 const box = (c: Creature) => {
-  const poses = [c.idle, c.walk, c.jump, c.climb, c.climb2, c.crouch]
+  const poses = [c.idle, c.walk, c.jump, c.climb, c.climb2, c.crouch, ...(c.fly ?? [])]
   return { w: Math.max(...poses.flat().map((l) => l.length)), h: Math.max(...poses.map((p) => p.length)) }
 }
 
-const rows = CREATURES.map((c) => {
-  const { n } = c
+const steps = CREATURES.map((c, i) => {
   const { w, h } = box(c)
-  const li = document.createElement('li')
-  li.className = 'cr-row'
-  li.innerHTML = `
-    <button type="button" class="cr-pick" aria-pressed="false">
-      <span class="cr-num">${String(n).padStart(2, '0')}</span>
-      <span class="cr-name">${c.name}</span>
-      <span class="cr-note">${c.note}</span>
-    </button>
-    <figure class="cr-lane" style="--h: ${h}">
-      <pre class="cr-art" aria-hidden="true" style="--w: ${w}ch; --h: ${h}"></pre>
-      <figcaption></figcaption>
-    </figure>`
-  const button = li.querySelector<HTMLButtonElement>('.cr-pick')!
-  const show = () => {
-    button.setAttribute('aria-pressed', String(kept.has(n)))
-    li.classList.toggle('is-kept', kept.has(n))
-  }
-  button.addEventListener('click', () => {
-    if (kept.has(n)) kept.delete(n)
-    else kept.add(n)
-    show()
-    save()
-  })
-  show()
-  list.append(li)
-  const lane = li.querySelector<HTMLElement>('.cr-lane')!
-  return stage(lane, lane.querySelector('.cr-art')!, lane.querySelector('figcaption')!, c, w, h)
+  const art = document.createElement('pre')
+  art.className = 'cr-art'
+  art.setAttribute('aria-label', c.name)
+  room.append(art)
+  return roam(room, art, c, w, h, land, bodies, (x, y) => draw.print(i, x, y))
 })
-save()
 
-// l'animation : chaque créature fait un pas sur sa piste, à chaque image (sans animation si on l'a demandé au
-// système : elles restent où elles sont)
+// l'animation : chaque créature fait un pas, à chaque image (sans animation si on l'a demandé au système : elles
+// restent où elles sont)
 let last = performance.now()
 function frame(now: number) {
   const dt = Math.min(0.05, (now - last) / 1000)
   last = now
-  for (const step of rows) step(dt)
+  for (const step of steps) step(dt)
+  land.draw(dt)
+  draw.paint()
   requestAnimationFrame(frame)
 }
-if (matchMedia('(prefers-reduced-motion: reduce)').matches) for (const step of rows) step(0)
-else requestAnimationFrame(frame)
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  for (const step of steps) step(0)
+  land.draw(0)
+  draw.paint()
+} else requestAnimationFrame(frame)
