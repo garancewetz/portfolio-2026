@@ -1,6 +1,6 @@
-/* ——— Le sommaire du labo (voir sommaire.ts) : la mise en page d'une fiche de projet, sur la grille de l'accueil
-   (cinq colonnes ; l'aperçu sur les trois premières, la liste sur les deux dernières, en haut, à la hauteur des
-   cartes) ; en bas, « labo » sous son filet, à la place et à la taille du nom de l'accueil ——— */
+/* ——— Le sommaire du labo (voir sommaire.ts) : une liste, sur la grille de l'accueil (cinq colonnes), en haut, à
+   la hauteur des cartes ; une ligne par expérience, sous un filet. En bas, « labo » sous son filet, à la place et à
+   la taille du nom de l'accueil ——— */
 @import '@/styles/base.css';
 
 :root {
@@ -49,58 +49,35 @@ main.sm.carnet-sheet {
   color: var(--ink);
 }
 
-.sm-grid {
-  display: grid;
-  grid-template-columns: repeat(var(--n), 1fr);
-  gap: var(--pad);
-  align-items: start;
-  /* (le haut de l'aperçu et de la liste : là où l'accueil range ses cartes, où la fiche pose sa capture) */
-  padding: calc(var(--pad) + var(--head-h)) var(--pad) 32px;
-}
-/* l'aperçu : la capture de l'expérience montrée, à la place et à la taille de la capture d'une fiche (sur un écran
-   large et peu haut, limitée à la place entre le haut et le filet du bas, voir SheetBody.css) */
-.sm-preview {
-  grid-column: 1 / span 3;
-  display: block;
-  width: min(100%, (100dvh - 2 * var(--pad) - var(--head-h) - 42px - 1.32 * var(--lh)) * 1.6);
-}
-.sm-preview img {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
-  border-radius: 4px;
-  /* (un filet : les captures claires, Toupies, Abyme, ne se confondent pas avec la page) */
-  outline: 1px solid var(--line);
-  outline-offset: -1px;
-}
-
-/* la liste : le numéro, le nom, comme les cartes de l'accueil ; celle qu'on regarde, en encre, avec le point bleu
-   (comme les projets déjà vus, sur l'accueil) */
-.sm-list {
-  grid-column: span 2;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.sm-rows {
   margin: 0;
-  padding: 0;
+  /* (le haut de la liste : là où l'accueil range ses cartes, où la fiche pose sa capture) */
+  padding: calc(var(--pad) + var(--head-h)) var(--pad) 32px;
   list-style: none;
 }
-.sm-list a {
-  display: inline-flex;
+/* une ligne : le numéro et le nom sur les deux premières colonnes, la petite capture au bout de la dernière */
+.sm-row {
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  column-gap: var(--pad);
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+  text-decoration: none;
+}
+.sm-rows li:last-child .sm-row {
+  border-bottom: 1px solid var(--line);
+}
+.sm-row:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.sm-label {
+  grid-column: span 2;
+  display: flex;
   align-items: baseline;
   gap: 10px;
-  color: var(--faint);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-.sm-list a[aria-current] {
-  color: var(--ink);
-}
-.sm-list a:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 4px;
 }
 .sm-n {
   min-width: 2ch;
@@ -109,15 +86,26 @@ main.sm.carnet-sheet {
 }
 .sm-name {
   font-family: var(--serif);
-  font-size: clamp(24px, 2vw, 30px);
+  font-size: clamp(18px, 1.6vw, 24px);
   line-height: 1.12;
+  transition: color 0.2s ease;
 }
-.sm-dot {
-  visibility: hidden;
-  color: var(--blue);
+/* au survol d'une ligne, les autres noms pâlissent */
+.sm-rows:has(.sm-row:hover) .sm-row:not(:hover) .sm-name {
+  color: var(--faint);
 }
-[aria-current] .sm-dot {
-  visibility: visible;
+.sm-row img {
+  grid-column: var(--n);
+  justify-self: end;
+  display: block;
+  width: 72px;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: 2px;
+  /* (un filet : les captures claires, Toupies, Abyme, ne se confondent pas avec la page) */
+  outline: 1px solid var(--line);
+  outline-offset: -1px;
 }
 
 /* en bas : « labo », sous un filet tracé d'un bord de la grille à l'autre, à la place du nom de l'accueil (le
@@ -163,16 +151,16 @@ main.sm.carnet-sheet {
   user-select: none;
 }
 
-/* écran étroit : une colonne, l'aperçu puis la liste, et « labo » en bas, comme le nom sur l'accueil */
+/* écran étroit : le nom à gauche, la capture à droite, et « labo » en bas, comme le nom sur l'accueil */
 @media (max-width: 900px) {
-  .sm-grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
+  .sm-row {
+    grid-template-columns: 1fr 72px;
   }
-  .sm-preview,
-  .sm-list {
+  .sm-label {
     grid-column: 1;
-    width: 100%;
+  }
+  .sm-row img {
+    grid-column: 2;
   }
   .sm-foot {
     margin-bottom: var(--pad);

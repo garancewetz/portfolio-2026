@@ -23,7 +23,8 @@ export interface Project {
   phone?: Screen
   /** le site, s'il est en ligne */
   demo: string | null
-  code: string
+  /** le code sur GitHub (sans : le dépôt est privé) */
+  code?: string
   /** en cours, bientôt en ligne */
   wip?: boolean
 }

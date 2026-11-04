@@ -13,38 +13,12 @@ export const experience: string[] = ['Okeiro', 'Colorz', 'Uptoo']
 // Les projets (une carte chacun). demo : lien du site s'il est en ligne ; sinon la carte mène à code.
 // wip : en cours, bientôt en ligne. short : la phrase qui dit ce que c'est, écrite par Garance (dans la fiche, et sur
 // mobile). kind, stack : les détails, affichés dans la fiche du projet (clic sur une carte).
+// L'ordre : les deux projets pensés pour l'après-AVC d'abord, côte à côte ; ceux en ligne avant celui qui ne l'est
+// pas encore. (Le CV en jeu, wwwetzel journey, n'y est plus : il parle de Garance, le site montre ses projets ; il
+// reste en ligne, sous /journey, voir netlify.toml.)
 // image : capture 16/10 dans public/shots (WebP, 1200 px de large). phone : dans la fiche, un écran de téléphone
 // à côté (voir types.ts).
 export const projects: Project[] = [
-  {
-    id: 'signe',
-    title: 'Signe astronomique',
-    short:
-      'Une application qui permet de visualiser l’aspect du ciel à la naissance, et donne le réel signe astrologique.',
-    kind: 'Application web 3D',
-    stack: ['TypeScript', 'React', 'Cesium', 'SGP4'],
-    image: '/shots/signe.webp',
-    alt: 'Interface de Signe astronomique : un formulaire de date de naissance à gauche, la Terre en 3D sur fond étoilé à droite.',
-    // dans la fiche, à côté de la capture : le résultat sur téléphone (fait sur le site en ligne)
-    phone: {
-      src: '/shots/signe-signe.webp',
-      alt: 'Sur téléphone, le résultat : le vrai signe est Poissons, alors que l’horoscope dit Bélier, avec un schéma Terre, Soleil, constellation.',
-    },
-    demo: 'https://signe-astronomique.garancewetz.dev/',
-    code: 'https://github.com/garancewetz/signe-astronomique',
-  },
-  {
-    id: 'trame',
-    wip: true,
-    title: 'Trans-trame',
-    short: 'Une data visualisation des textes intersectionnels, pour rendre visibles les évolutions et les influences.',
-    kind: 'Visualisation de données',
-    stack: ['React', 'TypeScript', 'Supabase'],
-    image: '/shots/trame.webp', // capture faite avec des données de démo
-    alt: 'Graphe de Trans-trame sur fond sombre : des cercles colorés, un par livre, reliés par des lignes de citation, avec des titres comme Le Deuxième Sexe, Gender Trouble ou Sister Outsider, et une frise chronologique en bas.',
-    demo: null,
-    code: 'https://github.com/garancewetz/Trans-trame',
-  },
   {
     id: 'synapso',
     title: 'Synapso',
@@ -64,6 +38,39 @@ export const projects: Project[] = [
     code: 'https://github.com/garancewetz/synapso-app-reeducation',
   },
   {
+    id: 'handiplan',
+    title: 'Handiplan',
+    short: 'Une carte simple des lieux adaptés autour de soi, et des places handicapées.',
+    kind: 'Application web (carte)',
+    stack: ['TypeScript', 'React', 'Leaflet', 'Tailwind'],
+    image: '/shots/handiplan.webp', // capture du site en ligne, avec ses données de démo (?demo, le centre de Paris)
+    alt: 'Handiplan : à gauche « Près de vous », une recherche « Où allez-vous ? », les filtres Tout, Lieux, Se garer et la liste des lieux avec toilettes adaptées ; à droite, la carte autour de l’Hôtel de Ville de Paris, avec des pictos verts (restaurants, toilettes, cafés) et des places handicapées en bleu.',
+    // dans la fiche, à côté de la capture : sur téléphone (fait sur le site en ligne, données de démo)
+    phone: {
+      src: '/shots/handiplan-mobile.webp',
+      alt: 'Sur téléphone : « Près de vous », la recherche, les filtres, la carte avec le bouton « Il y a une place ici », puis « Les lieux sûrs d’abord » avec leur distance.',
+    },
+    demo: 'https://handiplan.garancewetz.dev/',
+    // (pas de lien vers le code : le dépôt est privé)
+  },
+  {
+    id: 'signe',
+    title: 'Signe astronomique',
+    short:
+      'Une application qui permet de visualiser l’aspect du ciel à la naissance, et donne le réel signe astrologique.',
+    kind: 'Application web 3D',
+    stack: ['TypeScript', 'React', 'Cesium', 'SGP4'],
+    image: '/shots/signe.webp',
+    alt: 'Interface de Signe astronomique : un formulaire de date de naissance à gauche, la Terre en 3D sur fond étoilé à droite.',
+    // dans la fiche, à côté de la capture : le résultat sur téléphone (fait sur le site en ligne)
+    phone: {
+      src: '/shots/signe-signe.webp',
+      alt: 'Sur téléphone, le résultat : le vrai signe est Poissons, alors que l’horoscope dit Bélier, avec un schéma Terre, Soleil, constellation.',
+    },
+    demo: 'https://signe-astronomique.garancewetz.dev/',
+    code: 'https://github.com/garancewetz/signe-astronomique',
+  },
+  {
     id: 'mosaique',
     title: 'Mosaïque',
     short: 'Une extension qui permet d’avoir un accès simplifié et facile d’utilisation aux favoris.',
@@ -75,21 +82,16 @@ export const projects: Project[] = [
     code: 'https://github.com/garancewetz/mosaique-chrome-extension',
   },
   {
-    id: 'journey',
-    title: 'wwwetzel journey',
-    short: 'Mon CV en mini-jeu pixel art.',
-    kind: 'Mini-jeu',
-    stack: ['Next.js', 'TypeScript'],
-    image: '/shots/journey-jeu.webp', // la vraie vue du jeu, en ligne : tout est noir, sauf autour du personnage
-    alt: "Écran noir avec un cercle de lumière au centre : en pixel art façon Game Boy, l'héroïne devant une maison aux fenêtres allumées, un petit dragon orange à ses côtés, un étang ; en haut des étoiles, en bas deux orbes d'XP et de mana.",
-    // dans la fiche, à côté de la capture : le jeu sur téléphone, avec son joystick
-    phone: {
-      src: '/shots/journey-mobile.webp',
-      alt: "Sur téléphone, l'héroïne entre dans une maison : une bulle annonce « Formation · Sorbonne Nouvelle · Master de lettres · 2015 », un petit dragon orange la suit, un joystick en bas et le sac entre deux orbes.",
-    },
-    // Servi par ce site, à l'adresse /journey (voir netlify.toml)
-    demo: 'https://garancewetz.dev/journey',
-    code: 'https://github.com/garancewetz/wwwetzel-journey',
+    id: 'trame',
+    wip: true,
+    title: 'Trans-trame',
+    short: 'Une data visualisation des textes intersectionnels, pour rendre visibles les évolutions et les influences.',
+    kind: 'Visualisation de données',
+    stack: ['React', 'TypeScript', 'Supabase'],
+    image: '/shots/trame.webp', // capture faite avec des données de démo
+    alt: 'Graphe de Trans-trame sur fond sombre : des cercles colorés, un par livre, reliés par des lignes de citation, avec des titres comme Le Deuxième Sexe, Gender Trouble ou Sister Outsider, et une frise chronologique en bas.',
+    demo: null,
+    code: 'https://github.com/garancewetz/Trans-trame',
   },
 ]
 
@@ -124,22 +126,10 @@ export const carnet: Carnet = {
       alt: 'Des toupies à pompe en tôle posées sur une page claire ; les deux de devant tournent : l’une, à quartiers de couleurs, fondue en pastels mêlés, l’autre, à rayures noires et blanches, devenue grise ; sous elles, sur la page, le trait fin de leur pointe, bleu et rouge ; au fond, les autres attendent, couchées.',
     },
     {
-      name: 'escalade',
-      href: '/escalade/',
-      src: '/shots/escalade.webp',
-      alt: 'Sur une page claire, un petit bonhomme en caractères, une tête o et un corps #, escalade un trait multicolore qu’il a tracé depuis le bas de la page ; plus haut, à droite, une petite porte en caractères l’attend.',
-    },
-    {
       name: 'créatures',
       href: '/creatures/',
       src: '/shots/creatures.webp',
       alt: 'Sur une page blanche, une planche de créatures dessinées en caractères, une par ligne (un ourson, un yéti, un robot…) : à gauche son numéro, son nom en serif et un mot sur elle ; à droite, sa piste entre deux petits murs, où elle marche, tantôt vers la droite, tantôt vers la gauche.',
-    },
-    {
-      name: 'feu d’artifice',
-      href: '/feu/',
-      src: '/shots/feu.webp',
-      alt: 'Sur un ciel de nuit étoilé, des gerbes de feu d’artifice en traits de lumière : une bleue et verte à gauche, une orange au milieu dans un halo de fumée cuivrée, et une pluie dorée qui retombe.',
     },
     {
       name: 'abyme',
