@@ -1,5 +1,5 @@
 /* ——— Le dessin des coins de cahier (le yéti), dans la colonne du texte, tout à droite, les pieds sur
-   le filet au-dessus de la fiche technique (type, technos…), comme sur le sol : petit, en gris, sans animation
+   le filet au-dessus de la fiche technique (type, technos…), comme sur le sol : petit, à l'encre, sans animation
    (il ne bouge que quand on tourne la fiche). ——— */
 .rg-flipbook {
   align-self: flex-end;
@@ -13,8 +13,8 @@
   /* (sans les ligatures de la police : « ^^^ » ou « -- » restent des signes séparés) */
   font-variant-ligatures: none;
   font-feature-settings: 'calt' 0;
-  color: var(--muted);
-  opacity: 0.7;
+  /* (à l'encre, comme sur l'accueil et au labo : partout le même yéti) */
+  color: var(--ink);
   pointer-events: none;
   user-select: none;
 }

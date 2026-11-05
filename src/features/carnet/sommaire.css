@@ -1,10 +1,15 @@
-/* ——— Le sommaire du labo (voir sommaire.ts, book.ts) : un carnet ouvert, au format paysage, posé à plat sur la
-   page blanche, comme le reste du site ; deux pages dessinées d'un filet de part et d'autre de la reliure, sans
-   ombre ni texture ——— */
+/* ——— Le sommaire du labo (voir sommaire.ts) : les captures des expériences, deux par ligne, en grand, en haut à
+   la hauteur des cartes de l'accueil. En bas, « labo » sous son filet, à la place et à la taille du nom de
+   l'accueil ——— */
 @import '@/styles/base.css';
 
 :root {
   --pad: clamp(16px, 2.4vw, 32px);
+  /* (les mêmes que sur l'accueil, voir App.css : la hauteur de l'intitulé, le nombre de colonnes, la hauteur
+     d'une ligne du nom) */
+  --head-h: 30px;
+  --n: 5;
+  --lh: calc(0.75 * (2 * (100vw - 2 * var(--pad) - (var(--n) - 1) * var(--pad)) / var(--n) + var(--pad)) / 6.75);
   color-scheme: light;
   --carnet-ink: var(--muted);
   --carnet-ink-hover: var(--ink);
@@ -16,8 +21,10 @@
 /* en haut, comme sur l'accueil et les fiches : « ← hello, world. » à gauche, à la même place, à la même taille
    (plus fort que le style du carnet, chargé après : voir carnet.css) */
 .sm ~ .carnet {
-  padding: calc(var(--pad) + 5px) var(--pad);
+  /* (sur fond blanc, jusqu'au-dessus des captures : en défilant, elles passent dessous sans se mêler au texte) */
+  padding: calc(var(--pad) + 5px) var(--pad) 10px;
   font-size: 13px;
+  background: var(--bg);
 }
 .carnet-left a {
   color: var(--ink);
@@ -31,182 +38,104 @@ body {
   margin: 0;
   background: var(--table);
 }
-/* (plus fort que la feuille du carnet, claire, chargée après : voir sheet.css) */
+/* la page : la grille en haut, le nom en bas de l'écran (plus fort que la feuille du carnet : voir sheet.css) */
 main.sm.carnet-sheet {
   position: fixed;
   inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 48px clamp(16px, 4vw, 64px);
-  background: var(--table);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden auto;
+  background: var(--bg);
   color: var(--ink);
 }
 
-/* le carnet : deux pages au format paysage (4/3 chacune), aussi grand que l'écran le permet */
-.sm-book {
-  /* (en hauteur, la place qui reste entre le haut et le sommaire du bas) */
-  --page-w: min(calc((100vw - 2 * clamp(16px, 4vw, 64px)) / 2), calc((100dvh - 180px) * 4 / 3), 680px);
-  position: relative;
+.sm-grid {
   display: grid;
-  grid-template-columns: var(--page-w) var(--page-w);
-  height: calc(var(--page-w) * 3 / 4);
-  perspective: calc(var(--page-w) * 4);
+  grid-template-columns: 1fr 1fr;
+  gap: var(--pad);
+  margin: 0;
+  /* (le haut : là où l'accueil range ses cartes, où la fiche pose sa capture) */
+  padding: calc(var(--pad) + var(--head-h)) var(--pad) 32px;
+  list-style: none;
 }
-.sm-page {
-  position: relative;
-  display: grid;
-  grid-template-rows: auto auto 1fr;
-  align-content: start;
-  gap: 12px;
-  height: 100%;
-  padding: 7% 8% 0;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  cursor: pointer;
-  user-select: none;
-}
-/* la reliure : un filet entre les deux pages */
-.sm-left {
-  border-right: 0;
-}
-.sm-book.is-first .sm-left,
-.sm-book.is-last .sm-right {
-  cursor: default;
-}
-
-.sm-shot {
+/* une expérience : sa capture, en grand, sans titre ; elle ouvre l'expérience */
+.sm-grid a {
   display: block;
 }
-.sm-shot img {
+.sm-grid a:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+.sm-grid img {
   display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 16 / 10;
-  border-radius: 3px;
+  object-fit: cover;
+  border-radius: 4px;
   /* (un filet : les captures claires, Toupies, Abyme, ne se confondent pas avec la page) */
   outline: 1px solid var(--line);
   outline-offset: -1px;
 }
-.sm-name {
-  justify-self: start;
-  font: 500 14px/1.4 var(--mono);
+
+/* en bas : « labo », sous un filet tracé d'un bord de la grille à l'autre, à la place du nom de l'accueil (le
+   filet à la même hauteur, le mot à la même taille, voir --dock dans App.css et Signature.css) */
+.sm-foot {
+  position: relative;
+  /* (flex : le mot seul, sans la hauteur de ligne autour, qui décalerait le filet) */
+  display: flex;
+  flex-shrink: 0;
+  margin: auto var(--pad) 42px;
+  /* (moins l'épaisseur du filet : il tombe au pixel près sur celui de l'accueil) */
+  padding-top: calc(0.32 * var(--lh) - 1px);
+  border-top: 1px solid var(--line);
+}
+.sm-word {
+  position: relative;
+  display: inline-block;
+  height: var(--lh);
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: calc(var(--lh) / 0.92);
+  line-height: var(--lh);
+  letter-spacing: -0.03em;
+  /* (le l commence un peu après le bord de sa boîte : on le tire sur le bord de la colonne) */
+  margin-left: calc(var(--lh) * -0.043);
   color: var(--ink);
-  text-decoration: none;
 }
-.sm-name:hover,
-.sm-name:focus-visible {
-  text-decoration: underline;
-  text-underline-offset: 0.3em;
-}
-.sm-page a:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 4px;
-}
-/* le numéro, dans le coin du bas, du côté du bord */
-.sm-n {
-  position: absolute;
-  bottom: 5%;
-  font: 12px/1 var(--mono);
-  color: var(--muted);
-}
-[data-side='left'] > .sm-n {
-  left: 8%;
-}
-[data-side='right'] > .sm-n {
-  right: 8%;
-}
-/* le coin de la page de droite, à peine corné : c'est là qu'on tourne */
-.sm-right::after {
-  content: '';
+/* le yéti, debout sur le filet, tout à droite, au bout de la grille, comme dans la fiche (à gauche, au-dessus du
+   mot, il passerait sur l'aperçu quand l'écran est peu haut). Ses pieds, les « '' », sont en haut de leur ligne :
+   il descend un peu, pour qu'ils touchent le filet (le bas du filet, plus 3px). */
+.sm-yeti {
   position: absolute;
   right: 0;
-  bottom: 0;
-  width: 18px;
-  height: 18px;
-  background: linear-gradient(135deg, rgb(0 0 0 / 0.06) 50%, var(--table) 50%);
-  transition:
-    width 0.3s ease,
-    height 0.3s ease;
-}
-.sm-right:hover::after {
-  width: 30px;
-  height: 30px;
-}
-.sm-book.is-last .sm-right::after {
-  content: none;
-}
-
-/* la feuille qui tourne, posée sur la page qu'elle quitte, pivote autour de la reliure */
-.sm-leaf {
-  position: absolute;
-  top: 0;
-  left: var(--page-w);
-  width: var(--page-w);
-  height: 100%;
-  transform-origin: left center;
-  transform-style: preserve-3d;
-  pointer-events: none;
-}
-.sm-leaf.is-back {
-  left: 0;
-  transform-origin: right center;
-}
-.sm-leaf > .sm-page {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-}
-.sm-back {
-  transform: rotateY(180deg);
-}
-
-/* le sommaire, en bas, comme le pager des fiches : les noms de toutes les pages sur une ligne, en gris ; celles
-   qu'on voit, en encre */
-.sm-toc {
-  position: absolute;
-  left: var(--pad);
-  right: var(--pad);
-  bottom: var(--pad);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 24px;
-  font: 13px/1.4 var(--mono);
-}
-.sm-toc button {
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  color: var(--muted);
-  cursor: pointer;
-}
-.sm-toc button span {
-  font-size: 11px;
-}
-.sm-toc button:hover,
-.sm-toc button[aria-current] {
+  bottom: calc(100% - 3px);
+  font: 10px/1.05 var(--mono);
+  letter-spacing: 0;
+  white-space: pre;
+  /* (sans les ligatures de la police : « ::: » reste trois signes) */
+  font-variant-ligatures: none;
+  font-feature-settings: 'calt' 0;
   color: var(--ink);
-}
-.sm-toc button:hover {
-  text-decoration: underline;
-  text-underline-offset: 0.3em;
+  pointer-events: none;
+  user-select: none;
 }
 
-/* téléphone : une page à la fois, au format de l'écran */
-@media (max-width: 760px) {
-  .sm-book {
-    --page-w: calc(100vw - 32px);
-    grid-template-columns: var(--page-w);
+/* écran étroit : une capture par ligne, et « labo » en bas, comme le nom sur l'accueil */
+@media (max-width: 700px) {
+  .sm-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 900px) {
+  .sm-foot {
+    margin-bottom: var(--pad);
+    padding-top: 24px;
+  }
+  .sm-word {
     height: auto;
-  }
-  .sm-page {
-    height: auto;
-    padding: 24px 20px 56px;
-  }
-  .sm-left {
-    border-right: 0;
-  }
-  .sm-right {
-    display: none;
+    font-size: 11vw;
+    line-height: 1;
+    margin-left: 0;
   }
 }

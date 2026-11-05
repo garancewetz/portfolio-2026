@@ -1,45 +1,39 @@
 import { art, type Creature } from './art'
 
-// Les créatures 21 à 30 : encore quelques bêtes.
+// Le paresseux.
 export const C3: Creature[] = [
   {
-    n: 27,
-    name: 'ourson',
-    note: 'pataud, mais grimpeur',
+    n: 22,
+    name: 'paresseux',
+    note: 'lent, mais ne lâche jamais prise',
     idle: art`
- ()_()
- (o.o)
- (   )
+ (-.-)
+ /( )\
   " "
 `,
     walk: art`
- ()_()
- (o.o)
- (   )
-  / \
+ (-.-)
+ /( )\
+  / "
 `,
     jump: art`
- ()_()
 \(o.o)/
- (   )
+  ( )
  /   \
 `,
     climb: art`
- |()_()
- (o.o)
- (   )\
- /   |
+ |
+ (-.-)\
+  ( )
 `,
     climb2: art`
-  ()_()|
- (o.o)
-/(   )
- |   \
+     |
+ /(-.-)
+  ( )
 `,
     crouch: art`
- ()_()
- (o.o)
- (___)
+ (-.-)
+ (/ \)
 `,
   },
 ]

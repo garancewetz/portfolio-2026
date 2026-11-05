@@ -157,9 +157,14 @@ export default function ProjectSheet({ projects, index, cols, onClose, onStep }:
           <div className="rg-sheet-facts">
             <p>{p.stack.join(' · ')}</p>
             <p>
-              <ExternalLink href={p.code} sr="sur GitHub">
-                GitHub
-              </ExternalLink>
+              {p.code ? (
+                <ExternalLink href={p.code} sr="sur GitHub">
+                  GitHub
+                </ExternalLink>
+              ) : (
+                // (le dépôt est privé : la ligne reste, sans lien, pour que le filet ne bouge pas)
+                'code privé'
+              )}
             </p>
           </div>
         </div>

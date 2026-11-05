@@ -1,11 +1,10 @@
-/* ——— Créatures (voir main.ts) : la page claire du site, une planche de cartes, chaque créature à l'encre ——— */
+/* ——— Créatures (voir main.ts) : la page blanche du site, des ficelles fines à l'encre, et les créatures dessus
+   (voir lines.ts) ——— */
 @import '@/styles/base.css';
 
 :root {
   --bg: #ffffff;
   --ink: #1a1917;
-  --muted: rgb(26 25 23 / 0.5);
-  --keep: #c2410c;
   color-scheme: light;
   /* (la ligne du carnet, à l'encre de la page) */
   --carnet-ink: rgb(26 25 23 / 0.5);
@@ -17,153 +16,72 @@ body {
   overflow: hidden;
   background: var(--bg);
 }
-/* (la planche défile : plus précis que la feuille du carnet, qui garde les autres pages immobiles) */
+/* (plus précis que la feuille du carnet) */
 main.cr.carnet-sheet {
   position: fixed;
   inset: 0;
-  overflow-y: auto;
-  /* (sous la ligne du carnet) */
-  padding: 72px 16px 72px;
   color: var(--ink);
 }
-.cr-head {
-  max-width: 1100px;
-  margin: 0 auto 32px;
+/* les ficelles, et la trace des sauts (voir trace.ts) : des toiles sur toute la page, sous les créatures */
+.cr-trace,
+.cr-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
-.cr-title {
-  margin: 18px 0 10px;
-  font: 400 clamp(40px, 7vw, 64px) / 1 var(--serif);
+.cr-lines path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+  stroke-linecap: round;
 }
-.cr-lead {
-  max-width: 60ch;
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.55;
-}
-.cr-picked {
-  min-height: 1.4em;
-  margin: 14px 0 0;
-  font: 12px/1.5 var(--mono);
-  color: var(--keep);
-}
-
-/* la planche : une ligne par créature, son nom à gauche, sa piste à droite (dessous, sur un téléphone) */
-.cr-list {
-  display: grid;
-  gap: 10px;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0;
-  list-style: none;
-}
-.cr-row {
-  display: grid;
-  grid-template-columns: minmax(150px, 220px) 1fr;
-  gap: 8px;
-  align-items: stretch;
-}
-@media (max-width: 720px) {
-  .cr-row {
-    grid-template-columns: 1fr;
-  }
-}
-.cr-pick,
-.cr-lane {
-  margin: 0;
-  border: 1px solid rgb(26 25 23 / 0.12);
-  border-radius: 6px;
-  background: rgb(255 255 255 / 0.5);
-}
-.cr-pick {
-  display: grid;
-  align-content: center;
-  justify-items: start;
-  gap: 4px;
-  padding: 12px 14px;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  transition:
-    border-color 0.2s,
-    background 0.2s;
-}
-.cr-pick:hover,
-.cr-pick:focus-visible {
-  border-color: rgb(26 25 23 / 0.4);
-}
-.is-kept .cr-pick {
-  border-color: var(--keep);
-  background: rgb(194 65 12 / 0.06);
-}
-.cr-num {
-  font: 11px/1 var(--mono);
-  color: var(--muted);
-}
-.is-kept .cr-num {
-  color: var(--keep);
-}
-.is-kept .cr-num::after {
-  content: ' ♥';
-}
+/* une créature, placée par le script (ses pieds sur la ficelle) */
+.cr-art,
+.cr-z,
 .cr-name {
-  font: 400 22px/1 var(--serif);
-}
-.cr-note {
-  font-size: 12.5px;
-  line-height: 1.4;
-  color: var(--muted);
-}
-/* la piste : un sol, un petit mur à chaque bout, la créature posée dessus (elle s'y déplace, voir stage.ts), et son
-   geste dessous */
-.cr-lane {
-  position: relative;
-  min-height: calc(var(--h) * 1.15em + 76px);
-  padding: 0;
-  overflow: hidden;
-  font-size: 16px;
-}
-.cr-lane::before,
-.cr-lane::after {
-  content: '';
-  position: absolute;
-  bottom: 30px;
-  width: 2px;
-  height: 64px;
-  background: rgb(26 25 23 / 0.25);
-}
-.cr-lane::before {
-  left: 10px;
-}
-.cr-lane::after {
-  right: 10px;
-}
-.cr-lane figcaption {
   position: absolute;
   left: 0;
-  right: 0;
-  bottom: 10px;
-  border-top: 1px solid rgb(26 25 23 / 0.15);
-  padding-top: 8px;
-  margin: 0 10px;
-  text-align: center;
-  font: 10px/1 var(--mono);
-  letter-spacing: 0.06em;
-  color: var(--muted);
-}
-/* la créature : sa boîte fait la taille de sa plus grande pose */
-.cr-art {
-  position: absolute;
-  left: 0;
-  bottom: 30px;
-  width: var(--w);
-  min-height: calc(var(--h) * 1.15em);
+  top: 0;
   margin: 0;
+  pointer-events: none;
+  user-select: none;
+}
+.cr-art {
   will-change: transform;
   font: 500 16px / 1.15 var(--mono);
   white-space: pre;
-  text-align: left;
   /* (la police lie certains signes : ~> en flèche, == en trait ; ici, chaque caractère reste lui-même) */
   font-variant-ligatures: none;
   font-feature-settings: 'liga' 0, 'calt' 0;
+}
+/* endormie, un petit z près de sa tête (il s'efface quand elle se réveille) */
+.cr-z {
+  font: 12px var(--mono);
+  color: var(--muted);
+  transition: opacity 0.6s ease;
+}
+.cr-z.is-off {
+  opacity: 0;
+}
+/* réveillée, son nom sous la ficelle, en petit */
+.cr-name {
+  font: 11px var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.cr-name.is-on {
+  opacity: 1;
+}
+/* (la zone qui la réveille, invisible) */
+.cr-hit {
+  position: absolute;
+}
+@media (max-width: 600px) {
+  .cr-art {
+    font-size: 13px;
+  }
 }

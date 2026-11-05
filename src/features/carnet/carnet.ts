@@ -16,10 +16,10 @@ const PAGES = [
   { path: '/fourrure/', name: 'fourrure' },
   // (Yaya : cachée pour le moment ; sa page existe toujours, à /yaya/, sans lien)
   { path: '/toupies/', name: 'toupies' },
-  { path: '/escalade/', name: 'escalade' },
+  // (Escalade : cachée, Créatures en reprend l'idée ; sa page existe toujours, à /escalade/, sans lien)
   { path: '/creatures/', name: 'créatures' },
   // (Morse : caché pour le moment ; sa page existe toujours, à /morse/, sans lien)
-  { path: '/feu/', name: 'feu d’artifice' },
+  // (Feu d'artifice : caché ; il est sur l'accueil, en mode secret : sa page existe toujours, à /feu/, sans lien)
   // (Abyme à la fin : elle remonte la visite)
   { path: '/abyme/', name: 'abyme' },
 ]

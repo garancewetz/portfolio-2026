@@ -4,7 +4,8 @@
 // plusieurs lignes (la première et la dernière, vides, ne comptent pas) ; les \ restent des \.
 
 export type Pose = string[]
-export type Creature = { n: number; name: string; note: string; idle: Pose; walk: Pose; jump: Pose; climb: Pose; climb2: Pose; crouch: Pose }
+// (fly : pour celles qui volent, les images de leur vol, qui s'enchaînent vite)
+export type Creature = { n: number; name: string; note: string; idle: Pose; walk: Pose; jump: Pose; climb: Pose; climb2: Pose; crouch: Pose; fly?: Pose[] }
 
 export const art = (s: TemplateStringsArray): Pose => {
   const lines = s.raw[0].split('\n')

@@ -6,12 +6,12 @@
   display: grid;
   grid-template-columns: repeat(var(--n), 1fr);
   gap: var(--pad);
-  /* la rangée (capture et texte) au milieu de l'écran ; le texte aussi haut que la capture : il commence à son
-     bord haut et finit à son bord bas */
-  align-content: center;
+  /* la rangée (capture et texte) en haut, à la hauteur des cartes de l'accueil (et de l'aperçu du labo) ; le
+     texte aussi haut que la capture : il commence à son bord haut et finit à son bord bas */
+  align-content: start;
   align-items: stretch;
   min-height: calc(100% - var(--pad) - var(--head-h) + 8px - var(--pager-h));
-  padding: 24px var(--pad) var(--pad);
+  padding: 8px var(--pad) var(--pad);
 }
 .rg-sheet-shot {
   grid-column: 1 / span calc(var(--n) - 2);
@@ -33,7 +33,7 @@
 @media (min-width: 901px) {
   .rg-sheet {
     /* la hauteur disponible pour la capture, entre le haut et le bas de la fiche */
-    --shot-max-h: calc(100dvh - 2 * var(--pad) - var(--head-h) + 8px - 24px - var(--pager-h));
+    --shot-max-h: calc(100dvh - 2 * var(--pad) - var(--head-h) - var(--pager-h));
   }
   .rg-sheet-shot .shot-frame {
     width: min(100%, var(--shot-max-h) * 1.6);
