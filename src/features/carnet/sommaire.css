@@ -1,6 +1,6 @@
-/* ——— Le sommaire du labo (voir sommaire.ts) : une liste, sur la grille de l'accueil (cinq colonnes), en haut, à
-   la hauteur des cartes ; une ligne par expérience, sous un filet. En bas, « labo » sous son filet, à la place et à
-   la taille du nom de l'accueil ——— */
+/* ——— Le sommaire du labo (voir sommaire.ts) : les captures des expériences, deux par ligne, en grand, en haut à
+   la hauteur des cartes de l'accueil. En bas, « labo » sous son filet, à la place et à la taille du nom de
+   l'accueil ——— */
 @import '@/styles/base.css';
 
 :root {
@@ -10,8 +10,6 @@
   --head-h: 30px;
   --n: 5;
   --lh: calc(0.75 * (2 * (100vw - 2 * var(--pad) - (var(--n) - 1) * var(--pad)) / var(--n) + var(--pad)) / 6.75);
-  /* (un gris un peu plus clair que --muted, mais encore lisible à cette taille : les noms qu'on ne regarde pas) */
-  --faint: #949494;
   color-scheme: light;
   --carnet-ink: var(--muted);
   --carnet-ink-hover: var(--ink);
@@ -23,8 +21,10 @@
 /* en haut, comme sur l'accueil et les fiches : « ← hello, world. » à gauche, à la même place, à la même taille
    (plus fort que le style du carnet, chargé après : voir carnet.css) */
 .sm ~ .carnet {
-  padding: calc(var(--pad) + 5px) var(--pad);
+  /* (sur fond blanc, jusqu'au-dessus des captures : en défilant, elles passent dessous sans se mêler au texte) */
+  padding: calc(var(--pad) + 5px) var(--pad) 10px;
   font-size: 13px;
+  background: var(--bg);
 }
 .carnet-left a {
   color: var(--ink);
@@ -49,60 +49,30 @@ main.sm.carnet-sheet {
   color: var(--ink);
 }
 
-.sm-rows {
+.sm-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--pad);
   margin: 0;
-  /* (le haut de la liste : là où l'accueil range ses cartes, où la fiche pose sa capture) */
+  /* (le haut : là où l'accueil range ses cartes, où la fiche pose sa capture) */
   padding: calc(var(--pad) + var(--head-h)) var(--pad) 32px;
   list-style: none;
 }
-/* une ligne : le numéro et le nom sur les deux premières colonnes, la petite capture au bout de la dernière */
-.sm-row {
-  display: grid;
-  grid-template-columns: repeat(var(--n), 1fr);
-  column-gap: var(--pad);
-  align-items: center;
-  padding: 10px 0;
-  border-top: 1px solid var(--line);
-  color: var(--ink);
-  text-decoration: none;
-}
-.sm-rows li:last-child .sm-row {
-  border-bottom: 1px solid var(--line);
-}
-.sm-row:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
-}
-.sm-label {
-  grid-column: span 2;
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-}
-.sm-n {
-  min-width: 2ch;
-  font: 12px/1 var(--mono);
-  color: var(--muted);
-}
-.sm-name {
-  font-family: var(--serif);
-  font-size: clamp(18px, 1.6vw, 24px);
-  line-height: 1.12;
-  transition: color 0.2s ease;
-}
-/* au survol d'une ligne, les autres noms pâlissent */
-.sm-rows:has(.sm-row:hover) .sm-row:not(:hover) .sm-name {
-  color: var(--faint);
-}
-.sm-row img {
-  grid-column: var(--n);
-  justify-self: end;
+/* une expérience : sa capture, en grand, sans titre ; elle ouvre l'expérience */
+.sm-grid a {
   display: block;
-  width: 72px;
+}
+.sm-grid a:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+.sm-grid img {
+  display: block;
+  width: 100%;
   height: auto;
   aspect-ratio: 16 / 10;
   object-fit: cover;
-  border-radius: 2px;
+  border-radius: 4px;
   /* (un filet : les captures claires, Toupies, Abyme, ne se confondent pas avec la page) */
   outline: 1px solid var(--line);
   outline-offset: -1px;
@@ -151,17 +121,13 @@ main.sm.carnet-sheet {
   user-select: none;
 }
 
-/* écran étroit : le nom à gauche, la capture à droite, et « labo » en bas, comme le nom sur l'accueil */
+/* écran étroit : une capture par ligne, et « labo » en bas, comme le nom sur l'accueil */
+@media (max-width: 700px) {
+  .sm-grid {
+    grid-template-columns: 1fr;
+  }
+}
 @media (max-width: 900px) {
-  .sm-row {
-    grid-template-columns: 1fr 72px;
-  }
-  .sm-label {
-    grid-column: 1;
-  }
-  .sm-row img {
-    grid-column: 2;
-  }
   .sm-foot {
     margin-bottom: var(--pad);
     padding-top: 24px;

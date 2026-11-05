@@ -129,7 +129,7 @@ export const carnet: Carnet = {
       name: 'créatures',
       href: '/creatures/',
       src: '/shots/creatures.webp',
-      alt: 'Sur une page blanche, une planche de créatures dessinées en caractères, une par ligne (un ourson, un yéti, un robot…) : à gauche son numéro, son nom en serif et un mot sur elle ; à droite, sa piste entre deux petits murs, où elle marche, tantôt vers la droite, tantôt vers la gauche.',
+      alt: 'Sur une page blanche, des créatures dessinées en caractères dorment chacune sur son bout de ficelle, les yeux fermés, un petit z près de la tête ; deux sont réveillées, un hibou et un yéti : ils sautent sur leur ficelle et laissent derrière eux un trait de leur couleur, vert et rouge, qui garde la forme de leurs sauts.',
     },
     {
       name: 'abyme',
