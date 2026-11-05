@@ -1,5 +1,5 @@
-/* ——— Créatures (voir main.ts) : la page blanche du site, et les créatures à l'encre, en liberté dedans ; le bas
-   de l'écran est leur sol ——— */
+/* ——— Créatures (voir main.ts) : la page blanche du site, des ficelles fines à l'encre, et les créatures dessus
+   (voir lines.ts) ——— */
 @import '@/styles/base.css';
 
 :root {
@@ -9,14 +9,6 @@
   /* (la ligne du carnet, à l'encre de la page) */
   --carnet-ink: rgb(26 25 23 / 0.5);
   --carnet-ink-hover: rgb(26 25 23 / 0.95);
-}
-/* la nuit (voir theme.ts) : un fond d'encre, l'encre claire */
-:root[data-theme='nuit'] {
-  --bg: #1a1917;
-  --ink: #f4efe6;
-  color-scheme: dark;
-  --carnet-ink: rgb(244 239 230 / 0.5);
-  --carnet-ink-hover: rgb(244 239 230 / 0.95);
 }
 html,
 body {
@@ -30,54 +22,66 @@ main.cr.carnet-sheet {
   inset: 0;
   color: var(--ink);
 }
-.cr-art {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  margin: 0;
-  will-change: transform;
-  font: 500 16px / 1.15 var(--mono);
-  white-space: pre;
-  /* (la police lie certains signes : ~> en flèche, == en trait ; ici, chaque caractère reste lui-même) */
-  font-variant-ligatures: none;
-  font-feature-settings: 'liga' 0, 'calt' 0;
-  pointer-events: none;
-  user-select: none;
-}
-@media (max-width: 600px) {
-  .cr-art {
-    font-size: 13px;
-  }
-}
-/* le fil du paysage (voir land.ts), et les traits des créatures (voir trails.ts) : des toiles sur toute la page,
-   sous elles */
-.cr-wires,
-.cr-trails {
+/* les ficelles, et la trace des sauts (voir trace.ts) : des toiles sur toute la page, sous les créatures */
+.cr-trace,
+.cr-lines {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
 }
-/* la petite flèche sur la tête du yéti (voir steer.ts) */
-.cr-mark {
+.cr-lines path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+/* une créature, placée par le script (ses pieds sur la ficelle) */
+.cr-art,
+.cr-z,
+.cr-name {
   position: absolute;
   left: 0;
-  bottom: 0;
-  font: 400 14px / 1 var(--mono);
-  color: var(--ink);
+  top: 0;
+  margin: 0;
   pointer-events: none;
+  user-select: none;
 }
-/* le bouton du jour et de la nuit, dans la ligne du carnet, après le numéro de page */
-.cr-theme {
-  margin-left: 1.1em;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--carnet-ink-hover);
-  font: inherit;
-  font-size: 15px;
-  line-height: 1;
-  cursor: pointer;
-  pointer-events: auto;
+.cr-art {
+  will-change: transform;
+  font: 500 16px / 1.15 var(--mono);
+  white-space: pre;
+  /* (la police lie certains signes : ~> en flèche, == en trait ; ici, chaque caractère reste lui-même) */
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0;
+}
+/* endormie, un petit z près de sa tête (il s'efface quand elle se réveille) */
+.cr-z {
+  font: 12px var(--mono);
+  color: var(--muted);
+  transition: opacity 0.6s ease;
+}
+.cr-z.is-off {
+  opacity: 0;
+}
+/* réveillée, son nom sous la ficelle, en petit */
+.cr-name {
+  font: 11px var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.cr-name.is-on {
+  opacity: 1;
+}
+/* (la zone qui la réveille, invisible) */
+.cr-hit {
+  position: absolute;
+}
+@media (max-width: 600px) {
+  .cr-art {
+    font-size: 13px;
+  }
 }

@@ -6,57 +6,51 @@ import { C2 } from './bestiary-2'
 import { C3 } from './bestiary-3'
 import { C4 } from './bestiary-4'
 import { C7 } from './bestiary-7'
-import { watch } from './presence'
-import { landscape } from './land'
-import { trails } from './trails'
-import { roam, type Body } from './stage'
-import { switcher } from './theme'
+import { bouncer, step } from './bounce'
+import { lines } from './lines'
+import { trace } from './trace'
 
-// Créatures : les créatures en caractères, en liberté sur les trois lignes d'un paysage (des collines, un fil entre
-// des poteaux : voir land.ts), de la largeur de la page. Chacune va de son côté : elle marche, s'arrête, saute, grimpe, glisse dans les descentes, vole, fait
-// attention aux autres et au visiteur, tire un trait de sa couleur, dort la nuit (voir stage.ts).
+// Créatures : les créatures en caractères dorment, chacune sur son bout de ficelle, comme sur des cordes à linge
+// (voir lines.ts). Au survol, celle qu'on approche se réveille et fait du trampoline sur sa ficelle, de plus en
+// plus haut, et laisse derrière elle un trait de sa couleur, la forme de ses sauts, qui s'efface (voir trace.ts) ;
+// laissée, elle se calme, se pose, et se rendort (voir bounce.ts). Endormies, rien ne bouge.
 
-// la ligne du carnet (le labo, la page, les voisines), et le bouton du jour et de la nuit
-switcher(mount())
+// la ligne du carnet (le labo, la page, les voisines)
+mount()
 
 const CREATURES: Creature[] = [...C1, ...C2, ...C3, ...C4, ...C7]
 const room = document.querySelector<HTMLElement>('.cr')!
-const land = landscape(room)
-// (où chacune se trouve : pour qu'elles se remarquent)
-const bodies: Body[] = []
-const draw = trails(room, CREATURES.length)
-// (le visiteur : elles le remarquent)
-watch(room)
+const bouncers = CREATURES.map(bouncer)
+// (sans animation, si on l'a demandé au système : réveillée, elle ouvre les yeux, sans sauter)
+const still = matchMedia('(prefers-reduced-motion: reduce)').matches
+const { draw } = lines(room, bouncers, wake)
+const marks = trace(room, bouncers.length)
 
-// (toutes les poses d'une créature dans la même boîte : la plus large, la plus haute ; elle ne saute pas d'une pose
-// à l'autre)
-const box = (c: Creature) => {
-  const poses = [c.idle, c.walk, c.jump, c.climb, c.climb2, c.crouch, ...(c.fly ?? [])]
-  return { w: Math.max(...poses.flat().map((l) => l.length)), h: Math.max(...poses.map((p) => p.length)) }
-}
-
-const steps = CREATURES.map((c, i) => {
-  const { w, h } = box(c)
-  const art = document.createElement('pre')
-  art.className = 'cr-art'
-  art.setAttribute('aria-label', c.name)
-  room.append(art)
-  return roam(room, art, c, w, h, land, bodies, (x, y) => draw.print(i, x, y))
-})
-
-// l'animation : chaque créature fait un pas, à chaque image (sans animation si on l'a demandé au système : elles
-// restent où elles sont)
-let last = performance.now()
+// l'animation ne tourne que si l'une est réveillée, ou bouge encore
+let raf = 0
+let last = 0
 function frame(now: number) {
-  const dt = Math.min(0.05, (now - last) / 1000)
+  const dt = Math.min(0.033, (now - last) / 1000)
   last = now
-  for (const step of steps) step(dt)
-  land.draw(dt)
-  draw.paint()
-  requestAnimationFrame(frame)
+  let busy = false
+  for (const b of bouncers) {
+    if (still) {
+      b.awake = b.hover
+      continue
+    }
+    // (deux demi-pas : la ficelle est raide, un pas entier la ferait vibrer de travers)
+    busy = step(b, dt / 2) || busy
+    busy = step(b, dt / 2) || busy
+  }
+  const t = now / 1000
+  // (la trace : tant qu'elle n'est pas tout à fait effacée, on continue ; sans animation, pas de trace)
+  draw(still ? undefined : (i, x, y) => marks.add(i, x, y, t))
+  if (!still) busy = marks.paint(t) || busy
+  raf = busy ? requestAnimationFrame(frame) : 0
 }
-if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  for (const step of steps) step(0)
-  land.draw(0)
-  draw.paint()
-} else requestAnimationFrame(frame)
+function wake() {
+  if (raf) return
+  last = performance.now()
+  raf = requestAnimationFrame(frame)
+}
+draw()

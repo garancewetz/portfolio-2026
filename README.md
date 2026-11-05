@@ -64,8 +64,8 @@ src/
                                l’image), intro
     morse/                     la page /morse : une phrase tapée, écrite en morse (code : la table, le temps),
                                player (le bip et la lampe)
-    creatures/                 la page /creatures : une planche de créatures en caractères, chacune sur sa piste
-                               (allers-retours), pour choisir celle de Ruban : art, bestiary-2..4, stage (la piste)
+    creatures/                 la page /creatures : les créatures en caractères dorment chacune sur sa ficelle, et
+                               font du trampoline au survol : art, bestiary-*, bounce (le saut), lines (les ficelles), trace
     abyme/                     la page /abyme : la visite remontée de fenêtre en fenêtre (path, door, drawn…)
     yaya/                      la page /yaya (cachée, sans lien)
   shared/
