@@ -1,4 +1,4 @@
-import Shot from '@/shared/Shot'
+import Bichromie from './Bichromie'
 import ProjectStatus from '@/shared/ProjectStatus'
 import { projectNumber } from '@/shared/projectNumber'
 import type { Project } from '@/content/types'
@@ -33,8 +33,8 @@ export default function ProjectCard({ project: p, index: i, start, col, row, see
           aria-label={`${p.title} : ouvrir la fiche`}
           onClick={() => onOpen(i)}
         >
-          {/* (chargée tout de suite : la carte est là dès l'arrivée, même si elle part hors de l'écran) */}
-          <Shot project={p} eager />
+          {/* la capture, en bichromie (la couleur au survol) */}
+          <Bichromie project={p} />
           <span className="rg-meta">
             <span className="rg-n">{projectNumber(i)}</span>
             <span className="rg-title">
@@ -42,9 +42,13 @@ export default function ProjectCard({ project: p, index: i, start, col, row, see
               {seen && <span className="rg-seen">.</span>}
             </span>
           </span>
-          {/* Sur mobile seulement (sans fiche à côté) : la phrase courte et, s'il n'est pas en ligne, où il en est.
-              Sur grand écran, c'est dans la fiche. */}
-          <span className="rg-short">{p.short}</span>
+          {/* Quelques mots sur le sujet (sur grand écran, au survol) et, sur mobile seulement, s'il n'est pas en
+              ligne, où il en est (sur grand écran, c'est dans la fiche) */}
+          <span className="rg-tags">
+            {p.tags.map((t) => (
+              <span key={t}>{t}</span>
+            ))}
+          </span>
           <ProjectStatus project={p} className="rg-status" />
         </button>
       </div>

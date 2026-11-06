@@ -69,15 +69,31 @@
   font-size: 11px;
   color: var(--muted);
 }
-/* Phrase courte : sur mobile seulement (voir en bas) ; 2 lignes max */
-.rg-short {
-  display: none;
-  font-size: 14px;
+/* Mots-clés, sous le titre : de quoi parle le projet (« handicap », « astronomie »… : de simples mots, sans #).
+   Sur grand écran, ils n'apparaissent qu'au survol de la carte (ou au focus du clavier) : leur place est gardée
+   (rien ne bouge), ils se fondent et montent d'un cheveu. Sans survol (mobile, tablette), toujours là. */
+.rg-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  font-size: 13px;
   line-height: 1.4;
   color: var(--muted);
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
+  opacity: 0;
+  translate: 0 4px;
+  transition:
+    opacity 0.35s ease,
+    translate 0.35s ease;
+}
+.rg-card:is(:hover, :focus-within) .rg-tags {
+  opacity: 1;
+  translate: none;
+}
+@media (hover: none), (max-width: 900px) {
+  .rg-tags {
+    opacity: 1;
+    translate: none;
+  }
 }
 
 /* sur la carte sélectionnée au clavier : ↵ pour l'ouvrir, au bout de la ligne du titre */
@@ -105,8 +121,8 @@
 }
 /* petit écran : les cartes en liste, dans l'ordre ; la phrase courte et la ligne « pas en ligne » restent */
 @media (max-width: 900px) {
-  .rg-short {
-    display: -webkit-box;
+  .rg-tags {
+    display: flex;
   }
   .rg-status {
     display: block;

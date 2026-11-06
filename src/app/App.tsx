@@ -40,7 +40,8 @@ export default function App() {
 
   return (
     <main className={`rg is-${phase}`} style={{ '--n': N, '--rows': ROWS, '--hint-col': hintCol }} ref={root}>
-      {/* l'ondulation au survol des captures (seulement l'image, pas toute la carte) */}
+      {/* l'ondulation au survol des captures (seulement l'image, pas toute la carte) : la capture en couleur, au
+          moment où elle sort de sa bichromie */}
       <Ripple root={root} item=".rg-card .shot" />
 
       {/* En haut de page, visible dès l'arrivée : « hello, world. » à gauche, les liens à droite ; les cartes se
@@ -65,15 +66,19 @@ export default function App() {
 
       <section className="rg-field" aria-label="Projets" style={{ '--field-h': fieldHeight }}>
         {projects.map((p, i) => (
-          <ProjectCard key={p.id} project={p} index={i} start={cardStart(i)} {...cardPlace(i)} seen={seen.includes(p.id)} onOpen={sheet.open} />
+          <ProjectCard
+            key={p.id}
+            project={p}
+            index={i}
+            start={cardStart(i)}
+            {...cardPlace(i)}
+            seen={seen.includes(p.id)}
+            onOpen={sheet.open}
+          />
         ))}
         <Signature words={NAME} start={nameStart} ref={signature} />
         {/* le feu d'artifice, au bout de la ligne du nom : il arrive avec le dernier mot (le bouquet final) */}
-        <FireworksSwitch
-          on={fireworks}
-          onToggle={() => setFireworks((f) => !f)}
-          start={nameStart(NAME.length - 1)}
-        />
+        <FireworksSwitch on={fireworks} onToggle={() => setFireworks((f) => !f)} start={nameStart(NAME.length - 1)} />
       </section>
 
       {/* Fin de page, sous la grille, dans la page (vide : elle donne juste la place de finir de défiler) */}
