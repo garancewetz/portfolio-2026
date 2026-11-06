@@ -11,17 +11,16 @@ import { remember } from '@/shared/trail'
 // (la première, le sommaire : la page de garde, sans numéro ; voir sommaire.ts)
 const PAGES = [
   { path: '/labo/', name: 'sommaire' },
+  // (dans un ordre qui alterne les captures sombres et claires : le sommaire, en bichromie, respire)
   { path: '/murmuration/', name: 'murmuration' },
-  { path: '/ruban/', name: 'ruban' },
-  { path: '/fourrure/', name: 'fourrure' },
-  // (Yaya : cachée pour le moment ; sa page existe toujours, à /yaya/, sans lien)
   { path: '/toupies/', name: 'toupies' },
-  // (Escalade : cachée, Créatures en reprend l'idée ; sa page existe toujours, à /escalade/, sans lien)
+  { path: '/ruban/', name: 'ruban' },
   { path: '/creatures/', name: 'créatures' },
-  // (Morse : caché pour le moment ; sa page existe toujours, à /morse/, sans lien)
-  // (Feu d'artifice : caché ; il est sur l'accueil, en mode secret : sa page existe toujours, à /feu/, sans lien)
+  { path: '/fourrure/', name: 'fourrure' },
   // (Abyme à la fin : elle remonte la visite)
   { path: '/abyme/', name: 'abyme' },
+  // (cachées pour le moment, leurs pages existent toujours, sans lien : Yaya, à /yaya/ ; Escalade, à /escalade/,
+  // dont Créatures reprend l'idée ; Morse, à /morse/ ; Feu d'artifice, à /feu/, sur l'accueil en mode secret)
 ]
 
 const indexOf = (url: string) => PAGES.findIndex((p) => new URL(url, location.href).pathname.startsWith(p.path))

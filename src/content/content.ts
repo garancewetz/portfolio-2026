@@ -14,8 +14,8 @@ export const experience: string[] = ['Okeiro', 'Colorz', 'Uptoo']
 // wip : en cours, bientôt en ligne. short : la phrase qui dit ce que c'est, écrite par Garance (dans la fiche).
 // tags : quelques mots sur le sujet du projet (pas la technique), sous le titre de la carte. kind, stack : les
 // détails, affichés dans la fiche du projet (clic sur une carte).
-// L'ordre : les deux projets pensés pour l'après-AVC d'abord, côte à côte ; ceux en ligne avant celui qui ne l'est
-// pas encore. (Le CV en jeu, wwwetzel journey, n'y est plus : il parle de Garance, le site montre ses projets ; il
+// L'ordre : pour le rythme de la grille en bichromie, une capture claire, une sombre (Synapso, Signe, Handiplan,
+// Mosaïque) ; celui qui n'est pas encore en ligne à la fin. (Le CV en jeu, wwwetzel journey, n'y est plus : il parle de Garance, le site montre ses projets ; il
 // reste en ligne, sous /journey, voir netlify.toml.)
 // image : capture 16/10 dans public/shots (WebP, 1200 px de large). phone : dans la fiche, un écran de téléphone
 // à côté (voir types.ts).
@@ -40,23 +40,6 @@ export const projects: Project[] = [
     code: 'https://github.com/garancewetz/synapso-app-reeducation',
   },
   {
-    id: 'handiplan',
-    title: 'Handiplan',
-    short: 'Une carte simple des lieux adaptés autour de soi, et des places handicapées.',
-    tags: ['handicap', 'accessibilité', 'stationnement'],
-    kind: 'Application web (carte)',
-    stack: ['TypeScript', 'React', 'Leaflet', 'Tailwind'],
-    image: '/shots/handiplan.webp', // capture du site en ligne, avec ses données de démo (?demo, le centre de Paris)
-    alt: 'Handiplan : à gauche « Près de vous », une recherche « Où allez-vous ? », les filtres Tout, Lieux, Se garer et la liste des lieux avec toilettes adaptées ; à droite, la carte autour de l’Hôtel de Ville de Paris, avec des pictos verts (restaurants, toilettes, cafés) et des places handicapées en bleu.',
-    // dans la fiche, à côté de la capture : sur téléphone (fait sur le site en ligne, données de démo)
-    phone: {
-      src: '/shots/handiplan-mobile.webp',
-      alt: 'Sur téléphone : « Près de vous », la recherche, les filtres, la carte avec le bouton « Il y a une place ici », puis « Les lieux sûrs d’abord » avec leur distance.',
-    },
-    demo: 'https://handiplan.garancewetz.dev/',
-    // (pas de lien vers le code : le dépôt est privé)
-  },
-  {
     id: 'signe',
     title: 'Signe astronomique',
     short:
@@ -73,6 +56,23 @@ export const projects: Project[] = [
     },
     demo: 'https://signe-astronomique.garancewetz.dev/',
     code: 'https://github.com/garancewetz/signe-astronomique',
+  },
+  {
+    id: 'handiplan',
+    title: 'Handiplan',
+    short: 'Une carte simple des lieux adaptés autour de soi, et des places handicapées.',
+    tags: ['handicap', 'accessibilité', 'stationnement'],
+    kind: 'Application web (carte)',
+    stack: ['TypeScript', 'React', 'Leaflet', 'Tailwind'],
+    image: '/shots/handiplan.webp', // capture du site en ligne, avec ses données de démo (?demo, le centre de Paris)
+    alt: 'Handiplan : à gauche « Près de vous », une recherche « Où allez-vous ? », les filtres Tout, Lieux, Se garer et la liste des lieux avec toilettes adaptées ; à droite, la carte autour de l’Hôtel de Ville de Paris, avec des pictos verts (restaurants, toilettes, cafés) et des places handicapées en bleu.',
+    // dans la fiche, à côté de la capture : sur téléphone (fait sur le site en ligne, données de démo)
+    phone: {
+      src: '/shots/handiplan-mobile.webp',
+      alt: 'Sur téléphone : « Près de vous », la recherche, les filtres, la carte avec le bouton « Il y a une place ici », puis « Les lieux sûrs d’abord » avec leur distance.',
+    },
+    demo: 'https://handiplan.garancewetz.dev/',
+    // (pas de lien vers le code : le dépôt est privé)
   },
   {
     id: 'mosaique',
@@ -114,28 +114,28 @@ export const carnet: Carnet = {
       alt: 'Sur un ciel de crépuscule indigo, un grand nuage d’oiseaux dessiné en caractères aux couleurs d’un coucher de soleil, rose fluo en haut, orange en bas (des points, des v, des W plus denses là où ils se croisent) au-dessus d’un village perché, son clocher et ses maisons en escalier, en bas à droite.',
     },
     {
-      name: 'ruban',
-      href: '/ruban/',
-      src: '/shots/ruban.webp',
-      alt: 'Sur un fond noir, un ruban de lumière, coupé par deux silences, ondule de gauche à droite en changeant de couleur avec la note ; un petit yéti en caractères, aux grandes oreilles, grimpe dessus ; sur le bord gauche, la gamme, chaque note à sa hauteur et de sa couleur.',
-    },
-    {
-      name: 'fourrure',
-      href: '/fourrure/',
-      src: '/shots/fourrure.webp',
-      alt: 'Dans le noir, un chat gris dessiné en caractères très serrés, à peine éclairé : ses pattes, son poitrail et son dos sortent de l’ombre là où la lumière est passée.',
-    },
-    {
       name: 'toupies',
       href: '/toupies/',
       src: '/shots/toupies.webp',
       alt: 'Des toupies à pompe en tôle posées sur une page claire ; les deux de devant tournent : l’une, à quartiers de couleurs, fondue en pastels mêlés, l’autre, à rayures noires et blanches, devenue grise ; sous elles, sur la page, le trait fin de leur pointe, bleu et rouge ; au fond, les autres attendent, couchées.',
     },
     {
+      name: 'ruban',
+      href: '/ruban/',
+      src: '/shots/ruban.webp',
+      alt: 'Sur un fond noir, un ruban de lumière, coupé par deux silences, ondule de gauche à droite en changeant de couleur avec la note ; un petit yéti en caractères, aux grandes oreilles, grimpe dessus ; sur le bord gauche, la gamme, chaque note à sa hauteur et de sa couleur.',
+    },
+    {
       name: 'créatures',
       href: '/creatures/',
       src: '/shots/creatures.webp',
       alt: 'Sur une page blanche, des créatures dessinées en caractères dorment chacune sur son bout de ficelle, les yeux fermés, un petit z près de la tête ; deux sont réveillées, un hibou et un yéti : ils sautent sur leur ficelle et laissent derrière eux un trait de leur couleur, vert et rouge, qui garde la forme de leurs sauts.',
+    },
+    {
+      name: 'fourrure',
+      href: '/fourrure/',
+      src: '/shots/fourrure.webp',
+      alt: 'Dans le noir, un chat gris dessiné en caractères très serrés, à peine éclairé : ses pattes, son poitrail et son dos sortent de l’ombre là où la lumière est passée.',
     },
     {
       name: 'abyme',
