@@ -1,5 +1,5 @@
-/* ——— Le sommaire du labo (voir sommaire.ts) : les captures des expériences, deux par ligne, en grand, en haut à
-   la hauteur des cartes de l'accueil. En bas, « labo » sous son filet, à la place et à la taille du nom de
+/* ——— Le sommaire du labo (voir sommaire.ts) : les expériences en petites vignettes, six par ligne, en haut à la
+   hauteur des cartes de l'accueil. En bas, « labo » sous son filet, à la place et à la taille du nom de
    l'accueil ——— */
 @import '@/styles/base.css';
 
@@ -51,16 +51,33 @@ main.sm.carnet-sheet {
 
 .sm-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--pad);
+  grid-template-columns: repeat(6, 1fr);
+  gap: 28px var(--pad);
   margin: 0;
   /* (le haut : là où l'accueil range ses cartes, où la fiche pose sa capture) */
   padding: calc(var(--pad) + var(--head-h)) var(--pad) 32px;
   list-style: none;
 }
-/* une expérience : sa capture, en grand, sans titre ; elle ouvre l'expérience */
+/* une expérience : sa petite capture, puis son numéro et son nom (comme une carte de l'accueil, voir
+   projects/ProjectCard.css) ; elle ouvre l'expérience */
 .sm-grid a {
-  display: block;
+  display: grid;
+  gap: 8px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.sm-name {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--serif);
+  font-size: 20px;
+  line-height: 1.05;
+}
+.sm-n {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
 }
 .sm-grid a:focus-visible {
   outline: 2px solid var(--ink);
@@ -121,10 +138,15 @@ main.sm.carnet-sheet {
   user-select: none;
 }
 
-/* écran étroit : une capture par ligne, et « labo » en bas, comme le nom sur l'accueil */
-@media (max-width: 700px) {
+/* écran moyen : trois par ligne ; étroit : deux, et « labo » en bas, comme le nom sur l'accueil */
+@media (max-width: 1100px) {
   .sm-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .sm-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }
 @media (max-width: 900px) {

@@ -11,8 +11,9 @@ export const me: Person = {
 export const experience: string[] = ['Okeiro', 'Colorz', 'Uptoo']
 
 // Les projets (une carte chacun). demo : lien du site s'il est en ligne ; sinon la carte mène à code.
-// wip : en cours, bientôt en ligne. short : la phrase qui dit ce que c'est, écrite par Garance (dans la fiche, et sur
-// mobile). kind, stack : les détails, affichés dans la fiche du projet (clic sur une carte).
+// wip : en cours, bientôt en ligne. short : la phrase qui dit ce que c'est, écrite par Garance (dans la fiche).
+// tags : quelques mots sur le sujet du projet (pas la technique), sous le titre de la carte. kind, stack : les
+// détails, affichés dans la fiche du projet (clic sur une carte).
 // L'ordre : les deux projets pensés pour l'après-AVC d'abord, côte à côte ; ceux en ligne avant celui qui ne l'est
 // pas encore. (Le CV en jeu, wwwetzel journey, n'y est plus : il parle de Garance, le site montre ses projets ; il
 // reste en ligne, sous /journey, voir netlify.toml.)
@@ -24,10 +25,11 @@ export const projects: Project[] = [
     title: 'Synapso',
     short:
       'Une application de rééducation post-AVC, ou de rééducation tout court, pensée d’abord pour être simple d’utilisation.',
+    tags: ['rééducation', 'AVC', 'santé'],
     kind: 'Application mobile (PWA)',
     stack: ['Next.js', 'TypeScript', 'Prisma'],
-    image: '/shots/synapso.webp', // capture faite avec un compte et des données de démo
-    alt: 'Page « Ma progression » de Synapso : un calendrier des 28 derniers jours rempli de pastilles vertes, une série de 14 jours, les exercices par zone du corps et une liste de progrès notés.',
+    image: '/shots/synapso.webp', // capture de la zone « Haut du corps » du site en ligne (800 × 500, faite dans le navigateur de Claude ; l'accueil est déjà dans l'écran de téléphone)
+    alt: 'Synapso, la zone « Haut du corps » : les onglets des zones du corps (Visage, Haut, Tronc, Jambes, Étirer), le bouton vert « Lancer la séance » (5 exercices, environ 7 min) et les huit exercices à faire, comme « Serrer une balle », « Cercles du poignet » ou « Bras avec poids ».',
     // dans la fiche, à côté de la capture : l'accueil sur téléphone (fait en local, avec le compte et les données
     // de démo)
     phone: {
@@ -41,6 +43,7 @@ export const projects: Project[] = [
     id: 'handiplan',
     title: 'Handiplan',
     short: 'Une carte simple des lieux adaptés autour de soi, et des places handicapées.',
+    tags: ['handicap', 'accessibilité', 'stationnement'],
     kind: 'Application web (carte)',
     stack: ['TypeScript', 'React', 'Leaflet', 'Tailwind'],
     image: '/shots/handiplan.webp', // capture du site en ligne, avec ses données de démo (?demo, le centre de Paris)
@@ -58,6 +61,7 @@ export const projects: Project[] = [
     title: 'Signe astronomique',
     short:
       'Une application qui permet de visualiser l’aspect du ciel à la naissance, et donne le réel signe astrologique.',
+    tags: ['astronomie', 'ciel', 'naissance'],
     kind: 'Application web 3D',
     stack: ['TypeScript', 'React', 'Cesium', 'SGP4'],
     image: '/shots/signe.webp',
@@ -74,6 +78,7 @@ export const projects: Project[] = [
     id: 'mosaique',
     title: 'Mosaïque',
     short: 'Une extension qui permet d’avoir un accès simplifié et facile d’utilisation aux favoris.',
+    tags: ['favoris', 'simplicité', 'autonomie'],
     kind: 'Extension Chrome',
     stack: ['React', 'TypeScript', 'API Chrome'],
     image: '/shots/mosaique.webp', // capture de la fiche Chrome Web Store
@@ -86,6 +91,7 @@ export const projects: Project[] = [
     wip: true,
     title: 'Trans-trame',
     short: 'Une data visualisation des textes intersectionnels, pour rendre visibles les évolutions et les influences.',
+    tags: ['intersectionnalité', 'livres', 'transmission'],
     kind: 'Visualisation de données',
     stack: ['React', 'TypeScript', 'Supabase'],
     image: '/shots/trame.webp', // capture faite avec des données de démo

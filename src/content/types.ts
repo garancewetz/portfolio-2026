@@ -12,6 +12,8 @@ export interface Project {
   title: string
   /** la phrase qui dit ce que c'est (dans la fiche, et sur mobile) */
   short: string
+  /** quelques mots-clés, sous le titre de la carte (« handicap », « astronomie »…) */
+  tags: string[]
   /** le type de projet (« Application web 3D »…) */
   kind: string
   stack: string[]
