@@ -64,8 +64,8 @@ export const projects: Project[] = [
     tags: ['handicap', 'accessibilité', 'stationnement'],
     kind: 'Application web (carte)',
     stack: ['TypeScript', 'React', 'Leaflet', 'Tailwind'],
-    image: '/shots/handiplan.webp', // capture du site en ligne, avec ses données de démo (?demo, le centre de Paris)
-    alt: 'Handiplan : à gauche « Près de vous », une recherche « Où allez-vous ? », les filtres Tout, Lieux, Se garer et la liste des lieux avec toilettes adaptées ; à droite, la carte autour de l’Hôtel de Ville de Paris, avec des pictos verts (restaurants, toilettes, cafés) et des places handicapées en bleu.',
+    image: '/shots/handiplan.webp', // capture du site en ligne, avec ses données de démo (?demo, le centre de Paris ; 800 × 500, faite dans le navigateur de Claude)
+    alt: 'Handiplan : à gauche, la recherche « Où allez-vous ? », les filtres Tout, Lieux, Se garer et « Les lieux sûrs d’abord », avec leur distance et leurs toilettes adaptées ; à droite, la carte autour de l’Hôtel de Ville de Paris et de la Seine, avec des pictos verts (restaurants, toilettes, cafés) et des places handicapées en bleu.',
     // dans la fiche, à côté de la capture : sur téléphone (fait sur le site en ligne, données de démo)
     phone: {
       src: '/shots/handiplan-mobile.webp',
