@@ -69,7 +69,7 @@ export const projects: Project[] = [
     // dans la fiche, à côté de la capture : sur téléphone (fait sur le site en ligne, données de démo)
     phone: {
       src: '/shots/handiplan-mobile.webp',
-      alt: 'Sur téléphone : « Près de vous », la recherche, les filtres, la carte avec le bouton « Il y a une place ici », puis « Les lieux sûrs d’abord » avec leur distance.',
+      alt: 'Sur téléphone : la recherche « Où allez-vous ? » et le bouton pour se localiser, les filtres, la carte autour de l’Hôtel de Ville pleine de pictos et de places handicapées, puis « Les lieux sûrs d’abord » avec leur distance.',
     },
     demo: 'https://handiplan.garancewetz.dev/',
     // (pas de lien vers le code : le dépôt est privé)
