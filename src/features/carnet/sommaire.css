@@ -83,16 +83,40 @@ main.sm.carnet-sheet {
   outline: 2px solid var(--ink);
   outline-offset: 4px;
 }
-.sm-grid img {
+.sm-shot {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  border-radius: 4px;
+  overflow: clip;
+  isolation: isolate;
+  background: #fff;
+}
+/* la bichromie, comme sur l'accueil (voir projects/Bichromie.css) : la capture en gris, puis le noir prend le bleu
+   (screen : le blanc reste blanc) ; au survol, au focus, ou au milieu de l'écran sans survol (is-lit), la vraie
+   capture revient en fondu */
+.sm-shot img {
   display: block;
   width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 10;
+  height: 100%;
   object-fit: cover;
-  border-radius: 4px;
-  /* (un filet : les captures claires, Toupies, Abyme, ne se confondent pas avec la page) */
-  outline: 1px solid var(--line);
-  outline-offset: -1px;
+  filter: grayscale(1) contrast(1.15) brightness(1.05);
+  transition: filter 0.6s ease;
+}
+.sm-shot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--blue);
+  mix-blend-mode: screen;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+.sm-grid a:is(:hover, :focus-visible, .is-lit) .sm-shot img {
+  filter: none;
+}
+.sm-grid a:is(:hover, :focus-visible, .is-lit) .sm-shot::after {
+  opacity: 0;
 }
 
 /* en bas : « labo », sous un filet tracé d'un bord de la grille à l'autre, à la place du nom de l'accueil (le
