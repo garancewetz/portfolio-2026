@@ -11,12 +11,11 @@ import { remember } from '@/shared/trail'
 // (la première, le sommaire : la page de garde, sans numéro ; voir sommaire.ts)
 const PAGES = [
   { path: '/labo/', name: 'sommaire' },
-  // (dans un ordre qui alterne les captures sombres et claires : le sommaire, en bichromie, respire)
-  { path: '/murmuration/', name: 'murmuration' },
+  // (dans un ordre qui alterne les captures claires et sombres : le sommaire, en bichromie, respire)
   { path: '/toupies/', name: 'toupies' },
-  { path: '/ruban/', name: 'ruban' },
+  { path: '/murmuration/', name: 'murmuration' },
   { path: '/creatures/', name: 'créatures' },
-  { path: '/fourrure/', name: 'fourrure' },
+  { path: '/ruban/', name: 'ruban' },
   // (Abyme à la fin : elle remonte la visite)
   { path: '/abyme/', name: 'abyme' },
   // (cachées pour le moment, leurs pages existent toujours, sans lien : Yaya, à /yaya/ ; Escalade, à /escalade/,

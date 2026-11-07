@@ -39,7 +39,7 @@ export interface Carnet {
 
 /** une page du carnet : son nom, son adresse, sa capture (16/10, WebP, 1200 px de large) et sa
     description */
-export interface Page {
+interface Page {
   name: string
   href: string
   src: string
@@ -47,7 +47,7 @@ export interface Page {
 }
 
 /** un écran : son image et sa description */
-export interface Screen {
+interface Screen {
   src: string
   alt: string
 }

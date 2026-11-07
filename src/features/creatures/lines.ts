@@ -18,7 +18,7 @@ const NARROW = WIDE.map((_, i) => (i % 2 ? [0.36, 0.92, 0.2 + i * 0.105] : [0.08
 const narrow = matchMedia('(max-width: 700px)')
 const SVG = 'http://www.w3.org/2000/svg'
 
-export interface Line {
+interface Line {
   b: Bouncer
   ax: number
   bx: number
