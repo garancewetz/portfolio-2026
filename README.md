@@ -8,7 +8,7 @@ Deux effets cachés dans la signature, au survol : les « a » de Garance devien
 
 Easter egg : le repère « gap » de la grille est un bouton. Un clic mélange le nom en anagrammes ; le pied de page a un mode feu d'artifice.
 
-Dans le pied de page, « labo → » mène au **labo**, mes expériences : une page (`/labo`) de captures, deux par ligne (Murmuration, Ruban, Fourrure, Toupies, Créatures, Abyme ; Escalade, Feu d'artifice, Morse et Yaya existent toujours, sans lien), chacune sa propre page HTML (voir `vite.config.ts`).
+Dans le pied de page, « labo → » mène au **labo**, mes expériences : une page (`/labo`) de captures, deux par ligne (Toupies, Murmuration, Créatures, Ruban, Abyme ; Escalade, Feu d'artifice, Morse et Yaya existent toujours, sans lien), chacune sa propre page HTML (voir `vite.config.ts`).
 
 
 ## Lancer le projet
@@ -53,7 +53,6 @@ src/
                                feuille), sommaire (la page /labo, les captures), gear (les réglages), raster + photo (ASCII)
     murmuration/               la page /murmuration : main (boucle, gestes), draw, flock, grid, perches,
                                startle, pose, village, settings
-    fourrure/                  la page /fourrure : un chat dans le noir, la souris pour lumière
     toupies/                   la page /toupies (three.js) : stage, top + spin, bump, input, trace, settings…
     feu/                       la page /feu : le feu d'artifice de l'accueil, seul et sans fin, et ses réglages
     escalade/                  la page /escalade : un bonhomme en caractères qui joue avec la fenêtre : body (bords,

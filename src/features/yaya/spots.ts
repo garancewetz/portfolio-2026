@@ -9,7 +9,7 @@ export type Layout = { m1: Rect; m2: Rect; m3: Rect; village: Rect[]; leaves: Re
 export type Spot = { x: number; y: number; tall: number; under?: number | 'village'; behind?: number }
 
 // l'église (la maison au clocher, la cinquième)
-export const CHURCH = 4
+const CHURCH = 4
 // Yaya, détourée (voir scene.ts) : la hauteur de ses chaussures dans l'image, en part de sa hauteur
 export const FEET = 0.88
 // cachée derrière un bord (en y), avec seulement le haut d'elle qui dépasse (part : la part de sa hauteur visible)

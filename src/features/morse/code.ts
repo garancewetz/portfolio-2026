@@ -1,6 +1,6 @@
 // Le morse international (celui de l'UIT) : les lettres, les chiffres, la ponctuation courante. Un point « . », un
 // trait « - ».
-export const MORSE: Record<string, string> = {
+const MORSE: Record<string, string> = {
   A: '.-',
   B: '-...',
   C: '-.-.',

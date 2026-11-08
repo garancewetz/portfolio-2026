@@ -7,9 +7,9 @@ import { projects } from '@/content/content'
 // un peu plus bas que la précédente. En faisant défiler, elles montent ensemble et se rangent l'une après l'autre,
 // dans l'ordre, comme une vague qui passe. Les plus basses dépassent du bas de l'écran : coupées, elles disent
 // qu'il y a une suite, on fait défiler.
-// La grille a cinq colonnes, une par projet, tout sur une ligne (au-delà, une seconde ligne, en partant de la
-// première colonne). Les cartes d'une seconde ligne arriveraient après que la première s'est rangée.
-export const COLS = 5
+// La grille a une colonne par projet, cinq au plus, tout sur une ligne (au-delà, une seconde ligne, en partant
+// de la première colonne). Les cartes d'une seconde ligne arriveraient après que la première s'est rangée.
+export const COLS = Math.min(5, projects.length)
 const PLACES = projects.map((_, k) => ({ col: (k % COLS) + 1, row: Math.floor(k / COLS) }))
 export const cardPlace = (i: number) => PLACES[i]
 export const ROWS = Math.max(...PLACES.map((p) => p.row)) + 1
