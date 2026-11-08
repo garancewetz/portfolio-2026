@@ -11,7 +11,7 @@ export const me: Person = {
 // wip : en cours, bientôt en ligne. short : la phrase qui dit ce que c'est, écrite par Garance (dans la fiche).
 // tags : quelques mots sur le sujet du projet (pas la technique), sous le titre de la carte. kind, stack : les
 // détails, affichés dans la fiche du projet (clic sur une carte).
-// L'ordre : pour le rythme de la grille en bichromie, une capture claire, une sombre (Synapso, Signe,
+// L'ordre : pour le rythme de la grille en bichromie, une capture claire, une sombre (Synapso, Signe, Handiplan,
 // Mosaïque) ; celui qui n'est pas encore en ligne à la fin. (Le CV en jeu, wwwetzel journey, n'y est plus : il parle de Garance, le site montre ses projets ; il
 // reste en ligne, sous /journey, voir netlify.toml.)
 // image : capture 16/10 dans public/shots (WebP, 1200 px de large). phone : dans la fiche, un écran de téléphone
@@ -53,6 +53,24 @@ export const projects: Project[] = [
     },
     demo: 'https://signe-astronomique.garancewetz.dev/',
     code: 'https://github.com/garancewetz/signe-astronomique',
+  },
+  {
+    id: 'handiplan',
+    title: 'Handiplan',
+    short: 'Une carte : cafés et restaurants faciles d’accès, places handicapées.',
+    tags: ['handicap', 'accessibilité', 'stationnement'],
+    kind: 'Application web (carte)',
+    stack: ['TypeScript', 'React', 'Leaflet', 'Tailwind'],
+    image: '/shots/handiplan-bureau.webp', // le site en ligne sur ordinateur (1280 × 800, données de démo : ?demo, le centre de Paris)
+    alt: 'Handiplan sur ordinateur : à gauche, la légende (Facile, Attention, Difficile, Pas d’info, Place handicapée) et la liste « Les plus faciles d’abord », des toilettes publiques, Pastasuta et McDonald’s, faciles avec toilettes adaptées, une place handicapée, puis les filtres et « Où allez-vous ? » ; à droite, la carte autour de l’Hôtel de Ville de Paris, avec des cafés et restaurants verts ou orange et des places handicapées en bleu.',
+    // dans la fiche, à côté de la capture : sur téléphone, la fiche d'une place et « Me garer ici », qui ouvre Waze
+    // ou Google Maps (site en ligne, données de démo)
+    phone: {
+      src: '/shots/handiplan-telephone.webp',
+      alt: 'Sur téléphone, la fiche d’une place handicapée à 178 mètres de l’arrivée, rue des Rosiers, au-dessus de la carte du Marais, avec les boutons Fermer et « Me garer ici ».',
+    },
+    demo: 'https://handiplan.garancewetz.dev/',
+    code: 'https://github.com/garancewetz/handiplan-app',
   },
   {
     id: 'mosaique',
