@@ -14,6 +14,7 @@ const LAB_SITE = ''   // the experiments: their own pages, on this site
 const LAB_PAGES = [
   { id: 'ruban', title: 'ruban', href: '/ruban/' },
   { id: 'toupies', title: 'toupies', href: '/toupies/' },
+  { id: 'kit', title: 'kit', href: '/kit/' },
   { id: 'abyme', title: 'abyme', href: '/abyme/' },
   { id: 'murmuration', title: 'murmuration', href: '/murmuration/' },
   { id: 'creatures', title: 'créatures', href: '/creatures/' },
@@ -29,6 +30,7 @@ const HOURS = {
   creatures: hourSetting('#0d1266', '#26308f', -1.6, .3, .85),    // the starry night, under the moon
   ruban: hourSetting('#070a3c', '#151c5e', -4.6, .25, 1),         // the dark night
   abyme: hourSetting('#1414e6', '#9a9aff', -2.2, .9),             // noon: the blue of the home page
+  kit: hourSetting('#2f4cf2', '#b4beff', -2.6, .5),                // mid-morning, bright
 }
 // leaving for an experiment: the camera moves in, then the page goes; cancelled if we leave the lab meanwhile
 let departure = 0

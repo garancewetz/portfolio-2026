@@ -16,6 +16,7 @@ const PAGES = [
   { path: '/murmuration/', name: 'murmuration' },
   { path: '/creatures/', name: 'créatures' },
   { path: '/ruban/', name: 'ruban' },
+  { path: '/kit/', name: 'kit' },
   // (Abyme à la fin : elle remonte la visite)
   { path: '/abyme/', name: 'abyme' },
   // (cachées pour le moment, leurs pages existent toujours, sans lien : Yaya, à /yaya/ ; Escalade, à /escalade/,

@@ -124,6 +124,12 @@ export const carnet: Carnet = {
       alt: 'Sur une page blanche, des créatures dessinées en caractères dorment chacune sur son bout de ficelle, les yeux fermés, un petit z près de la tête ; deux sont réveillées, un hibou et un yéti : ils sautent sur leur ficelle et laissent derrière eux un trait de leur couleur, vert et rouge, qui garde la forme de leurs sauts.',
     },
     {
+      name: 'kit',
+      href: '/kit/',
+      src: '/shots/kit.webp',
+      alt: 'Sur une page gris pâle, six cartes blanches, une par étape d’un ticket, et sur chacune Pousse, une petite mascotte ronde et vernie avec une pousse sur la tête : bleue avec un ticket doré, menthe, corail avec une caméra, orange avec une caisse à outils, violette avec un avion en papier, et menthe encore, sa pousse en fleur.',
+    },
+    {
       name: 'ruban',
       href: '/ruban/',
       src: '/shots/ruban.webp',
