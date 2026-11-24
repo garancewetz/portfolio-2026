@@ -42,11 +42,11 @@ const LAB_MODE = {
   aim: (id) => ({ ...HOURS[id], ...scrollDriven(), rise: 1 }),
   open: (id) => {
     const href = LAB_SITE + LAB_PAGES.find((p) => p.id === id).href
-    if (calm) { location.href = href; return }
+    if (calm) { top.location.href = href; return }
     cancelDeparture()
     document.documentElement.classList.add('leaving')
     approach(1)
-    departure = setTimeout(() => { location.href = href }, 900)
+    departure = setTimeout(() => { top.location.href = href }, 900)   // (top: the whole window, also from inside Abyme)
   },
 }
 
@@ -106,7 +106,8 @@ function enterLab({ history: push = true, instant = false } = {}) {
     scrollTo(0, 0)
     pose(STANDING); placeYeti(); document.fonts.ready.then(placeYeti)
   }
-  instant ? update() : transition(update)
+  if (instant) update()
+  else transition(update)
   if (!calm) jumpTimer = setTimeout(jump, 1500)
 }
 // then: what to show instead of the home page (a project page, when going back to it)
@@ -123,7 +124,8 @@ function leaveLab({ history: push = true, then = null } = {}) {
     document.documentElement.classList.remove('in-lab')
     scrollTo(0, homeScroll)
     if (homeActive) activate(homeActive)
-    then ? then() : BACKDROP.goTo(aim(homeActive || 'rest'))
+    if (then) then()
+    else BACKDROP.goTo(aim(homeActive || 'rest'))
   })
 }
 
@@ -139,7 +141,8 @@ function route() {
   const q = new URLSearchParams(location.search), id = q.get('p')
   if (q.has('labo')) { closeProject({ history: false, instant: true }); enterLab({ history: false }); return }
   if (inLab) { leaveLab({ history: false, then: id && (() => openProject(id, { history: false, instant: true })) }); return }
-  id ? openProject(id, { history: false }) : closeProject({ history: false })
+  if (id) openProject(id, { history: false })
+  else closeProject({ history: false })
 }
 addEventListener('popstate', route)
 // back from an experiment with the back button (the page kept in memory): out of the backdrop again

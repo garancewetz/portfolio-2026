@@ -71,7 +71,8 @@ projectNav.addEventListener('click', (e) => {
   const a = e.target.closest('a')
   if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
   e.preventDefault()
-  a.dataset.id ? openProject(a.dataset.id) : closeProject()
+  if (a.dataset.id) openProject(a.dataset.id)
+  else closeProject()
 })
 projectNav.addEventListener('pointerover', (e) => { const a = e.target.closest('a[data-id]'); if (a) BACKDROP.goTo(aimProject(a.dataset.id)) })
 projectNav.addEventListener('pointerout', (e) => { if (e.target.closest('a[data-id]') && openId) BACKDROP.goTo(aimProject(openId)) })

@@ -33,9 +33,9 @@ export function path(): Step[] {
 export function picture(path: string) {
   const page = PAGES.find((p) => path.startsWith(p.href))
   if (page) return page.src
-  // (le sommaire du labo : son carnet ouvert)
-  if (path.startsWith('/labo')) return '/shots/labo.webp'
-  const sheet = path.match(/#(.+)$/)
+  // (the lab, on the home page: its own screenshot; a project page, ?p=id: the project's)
+  if (/[?&]labo\b/.test(path)) return '/shots/labo.webp'
+  const sheet = path.match(/[?&]p=([^&#]+)/)
   const project = sheet && projects.find((p) => p.id === sheet[1])
   return project?.image ?? '/shots/accueil.webp'
 }

@@ -99,11 +99,11 @@ export const projects: Project[] = [
   },
 ]
 
-// Le labo (le carnet d'expériences) : sur l'accueil, un lien dans le pied de page ; il mène à son sommaire,
-// /labo/, puis on en tourne les pages (voir features/carnet). Chaque page : son nom, son adresse, sa capture
+// Le labo (le carnet d'expériences) : sur l'accueil, le badge « labo → » (/?labo, see public/accueil/lab.js) ; puis
+// on en tourne les pages (voir features/carnet). Chaque page : son nom, son adresse, sa capture
 // (16/10, WebP, 1200 px de large) et sa description.
 export const carnet: Carnet = {
-  href: '/labo/',
+  href: '/?labo',
   pages: [
     {
       name: 'toupies',
