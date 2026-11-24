@@ -1,43 +1,95 @@
 <!doctype html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <!-- un g sur papier ; .ico pour les navigateurs sans SVG, PNG pour l'écran d'accueil iPhone -->
-    <link rel="icon" href="/favicon.ico" sizes="32x32" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Garance Wetzel</title>
-    <meta name="description" content="Garance Wetzel, développeuse front-end : mes projets personnels — Signe astronomique, Trans-trame, Synapso, Mosaïque, wwwetzel journey, et un carnet d’expériences." />
-    <meta name="theme-color" content="#ffffff" />
-    <meta property="og:title" content="Garance Wetzel" />
-    <meta property="og:description" content="Mes projets personnels : Signe astronomique, Trans-trame, Synapso, Mosaïque, wwwetzel journey, et un carnet d’expériences." />
-    <meta property="og:type" content="website" />
-    <link rel="canonical" href="https://garancewetz.dev/" />
-    <meta property="og:url" content="https://garancewetz.dev/" />
-    <!-- aperçu des liens partagés (LinkedIn, Slack…) : un g, comme le favicon (source : scripts/og). Adresse complète :
-         certains réseaux l'exigent. -->
-    <meta property="og:image" content="https://garancewetz.dev/og.jpg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Un g minuscule, l’initiale de Garance, sur les colonnes de la grille du site." />
-    <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter+Tight:wght@300..500&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <!-- les captures des cartes, demandées dès la lecture de la page (sans attendre le script) : elles sont là dès
-         l'arrivée (les mêmes que dans src/content/content.ts) -->
-    <link rel="preload" as="image" href="/shots/signe.webp" />
-    <link rel="preload" as="image" href="/shots/trame.webp" />
-    <link rel="preload" as="image" href="/shots/synapso.webp" fetchpriority="high" />
-    <link rel="preload" as="image" href="/shots/mosaique.webp" />
-    <link rel="preload" as="image" href="/shots/journey-jeu.webp" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Garance Wetzel</title>
+<meta name="description" content="Garance Wetzel, développeuse front-end : mes projets personnels — Synapso, Signe astronomique, Handiplan, Mosaïque, Trans-trame, Paris Forest — et un labo d’expériences." />
+<meta name="theme-color" content="#1414e6" />
+<!-- the blue Canigou above its clouds (a still of the backdrop); .ico for browsers without SVG, PNG for the iPhone home screen -->
+<link rel="icon" href="/favicon.ico" sizes="32x32" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<meta property="og:title" content="Garance Wetzel" />
+<meta property="og:description" content="Mes projets personnels : Synapso, Signe astronomique, Handiplan, Mosaïque, Trans-trame, Paris Forest, et un labo d’expériences." />
+<meta property="og:type" content="website" />
+<link rel="canonical" href="https://garancewetz.dev/" />
+<meta property="og:url" content="https://garancewetz.dev/" />
+<!-- the preview of shared links (LinkedIn, Slack…), source: scripts/og; a full address: some networks require it -->
+<meta property="og:image" content="https://garancewetz.dev/og.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Un g minuscule, l’initiale de Garance, sur les colonnes de la grille du site." />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- The home page (its files: public/accueil/, plain scripts sharing the global scope, in the order below): the
+     project cards, and behind them Garance's places in relief (relief-shader.js); hovering a card leads to its place.
+     A project's page opens in the page itself (project.js, ?p=id), the lab too (lab.js, ?labo): the backdrop never
+     reloads. Easter egg: zooming out pulls back until the landscape sits in a snow globe (snow-globe.js). The visible
+     text is in French. -->
+<script src="/accueil/time-of-day.js"></script>
+<script>
+  // arriving on the home page (not on a project page nor in the lab): the poster, an image of the sea of clouds in the
+  // light of the hour, at once; the live backdrop fades over it
+  if (!/[?&](p|labo)\b/.test(location.search)) {
+    const src = `/accueil/posters/${matchMedia('(max-aspect-ratio: 1/1)').matches ? 'tall' : 'wide'}-${MOOD}.jpg`
+    document.head.append(Object.assign(document.createElement('link'), { rel: 'preload', as: 'image', href: src }))
+    document.documentElement.classList.add('poster')
+    document.documentElement.style.setProperty('--poster', `url(${src})`)
+  }
+</script>
+<link rel="stylesheet" href="/accueil/base.css" />
+<link rel="stylesheet" href="/accueil/header.css" />
+<link rel="stylesheet" href="/accueil/cards.css" />
+<link rel="stylesheet" href="/accueil/lab.css" />
+<link rel="stylesheet" href="/accueil/project.css" />
+</head>
+<body>
+  <canvas id="backdrop"></canvas>
+  <script src="/accueil/data.js"></script>
+  <script src="/accueil/header.js"></script>
+  <script src="/accueil/gl-background.js"></script>
+  <script src="/accueil/reliefs.js"></script>
+  <script src="/accueil/relief-shader.js"></script>
+  <script src="/accueil/place-label.js"></script>
+  <script src="/accueil/snow-globe.js"></script>
+  <script>
+    const SETTINGS = atThisHour(RELIEF_SETTINGS)   // in the light of the hour it is in Paris (see time-of-day.js)
+    // a project opened directly (?p=id): the backdrop starts from its place
+    const START = SETTINGS[QUERY.get('p')] ? QUERY.get('p') : 'rest'
+    // smaller on a phone; shorter for whoever asked for less motion
+    const RELIEF_OPTIONS = {
+      scale: matchMedia('(pointer: coarse)').matches || innerWidth < 820 ? .35 : .75,
+      textures: texturesStartingWith(QUERY.has('labo') ? 'arles' : PROJECT_PLACES[START]),
+      duration: calm ? 500 : 1600,
+      ready: () => document.documentElement.classList.add('backdrop-ready'),
+    }
+    // on arrival the backdrop is flat (the sea of clouds) and nothing else shows but an arrow; the first stretch of
+    // scrolling (--lead in cards.css: 1.7 screens, 1.5 on a phone) raises the Canigou out of the clouds, slowly
+    // and evenly (a gentle ease, not a steep one); only then do the cards arrive, then the signature
+    const inLabNow = () => document.documentElement.classList.contains('in-lab')
+    const lead = () => innerHeight * (innerWidth <= 820 ? 1.5 : 1.7)
+    const SCROLL_DRIVEN = {
+      rise: () => { if (inLabNow()) return 1; const x = Math.min(1, Math.max(0, scrollY / lead())); return x * x * (3 - 2 * x) },   // in the lab: Arles, whole
+    }
+    // hovering changes the place only once « Garance Wetzel » has stuck under the cards (before, the cards passing
+    // under the pointer while scrolling would trigger it): scrolled down to its rail, minus its `top`
+    const hoverAllowed = () => {
+      if (inLabNow()) return true
+      const rail = document.querySelector('.signature-rail'), sig = rail && rail.querySelector('.signature')
+      return !!sig && scrollY >= rail.closest('.scene').offsetTop + rail.offsetTop - parseFloat(getComputedStyle(sig).top) - 2
+    }
+    const BACKDROP = placeLabel(glBackground(document.getElementById('backdrop'), RELIEF_FS, SETTINGS[START], RELIEF_OPTIONS), SETTINGS[START])
+    snowGlobe(BACKDROP)
+    // the other reliefs: at the first gesture, or as soon as the page is idle after arriving (4 s at the latest)
+    const loadTheRest = () => BACKDROP.loadAll()
+    addEventListener('pointerdown', loadTheRest, { once: true })
+    setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(loadTheRest, { timeout: 3000 }) : loadTheRest()), 1200)
+  </script>
+  <script src="/accueil/cards.js"></script>
+  <script src="/accueil/project.js"></script>
+  <script src="/accueil/lab.js"></script>
+  <script src="/accueil/lab-gate.js"></script>
+</body>
 </html>

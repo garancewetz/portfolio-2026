@@ -1,0 +1,59 @@
+/* The lab (see lab.js): a mode of the same page, with no scrolling, almost empty, in the home page's register. At the
+   top left, « labo » very large, the yeti standing on its o; at the top right, the five experiments as badges; the
+   hovered one lights up, its screenshot follows the cursor, and the backdrop changes hour. */
+.yeti { display: none; position: absolute; margin: 0; font: 400 clamp(9px, .8vw, 13px)/1.05 var(--mono); letter-spacing: 0; white-space: pre; opacity: .9; }
+html.in-lab .yeti { display: block; }
+/* a jump (lab.js places the yeti and switches its poses): one soft arc; it crouches, rises, hovers a moment, comes
+   down and lands */
+.yeti.jumping { animation: jump 1.8s both; }
+@keyframes jump {
+  0% { translate: 0 0; animation-timing-function: ease-in-out; }
+  8% { translate: 0 2px; animation-timing-function: cubic-bezier(.25, .8, .4, 1); }
+  30% { translate: 0 -40px; animation-timing-function: ease-in-out; }
+  48% { translate: 0 -46px; animation-timing-function: ease-in-out; }
+  64% { translate: 0 -40px; animation-timing-function: cubic-bezier(.55, 0, .85, .4); }
+  84% { translate: 0 2px; animation-timing-function: ease-out; }
+  100% { translate: 0 0; }
+}
+html.in-lab .scene { height: 100vh; }
+html.in-lab .signature-rail { position: fixed; top: 76px; bottom: auto; }
+html.in-lab .signature { position: relative; top: auto; border-top: 0; padding: 0; font-size: clamp(88px, 13vw, 220px); letter-spacing: -0.065em; }
+
+/* the experiments: badges, like the projects, on one line at the top right, on the line of « hello, world. » (their screenshot follows the cursor,
+   cards.js); hovering one sets its hour over Arles */
+html.in-lab .row { position: fixed; inset: 15px var(--pad) auto auto; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; padding: 0; }
+html.in-lab .row .col { width: auto; }
+html.in-lab .row a { position: static; margin-top: 0; width: auto; }
+html.in-lab .row b { padding: 6px 12px; }
+
+@media (max-width: 820px) {
+  html.in-lab .signature { font-size: 30vw; }
+  .yeti { font-size: 7px; }
+  html.in-lab .row { inset: auto var(--pad) 72px; justify-content: flex-start; }
+  html.in-lab .row b { font-size: 11px; padding: 5px 9px; }
+}
+
+/* the lab's door (lab-gate.js): a small box in the middle, in the badges' register, over a veil; the yeti on top */
+.lab-gate {
+  position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: var(--pad);
+  background: #0b0b2a66; backdrop-filter: blur(6px); opacity: 0; transition: opacity .3s;
+}
+.lab-gate.open { opacity: 1; }
+.lab-gate[hidden] { display: none; }
+.lab-gate-box {
+  width: min(360px, 100%); padding: 22px 22px 18px; text-align: center; background: #1414e6e6;
+  border: 1px solid #ffffff40; border-radius: 8px; box-shadow: 0 30px 80px #00001a80;
+  translate: 0 8px; transition: translate .4s cubic-bezier(.2, .7, .2, 1);
+}
+.lab-gate.open .lab-gate-box { translate: none; }
+.lab-gate-yeti { margin: 0 auto 10px; font-size: 11px; line-height: 1.05; white-space: pre; display: inline-block; text-align: left; }
+.lab-gate-title { margin: 0; font: 500 20px/1.1 var(--sans); letter-spacing: -0.02em; }
+.lab-gate-riddle { margin: 8px 0 16px; font-size: 14px; line-height: 1.4; opacity: .85; }
+.lab-gate-row { display: flex; gap: 6px; }
+.lab-gate-row input { flex: 1; min-width: 0; text-align: left; outline: none; }
+.lab-gate-row input:focus { border-color: #fff; }
+.lab-gate-row button { cursor: pointer; }
+.lab-gate-row button:hover { background: #fff; color: #1414e6; }
+.lab-gate-note { min-height: 1.4em; margin: 10px 0 0; font-size: 11px; opacity: .8; }
+.lab-gate-box.wrong { animation: no .4s; }
+@keyframes no { 25% { translate: -6px 0; } 50% { translate: 5px 0; } 75% { translate: -3px 0; } }

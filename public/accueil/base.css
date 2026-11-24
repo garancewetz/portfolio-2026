@@ -1,0 +1,25 @@
+/* Shared base: the fonts and colours of the site (portfolio/src/styles/base.css) */
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300..500&family=JetBrains+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; }
+:root {
+  --sans: 'Inter Tight', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --bg: #fff;
+  --ink: #111;
+  --muted: #6b6b6b;
+  --line: #0000001a;
+  --blue: #0000ee;
+  --pad: 28px;
+  color-scheme: light;
+}
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font: 15px/1.45 var(--sans); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+a { color: inherit; text-decoration: none; }
+img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+.mono { font-family: var(--mono); font-size: 12px; letter-spacing: 0.02em; }
+.muted { color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
