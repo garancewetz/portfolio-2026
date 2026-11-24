@@ -3,19 +3,20 @@ import './sheet'
 import { remember } from '@/shared/trail'
 
 // Le carnet du labo : les expériences, chacune sur sa page (sa propre adresse), qu'on parcourt comme un carnet. En
-// haut de chaque page, discrètement : « labo » (retour au sommaire ; sur le sommaire, « ← hello, world. », retour
-// au site) et le numéro de page à gauche ; la page d'avant et celle d'après, par leur nom, à droite. Chaque page
-// prend tout l'écran (voir sheet.ts) ; on passe de l'une à l'autre simplement, sans animation.
+// haut de chaque page, discrètement : « labo » et le numéro de page à gauche ; la page d'avant et celle d'après, par
+// leur nom, à droite. Chaque page prend tout l'écran (voir sheet.ts) ; on passe de l'une à l'autre simplement, sans
+// animation.
+// (the lab itself, its table of contents, is on the home page: /?labo, see public/accueil/lab.js)
+const LAB = '/?labo'
 
 // les pages, dans l'ordre du carnet (pour en ajouter une : une ligne ici, et `mount()` dans son main.ts)
-// (la première, le sommaire : la page de garde, sans numéro ; voir sommaire.ts)
 const PAGES = [
-  { path: '/labo/', name: 'sommaire' },
   // (dans un ordre qui alterne les captures claires et sombres : le sommaire, en bichromie, respire)
   { path: '/toupies/', name: 'toupies' },
   { path: '/murmuration/', name: 'murmuration' },
   { path: '/creatures/', name: 'créatures' },
   { path: '/ruban/', name: 'ruban' },
+  { path: '/kit/', name: 'kit' },
   // (Abyme à la fin : elle remonte la visite)
   { path: '/abyme/', name: 'abyme' },
   // (cachées pour le moment, leurs pages existent toujours, sans lien : Yaya, à /yaya/ ; Escalade, à /escalade/,
@@ -38,11 +39,7 @@ export function mount() {
   nav.className = 'carnet'
   nav.setAttribute('aria-label', 'Carnet')
   nav.innerHTML = `
-    <span class="carnet-left">${
-      here
-        ? `<a href="${PAGES[0].path}">labo</a> <span class="carnet-page">${here}/${PAGES.length - 1}</span>`
-        : '<a href="/">← hello, world<span class="carnet-dot">.</span></a>'
-    }</span>
+    <span class="carnet-left"><a href="${LAB}">labo</a> <span class="carnet-page">${here + 1}/${PAGES.length}</span></span>
     <span class="carnet-turn">
       ${prev ? `<a href="${prev.path}" rel="prev">← ${prev.name}</a>` : ''}
       ${next ? `<a href="${next.path}" rel="next">${next.name} →</a>` : ''}

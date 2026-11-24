@@ -1,14 +1,18 @@
 # L'image d'aperçu des liens partagés
 
-`og.html` est la source de `public/og.jpg` (1200 × 630). Slack, iMessage et WhatsApp n'en montrent souvent qu'un
-carré, au centre : le g doit y tenir en entier (le carré va de x 285 à x 915).
+`public/og.jpg` (1200 × 630) est une capture du site lui-même : l'accueil à midi (`/?hour=12`), défilé jusqu'au bout
+(le Canigou sorti des nuages, « Garance Wetzel » et les badges en haut). Slack, iMessage et WhatsApp n'en montrent
+souvent qu'un carré, au centre (de x 285 à x 915) : le Canigou y tient.
 
-Pour la refaire, depuis `portfolio/` (Chrome sans fenêtre, puis conversion en JPEG) :
+Pour la refaire : ouvrir `/?hour=12` dans une fenêtre de 1200 × 630 (l'outil « appareil » de l'inspecteur de Chrome),
+défiler jusqu'en bas, attendre que le fond soit posé, puis « Capture screenshot » ; convertir en JPEG :
 
 ```bash
-"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --hide-scrollbars --window-size=1200,630 --virtual-time-budget=4000 --screenshot=og.png "file://$PWD/scripts/og/og.html"
-sips -s format jpeg -s formatOptions 88 og.png --out public/og.jpg && rm og.png
+sips -s format jpeg -s formatOptions 86 capture.png --out public/og.jpg
 ```
+
+Les mêmes captures, en 1200 × 750, servent au fond d'Abyme : `public/shots/accueil.webp` (l'accueil) et
+`public/shots/labo.webp` (`/?labo`), converties avec `cwebp -q 82`.
 
 Les réseaux gardent l'ancienne image en cache : pour LinkedIn, la repasser dans le Post Inspector
 (https://www.linkedin.com/post-inspector/).

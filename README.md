@@ -1,15 +1,17 @@
 # Portfolio — Garance Wetzel
 
-Portfolio de projets personnels, en React + Vite + TypeScript (strict).
+Portfolio de projets personnels, en Vite + TypeScript (strict) ; l'accueil en scripts simples et WebGL.
 
-À l'arrivée, les 5 projets sont déjà là, en escalier (chacun un peu plus bas que le précédent) ; ils montent un par un et se rangent en haut de l'écran (`position: sticky`) sur une ligne, une colonne par projet, sur un fond de guides de grille CSS. Ensuite vient la signature : le nom, en très grand, se range dessous (« Garance » en linéale, puis « Wetzel » en italique). Le nom n'est pas écrit en haut de la page (seulement le métier) : la signature, à la fin, est la révélation ; sur mobile, elle vient après la liste des projets. Au survol, la carte ne change pas de taille : l'effet three.js ondule l'image quand la souris bouge. Un clic sur la carte ouvre la fiche du projet (plein écran, sur la même grille), avec les liens vers le site et le code ; on y passe d'un projet à l'autre (← →), et chaque fiche a son adresse (`#synapso`…) : le retour du navigateur la ferme. À la fin, la page continue juste ce qu'il faut : la grille remonte si besoin, et le pied de page (parcours et contact) arrive dessous.
+**L'accueil** (`index.html`, ses fichiers dans `public/accueil/`) : en fond, les lieux de Garance en relief, dans un
+seul bleu (`relief-shader.js`, `reliefs.js`, données IGN et Copernicus). À l'arrivée, la mer de nuages ; le défilement
+fait sortir le Canigou, puis les projets arrivent en badges et « Garance Wetzel » prend la place de « hello, world. ».
+Au survol d'un badge, sa capture suit le curseur et le fond part vers le lieu du projet. Un clic ouvre la page du
+projet en calque (`?p=id`), sans recharger le fond. La lumière suit l'heure de Paris (`time-of-day.js`) ; un dézoom
+finit en boule à neige (`snow-globe.js`).
 
-Deux effets cachés dans la signature, au survol : les « a » de Garance deviennent creux, le W de Wetzel ondule.
-
-Easter egg : le repère « gap » de la grille est un bouton. Un clic mélange le nom en anagrammes ; le pied de page a un mode feu d'artifice.
-
-Dans le pied de page, « labo → » mène au **labo**, mes expériences : une page (`/labo`) de captures, deux par ligne (Toupies, Murmuration, Créatures, Ruban, Abyme ; Escalade, Feu d'artifice, Morse et Yaya existent toujours, sans lien), chacune sa propre page HTML (voir `vite.config.ts`).
-
+**Le labo** (`?labo`, `lab.js`) : derrière une petite énigme (`lab-gate.js`), sur Arles, une heure par expérience, le
+yéti sur le o. Chaque expérience a sa propre page HTML (voir `vite.config.ts`) : Toupies, Murmuration, Créatures,
+Ruban, Kit (la mascotte de Kit en 3D), Abyme ; Escalade, Feu d'artifice, Morse et Yaya existent toujours, sans lien.
 
 ## Lancer le projet
 
@@ -25,71 +27,31 @@ bun run lint
 
 ## Structure
 
-Organisé par fonctionnalité (feature first) : chaque fonctionnalité a son dossier, avec son composant et son CSS.
-`app/` assemble la page (avec ses morceaux de mise en page) et décide du déroulé ; les features ne dépendent pas
-de `app/` (elles reçoivent ce dont elles ont besoin en props). Ce qui sert à plusieurs parties est dans `shared/`.
-Les imports passent par l'alias `@/` (= `src/`).
-
 ```
-src/
-  main.tsx                     point d'entrée
-  app/
-    App.tsx                    la page : assemble les parties
-    App.css                    mise en page (variables, intitulé, champ, fin de page, mobile)
-    timeline.ts                le déroulé : hauteurs de départ des cartes et du nom
-    useStickyLayout.ts         au défilement : cartes rangées, étape, intitulé, « scroll ↓ »
-    layout/PageGuides          la grille en fond (colonnes, row 1)
-    layout/ScrollHint          « scroll ↓ »
-    layout/Footer              parcours et liens
-  features/
-    projects/ProjectCard       une carte projet (sticky, ouvre la fiche)
-    sheet/ProjectSheet         la fiche d'un projet (précédent/suivant, Échap)
-    sheet/useSheetRoute.ts     fiche ↔ adresse (#synapso), retour du navigateur
-    sheet/morph.ts             transition carte ↔ fiche (View Transitions)
-    signature/Signature        le nom en grand, et ses deux effets cachés
-    fireworks/                 le mode feu d'artifice : Fireworks (le spectacle), show + shells (étincelles),
-                               fluid + gl + shaders (halo liquide), salvos, stars
-    carnet/                    le carnet d'expériences : carnet (la ligne en haut, tourner la page), sheet (la
-                               feuille), sommaire (la page /labo, les captures), gear (les réglages), raster + photo (ASCII)
-    murmuration/               la page /murmuration : main (boucle, gestes), draw, flock, grid, perches,
-                               startle, pose, village, settings
-    toupies/                   la page /toupies (three.js) : stage, top + spin, bump, input, trace, settings…
-    feu/                       la page /feu : le feu d'artifice de l'accueil, seul et sans fin, et ses réglages
-    escalade/                  la page /escalade : un bonhomme en caractères qui joue avec la fenêtre : body (bords,
-                               secousse), input (clavier, souris), intro, shake, tab (il dort), windows (deux fenêtres)
-    ruban/                     la page /ruban : la voix dessine un ruban de lumière sur le noir, et un petit yéti
-                               marche dessus : voice (le micro, la note, le volume), pitch (YIN, les noms, les couleurs),
-                               ribbon, rider (le yéti ; ses dessins : yeti), scale (la gamme), controls (enregistrer
-                               l’image), intro
-    morse/                     la page /morse : une phrase tapée, écrite en morse (code : la table, le temps),
-                               player (le bip et la lampe)
-    creatures/                 la page /creatures : les créatures en caractères dorment chacune sur sa ficelle, et
-                               font du trampoline au survol : art, bestiary-*, bounce (le saut), lines (les ficelles), trace
-    abyme/                     la page /abyme : la visite remontée de fenêtre en fenêtre (path, door, drawn…)
-    yaya/                      la page /yaya (cachée, sans lien)
-  shared/
-    Shot                       capture d'un projet (ou « capture à venir »)
-    Ripple + CardFX            effet three.js au survol (chargé à la demande, souris seulement)
-    Guides                     colonnes de grille (page et fiche)
-    ExternalLink               lien « nouvel onglet » (↗, et le texte pour les lecteurs d'écran)
-    ProjectStatus              « en cours · bientôt en ligne » / « pas en ligne »
-    projectNumber.ts           0 → « 01 »
-  content/content.ts           tout le contenu (textes, projets, parcours, liens)
-  content/types.ts             ses types (Project, Carnet, Page, Person)
-  styles/base.css              base : couleurs, typo, accessibilité, touches du clavier
-  env.d.ts                     types globaux (variables CSS dans style={{ '--o': … }})
+index.html                     l'accueil : charge les scripts de public/accueil/, dans l'ordre
 public/
-  shots/                       captures des projets (16/10, WebP, 1200 px de large)
-  favicon.svg
-  og.jpg                       aperçu des liens partagés (1200 × 630 ; un G, comme le favicon)
+  accueil/                     l'accueil (scripts simples, qui partagent la portée globale) :
+                               data (projets), header, gl-background (le moteur WebGL), reliefs + relief-shader
+                               (les lieux), place-label, snow-globe, cards (les badges), project (la page projet),
+                               lab + lab-gate (le labo), time-of-day, trail (le chemin, pour Abyme) ;
+                               reliefs/ (les terrains, en PNG), posters/ (l'image d'arrivée, selon l'heure)
+  shots/                       captures (16/10, WebP, 1200 px de large)
+  favicon.svg, .ico            le Canigou bleu
+  og.jpg                       aperçu des liens partagés (1200 × 630)
+src/                           les pages du labo, organisées par expérience (alias `@/` = `src/`)
+  features/
+    carnet/                    le carnet : la ligne en haut de chaque expérience (retour au labo, tourner la
+                               page), sheet (la feuille), gear (les réglages), raster + photo (ASCII)
+    murmuration/  toupies/  creatures/  ruban/  kit/  abyme/  escalade/  feu/  fireworks/  morse/  yaya/
+  shared/trail.ts              le chemin de la visite (pour Abyme)
+  content/content.ts           les textes du carnet et des projets (pour Abyme)
+  styles/base.css              base des pages du labo
 scripts/og/                    la source de og.jpg, et comment la refaire
 ```
 
-## Modifier le contenu (`src/content/content.ts`)
+## Modifier le contenu
 
-- **Un projet** : `id` (l'adresse de sa fiche, ex. `#synapso`), `title`, `short` (la phrase simple, dans la fiche et sur mobile), `image` et `alt`.
-- **Projet en ligne** : `demo` (lien du site, dans la fiche) ; sinon la carte affiche « pas en ligne » et la fiche ne propose que `code` (GitHub).
-- **Projet bientôt en ligne** : `wip: true` (affiche « en cours · bientôt en ligne »).
+- **Les projets de l'accueil** : dans `public/accueil/data.js` (`PROJECTS`), leur lieu dans `relief-shader.js` (`PROJECT_PLACES`).
 - **Le carnet** : `carnet.pages`, une page chacune (nom, adresse, capture, description) ; l'ordre où on les tourne est dans `features/carnet/carnet.ts` (`PAGES`).
 - **Parcours** : `experience`, du poste actuel au plus ancien.
 
@@ -103,9 +65,8 @@ cwebp -q 82 -resize 1200 0 capture.png -o public/shots/nom.webp
 
 ## À savoir
 
-- Garder `overflow: clip` (et non `hidden`) sur `.rg` : `hidden` casse le sticky.
-- Les cartes ont une marge basse invisible (la place du nom) et la 1re ligne du nom aussi (une ligne) : à la fin, cartes et nom se décollent en même temps et la grille remonte d'un bloc. Chaque mot du nom a sa propre colonne, sur toute la hauteur du champ (sinon le sticky ne tient pas).
-- Pendant le scroll, le script n'écrit que ce qui change (une variable réécrite sur toute la page à chaque image fait saccader).
+- Après chaque changement dans `public/accueil/`, refaire le build pour le voir avec `vite preview`.
+- L'ancienne adresse du labo, `/labo/`, mène à `/?labo` (voir `netlify.toml`).
 - Les captures de Trans-trame, Mosaïque (fiche Chrome Web Store) et Synapso montrent des données de démo.
 
 ## Mise en ligne

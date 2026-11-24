@@ -1,19 +1,18 @@
 import { fileURLToPath } from 'node:url'
-import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
   // « @/ » : le dossier src (des imports qui ne dépendent pas de l'endroit où l'on est)
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
-  // les pages : le site, et celles du carnet : son sommaire (/labo), Murmuration (servie à l'adresse /murmuration),
-  // Yaya (/yaya), Toupies (/toupies), Feu d'artifice (/feu), Escalade (/escalade), Ruban (/ruban), Morse (/morse), Créatures (/creatures) et Abyme (/abyme)
+  // les pages : le site (its lab: /?labo, in the home page itself), et celles du carnet : Murmuration (servie à l'adresse /murmuration),
+  // Yaya (/yaya), Toupies (/toupies), Feu d'artifice (/feu), Escalade (/escalade), Ruban (/ruban), Morse (/morse), Créatures (/creatures), Kit (/kit) et Abyme (/abyme)
   build: {
+    // (three.js alone, shared by the 3D pages, weighs a little over 500 kB: expected)
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
-        labo: fileURLToPath(new URL('./labo/index.html', import.meta.url)),
         murmuration: fileURLToPath(new URL('./murmuration/index.html', import.meta.url)),
         yaya: fileURLToPath(new URL('./yaya/index.html', import.meta.url)),
         abyme: fileURLToPath(new URL('./abyme/index.html', import.meta.url)),
@@ -23,6 +22,7 @@ export default defineConfig({
         ruban: fileURLToPath(new URL('./ruban/index.html', import.meta.url)),
         morse: fileURLToPath(new URL('./morse/index.html', import.meta.url)),
         creatures: fileURLToPath(new URL('./creatures/index.html', import.meta.url)),
+        kit: fileURLToPath(new URL('./kit/index.html', import.meta.url)),
       },
     },
   },

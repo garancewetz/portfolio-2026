@@ -29,13 +29,16 @@ export function path(): Step[] {
   return steps.length || trail().some((s) => s.path === '/') ? [...steps, HOME] : CARNET
 }
 
+// (a project on the home page that content.ts does not list: its screenshot, from public/accueil/data.js)
+const NOT_LISTED: Record<string, string> = { 'paris-forest': '/shots/paris-forest.jpg' }
+
 // la capture d'une page : celle de la page du carnet, celle du projet dont la fiche était ouverte, ou l'accueil
 export function picture(path: string) {
   const page = PAGES.find((p) => path.startsWith(p.href))
   if (page) return page.src
-  // (le sommaire du labo : son carnet ouvert)
-  if (path.startsWith('/labo')) return '/shots/labo.webp'
-  const sheet = path.match(/#(.+)$/)
+  // (the lab, on the home page: its own screenshot; a project page, ?p=id: the project's)
+  if (/[?&]labo\b/.test(path)) return '/shots/labo.webp'
+  const sheet = path.match(/[?&]p=([^&#]+)/)
   const project = sheet && projects.find((p) => p.id === sheet[1])
-  return project?.image ?? '/shots/accueil.webp'
+  return project?.image ?? (sheet && NOT_LISTED[sheet[1]]) ?? '/shots/accueil.webp'
 }
