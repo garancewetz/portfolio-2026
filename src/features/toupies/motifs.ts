@@ -1,19 +1,19 @@
 import * as THREE from 'three'
 import { birds } from './oiseau'
 
-// Les toupies et l'image imprimée sur leur tôle (en largeur le tour de la toupie, en hauteur son profil, du haut en
-// haut de l'image au bas ; edge : où est le bord). Chacune a son effet, en tournant :
-// - quartiers, rayures, bicolore : des bandes qui se fondent en une seule couleur (l'œil fait la moyenne de la
-//   lumière : voir top.ts) — une teinte douce ; du gris ; et, pour le bleu et le jaune, pas du vert comme en
-//   peinture mais un gris clair (l'œil additionne les lumières, il ne mélange pas les pigments) ;
-// - pois : des pois de couleur sur fond crème, qui deviennent des anneaux ;
-// - benham : du noir et du blanc seulement, mais en tournant l'œil y voit de pâles couleurs qui n'existent pas
-//   (l'illusion de Benham, 1894) ; sans flou simulé : c'est l'œil qui la fait ;
-// - oiseau : une ronde de huit oiseaux de profil, à huit moments d'un coup d'aile (voir oiseau.ts) ;
-// - lampes : sombre, avec de petites lampes qui s'allument en tournant ; en tournant vite, chaque point s'étire en
-//   trait, puis en anneau continu : trois fils de néon (voir top.ts).
-// plastic : la couleur de ses pièces en plastique ; blur : si l'on simule le flou de l'œil ; max : sa vitesse la plus
-// haute (en radians par seconde). Toutes ont la même forme : c'est leur couleur et leur décor qui les distinguent.
+// The tops and the image printed on their tinplate (across, the top's circumference; down, its profile, from the
+// top of the image to the bottom; edge: where the rim is). Each has its effect, when spinning:
+// - quarters, stripes, two-tone: bands that blend into a single colour (the eye averages the light: see top.ts)
+//   — a soft hue; grey; and, for blue and yellow, not green as in paint but a light grey (the eye adds lights, it
+//   does not mix pigments);
+// - dots: coloured dots on a cream background, which become rings;
+// - benham: only black and white, but when spinning the eye sees pale colours that do not exist (Benham's
+//   illusion, 1894); without simulated blur: the eye does it;
+// - bird: a ring of eight birds in profile, at eight moments of a wingbeat (see oiseau.ts);
+// - lamps: dark, with small lamps lighting up as it spins; spinning fast, each dot stretches into a line, then
+//   into a continuous ring: three neon threads (see top.ts).
+// plastic: the colour of its plastic parts; blur: whether the eye's blur is simulated; max: its highest speed
+// (in radians per second). All have the same shape: their colour and pattern set them apart.
 
 type Kind = 'bands' | 'pois' | 'benham' | 'oiseau' | 'lampes'
 type Def = {
@@ -61,7 +61,7 @@ export const VARIANTS = {
   lampes: def({ kind: 'lampes', colors: ['#141a3a'], rim: '#0b0f26', dots: '#ffe7a3', plastic: '#c9b8ff' }),
 }
 export type Variant = keyof typeof VARIANTS
-// les couleurs des lampes de la toupie lumineuse (une par rangée : un anneau de néon chacune)
+// the lamp colours of the light-up top (one per row: a neon ring each)
 export const LAMPS = ['#ff4f9a', '#4fe3ff', '#ffd23f']
 
 const W = 2048
@@ -80,7 +80,7 @@ function texture(c: HTMLCanvasElement) {
   return t
 }
 
-// l'image de la tôle ; et, pour la toupie lumineuse, l'image de ses lampes (ce qui s'allume)
+// the tinplate image; and, for the light-up top, the image of its lamps (what lights up)
 export function motifs(edge: number, variant: Variant) {
   const d = VARIANTS[variant]
   const { c, g } = canvas()
@@ -94,7 +94,7 @@ export function motifs(edge: number, variant: Variant) {
       g.fillRect((k * W) / d.bands, 0, W / d.bands + 1, H)
     }
   } else if (d.kind === 'benham') {
-    // une moitié noire ; l'autre blanche, avec quatre groupes de trois arcs, chacun plus loin du centre
+    // one half black; the other white, with four groups of three arcs, each farther from the centre
     g.fillStyle = d.colors[1]
     g.fillRect(0, 0, W, H)
     g.fillStyle = d.colors[0]
@@ -105,7 +105,7 @@ export function motifs(edge: number, variant: Variant) {
         g.fillRect(W / 2 + (k * W) / 8, y(v) - 5, W / 8, 10)
       }
   } else if (d.kind === 'pois') {
-    // des pois de couleur, ronds, à des hauteurs différentes ; en tournant, chacun trace son anneau
+    // coloured dots, round, at different heights; when spinning, each traces its ring
     g.fillStyle = d.colors[0]
     g.fillRect(0, 0, W, H)
     const rows = [0.16, 0.27, 0.38, edge + 0.1, edge + 0.22, edge + 0.34]
@@ -121,10 +121,10 @@ export function motifs(edge: number, variant: Variant) {
   } else {
     g.fillStyle = d.colors[0]
     g.fillRect(0, 0, W, H)
-    // (la ronde d'oiseaux, sur la coupelle du haut, près du bord : leur dos vers le centre)
+    // (the ring of birds, on the upper cup, near the rim: their backs towards the centre)
     if (d.kind === 'oiseau') birds(g, W, y(top1 - 0.12), 200, d.rim)
   }
-  // le bord : un bandeau à pois
+  // the rim: a polka-dot band
   g.fillStyle = d.rim
   g.fillRect(0, y(edge - 0.03), W, y(0.06))
   for (let k = 0; k < 48; k++) {
@@ -134,7 +134,7 @@ export function motifs(edge: number, variant: Variant) {
     g.fill()
   }
   if (d.kind === 'lampes') {
-    // les lampes : trois rangées de petites lampes rondes, une couleur par rangée ; leur image à part (ce qui brille)
+    // the lamps: three rows of small round lamps, one colour per row; their image apart (what shines)
     const lamps = canvas()
     lamps.g.fillStyle = '#000'
     lamps.g.fillRect(0, 0, W, H)

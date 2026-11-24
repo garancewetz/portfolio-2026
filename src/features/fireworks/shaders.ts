@@ -1,5 +1,5 @@
-// Les programmes du liquide (voir fluid.ts) : un sommet commun (un grand triangle, avec les voisins de chaque
-// point), et un fragment par étape de la simulation.
+// The liquid's programs (see fluid.ts): a shared vertex shader (one big triangle, with each point's
+// neighbours), and one fragment shader per simulation step.
 
 export const VERT = `#version 300 es
 in vec2 aPos;
@@ -90,8 +90,8 @@ void main() {
 uniform sampler2D uTexture;
 uniform float value;
 void main() { o = value * texture(uTexture, vUv); }`,
-  // la couleur posée sur le fond papier, comme de l'encre : transparente là où il n'y en a pas, vive là où elle
-  // est dense (alpha prémultiplié)
+  // the colour laid on the paper background, like ink: transparent where there is none, vivid where it is
+  // dense (premultiplied alpha)
   display: `${HEAD}
 uniform sampler2D uDye;
 void main() {

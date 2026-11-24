@@ -1,8 +1,8 @@
 import type { Refusal } from './voice'
 
-// L'arrivée : au milieu du noir, le titre, et deux boutons : chanter (la demande du micro) ou dessiner au doigt ; rien
-// d'autre (tout se découvre). Si le micro ne vient pas (refusé, absent, impossible ici), on le dit simplement, et on
-// peut jouer au doigt.
+// The arrival: in the middle of the black, the title, and two buttons: sing (asking for the mic) or draw with a
+// finger; nothing else (everything is discovered). If the mic does not come (refused, missing, impossible
+// here), we just say so, and you can play with a finger.
 
 const WHY: Record<Refusal, string> = {
   refused:
@@ -29,15 +29,15 @@ export function intro(main: HTMLElement, o: { mic: () => void; finger: () => voi
   const finger = $('[data-do=finger]')
   mic.addEventListener('click', o.mic)
   finger.addEventListener('click', o.finger)
-  // (les appuis sur ces lignes ne dessinent pas)
+  // (presses on these lines do not draw)
   box.addEventListener('pointerdown', (e) => e.stopPropagation())
 
   return {
-    // en attendant la réponse du navigateur
+    // while waiting for the browser's answer
     asking(on: boolean) {
       mic.disabled = on
     },
-    // le micro ne vient pas : pourquoi, et l'autre façon de jouer, mise en avant
+    // the mic does not come: why, and the other way to play, put forward
     fail(why: Refusal) {
       const error = $('.ru-error')
       error.textContent = `${WHY[why]} Ou dessinez au doigt : appuyez sur la page, plus haut pour une note plus aiguë.`

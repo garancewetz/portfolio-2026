@@ -1,6 +1,6 @@
-// La porte : le but du jeu. Une petite porte en caractères, quelque part au milieu de la page, trop haute pour qu'il
-// l'atteigne en sautant. Il faut lui dessiner des traits, et les escalader jusque-là (trail.ts, body.ts). Arrivé
-// devant la porte, il fait coucou ; la porte s'ouvre, il entre, elle se referme (voir main.ts).
+// The door: the goal of the game. A small door made of characters, somewhere in the middle of the page, too
+// high for him to reach by jumping. You have to draw him lines, and he climbs them up to it (trail.ts,
+// body.ts). Arrived in front of the door, he waves; the door opens, he goes in, it closes (see main.ts).
 
 const SHUT = ['.---.', '|   |', '|  o|', '|   |']
 const OPEN = ['.---.', '|▒▒▒|', '|▒▒▒|', '|▒▒▒|']
@@ -10,12 +10,12 @@ export function createDoor(main: HTMLElement, size: () => { W: number; H: number
   el.className = 'es-door'
   el.setAttribute('aria-hidden', 'true')
   el.textContent = SHUT.join('\n')
-  // (sous le bonhomme : il passe devant la porte)
+  // (under the little man: he passes in front of the door)
   main.insertBefore(el, main.querySelector('.es-man'))
   let x = 0
   let y = 0
 
-  // une place : au milieu de la page, à hauteur de deux à trois fois ce qu'il peut sauter, loin des bords
+  // a spot: in the middle of the page, two to three times as high as he can jump, far from the edges
   function move() {
     const { W, H } = size()
     x = Math.round(W * (0.3 + Math.random() * 0.4) - el.offsetWidth / 2)
@@ -29,12 +29,12 @@ export function createDoor(main: HTMLElement, size: () => { W: number; H: number
     move,
     open: () => (el.textContent = OPEN.join('\n')),
     shut: () => (el.textContent = SHUT.join('\n')),
-    // sa place devant la porte (sa boîte, de largeur w et de hauteur h : les pieds sur le bas de la porte)
+    // his place in front of the door (his box, w wide and h high: feet on the bottom of the door)
     front: (w: number, h: number) => ({ x: x + el.offsetWidth / 2 - w / 2, y: y + el.offsetHeight - h }),
-    // le milieu de la porte
+    // the middle of the door
     middle: () => x + el.offsetWidth / 2,
-    // il est arrivé : devant la porte, le milieu de son corps (sa boîte x, y, w, h) dans la porte (la frôler par le
-    // bord ne suffit pas)
+    // he has arrived: in front of the door, the middle of his body (his box x, y, w, h) inside the door (brushing
+    // it by the edge is not enough)
     reached(bx: number, by: number, w: number, h: number) {
       const cx = bx + w / 2
       const cy = by + h / 2

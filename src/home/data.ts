@@ -1,9 +1,23 @@
-// The content: the projects of the live site (garancewetz.dev), copied from portfolio/src/content/content.ts on main
-// (24/11/2026), in the same order and in French, like the site. Screenshots come from the repository (and from
-// the live site for Handiplan, and the game's title screen for Paris Forest). Plus the yeti's poses, and el(), a small helper.
-const SHOTS = '/shots/'
+// The content: the projects, in French like the site, with their screenshots (public/shots/: from the live sites, and
+// the game's title screen for Paris Forest); and the yeti's poses.
 
-const PROJECTS = [
+export const SHOTS = '/shots/'
+
+export type Project = {
+  id: string
+  title: string
+  kind: string
+  stack: string
+  short: string
+  alt: string
+  src: string
+  // on the project page, next to the screenshot: the same project on a phone
+  phone?: { src: string; alt: string }
+  demo: string | null
+  code: string | null
+}
+
+const LIST: (Omit<Project, 'src'> & { src?: string })[] = [
   { id: 'synapso', title: 'Synapso', kind: 'Application mobile (PWA)', stack: 'Next.js · TypeScript · Prisma',
     short: 'Une application de rééducation post-AVC, ou de rééducation tout court, pensée d’abord pour être simple d’utilisation.',
     alt: 'Synapso, la zone « Haut du corps » : les onglets des zones du corps, le bouton vert « Lancer la séance » et les exercices à faire.',
@@ -36,24 +50,18 @@ const PROJECTS = [
     short: 'Les 192 916 arbres de Paris, sortis des rues et replantés en une forêt à la silhouette de la ville : on s’y promène, et on y cherche toutes les espèces.',
     alt: 'Paris Forest : l’écran d’accueil « La forêt de Paris » sur une forêt de platanes en automne, l’écureuil Noisette en bas à gauche.',
     src: SHOTS + 'paris-forest.jpg', demo: null, code: null },
-].map((p) => ({ ...p, src: p.src || SHOTS + p.id + '.webp' }))
+]
+export const PROJECTS: Project[] = LIST.map((p) => ({ ...p, src: p.src || SHOTS + p.id + '.webp' }))
 
-// the armless yeti (features/yeti/art.ts) and its five poses: 0 crouching, 1 taking off, 2 arms up, 3 arms flat,
+// the armless yeti, drawn in characters, and its five poses: 0 crouching, 1 taking off, 2 arms up, 3 arms flat,
 // 4 standing
 const EARS = '(\\.:::./)', FLAP_UP = '\\\\.:::.//', FLAP_FLAT = '--.:::.--', EARS_DOWN = ' _.:::._'
 const HEAD = ' :(o.o):', HAPPY = ' :(^.^):', BELLY = ' :(   ):', BELLY_LOW = ' :(___):'
 const FEET = "  '' ''", STEP = "  /' '\\", LEGS = '  /   \\'
-const YETI = [
+export const YETI = [
   ['', '', '', '', EARS_DOWN, HEAD, BELLY_LOW],
   ['', '', EARS, HEAD, BELLY, STEP, ''],
   [FLAP_UP, HAPPY, BELLY, LEGS, '', '', ''],
   ['', FLAP_FLAT, HAPPY, BELLY, LEGS, '', ''],
   ['', '', '', EARS, HEAD, BELLY, FEET],
 ].map((f) => f.map((l) => l.padEnd(9)).join('\n'))
-
-// an element from its HTML
-const el = (html) => {
-  const t = document.createElement('template')
-  t.innerHTML = html.trim()
-  return t.content.firstElementChild
-}

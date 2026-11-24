@@ -2,33 +2,33 @@ import './carnet.css'
 import './sheet'
 import { remember } from '@/shared/trail'
 
-// Le carnet du labo : les expériences, chacune sur sa page (sa propre adresse), qu'on parcourt comme un carnet. En
-// haut de chaque page, discrètement : « labo » et le numéro de page à gauche ; la page d'avant et celle d'après, par
-// leur nom, à droite. Chaque page prend tout l'écran (voir sheet.ts) ; on passe de l'une à l'autre simplement, sans
-// animation.
-// (the lab itself, its table of contents, is on the home page: /?labo, see public/accueil/lab.js)
+// The lab notebook: the experiments, each on its own page (its own address), leafed through like a notebook. At
+// the top of each page, discreetly: « labo » and the page number on the left; the previous and next pages, by
+// name, on the right. Each page takes the whole screen (see sheet.ts); you go from one to the other simply,
+// without animation.
+// (the lab itself, its table of contents, is on the home page: /?labo, see src/home/lab.ts)
 const LAB = '/?labo'
 
-// les pages, dans l'ordre du carnet (pour en ajouter une : une ligne ici, et `mount()` dans son main.ts)
+// the pages, in notebook order (to add one: a line here, and `mount()` in its main.ts)
 const PAGES = [
-  // (dans un ordre qui alterne les captures claires et sombres : le sommaire, en bichromie, respire)
+  // (in an order that alternates light and dark screenshots: the two-tone table of contents breathes)
   { path: '/toupies/', name: 'toupies' },
   { path: '/murmuration/', name: 'murmuration' },
   { path: '/creatures/', name: 'créatures' },
   { path: '/ruban/', name: 'ruban' },
   { path: '/kit/', name: 'kit' },
-  // (Abyme à la fin : elle remonte la visite)
+  // (Abyme last: it climbs back up the visit)
   { path: '/abyme/', name: 'abyme' },
-  // (cachées pour le moment, leurs pages existent toujours, sans lien : Yaya, à /yaya/ ; Escalade, à /escalade/,
-  // dont Créatures reprend l'idée ; Morse, à /morse/ ; Feu d'artifice, à /feu/, sur l'accueil en mode secret)
+  // (hidden for now, their pages still exist, unlinked: Yaya, at /yaya/; Escalade, at /escalade/, whose idea
+  // Créatures picks up; Morse, at /morse/; Feu d'artifice, at /feu/, on the home in secret mode)
 ]
 
 const indexOf = (url: string) => PAGES.findIndex((p) => new URL(url, location.href).pathname.startsWith(p.path))
 
 export function mount() {
-  // (le chemin de la visite, pour la page Abyme)
+  // (the path of the visit, for the Abyme page)
   remember()
-  // (montrée dans une fenêtre d'Abyme, dans une iframe : ses liens s'ouvrent dans la fenêtre entière)
+  // (shown in an Abyme window, in an iframe: its links open in the whole window)
   if (window !== window.top) document.head.append(Object.assign(document.createElement('base'), { target: '_top' }))
   const here = indexOf(location.href)
   if (here < 0) return
@@ -44,12 +44,12 @@ export function mount() {
       ${prev ? `<a href="${prev.path}" rel="prev">← ${prev.name}</a>` : ''}
       ${next ? `<a href="${next.path}" rel="next">${next.name} →</a>` : ''}
     </span>`
-  // (les pages écoutent les clics, le clavier et la molette sur toute la fenêtre — un clic fait s'envoler les
-  // oiseaux, Entrée aussi : ce qui se passe sur le carnet, ou sur ce qu'une page y ajoute, ne les concerne pas)
+  // (the pages listen to clicks, keys and the wheel on the whole window — a click makes the birds fly off, Enter
+  // too: what happens on the notebook, or on what a page adds to it, is none of their business)
   for (const type of ['pointerdown', 'pointerup', 'click', 'keydown', 'wheel'])
     nav.addEventListener(type, (e) => e.stopPropagation())
   document.body.append(nav)
 
-  // (une page peut y ajouter ses propres outils, à gauche, après le numéro de page)
+  // (a page may add its own tools there, on the left, after the page number)
   return nav.querySelector<HTMLElement>('.carnet-left')
 }

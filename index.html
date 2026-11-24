@@ -23,74 +23,31 @@
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<!-- The home page (its files: public/accueil/, plain scripts sharing the global scope, in the order below): the
-     project cards, and behind them Garance's places in relief (relief-shader.js); hovering a card leads to its place.
-     A project's page opens in the page itself (project.js, ?p=id), the lab too (lab.js, ?labo): the backdrop never
-     reloads. Easter egg: zooming out pulls back until the landscape sits in a snow globe (snow-globe.js). The visible
-     text is in French. -->
-<script src="/accueil/time-of-day.js"></script>
-<script src="/accueil/trail.js"></script>
+<!-- The home page (its code: src/home/, see main.ts): the project badges, and behind them Garance's places in relief;
+     hovering a badge leads to its place. A project's page opens in the page itself (?p=id), the lab too (?labo): the
+     backdrop never reloads. The visible text is in French. -->
 <script>
-  // arriving on the home page (not on a project page nor in the lab): the poster, an image of the sea of clouds in the
-  // light of the hour, at once; the live backdrop fades over it
-  if (!/[?&](p|labo)\b/.test(location.search)) {
-    const src = `/accueil/posters/${matchMedia('(max-aspect-ratio: 1/1)').matches ? 'tall' : 'wide'}-${MOOD}.jpg`
+  // the light of the hour it is in Paris (see src/home/time-of-day.ts; ?hour=22 to try an hour), picked before anything
+  // shows: arriving on the home page (not on a project page nor in the lab), the poster, an image of the sea of clouds
+  // in that light, shows at once; the live backdrop fades over it
+  ;(() => {
+    const asked = new URLSearchParams(location.search).get('hour')
+    const parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Paris', hour: 'numeric', minute: 'numeric', hourCycle: 'h23' }).formatToParts(new Date())
+    const at = (type) => +parts.find((x) => x.type === type).value
+    const hour = asked !== null && asked !== '' && !isNaN(+asked) ? +asked % 24 : at('hour') + at('minute') / 60
+    const mood = hour < 6 ? 'night' : hour < 8 ? 'dawn' : hour < 18 ? 'day' : hour < 21.5 ? 'dusk' : 'night'
+    const root = document.documentElement
+    root.dataset.mood = mood
+    if (/[?&](p|labo)\b/.test(location.search)) return
+    const src = `/accueil/posters/${matchMedia('(max-aspect-ratio: 1/1)').matches ? 'tall' : 'wide'}-${mood}.jpg`
     document.head.append(Object.assign(document.createElement('link'), { rel: 'preload', as: 'image', href: src }))
-    document.documentElement.classList.add('poster')
-    document.documentElement.style.setProperty('--poster', `url(${src})`)
-  }
+    root.classList.add('poster')
+    root.style.setProperty('--poster', `url(${src})`)
+  })()
 </script>
-<link rel="stylesheet" href="/accueil/base.css" />
-<link rel="stylesheet" href="/accueil/header.css" />
-<link rel="stylesheet" href="/accueil/cards.css" />
-<link rel="stylesheet" href="/accueil/lab.css" />
-<link rel="stylesheet" href="/accueil/project.css" />
 </head>
 <body>
   <canvas id="backdrop"></canvas>
-  <script src="/accueil/data.js"></script>
-  <script src="/accueil/header.js"></script>
-  <script src="/accueil/gl-background.js"></script>
-  <script src="/accueil/reliefs.js"></script>
-  <script src="/accueil/relief-shader.js"></script>
-  <script src="/accueil/place-label.js"></script>
-  <script src="/accueil/snow-globe.js"></script>
-  <script>
-    const SETTINGS = atThisHour(RELIEF_SETTINGS)   // in the light of the hour it is in Paris (see time-of-day.js)
-    // a project opened directly (?p=id): the backdrop starts from its place
-    const START = SETTINGS[QUERY.get('p')] ? QUERY.get('p') : 'rest'
-    // smaller on a phone; shorter for whoever asked for less motion
-    const RELIEF_OPTIONS = {
-      scale: matchMedia('(pointer: coarse)').matches || innerWidth < 820 ? .35 : .75,
-      textures: texturesStartingWith(QUERY.has('labo') ? 'arles' : PROJECT_PLACES[START]),
-      duration: calm ? 500 : 1600,
-      ready: () => document.documentElement.classList.add('backdrop-ready'),
-    }
-    // on arrival the backdrop is flat (the sea of clouds) and nothing else shows but an arrow; the first stretch of
-    // scrolling (--lead in cards.css: 1.7 screens, 1.5 on a phone) raises the Canigou out of the clouds, slowly
-    // and evenly (a gentle ease, not a steep one); only then do the cards arrive, then the signature
-    const inLabNow = () => document.documentElement.classList.contains('in-lab')
-    const lead = () => innerHeight * (innerWidth <= 820 ? 1.5 : 1.7)
-    const SCROLL_DRIVEN = {
-      rise: () => { if (inLabNow()) return 1; const x = Math.min(1, Math.max(0, scrollY / lead())); return x * x * (3 - 2 * x) },   // in the lab: Arles, whole
-    }
-    // hovering changes the place only once « Garance Wetzel » has stuck under the cards (before, the cards passing
-    // under the pointer while scrolling would trigger it): scrolled down to its rail, minus its `top`
-    const hoverAllowed = () => {
-      if (inLabNow()) return true
-      const rail = document.querySelector('.signature-rail'), sig = rail && rail.querySelector('.signature')
-      return !!sig && scrollY >= rail.closest('.scene').offsetTop + rail.offsetTop - parseFloat(getComputedStyle(sig).top) - 2
-    }
-    const BACKDROP = placeLabel(glBackground(document.getElementById('backdrop'), RELIEF_FS, SETTINGS[START], RELIEF_OPTIONS), SETTINGS[START])
-    snowGlobe(BACKDROP)
-    // the other reliefs: at the first gesture, or as soon as the page is idle after arriving (4 s at the latest)
-    const loadTheRest = () => BACKDROP.loadAll()
-    addEventListener('pointerdown', loadTheRest, { once: true })
-    setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(loadTheRest, { timeout: 3000 }) : loadTheRest()), 1200)
-  </script>
-  <script src="/accueil/cards.js"></script>
-  <script src="/accueil/project.js"></script>
-  <script src="/accueil/lab.js"></script>
-  <script src="/accueil/lab-gate.js"></script>
+  <script type="module" src="/src/home/main.ts"></script>
 </body>
 </html>

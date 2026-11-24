@@ -1,5 +1,5 @@
-// Le navigateur de la personne, à peu près (ce qu'une page peut en savoir) : lequel, sur quel système, en clair ou
-// en sombre. Les favoris, les autres onglets et l'historique restent privés : une page n'y a pas accès.
+// The visitor's browser, roughly (what a page can know about it): which one, on which system, light or
+// dark. Bookmarks, other tabs and history stay private: a page has no access to them.
 
 export type Kind = 'chrome' | 'safari' | 'firefox' | 'edge' | 'brave'
 
@@ -21,8 +21,8 @@ export function detect() {
   return { kind, mac, dark }
 }
 
-// les couleurs de chaque navigateur (la barre des onglets, la barre d'outils, le champ d'adresse, l'onglet
-// ouvert, le texte), en clair et en sombre
+// each browser's colours (the tab bar, the toolbar, the address field, the open tab, the text), in light
+// and in dark
 export type Look = { strip: string; bar: string; field: string; tab: string; text: string; faint: string }
 const LOOKS: Record<Kind, [Look, Look]> = {
   chrome: [

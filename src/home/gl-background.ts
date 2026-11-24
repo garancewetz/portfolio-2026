@@ -10,20 +10,43 @@
 // · scale: the resolution, relative to the screen's. It adapts: if drawing lags (over 32 ms a frame on average), the
 //   backdrop draws smaller, down to 0.25; and never more than MAX_PIXELS.
 // Without WebGL, it returns an engine that does nothing (the page works, without a backdrop).
-function glBackground(canvas, FS, start, { animated = false, scale = 0.6, textures = {}, duration = 1600, ready = () => {} } = {}) {
-  const gl = canvas.getContext('webgl')
-  if (!gl) {
+
+// a setting: a number (float), two (vec2), or a colour '#rrggbb' (vec3)
+export type Value = number | number[] | string
+export type Settings = Record<string, Value>
+type Numbers = Record<string, number | number[]>
+export type Backdrop = {
+  loadAll: () => Promise<void>
+  loaded: (name: string) => Promise<void>
+  set: (key: string, v: number | number[]) => void
+  animate: (v: boolean) => void
+  goTo: (settings: Settings) => void
+}
+export type BackdropOptions = {
+  animated?: boolean
+  scale?: number
+  textures?: Record<string, string>
+  duration?: number
+  ready?: () => void
+}
+
+export function glBackground(canvas: HTMLCanvasElement, FS: string, start: Settings, options: BackdropOptions = {}): Backdrop {
+  let { animated = false, scale = 0.6 } = options
+  const { textures = {}, duration = 1600, ready = () => {} } = options
+  const context = canvas.getContext('webgl')
+  if (!context) {
     ready()
     return { loadAll: () => Promise.resolve(), loaded: () => Promise.resolve(), set() {}, animate() {}, goTo() {} }
   }
-  const shader = (type, src) => {
-    const s = gl.createShader(type)
+  const gl: WebGLRenderingContext = context
+  const shader = (type: number, src: string) => {
+    const s = gl.createShader(type)!
     gl.shaderSource(s, src)
     gl.compileShader(s)
     if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s))
     return s
   }
-  const prog = gl.createProgram()
+  const prog = gl.createProgram()!
   gl.attachShader(prog, shader(gl.VERTEX_SHADER, 'attribute vec2 a; void main(){ gl_Position = vec4(a, 0., 1.); }'))
   gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, FS))
   gl.linkProgram(prog)
@@ -46,10 +69,10 @@ function glBackground(canvas, FS, start, { animated = false, scale = 0.6, textur
     return { url, unit, tex }
   })
   let loading = 0                     // images on their way (the resolution does not adapt meanwhile: see pace)
-  const promises = {}
-  function loadOne(k) {
+  const promises: Promise<void>[] = []
+  function loadOne(k: number) {
     const { url, unit, tex } = images[k]
-    return (promises[k] ||= new Promise((done) => {
+    return (promises[k] ||= new Promise<void>((done) => {
       loading++
       const settle = () => { setTimeout(() => { loading-- }, 1000); done() }
       // decoded off the main thread (createImageBitmap), so scrolling never freezes; as is, no colour correction
@@ -65,23 +88,23 @@ function glBackground(canvas, FS, start, { animated = false, scale = 0.6, textur
         .catch((err) => { console.error('relief not loaded:', url, err); settle() })   // the place stays flat; the others still load
     }))
   }
-  let all = null
+  let all: Promise<void> | null = null
   const loadAll = () => (all ||= images.reduce((p, _, k) => p.then(() => loadOne(k)), Promise.resolve()))
-  const loaded = (name) => { const k = Object.keys(textures).indexOf(name); return k < 0 ? Promise.resolve() : loadOne(k) }
+  const loaded = (name: string) => { const k = Object.keys(textures).indexOf(name); return k < 0 ? Promise.resolve() : loadOne(k) }
   if (images.length) {
     const fallback = setTimeout(ready, 4000)          // at worst, the backdrop shows after 4 s
     loadOne(0).then(() => { clearTimeout(fallback); ready() })
   } else ready()
 
-  const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255)
-  const toNumbers = (r) => Object.fromEntries(Object.entries(r).map(([k, v]) => [k, typeof v === 'string' ? rgb(v) : v]))
-  const U = Object.fromEntries(['res', 'time', ...Object.keys(start)].map((n) => [n, gl.getUniformLocation(prog, n)]))
+  const rgb = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255)
+  const toNumbers = (r: Settings): Numbers => Object.fromEntries(Object.entries(r).map(([k, v]) => [k, typeof v === 'string' ? rgb(v) : v]))
+  const U: Record<string, WebGLUniformLocation | null> = Object.fromEntries(['res', 'time', ...Object.keys(start)].map((n) => [n, gl.getUniformLocation(prog, n)]))
   let state = toNumbers(start), target = state, t0 = performance.now()
 
   // the pace: the gap between two frames drawn in a row. Too slow for long (two series in a row): draw smaller; smooth
   // again: back up, to the wanted scale. Not while images load (decoding slows a moment, not the backdrop).
   const wantedScale = scale
-  let previous = 0, gaps = [], changedAt = 0, slow = 0
+  let previous = 0, gaps: number[] = [], changedAt = 0, slow = 0
   function pace() {
     const now = performance.now(), dt = now - previous
     previous = now
@@ -123,15 +146,16 @@ function glBackground(canvas, FS, start, { animated = false, scale = 0.6, textur
   // gliding from one set of settings to another: it starts and stops softly (never a jolt), over `duration` ms,
   // from wherever it was when the target changed
   let from = state, startedAt = 0
-  const ease = (x) => x * x * x * (x * (x * 6 - 15) + 10)
-  const mix = (a, b, k) => (Array.isArray(a) ? a.map((x, i) => x + (b[i] - x) * k) : a + (b - a) * k)
+  const ease = (x: number) => x * x * x * (x * (x * 6 - 15) + 10)
+  const mix = (a: number | number[], b: number | number[], k: number) =>
+    Array.isArray(a) ? a.map((x, i) => x + ((b as number[])[i] - x) * k) : a + ((b as number) - a) * k
   // a single frame loop at a time
   let requested = false
   const request = () => { if (!requested) { requested = true; requestAnimationFrame(frame) } }
   function frame() {
     requested = false
     const k = ease(Math.min(1, (performance.now() - startedAt) / duration))
-    const next = {}
+    const next: Numbers = {}
     for (const n in target) next[n] = mix(from[n], target[n], k)
     state = next
     draw()

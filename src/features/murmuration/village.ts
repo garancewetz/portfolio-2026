@@ -1,6 +1,6 @@
-// Le village perché, en bas à droite (d'après une photo d'Eus, dans les Pyrénées-Orientales) : l'église et son
-// clocher carré au sommet, les maisons serrées en rangées qui descendent en escalier régulier, longtemps vers la
-// gauche et moins vers la droite
+// The hilltop village, at the bottom right (from a photo of Eus, in the Pyrénées-Orientales): the church and its
+// square bell tower at the top, the houses packed in rows stepping down evenly, far to the left and less to the
+// right
 export const VILLAGE = [
   '                                         /\\',
   '                                        |^^|',

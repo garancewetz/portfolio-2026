@@ -1,6 +1,6 @@
 import { art, type Creature } from './art'
 
-// La souris et le gobelin : revenus sur la page.
+// The mouse and the goblin: back on the page.
 export const C1: Creature[] = [
   {
     n: 8,

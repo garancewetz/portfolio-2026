@@ -3,10 +3,11 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // « @/ » : le dossier src (des imports qui ne dépendent pas de l'endroit où l'on est)
+  // « @/ »: the src folder (imports that do not depend on where you are)
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
-  // les pages : le site (its lab: /?labo, in the home page itself), et celles du carnet : Murmuration (servie à l'adresse /murmuration),
-  // Yaya (/yaya), Toupies (/toupies), Feu d'artifice (/feu), Escalade (/escalade), Ruban (/ruban), Morse (/morse), Créatures (/creatures), Kit (/kit) et Abyme (/abyme)
+  // the pages: the site (its lab: /?labo, in the home page itself), and the notebook's: Murmuration (served at
+  // /murmuration), Yaya (/yaya), Toupies (/toupies), Feu d'artifice (/feu), Escalade (/escalade), Ruban (/ruban),
+  // Morse (/morse), Créatures (/creatures), Kit (/kit) and Abyme (/abyme)
   build: {
     // (three.js alone, shared by the 3D pages, weighs a little over 500 kB: expected)
     chunkSizeWarningLimit: 600,

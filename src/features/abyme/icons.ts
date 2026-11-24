@@ -1,5 +1,5 @@
-// Les petites icônes des barres de navigateur, au trait (comme les vraies : des traits fins et arrondis), centrées
-// sur (x, y). La couleur et l'épaisseur sont celles du contexte (strokeStyle, lineWidth).
+// The small browser-bar icons, as line drawings (like the real ones: thin, rounded strokes), centred on
+// (x, y). Colour and thickness come from the context (strokeStyle, lineWidth).
 
 type Ctx = CanvasRenderingContext2D
 
@@ -110,7 +110,7 @@ export const icons = {
         [x + 7, y + d],
       ])
   },
-  // (les réglages du site, dans la barre d'adresse de Chrome : deux curseurs)
+  // (the site settings, in Chrome's address bar: two sliders)
   tune(ctx: Ctx, x: number, y: number) {
     line(ctx, [
       [x - 6, y - 3],

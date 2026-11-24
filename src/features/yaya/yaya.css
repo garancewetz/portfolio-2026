@@ -1,11 +1,11 @@
-/* ——— Où est Yaya ? (voir scene.ts) : la scène dessinée dans le canvas, sur toute la page, et le titre du voyage
-   en haut à gauche, sous le carnet ——— */
+/* ——— Où est Yaya ? (see scene.ts): the scene drawn in the canvas, over the whole page, and the trip's title at
+   the top left, under the notebook ——— */
 @import '@/styles/base.css';
 
 :root {
   --bg: #9cc3e6;
   color-scheme: light;
-  /* (le carnet et le titre, en encre sombre sur le ciel) */
+  /* (the notebook and the title, in dark ink on the sky) */
   --carnet-ink: rgb(20 28 40 / 0.55);
   --carnet-ink-hover: rgb(20 28 40 / 0.95);
 }
@@ -40,6 +40,6 @@ body {
 }
 .yy-ask {
   color: var(--carnet-ink-hover);
-  /* (les espaces comptent : ils gardent le compteur en place, voir scene.ts) */
+  /* (the spaces matter: they keep the counter in place, see scene.ts) */
   white-space: pre;
 }

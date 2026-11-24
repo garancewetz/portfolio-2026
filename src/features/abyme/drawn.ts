@@ -3,14 +3,14 @@ import { bar, barHeight, type Info } from './bars'
 import { doors, type Place } from './door'
 import { path as walked, picture } from './path'
 
-// La fenêtre du navigateur de la personne (le sien, à peu près : Chrome, Safari, Firefox, Edge ou Brave ; sur Mac
-// ou non ; en clair ou en sombre) ; dans la fenêtre, la page vue juste avant (son titre, son adresse, sa capture) ;
-// dans cette page, une fenêtre avec la page d'avant… jusqu'à la première page de la visite, tout au fond. En
-// faisant défiler (ou en glissant le doigt), on plonge : on remonte son propre chemin dans le site.
+// The visitor's browser window (theirs, roughly: Chrome, Safari, Firefox, Edge or Brave; on a Mac or not;
+// light or dark); in the window, the page seen just before (its title, its address, its screenshot); in that
+// page, a window with the page before… down to the first page of the visit, at the very bottom. By scrolling
+// (or sliding a finger), you dive: you walk back up your own path through the site.
 
 const BG = '#ffffff'
-// la place autour de la première fenêtre : en haut, celle de la ligne du carnet ; sur les côtés et en bas, un
-// liseré. Les suivantes, plus petites, laissent voir la page où elles sont posées.
+// the room around the first window: at the top, the notebook line's; on the sides and at the bottom, a thin
+// border. The next ones, smaller, let the page they sit on show.
 const TOP = 40
 const EDGE = 16
 const INNER = 0.62
@@ -24,7 +24,7 @@ export function drawn(canvas: HTMLCanvasElement) {
   const favicon = new Image()
   favicon.src = '/favicon.svg'
   favicon.onload = () => (dirty = true)
-  // le chemin : la page vue juste avant d'abord, puis celle d'avant… (et leurs captures, chargées au besoin)
+  // the path: the page seen just before first, then the one before… (and their screenshots, loaded as needed)
   const steps = walked()
   const shots = steps.map((s) => {
     const img = new Image()
@@ -42,13 +42,13 @@ export function drawn(canvas: HTMLCanvasElement) {
 
   let W = 0
   let H = 0
-  // chaque niveau : sa fenêtre (x, y) et l'échelle de la page qu'elle montre (s : aussi sa largeur, en part de la
-  // page) ; le niveau 0, c'est cette page-ci
+  // each level: its window (x, y) and the scale of the page it shows (s: also its width, as a share of the
+  // page); level 0 is this very page
   let geo: { x: number; y: number; s: number }[] = []
-  // u : où l'on en est de la plongée, en niveaux (0 : ici ; steps.length : la première page de la visite)
+  // u: how far the dive has gone, in levels (0: here; steps.length: the first page of the visit)
   let u = 0
   let dirty = true
-  // les vraies pages, dans leurs fenêtres (voir door.ts)
+  // the real pages, in their windows (see door.ts)
   const live = doors(
     canvas.parentElement!,
     steps.map((s) => s.path),
@@ -72,7 +72,7 @@ export function drawn(canvas: HTMLCanvasElement) {
   }
   const at = (d: number) => geo[Math.min(d, 1)]
 
-  // la capture d'une page, qui couvre toute la page (centrée, ce qui dépasse est coupé)
+  // a page's screenshot, covering the whole page (centred, whatever overflows is cut)
   function cover(img: HTMLImageElement) {
     ctx.fillStyle = BG
     ctx.fillRect(0, 0, W, H)
@@ -83,20 +83,20 @@ export function drawn(canvas: HTMLCanvasElement) {
     ctx.drawImage(img, (W - w) / 2, 0, w, h)
   }
 
-  // la page d (0 : celle-ci ; d : la d-ième page avant), et dans sa fenêtre la page d'avant… (k : sa taille à
-  // l'écran, en part de la page)
+  // page d (0: this one; d: the d-th page before), and in its window the page before… (k: its on-screen size,
+  // as a share of the page)
   function page(d: number, k: number) {
     if (d === 0) {
       ctx.fillStyle = BG
       ctx.fillRect(0, 0, W, H)
     } else cover(shots[d - 1])
-    // (au fond du chemin, ou plus petite qu'un point : on s'arrête)
+    // (at the end of the path, or smaller than a dot: stop)
     if (d >= steps.length || k * at(d).s * W < 2) return
     const { x, y, s } = at(d)
     const w = s * W
     const h = C + s * H
     const r = who.mac ? 10 : 8
-    // la fenêtre : son ombre (large et douce, comme sur un Mac), sa barre, la page dedans, son filet
+    // the window: its shadow (wide and soft, like on a Mac), its bar, the page inside, its hairline
     ctx.save()
     ctx.shadowColor = 'rgb(0 0 0 / 0.3)'
     ctx.shadowBlur = 40
@@ -127,8 +127,8 @@ export function drawn(canvas: HTMLCanvasElement) {
     if (!dirty || !W) return
     dirty = false
     const dpr = canvas.width / W
-    // entre deux niveaux n et n + 1 : la page n, agrandie autour du point qui reste en place quand on passe de
-    // l'une à l'autre (à u = n + 1, la page n + 1 remplit l'écran)
+    // between two levels n and n + 1: page n, enlarged around the point that stays put when going from one to
+    // the other (at u = n + 1, page n + 1 fills the screen)
     const n = Math.min(Math.floor(u), steps.length)
     const { x, y, s } = at(n)
     const z = Math.pow(1 / s, u - n)
@@ -139,14 +139,14 @@ export function drawn(canvas: HTMLCanvasElement) {
     ctx.scale(z, z)
     ctx.translate(-px, -py)
     page(n, z)
-    // les vraies pages, chacune posée sur la page de sa fenêtre, même toute petite au fond du tunnel (la même page
-    // du début à la fin : rien ne saute quand on s'en approche). Leur place à l'écran : celle qui remplit l'écran
-    // (agrandie), puis on descend de fenêtre en fenêtre, chacune décale et réduit la suivante
+    // the real pages, each laid on its window's page, even tiny at the bottom of the tunnel (the same page from
+    // start to end: nothing jumps as you get closer). Their place on screen: the one filling the screen
+    // (enlarged), then down from window to window, each one shifting and shrinking the next
     const places: (Place | null)[] = steps.map(() => null)
     let ox = px * (1 - z)
     let oy = py * (1 - z)
     let k = z
-    // (le trou d'une page : la fenêtre posée dedans, s'il y en a une)
+    // (a page's hole: the window laid inside it, if there is one)
     const hole = (d: number) => {
       if (d >= steps.length) return undefined
       const g = at(d)
@@ -162,23 +162,23 @@ export function drawn(canvas: HTMLCanvasElement) {
       if (k * W > 24) places[d] = { left: ox, top: oy, scale: k, r, hole: hole(d + 1) }
     }
     live.place(places, W, H)
-    // (la ligne du carnet ne sert qu'ici : elle s'efface en plongeant)
+    // (the notebook line only matters here: it fades out while diving)
     const nav = document.querySelector<HTMLElement>('.carnet')
     nav?.style.setProperty('opacity', String(Math.max(0, 1 - u * 2)))
     nav?.style.setProperty('visibility', u < 0.5 ? '' : 'hidden')
-    // (une page du chemin remplit l'écran : on peut y retourner, d'un clic)
+    // (a page of the path fills the screen: you can go back to it, with a click)
     canvas.style.cursor = reached() ? 'pointer' : ''
   }
 
-  // la page du chemin qui occupe l'écran (la plus proche : son rang, de 1 à steps.length), ou 0 (ici, Abyme)
+  // the page of the path that fills the screen (the closest: its rank, from 1 to steps.length), or 0 (here, Abyme)
   const reached = () => Math.round(u)
-  // un clic sur elle : on y retourne (l'accueil, au fond ; ou une page en chemin)
+  // a click on it: go back there (the home, at the bottom; or a page along the way)
   canvas.addEventListener('click', () => {
     const n = reached()
     if (n) location.href = steps[n - 1].path
   })
 
-  // faire défiler, glisser le doigt, ou les flèches : on plonge (ou on remonte), jusqu'au début de la visite
+  // scroll, slide a finger, or the arrow keys: dive (or climb back), down to the start of the visit
   const dive = (levels: number) => {
     u = Math.max(0, Math.min(steps.length, u + levels))
     dirty = true

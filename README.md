@@ -1,8 +1,8 @@
 # Portfolio — Garance Wetzel
 
-Portfolio de projets personnels, en Vite + TypeScript (strict) ; l'accueil en scripts simples et WebGL.
+Portfolio de projets personnels, en Vite + TypeScript (strict) et WebGL, sans framework.
 
-**L'accueil** (`index.html`, ses fichiers dans `public/accueil/`) : en fond, les lieux de Garance en relief, dans un
+**L'accueil** (`index.html`, son code dans `src/home/`) : en fond, les lieux de Garance en relief, dans un
 seul bleu (`relief-shader.js`, `reliefs.js`, données IGN et Copernicus). À l'arrivée, la mer de nuages ; le défilement
 fait sortir le Canigou, puis les projets arrivent en badges et « Garance Wetzel » prend la place de « hello, world. ».
 Au survol d'un badge, sa capture suit le curseur et le fond part vers le lieu du projet. Un clic ouvre la page du
@@ -28,30 +28,30 @@ bun run lint
 ## Structure
 
 ```
-index.html                     l'accueil : charge les scripts de public/accueil/, dans l'ordre
-public/
-  accueil/                     l'accueil (scripts simples, qui partagent la portée globale) :
-                               data (projets), header, gl-background (le moteur WebGL), reliefs + relief-shader
-                               (les lieux), place-label, snow-globe, cards (les badges), project (la page projet),
-                               lab + lab-gate (le labo), time-of-day, trail (le chemin, pour Abyme) ;
-                               reliefs/ (les terrains, en PNG), posters/ (l'image d'arrivée, selon l'heure)
-  shots/                       captures (16/10, WebP, 1200 px de large)
-  favicon.svg, .ico            le Canigou bleu
-  og.jpg                       aperçu des liens partagés (1200 × 630)
-src/                           les pages du labo, organisées par expérience (alias `@/` = `src/`)
-  features/
+index.html                     l'accueil : choisit l'humeur de l'heure (et l'affiche d'arrivée), puis charge src/home/main.ts
+src/                           (alias `@/` = `src/`)
+  home/                        l'accueil, en modules : main (l'ordre de mise en place), shared, data (projets),
+                               header, backdrop (le fond) + gl-background (le moteur WebGL) + reliefs + relief-shader
+                               (les lieux) + place-label + snow-globe + time-of-day, cards (les badges), project (la
+                               page projet), lab + yeti + lab-gate (le labo), trail (le chemin, pour Abyme) ; et leur CSS
+  features/                    les expériences du labo, chacune sa page HTML (voir vite.config.ts) :
     carnet/                    le carnet : la ligne en haut de chaque expérience (retour au labo, tourner la
                                page), sheet (la feuille), gear (les réglages), raster + photo (ASCII)
     murmuration/  toupies/  creatures/  ruban/  kit/  abyme/  escalade/  feu/  fireworks/  morse/  yaya/
   shared/trail.ts              le chemin de la visite (pour Abyme)
   content/content.ts           les textes du carnet et des projets (pour Abyme)
   styles/base.css              base des pages du labo
+public/
+  accueil/                     les terrains de l'accueil (reliefs/, en PNG) et ses affiches d'arrivée (posters/)
+  shots/                       captures (16/10, WebP, 1200 px de large)
+  favicon.svg, .ico            le Canigou bleu
+  og.jpg                       aperçu des liens partagés (1200 × 630)
 scripts/og/                    la source de og.jpg, et comment la refaire
 ```
 
 ## Modifier le contenu
 
-- **Les projets de l'accueil** : dans `public/accueil/data.js` (`PROJECTS`), leur lieu dans `relief-shader.js` (`PROJECT_PLACES`).
+- **Les projets de l'accueil** : dans `src/home/data.ts` (`PROJECTS`), leur lieu dans `src/home/relief-shader.ts` (`PROJECT_PLACES`) ; les expériences du labo dans `src/home/lab.ts` (`LAB_PAGES`, et leur heure : `HOURS`).
 - **Le carnet** : `carnet.pages`, une page chacune (nom, adresse, capture, description) ; l'ordre où on les tourne est dans `features/carnet/carnet.ts` (`PAGES`).
 - **Parcours** : `experience`, du poste actuel au plus ancien.
 
@@ -65,7 +65,6 @@ cwebp -q 82 -resize 1200 0 capture.png -o public/shots/nom.webp
 
 ## À savoir
 
-- Après chaque changement dans `public/accueil/`, refaire le build pour le voir avec `vite preview`.
 - L'ancienne adresse du labo, `/labo/`, mène à `/?labo` (voir `netlify.toml`).
 - Les captures de Trans-trame, Mosaïque (fiche Chrome Web Store) et Synapso montrent des données de démo.
 

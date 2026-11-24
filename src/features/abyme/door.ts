@@ -1,11 +1,11 @@
-// Dans la fenêtre de l'accueil, tout au fond de l'abyme, la vraie page (les autres fenêtres gardent leur capture) :
-// une iframe, chargée dès l'arrivée (cachée), puis posée exactement sur la page dessinée de sa fenêtre : même taille
-// que la fenêtre du navigateur (W × H), réduite à l'échelle de la fenêtre dessinée. La capture dessinée dessous ne
-// sert qu'en attendant. La molette, au-dessus d'elle, sert à plonger (dive) ; sauf tout au fond, quand l'accueil
-// remplit l'écran : c'est lui qui défile, et, tout en haut de l'accueil, remonter fait ressortir de l'abyme.
+// In the home's window, at the very bottom of the abyss, the real page (the other windows keep their screenshot):
+// an iframe, loaded on arrival (hidden), then laid exactly on the drawn page of its window: same size as the
+// browser window (W × H), scaled down to the drawn window. The screenshot drawn below is only a placeholder.
+// The wheel, over it, is for diving (dive); except at the very bottom, when the home fills the screen: then it
+// scrolls, and, at the very top of the home, scrolling up brings you back out of the abyss.
 
-// sa place : coin haut gauche et échelle à l'écran, arrondi du bas ; et le trou où se pose la fenêtre suivante
-// (en pixels de la page : la page s'y efface, pour laisser voir la fenêtre dessinée, sa barre et son ombre)
+// its place: top-left corner and on-screen scale, bottom rounding; and the hole where the next window sits
+// (in page pixels: the page fades out there, to show the drawn window, its bar and its shadow)
 export type Place = {
   left: number
   top: number
@@ -14,8 +14,8 @@ export type Place = {
   hole?: { x: number; y: number; w: number; h: number }
 }
 
-// (seul l'accueil est une vraie page, vivante : les pages du labo, souvent lourdes — 3D, feu d'artifice —, restent
-// leurs captures, dessinées dans leurs fenêtres)
+// (only the home is a real, living page: the lab pages, often heavy — 3D, fireworks —, stay as their
+// screenshots, drawn in their windows)
 const live = (path: string) => path === '/'   // (the home page itself, not a project page nor the lab: ?p=…, ?labo)
 
 export function doors(main: HTMLElement, paths: string[], dive: (deltaY: number) => void, full: () => boolean) {
@@ -25,7 +25,7 @@ export function doors(main: HTMLElement, paths: string[], dive: (deltaY: number)
     frame.className = 'ab-door'
     frame.src = path
     frame.title = path
-    // (cachée, mais à sa taille : une page cachée sans taille se mettrait en page pour rien)
+    // (hidden, but at its size: a hidden page with no size would lay itself out for nothing)
     frame.style.visibility = 'hidden'
     frame.style.width = `${main.clientWidth}px`
     frame.style.height = `${main.clientHeight}px`
@@ -33,8 +33,8 @@ export function doors(main: HTMLElement, paths: string[], dive: (deltaY: number)
     frame.addEventListener('load', () => {
       frame.classList.add('is-ready')
       const inside = frame.contentWindow
-      // (avant la page elle-même : la molette est à l'abyme, pas à la page — la murmuration, par exemple, s'en
-      // sert pour avancer le temps)
+      // (before the page itself: the wheel belongs to the abyss, not to the page — the murmuration, for instance, uses
+      // it to move time forward)
       inside?.addEventListener(
         'wheel',
         (e) => {
@@ -52,7 +52,7 @@ export function doors(main: HTMLElement, paths: string[], dive: (deltaY: number)
     return frame
   })
   return {
-    // la place de chaque page à l'écran (null : pas en vue) ; W × H : la taille de la fenêtre du navigateur
+    // each page's place on screen (null: not in view); W × H: the size of the browser window
     place(at: (Place | null)[], W: number, H: number) {
       frames.forEach((frame, d) => {
         if (!frame) return

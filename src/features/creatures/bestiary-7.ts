@@ -1,6 +1,6 @@
 import { art, type Creature } from './art'
 
-// Le yéti sans bras (67), celui de Ruban : il grimpe, et vole en battant des oreilles.
+// The armless yeti (67), the one from Ruban: it climbs, and flies by flapping its ears.
 export const C7: Creature[] = [
   {
     n: 67,
@@ -41,7 +41,7 @@ export const C7: Creature[] = [
  :(o.o):
  :(___):
 `,
-    // il vole en battant des oreilles (en haut, puis à plat), ravi, les jambes pendantes, comme dans Ruban
+    // it flies by flapping its ears (up, then flat), delighted, legs dangling, like in Ruban
     fly: [
       art`
 \\.:::.//

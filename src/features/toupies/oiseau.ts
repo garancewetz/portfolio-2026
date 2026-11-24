@@ -1,11 +1,11 @@
-// Les oiseaux, comme sur un disque de phénakistiscope (le jouet optique de Plateau, 1833) : sur la tôle, près du
-// bord, huit fois le même oiseau, de profil, à huit moments d'un battement d'ailes, tournés dans le sens où la toupie
-// tourne. À l'arrêt, une ronde d'oiseaux ; en tournant, un anneau gris.
+// The birds, as on a phenakistiscope disc (Plateau's optical toy, 1833): on the tinplate, near the rim, eight
+// times the same bird, in profile, at eight moments of a wingbeat, facing the way the top spins. At rest, a ring
+// of birds; spinning, a grey ring.
 
 const POSES = 8
 
-// g : l'image de la tôle (W de large : un tour ; vers la droite, le sens où elle tourne, vue de face) ; v : la
-// hauteur de la ronde ; s : la taille d'un oiseau, en pixels
+// g: the tinplate image (W wide: one turn; to the right, the way it spins, seen from the front); v: the height
+// of the ring; s: the size of a bird, in pixels
 export function birds(g: CanvasRenderingContext2D, W: number, v: number, s: number, ink: string) {
   g.save()
   g.fillStyle = ink
@@ -13,12 +13,12 @@ export function birds(g: CanvasRenderingContext2D, W: number, v: number, s: numb
   g.restore()
 }
 
-// un oiseau de profil, tourné vers la droite ; phase : le moment du battement (0 : les ailes tout en haut)
+// a bird in profile, facing right; phase: the moment of the wingbeat (0: wings all the way up)
 function bird(g: CanvasRenderingContext2D, cx: number, cy: number, s: number, phase: number) {
   const w = Math.cos(phase * Math.PI * 2)
-  // (le corps descend un peu quand les ailes sont hautes, remonte quand elles poussent vers le bas)
+  // (the body dips a little when the wings are up, rises when they push down)
   const by = cy + w * 0.06 * s
-  // l'aile loin de nous, un peu plus pâle, puis le corps, la tête, la queue, l'aile proche
+  // the far wing, a little paler, then the body, the head, the tail, the near wing
   g.globalAlpha = 0.45
   wing(g, cx - 0.04 * s, by, s, w * 0.92)
   g.globalAlpha = 1
@@ -41,8 +41,8 @@ function bird(g: CanvasRenderingContext2D, cx: number, cy: number, s: number, ph
   wing(g, cx, by, s, w)
 }
 
-// une aile : de l'épaule à sa pointe, en haut (w = 1) ou en bas (w = −1) ; à mi-course, elle vient vers nous et
-// paraît plus courte
+// a wing: from the shoulder to its tip, up (w = 1) or down (w = −1); halfway, it comes towards us and looks
+// shorter
 function wing(g: CanvasRenderingContext2D, cx: number, by: number, s: number, w: number) {
   const reach = 0.25 + 0.4 * Math.abs(w)
   const tip = { x: cx - 0.16 * s, y: by - Math.sign(w || 1) * reach * s }

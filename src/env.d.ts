@@ -1,6 +1,6 @@
-// Types globaux du site
+// Global types for the site
 
-// Les variables CSS passées en style (style={{ '--o': '26vh' }}) : React les accepte, TypeScript doit le savoir
+// CSS variables passed in style (style={{ '--o': '26vh' }}): React accepts them, TypeScript needs to know
 import 'react'
 declare module 'react' {
   interface CSSProperties {

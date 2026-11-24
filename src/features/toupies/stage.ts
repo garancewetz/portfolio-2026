@@ -4,10 +4,10 @@ import { sheet } from '@/features/carnet/sheet'
 import { ground } from './ground'
 import { FLOOR } from './spin'
 
-// La scène : la page est une table plate qui file au loin jusqu'à un horizon ; une lumière blanche au-dessus, un peu
-// devant, porte les ombres des toupies ; le sol (voir ground.ts) ; une pièce douce autour se reflète dans la tôle
-// vernie des toupies. On la regarde de côté ou de dessus (le réglage « vue » : la vue y glisse doucement) ; sinon, la
-// vue ne bouge pas.
+// The stage: the page is a flat table running off to a horizon; a white light above, slightly in front, casts
+// the tops' shadows; the ground (see ground.ts); a soft room around is reflected in the tops' varnished
+// tinplate. You look at it from the side or from above (the « vue » setting: the view glides there gently);
+// otherwise, the view does not move.
 
 export const VIEWS = ['côté', 'dessus'] as const
 export type View = (typeof VIEWS)[number]
@@ -21,7 +21,7 @@ export function stage(canvas: HTMLCanvasElement) {
   scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture
   scene.environmentIntensity = 0.65
   scene.add(new THREE.AmbientLight(0xffffff, 0.4))
-  // (le soleil : ses ombres couvrent toute la profondeur, jusqu'au fond)
+  // (the sun: its shadows cover the whole depth, to the very back)
   const sun = new THREE.DirectionalLight(0xffffff, 1.6)
   sun.position.set(-1, 30, 6)
   sun.target.position.set(0, 0, -40)
@@ -33,21 +33,21 @@ export function stage(canvas: HTMLCanvasElement) {
   ground(scene)
   let view: View = 'côté'
 
-  // où est l'œil, et ce qu'il regarde : là où il va, et là où il en est (il y glisse)
+  // where the eye is, and what it looks at: where it is going, and where it stands (it glides there)
   const goal = { eye: new THREE.Vector3(), at: new THREE.Vector3() }
   const now = { eye: new THREE.Vector3(), at: new THREE.Vector3() }
-  // (le recul de la vue de côté : un écran en hauteur recule, pour que les toupies tiennent en largeur)
+  // (the side view's distance: a tall screen steps back, so the tops fit in the width)
   const back = () => 11 * Math.max(1, 1.5 / camera.aspect)
   function aim() {
     const b = back()
     if (view === 'côté') {
-      // (d'assez bas, presque à hauteur de toupie : le plan de la page file jusqu'à un horizon qu'on voit, en haut de
-      // l'écran ; une toupie poussée au fond y devient toute petite, mais reste entière)
+      // (from fairly low, almost at top height: the page's plane runs to a visible horizon, at the top of the screen;
+      // a top pushed to the back becomes tiny there, but stays whole)
       goal.eye.set(0, 1.7, b)
       goal.at.set(0, 1.7 - b * Math.tan((5.5 * Math.PI) / 180), 0)
     } else {
-      // (de haut, presque à l'aplomb : toutes les toupies, celles de devant et celles de l'arc, leurs couleurs à plat,
-      // en rond)
+      // (from high up, almost straight above: all the tops, those in front and those on the arc, their colours flat,
+      // round)
       goal.eye.set(0, 3.4 * b, 0.05 * b)
       goal.at.set(0, FLOOR, -0.6 * b)
     }
@@ -75,12 +75,12 @@ export function stage(canvas: HTMLCanvasElement) {
     renderer,
     scene,
     camera,
-    // changer de vue (elle y glisse)
+    // change the view (it glides there)
     look(next: View) {
       view = next
       aim()
     },
-    // la vue glisse vers là où elle va
+    // the view glides towards where it is going
     step(dt: number) {
       const k = 1 - Math.exp(-dt * 3)
       now.eye.lerp(goal.eye, k)

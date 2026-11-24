@@ -1,4 +1,4 @@
-/* ——— Morse (voir main.ts) : la page claire du site ; la phrase à l'encre, ses points et ses traits dessous ——— */
+/* ——— Morse (see main.ts): the site's light page; the sentence in ink, its dots and dashes below ——— */
 @import '@/styles/base.css';
 
 :root {
@@ -8,9 +8,9 @@
   --carnet-ink-hover: rgb(26 25 23 / 0.95);
   --panel-bg: rgb(26 25 23 / 0.9);
   --panel-accent: #ffffff;
-  /* l'unité du morse, dessinée : un point fait 1 de large, un trait 3, et 1 entre deux marques */
+  /* the Morse unit, drawn: a dot is 1 wide, a dash 3, and 1 between two marks */
   --u: 9px;
-  /* la lampe allumée */
+  /* the lamp, lit */
   --glow: #f2b632;
 }
 @media (max-width: 600px) {
@@ -23,8 +23,8 @@ body {
   height: 100%;
   overflow: hidden;
 }
-/* (la feuille défile : une longue phrase passe à la ligne, et peut descendre plus bas que l'écran ; plus précis
-   que la feuille du carnet, qui garde les autres pages immobiles) */
+/* (the sheet scrolls: a long sentence wraps, and can go lower than the screen; more precise than the
+   notebook sheet, which keeps the other pages still) */
 main.mo.carnet-sheet {
   position: fixed;
   inset: 0;
@@ -36,7 +36,7 @@ main.mo.carnet-sheet {
   padding: clamp(72px, 14vh, 140px) 24px 72px;
 }
 
-/* le champ : grand, en serif, un simple filet dessous */
+/* the field: large, in serif, a simple hairline below */
 .mo-field {
   display: block;
   width: 100%;
@@ -58,7 +58,7 @@ main.mo.carnet-sheet {
   border-bottom-color: var(--ink);
 }
 
-/* ——— la phrase en morse : des mots, côte à côte, qui passent à la ligne ; dans chaque mot, les lettres ——— */
+/* ——— the sentence in Morse: words, side by side, wrapping; in each word, the letters ——— */
 .mo-out {
   display: flex;
   flex-wrap: wrap;
@@ -75,7 +75,7 @@ main.mo.carnet-sheet {
   flex-wrap: wrap;
   gap: calc(var(--u) * 2.5) calc(var(--u) * 3.2);
 }
-/* une lettre : ses marques en haut, la lettre tapée dessous, alignées au milieu */
+/* a letter: its marks on top, the typed letter below, centred */
 .mo-sign {
   display: grid;
   justify-items: center;
@@ -105,7 +105,7 @@ main.mo.carnet-sheet {
 .mo-dash {
   width: calc(var(--u) * 3);
 }
-/* (œ : deux lettres, O puis E ; entre les deux, la place d'une lettre) */
+/* (œ: two letters, O then E; between them, one letter's space) */
 .mo-gap {
   width: var(--u);
 }
@@ -115,14 +115,14 @@ main.mo.carnet-sheet {
   white-space: pre;
   transition: color 0.25s;
 }
-/* au survol : la lettre et son code ressortent */
+/* on hover: the letter and its code stand out */
 .mo-sign:hover .mo-letter {
   color: var(--violet);
 }
 .mo-sign:hover :is(.mo-dot, .mo-dash) {
   background: var(--violet);
 }
-/* ce que le morse ne sait pas dire : la lettre, pâle, et un petit « ? » à la place des marques */
+/* what Morse cannot say: the letter, pale, and a small « ? » instead of the marks */
 .mo-what {
   font: 11px / 1 var(--mono);
   color: var(--muted);
@@ -140,7 +140,7 @@ main.mo.carnet-sheet {
   color: var(--muted);
 }
 
-/* ——— la lecture : la lettre qu'on lit, et la marque allumée ——— */
+/* ——— playback: the letter being read, and the lit mark ——— */
 .mo.is-playing .mo-sign:not(.is-reading) {
   opacity: 0.35;
 }
@@ -150,7 +150,7 @@ main.mo.carnet-sheet {
 .mo-sign.is-reading .mo-letter {
   color: var(--ink);
 }
-/* (allumée tout de suite, éteinte en douceur) */
+/* (lit at once, turned off gently) */
 .mo-sign .mo-dot.is-lit,
 .mo-sign .mo-dash.is-lit {
   background: var(--glow);
@@ -158,7 +158,7 @@ main.mo.carnet-sheet {
   transition: none;
 }
 
-/* la barre du bas : le bouton, la lampe, le morse en texte (à copier) */
+/* the bottom bar: the button, the lamp, the Morse as text (to copy) */
 .mo-bar {
   display: flex;
   flex-wrap: wrap;
@@ -183,7 +183,7 @@ main.mo.carnet-sheet {
   background: var(--ink);
   color: var(--bg);
 }
-/* (au doigt, pas de survol : le bouton resterait noir après qu'on l'a touché) */
+/* (with a finger, no hover: the button would stay black after being touched) */
 @media (hover: hover) {
   .mo-play:hover:not(:disabled) {
     background: var(--ink);
@@ -207,7 +207,7 @@ main.mo.carnet-sheet {
 .mo-copy[hidden] {
   display: none;
 }
-/* la lampe : éteinte, un cercle de verre ; allumée, elle brille */
+/* the lamp: off, a glass circle; lit, it shines */
 .mo-lamp {
   flex: none;
   width: 22px;

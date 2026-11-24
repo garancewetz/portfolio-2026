@@ -1,17 +1,17 @@
-// Les gestes du spectacle (voir Fireworks.tsx) : les salves sur les deux plans, et la lumière des gerbes proches
-// sur les cartes.
+// The show's gestures (see Fireworks.tsx): the salvos on both planes, and the light of near bursts on the
+// cards.
 
 export const around = (a: number, b: number) => a + Math.random() * (b - a)
 
-// les deux plans ensemble : une gerbe, une fusée vont dans le plan qui convient à leur taille (near : forcer le
-// plan proche)
+// both planes together: a burst, a rocket go into the plane that suits their size (near: force the near
+// plane)
 export interface Planes {
   burst(x: number, y: number, size: number, near?: boolean): void
   launch(x: number, y: number, size: number, trail?: number, near?: boolean): void
 }
 
-// les salves, en deux gestes : des fusées qui montent tout autour (climb), puis des gerbes en rafale réparties sur
-// tout l'écran (spread) ; alive : le mode est encore allumé
+// the salvos, in two gestures: rockets rising all around (climb), then bursts in quick succession spread over the
+// whole screen (spread); alive: the mode is still on
 export const climb = (show: Planes, alive: () => boolean) => {
   for (let i = 0; i < 6; i++) {
     setTimeout(
@@ -20,31 +20,31 @@ export const climb = (show: Planes, alive: () => boolean) => {
     )
   }
 }
-// la lumière des gerbes proches sur les cartes : chaque capture à portée reçoit un reflet de la couleur de
-// l'explosion, venu de son côté, d'autant plus fort qu'elle est près, et qui s'éteint avec elle (--glow, animé :
-// voir Fireworks.css). (x, y) : le centre de la gerbe ; size : sa taille ; color : sa couleur
-const LIGHT_REACH = 520 // px : jusqu'où porte la lumière d'une gerbe de taille 1
+// the light of near bursts on the cards: each screenshot within reach gets a reflection in the explosion's
+// colour, coming from its side, the stronger the closer it is, and dying out with it (--glow, animated: see
+// Fireworks.css). (x, y): the centre of the burst; size: its size; color: its colour
+const LIGHT_REACH = 520 // px: how far the light of a size-1 burst reaches
 const LIGHT_FADE = 1600 // ms
 export function lightCards(x: number, y: number, size: number, color: string) {
   const reach = LIGHT_REACH * size
   for (const shot of document.querySelectorAll<HTMLElement>('.rg-card .shot')) {
     const r = shot.getBoundingClientRect()
     if (r.bottom < 0 || r.top > innerHeight) continue
-    // (la distance au bord le plus proche de la capture : une gerbe qui éclate dessus l'éclaire à fond)
+    // (the distance to the closest edge of the screenshot: a burst right over it lights it fully)
     const d = Math.hypot(Math.max(r.left - x, 0, x - r.right), Math.max(r.top - y, 0, y - r.bottom))
     const k = 1 - d / reach
     if (k < 0.05) continue
     shot.style.setProperty('--gx', `${x - r.left}px`)
     shot.style.setProperty('--gy', `${y - r.top}px`)
-    // (le reflet s'éteint en traversant la capture : plus fort du côté de la gerbe)
+    // (the reflection fades across the screenshot: stronger on the burst's side)
     shot.style.setProperty('--gr', `${d + r.width * 1.1}px`)
     shot.style.setProperty('--gc', color)
     shot.animate([{ '--glow': k }, { '--glow': 0 }], { duration: LIGHT_FADE, easing: 'cubic-bezier(0.1, 0.6, 0.3, 1)' })
   }
 }
 
-// n gerbes en rafale, réparties sur toute la largeur (une par tranche, placée au hasard dedans) et dans le haut de
-// l'écran, à quelques dixièmes de seconde d'écart
+// n bursts in quick succession, spread over the whole width (one per slice, placed at random inside it) and
+// in the top of the screen, a few tenths of a second apart
 export const spread = (show: Planes, n: number, alive: () => boolean) => {
   for (let i = 0; i < n; i++) {
     setTimeout(

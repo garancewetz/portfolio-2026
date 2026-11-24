@@ -1,17 +1,18 @@
-// Le bonhomme et ses gestes, sur les bords de la fenêtre : le bas (il marche), les côtés (il grimpe), le haut (il
-// avance suspendu, main après main). Hors des bords, il tombe ; il saute (barre d'espace), et en l'air, il peut
-// sauter encore deux fois (un triple saut). La fenêtre est sa boîte, et ce qu'on lui fait le touche : un bord qui
-// s'éloigne le fait lâcher ou tomber, un bord qui avance le pousse, une fenêtre trop basse l'écrase ; une fenêtre
-// qu'on déplace vite le bouscule (inertie : il part à l'opposé), le fait glisser, décoller, lâcher prise. Les traits
-// qu'il a tracés (trail.ts) ne sont pas des sols : il passe au travers ; mais avec ↑, il s'y accroche, et les suit
-// avec les flèches, dans tous les sens : raides, il les escalade ; plats, il s'y hisse et avance suspendu dessous.
-// Ce module ne dessine rien : il dit où il est, dans quelle posture, tourné de quel côté, et combien de chemin il a
-// fait (l'image de la marche en dépend).
+// The little man and his moves, on the edges of the window: the bottom (he walks), the sides (he climbs), the
+// top (he moves along hanging, hand over hand). Off the edges, he falls; he jumps (space bar), and in the air
+// he can jump twice more (a triple jump). The window is his box, and what you do to it affects him: an edge
+// moving away makes him let go or fall, an edge moving in pushes him, a window too low crushes him; a window
+// moved fast jostles him (inertia: he goes the opposite way), makes him slide, take off, lose his grip. The
+// lines he has drawn (trail.ts) are not floors: he goes through them; but with ↑, he grabs them, and follows
+// them with the arrows, in every direction: steep, he climbs them; flat, he pulls himself up and moves along
+// hanging under them.
+// This module draws nothing: it says where he is, in which posture, facing which way, and how far he has
+// gone (the walking frame depends on it).
 
 export type Where = 'floor' | 'wall' | 'line' | 'ceiling' | 'air' | 'carried' | 'away' | 'sleep' | 'door'
 export type Keys = { left: boolean; right: boolean; up: boolean; down: boolean; jump?: boolean }
 export type Size = () => { W: number; H: number; w: number; h: number }
-// les traits qu'il a tracés : le plus proche d'un point (le point où s'y accrocher, et la direction du trait)
+// the lines he has drawn: the closest to a point (the point to grab, and the line's direction)
 export type Lines = {
   near: (
     x: number,
@@ -21,68 +22,68 @@ export type Lines = {
   ) => { x: number; y: number; ux: number; uy: number } | null
 }
 
-const WALK = 150 // px/s, en marchant
-const CLIMB = 95 // px/s, en grimpant
-const HANG = 110 // px/s, suspendu
-const GRAVITY = 1800 // px/s², en tombant
-const JUMP = 620 // px/s, l'élan d'un saut (à peu près 100 px de haut)
-const AGAIN = 560 // px/s, l'élan d'un saut de plus, en l'air
-const AIR_JUMPS = 2 // en l'air, il peut encore sauter deux fois (un triple saut)
-const FRICTION = 7 // au sol, une glissade s'arrête vite
-const BOUNCE = 0.35 // contre un bord, en l'air : il rebondit un peu
-const SLIP = 1400 // px/s² : la fenêtre bouge plus fort que ça, il glisse au sol
-const GRIP = 2600 // px/s² : plus fort que ça, il lâche le bord où il est accroché
-const REACH = 10 // px : en suivant un trait, il le perd (le bout) s'il n'y en a plus à moins de ça
+const WALK = 150 // px/s, walking
+const CLIMB = 95 // px/s, climbing
+const HANG = 110 // px/s, hanging
+const GRAVITY = 1800 // px/s², falling
+const JUMP = 620 // px/s, the momentum of a jump (about 100 px high)
+const AGAIN = 560 // px/s, the momentum of one more jump, in the air
+const AIR_JUMPS = 2 // in the air, he can still jump twice (a triple jump)
+const FRICTION = 7 // on the ground, a slide stops quickly
+const BOUNCE = 0.35 // against an edge, in the air: he bounces a little
+const SLIP = 1400 // px/s²: the window moves harder than that, he slides on the ground
+const GRIP = 2600 // px/s²: harder than that, he lets go of the edge he holds
+const REACH = 10 // px: following a line, he loses it (its end) if there is no more of it closer than that
 
 export function createBody(size: Size, lines?: Lines) {
   const b = {
     where: 'floor' as Where,
-    // la boîte du bonhomme (coin en haut à gauche, px), son côté (1 : vers la droite), sa vitesse (glissade, chute)
+    // the little man's box (top-left corner, px), his side (1: facing right), his speed (slide, fall)
     x: 0,
     y: 0,
     face: 1 as 1 | -1,
     vx: 0,
     vy: 0,
-    // le chemin fait (pour l'image de la marche, de l'escalade) ; s'il bouge en ce moment ; s'il vient d'être poussé
-    // par un bord (s), ou s'il est écrasé par une fenêtre trop basse
+    // the distance covered (for the walking and climbing frames); whether he is moving right now; whether he was
+    // just pushed by an edge (s), or is crushed by a window too low
     trip: 0,
     moving: false,
     pushed: 0,
     squashed: false,
-    // les sauts déjà faits en l'air (ils reviennent en touchant un sol, un bord, un trait)
+    // the jumps already made in the air (they come back on touching a floor, an edge, a line)
     jumps: 0,
-    // accroché à un trait : où sont ses mains (sur le trait), et si le trait est raide (il l'escalade) ou plat (il y
-    // est suspendu)
+    // hanging on a line: where his hands are (on the line), and whether the line is steep (he climbs it) or flat
+    // (he hangs from it)
     grip: { x: 0, y: 0 },
     steep: true,
-    // (il vient de lâcher un trait : un instant, il ne s'y raccroche pas, même ↑ tenue)
+    // (he has just let go of a line: for a moment, he does not grab it again, even with ↑ held)
     cool: 0,
   }
-  // à l'arrivée : au milieu, en bas
+  // on arrival: in the middle, at the bottom
   const start = () => {
     const { W, H, w, h } = size()
     Object.assign(b, { where: 'floor', x: (W - w) / 2, y: H - h, face: 1, vx: 0, vy: 0, trip: 0 })
   }
   start()
-  // il lâche (ou décolle) : en l'air, avec cet élan
+  // he lets go (or takes off): in the air, with this momentum
   const fall = (vx = 0, vy = 0) => {
     if (b.where === 'line') b.cool = 0.45
     Object.assign(b, { where: 'air', vx, vy })
   }
 
-  // promené à la souris, vers (x, y)
+  // dragged by the mouse, towards (x, y)
   function drag(x: number, y: number) {
     if (b.where === 'carried') Object.assign(b, { x, y })
   }
-  // accroché à un trait, ses mains sur le trait : sa boîte (raide : contre le trait, du côté où il regarde, ses mains
-  // à hauteur d'épaules ; plat : pendu dessous, les mains en haut)
-  const GRIP_AT = 0.3 // (ses mains, en part de sa hauteur)
+  // hanging on a line, his hands on the line: his box (steep: against the line, on the side he faces, his hands
+  // at shoulder height; flat: hanging below, hands up)
+  const GRIP_AT = 0.3 // (his hands, as a share of his height)
   function hang(w: number, h: number) {
     if (b.steep) Object.assign(b, { x: b.face === 1 ? b.grip.x - w : b.grip.x, y: b.grip.y - h * GRIP_AT })
     else Object.assign(b, { x: b.grip.x - w / 2, y: b.grip.y })
   }
 
-  // dt : le temps passé (s) ; k : les flèches tenues ; ax, ay : l'accélération de la fenêtre sur l'écran (px/s²)
+  // dt: elapsed time (s); k: the arrows held; ax, ay: the window's acceleration on screen (px/s²)
   function step(dt: number, k: Keys, ax = 0, ay = 0) {
     if (b.where === 'carried' || b.where === 'away' || b.where === 'sleep' || b.where === 'door') return
     const { W, H, w, h } = size()
@@ -91,18 +92,18 @@ export function createBody(size: Size, lines?: Lines) {
     const dx = (k.right ? 1 : 0) - (k.left ? 1 : 0)
     const dy = (k.down ? 1 : 0) - (k.up ? 1 : 0)
     const was = { x: b.x, y: b.y }
-    // un bord qui avance le pousse (il reste dans la fenêtre)
+    // an edge moving in pushes him (he stays in the window)
     if (b.x > right + 0.5 || b.x < -0.5) b.pushed = 0.4
     b.pushed = Math.max(0, b.pushed - dt)
     b.squashed = H < h * 1.7
-    // (contre quel bord : -1 à gauche, 1 à droite, 0 aucun)
+    // (against which edge: -1 left, 1 right, 0 none)
     const side = b.x <= 0.5 ? -1 : b.x >= right - 0.5 ? 1 : 0
     const shake = Math.hypot(ax, ay)
 
     if (b.where === 'floor') {
-      // le sol s'est éloigné (la fenêtre a grandi vers le bas) : il tombe
+      // the floor has moved away (the window grew downwards): he falls
       if (b.y < floor - 1) fall()
-      // la fenêtre bouge fort : il glisse à l'opposé ; plus fort vers le bas que la pesanteur : il décolle
+      // the window moves hard: he slides the opposite way; harder downwards than gravity: he takes off
       else if (ay > GRAVITY) fall(-ax * dt, -(ay - GRAVITY) * dt)
       else {
         if (Math.abs(ax) > SLIP) b.vx -= ax * dt
@@ -111,30 +112,30 @@ export function createBody(size: Size, lines?: Lines) {
         if (dx) b.face = dx as 1 | -1
         b.x += (b.vx + (b.squashed ? 0.4 : 1) * dx * WALK) * dt
         if (b.where === 'floor') b.y = floor
-        // contre un bord, la flèche du haut : il grimpe
+        // against an edge, the up arrow: he climbs
         if (side && dy < 0 && !b.squashed) b.where = 'wall'
       }
     } else if (b.where === 'line') {
-      // accroché à un trait : les flèches le font avancer le long, dans leur sens (raide : il grimpe ; plat : il
-      // avance suspendu) ; au bout, il passe par-dessus (en montant) ou il tombe ; la barre d'espace, ou s'éloigner
-      // d'un trait raide, il lâche
+      // hanging on a line: the arrows move him along it, in their direction (steep: he climbs; flat: he moves along
+      // hanging); at the end, he goes over the top (going up) or falls; with the space bar, or moving away from a
+      // steep line, he lets go
       const here = lines?.near(b.grip.x, b.grip.y, REACH) ?? null
       const len = Math.hypot(dx, dy) || 1
       if (!here || shake > GRIP) fall()
       else if (k.jump) fall(-b.face * 80, -JUMP * 0.8)
       else if (b.steep && dx === -b.face && !dy) fall(-b.face * 40, 0)
       else {
-        // (le sens du trait qui va avec les flèches, et sa vitesse : escalade ou suspendu)
+        // (the line's direction that matches the arrows, and his speed: climbing or hanging)
         const along = (here.ux * dx + here.uy * dy) / len
         const speed = b.steep ? CLIMB : HANG
         const gx = here.x + here.ux * along * speed * dt
         const gy = here.y + here.uy * along * speed * dt
         const next = lines?.near(gx, gy, REACH) ?? null
-        // (au bout : plus de trait là où il va, ou il pousse sans plus avancer, collé au dernier point)
+        // (at the end: no more line where he is going, or he pushes without moving, stuck to the last point)
         const stuck =
           !!next && Math.abs(along) > 0.3 && Math.hypot(next.x - here.x, next.y - here.y) < speed * dt * 0.25
         if (!next || stuck) {
-          // le bout du trait : en montant, il se hisse par-dessus ; sinon il tombe
+          // the end of the line: going up, he pulls himself over it; otherwise he falls
           if (here.uy * along < 0) fall(b.face * 140, -420)
           else fall()
         } else {
@@ -142,19 +143,19 @@ export function createBody(size: Size, lines?: Lines) {
           b.steep = Math.abs(next.uy) > Math.abs(next.ux)
           if (!b.steep && dx) b.face = dx as 1 | -1
           hang(w, h)
-          // (redescendu jusqu'au sol : il y reprend pied)
+          // (back down to the ground: he finds his feet there)
           if (b.y >= floor && dy > 0) Object.assign(b, { where: 'floor', y: floor })
         }
       }
     } else if (b.where === 'wall') {
-      // le bord s'est éloigné (la fenêtre a grandi), ou la fenêtre le secoue : il lâche
+      // the edge has moved away (the window grew), or the window shakes him: he lets go
       if (!side || shake > GRIP) fall(-ax * dt * 0.5, -ay * dt * 0.5)
       else {
         b.face = side === -1 ? -1 : 1
         b.x = side === -1 ? 0 : right
         b.y = Math.min(floor, Math.max(0, b.y + dy * CLIMB * dt))
         if (b.y >= floor && dy > 0) b.where = 'floor'
-        // en haut, vers l'intérieur : il passe sous le bord du haut, suspendu ; plus bas, vers l'intérieur : il lâche
+        // at the top, inwards: he goes under the top edge, hanging; lower, inwards: he lets go
         const away = dx === -side && dx !== 0
         if (away && b.y <= 0) b.where = 'ceiling'
         else if (away) fall()
@@ -165,16 +166,16 @@ export function createBody(size: Size, lines?: Lines) {
         if (dx) b.face = dx as 1 | -1
         b.x += dx * HANG * dt
         b.y = 0
-        // contre un bord, la flèche du bas : il redescend le long du bord ; ailleurs : il lâche, et tombe
+        // against an edge, the down arrow: he climbs down along the edge; elsewhere: he lets go, and falls
         if (dy > 0) {
           if (side) b.where = 'wall'
           else fall()
         }
       }
     } else {
-      // en l'air : encore un saut (deux fois au plus, avant de retoucher quelque chose)
+      // in the air: one more jump (twice at most, before touching something again)
       if (k.jump && b.jumps < AIR_JUMPS) Object.assign(b, { vy: -AGAIN, jumps: b.jumps + 1 })
-      // la pesanteur, l'inertie quand la fenêtre bouge, et les flèches le portent encore un peu
+      // gravity, inertia when the window moves, and the arrows still carry him a little
       b.vx -= ax * dt
       b.vy += (GRAVITY - ay) * dt
       if (dx) b.face = dx as 1 | -1
@@ -184,7 +185,7 @@ export function createBody(size: Size, lines?: Lines) {
         b.x = Math.min(right, Math.max(0, b.x))
         b.vx = -b.vx * BOUNCE
       }
-      // contre un bord, la flèche du haut : il s'y accroche (en sautant, ou en tombant)
+      // against an edge, the up arrow: he grabs it (jumping, or falling)
       const touching = b.x <= 0.5 || b.x >= right - 0.5
       if (b.where === 'air' && touching && dy < 0 && b.y < floor) Object.assign(b, { where: 'wall', vx: 0, vy: 0 })
       if (b.where === 'air' && b.y < 0) {
@@ -194,9 +195,9 @@ export function createBody(size: Size, lines?: Lines) {
       }
       if (b.where === 'air' && b.y >= floor) Object.assign(b, { y: floor, vy: 0, where: 'floor' })
     }
-    // la flèche du haut, un trait à portée de ses mains : d'abord un trait plat juste au-dessus de sa tête (il s'y
-    // hisse, suspendu) ; sinon le plus proche autour du haut de son corps, pas sous ses pieds (raide : il se met
-    // contre ; plat : il s'y suspend)
+    // the up arrow, a line within reach of his hands: first a flat line just above his head (he pulls himself up,
+    // hanging); otherwise the closest one around his upper body, not under his feet (steep: he gets against it;
+    // flat: he hangs from it)
     b.cool = Math.max(0, b.cool - dt)
     if (dy < 0 && !b.cool && (b.where === 'floor' || b.where === 'air')) {
       const cx = b.x + w / 2
@@ -212,9 +213,9 @@ export function createBody(size: Size, lines?: Lines) {
         hang(w, h)
       }
     }
-    // (il touche quelque chose : ses sauts en l'air reviennent)
+    // (he touches something: his air jumps come back)
     if (b.where !== 'air') b.jumps = 0
-    // (toujours dans la fenêtre, même si elle a rétréci)
+    // (always inside the window, even if it shrank)
     b.x = Math.min(right, Math.max(0, b.x))
     b.y = Math.min(floor, Math.max(0, b.y))
     const moved = Math.hypot(b.x - was.x, b.y - was.y)

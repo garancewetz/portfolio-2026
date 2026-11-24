@@ -1,10 +1,10 @@
-// Une créature, en caractères : son numéro (fixe : il ne change pas quand on en retire une), son nom, un mot sur
-// elle, et ses poses (tournée vers la droite) : au repos, en marche, en plein saut, en train de grimper (deux images :
-// une main en haut, puis l'autre), et accroupie. Chaque pose s'écrit telle quelle, entre deux accents graves, sur
-// plusieurs lignes (la première et la dernière, vides, ne comptent pas) ; les \ restent des \.
+// A creature, in characters: its number (fixed: it does not change when one is removed), its name, a word about
+// it, and its poses (facing right): at rest, walking, mid-jump, climbing (two frames: one hand up, then the
+// other), and crouching. Each pose is written as is, between two backticks, over several lines (the first and
+// last, empty, do not count); the \ stay \.
 
 export type Pose = string[]
-// (fly : pour celles qui volent, les images de leur vol, qui s'enchaînent vite)
+// (fly: for those that fly, the frames of their flight, which follow each other quickly)
 export type Creature = { n: number; name: string; note: string; idle: Pose; walk: Pose; jump: Pose; climb: Pose; climb2: Pose; crouch: Pose; fly?: Pose[] }
 
 export const art = (s: TemplateStringsArray): Pose => {

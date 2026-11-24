@@ -1,27 +1,26 @@
 import { choices, gear } from '@/features/carnet/gear'
 
-// La traînée : là où il passe (en marchant, en sautant, en grimpant, suspendu, promené), son pied arrière laisse
-// un trait sur une toile sous lui. Un trait n'est pas un sol : on passe au travers, on ne s'y pose pas ; mais on
-// peut s'y accrocher, et l'escalader dans tous les sens (voir body.ts, 'line'). La traînée reste jusqu'à ce qu'on
-// quitte la page, que la fenêtre change de taille, ou qu'il passe la porte. La roue crantée choisit : le crayon
-// magique (mine multicolore : plusieurs couleurs côte à côte, qui changent avec le sens du trait), un trait noir,
-// des points, ou rien.
+// The trail: wherever he goes (walking, jumping, climbing, hanging, dragged), his back foot leaves a line on a
+// canvas under him. A line is not a floor: you go through it, you do not land on it; but you can grab it, and
+// climb it in every direction (see body.ts, 'line'). The trail stays until you leave the page, the window
+// changes size, or he goes through the door. The cog wheel chooses: the magic pencil (multicolour lead: several
+// colours side by side, changing with the line's direction), a black line, dots, or nothing.
 
 const KINDS = ['multicolore', 'trait', 'points', 'rien'] as const
 type Kind = (typeof KINDS)[number]
-const GAP = 9 // px entre deux points
+const GAP = 9 // px between two points
 const INK = '#1a1917'
-// le crayon magique (mine multicolore) : la mine mêle plusieurs couleurs en quartiers ; le trait, assez large,
-// en montre plusieurs côte à côte, comme des rayures le long de la ligne (un bord bleu, l'autre jaune ou rouge, du
-// vert, du violet là où elles se touchent). Selon le sens du trait, la mine frotte le papier par une autre face :
-// les couleurs des bords changent. Les quartiers de la mine, dans l'ordre, tout autour :
+// the magic pencil (multicolour lead): the lead mixes several colours in wedges; the line, fairly wide, shows
+// several side by side, like stripes along the line (one edge blue, the other yellow or red, green, purple
+// where they meet). Depending on the line's direction, the lead rubs the paper with another face: the edge
+// colours change. The wedges of the lead, in order, all the way round:
 const LEAD = [
-  [47, 95, 176], // bleu
-  [233, 197, 45], // jaune
-  [217, 83, 43], // rouge orangé
-  [72, 48, 120], // violet sombre
+  [47, 95, 176], // blue
+  [233, 197, 45], // yellow
+  [217, 83, 43], // orange red
+  [72, 48, 120], // dark purple
 ]
-// la couleur de la mine à cet angle (en tours : 0 à 1), entre deux quartiers, mêlée
+// the lead's colour at this angle (in turns: 0 to 1), between two wedges, blended
 function tint(turn: number) {
   const f = ((((turn % 1) + 1) % 1) * LEAD.length) % LEAD.length
   const a = LEAD[Math.floor(f)]
@@ -29,12 +28,12 @@ function tint(turn: number) {
   const k = f - Math.floor(f)
   return a.map((v, i) => Math.round(v + (b[i] - v) * k))
 }
-const BANDS = [-2.4, -1.2, 0, 1.2, 2.4] // les rayures, en travers du trait (px)
-const FRESH = 400 // ms : le bout qu'il vient de tracer, il ne s'y accroche pas (il est encore sous son pied)
-const JUMP = 80 // px d'une image à l'autre : plus loin, c'est un bond (la traînée s'interrompt)
+const BANDS = [-2.4, -1.2, 0, 1.2, 2.4] // the stripes, across the line (px)
+const FRESH = 400 // ms: the bit he has just drawn, he does not grab it (it is still under his foot)
+const JUMP = 80 // px from one frame to the next: farther, it is a leap (the trail breaks off)
 
 type Seg = { x1: number; y1: number; x2: number; y2: number; t: number }
-// le point d'un bout de trait le plus proche de (px, py), et la direction du trait (de son début vers sa fin)
+// the point of a line segment closest to (px, py), and the line's direction (from its start to its end)
 function closest(s: Seg, px: number, py: number) {
   const dx = s.x2 - s.x1
   const dy = s.y2 - s.y1
@@ -49,10 +48,10 @@ export function createTrail(canvas: HTMLCanvasElement) {
   const ctx = canvas.getContext('2d')
   let kind: Kind = 'multicolore'
   let last: { x: number; y: number } | null = null
-  let since = 0 // (le chemin depuis le dernier point posé)
-  let segs: Seg[] = [] // (ce qu'il a tracé)
+  let since = 0 // (the path since the last point laid)
+  let segs: Seg[] = [] // (what he has drawn)
 
-  // tout effacer
+  // erase everything
   const clear = () => {
     ctx?.clearRect(0, 0, canvas.width, canvas.height)
     last = null
@@ -69,7 +68,7 @@ export function createTrail(canvas: HTMLCanvasElement) {
   addEventListener('resize', resize)
 
   return {
-    // son pied arrière est là : la traînée le suit
+    // his back foot is here: the trail follows it
     to(x: number, y: number) {
       if (!ctx || kind === 'rien') return
       if (!last) {
@@ -78,20 +77,20 @@ export function createTrail(canvas: HTMLCanvasElement) {
       }
       const d = Math.hypot(x - last.x, y - last.y)
       if (d < 0.5) return
-      // (un bond : attrapé, emporté d'un coup par la souris ; la traînée ne relie pas, elle reprend de là)
+      // (a leap: grabbed, carried off at once by the mouse; the trail does not join up, it picks up from there)
       if (d > JUMP) {
         last = { x, y }
         return
       }
       segs.push({ x1: last.x, y1: last.y, x2: x, y2: y, t: performance.now() })
       if (kind === 'multicolore') {
-        // des rayures côte à côte, en travers du trait : chacune la face de la mine qui frotte à cet endroit (elles
-        // tournent avec le sens du trait) ; le grain du crayon : chaque passage un peu décalé, plus ou moins appuyé
+        // stripes side by side, across the line: each one the face of the lead rubbing at that spot (they turn with
+        // the line's direction); the pencil's grain: each pass slightly offset, pressed more or less hard
         const dx = x - last.x
         const dy = y - last.y
-        const n = { x: -dy / d, y: dx / d } // (en travers du trait)
+        const n = { x: -dy / d, y: dx / d } // (across the line)
         const turn = Math.atan2(dy, dx) / (2 * Math.PI)
-        // (bouts droits : arrondis, les bouts qui se chevauchent feraient des pointillés plus sombres)
+        // (square ends: rounded, overlapping ends would make darker dots)
         ctx.lineCap = 'butt'
         const from = last
         BANDS.forEach((off, i) => {
@@ -113,7 +112,7 @@ export function createTrail(canvas: HTMLCanvasElement) {
         ctx.lineTo(x, y)
         ctx.stroke()
       } else {
-        // des points réguliers, le long du chemin
+        // regular dots, along the path
         ctx.fillStyle = INK
         since += d
         while (since >= GAP) {
@@ -126,9 +125,9 @@ export function createTrail(canvas: HTMLCanvasElement) {
       }
       last = { x, y }
     },
-    // le trait le plus proche de (x, y), à moins de reach px : le point où s'y accrocher, et la direction du trait
-    // (pas le bout qu'il vient de tracer, encore sous son pied)
-    // (keep : seulement les points qui conviennent, par exemple au-dessus de sa tête)
+    // the line closest to (x, y), within reach px: the point to grab, and the line's direction
+    // (not the bit he has just drawn, still under his foot)
+    // (keep: only the points that fit, for instance above his head)
     near(x: number, y: number, reach: number, keep?: (p: { x: number; y: number; ux: number; uy: number }) => boolean) {
       const now = performance.now()
       let best: ReturnType<typeof closest> | null = null
@@ -140,11 +139,11 @@ export function createTrail(canvas: HTMLCanvasElement) {
       return best
     },
     clear,
-    // il disparaît d'ici (une autre fenêtre), ou réapparaît ailleurs : la traînée ne les relie pas
+    // he disappears from here (another window), or reappears elsewhere: the trail does not join them
     lift() {
       last = null
     },
-    // la roue crantée, dans la ligne du carnet
+    // the cog wheel, in the notebook line
     settings(slot: HTMLElement) {
       gear(slot, 'Réglages de la traînée', [
         choices('traînée', KINDS, kind, (k) => {

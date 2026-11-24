@@ -1,10 +1,10 @@
 import type { Kind, Look } from './browser'
 import { icons } from './icons'
 
-// La barre du haut de chaque navigateur, au plus près des vraies (en pixels de la page, à la taille réelle) :
-// Chrome, Edge et Brave (une rangée d'onglets, puis la barre d'outils et sa barre d'adresse arrondie), Firefox
-// (l'onglet posé comme une carte), Safari (une seule barre, le champ d'adresse au milieu). La page dessine
-// ensuite son contenu dessous.
+// The top bar of each browser, as close to the real ones as possible (in page pixels, at real size):
+// Chrome, Edge and Brave (a row of tabs, then the toolbar and its rounded address bar), Firefox
+// (the tab laid like a card), Safari (a single bar, the address field in the middle). The page then
+// draws its content below.
 
 type Ctx = CanvasRenderingContext2D
 export type Info = { title: string; host: string; path: string; mac: boolean; favicon: HTMLImageElement | null }
@@ -24,7 +24,7 @@ function lights(ctx: Ctx, x: number, y: number) {
     ctx.stroke()
   })
 }
-// (Windows : réduire, agrandir, fermer, à droite)
+// (Windows: minimise, maximise, close, on the right)
 function controls(ctx: Ctx, x: number, y: number, w: number, L: Look) {
   ctx.strokeStyle = L.text
   ctx.lineWidth = 1
@@ -52,7 +52,7 @@ function text(ctx: Ctx, s: string, x: number, y: number, color: string, size = 1
   ctx.textBaseline = 'middle'
   ctx.fillText(s, x, y)
 }
-// le titre de l'onglet, coupé au bord (en fondu, comme Chrome)
+// the tab title, cut at the edge (faded, like Chrome)
 function title(ctx: Ctx, info: Info, x: number, y: number, w: number, L: Look) {
   ctx.save()
   ctx.beginPath()
@@ -74,7 +74,7 @@ function chromium(ctx: Ctx, x: number, y: number, w: number, L: Look, info: Info
   ctx.fillRect(x, y, w, S)
   if (info.mac) lights(ctx, x, y + S / 2)
   else controls(ctx, x, y + S / 2, w, L)
-  // l'onglet ouvert : coins arrondis en haut, et ses « pieds » qui s'évasent dans la barre d'outils
+  // the open tab: rounded top corners, and its « feet » flaring into the toolbar
   const tx = x + (info.mac ? 82 : 10)
   const tw = Math.min(256, Math.max(120, w * 0.22))
   const top = y + 8
@@ -97,7 +97,7 @@ function chromium(ctx: Ctx, x: number, y: number, w: number, L: Look, info: Info
   ctx.lineWidth = 1.4
   icons.plus(ctx, tx + tw + 22, top + 16, 6)
   if (info.mac) icons.chevronDown(ctx, x + w - 22, y + S / 2)
-  // la barre d'outils
+  // the toolbar
   const B = y + S
   ctx.fillStyle = L.bar
   ctx.fillRect(x, B, w, 41)
@@ -122,7 +122,7 @@ function chromium(ctx: Ctx, x: number, y: number, w: number, L: Look, info: Info
   url(ctx, info, ox + 40, cy, L)
   ctx.lineWidth = 1.4
   icons.star(ctx, ox + ow - 20, cy)
-  // le profil (une pastille), et le menu
+  // the profile (a dot), and the menu
   ctx.fillStyle = '#8ab4f8'
   ctx.beginPath()
   ctx.arc(x + w - 58, cy, 11, 0, Math.PI * 2)
@@ -139,7 +139,7 @@ function firefox(ctx: Ctx, x: number, y: number, w: number, L: Look, info: Info)
   ctx.fillRect(x, y, w, S)
   if (info.mac) lights(ctx, x, y + S / 2)
   else controls(ctx, x, y + S / 2, w, L)
-  // l'onglet : une carte posée, avec une ombre
+  // the tab: a card laid down, with a shadow
   const tx = x + (info.mac ? 82 : 8)
   const tw = Math.min(240, Math.max(120, w * 0.22))
   ctx.save()
@@ -197,7 +197,7 @@ function safari(ctx: Ctx, x: number, y: number, w: number, L: Look, info: Info) 
   icons.sidebar(ctx, x + 100, cy)
   icons.chevronLeft(ctx, x + 140, cy)
   icons.chevronRight(ctx, x + 166, cy)
-  // le champ d'adresse, au milieu : le cadenas et le nom du site
+  // the address field, in the middle: the padlock and the site name
   const fw = Math.min(w * 0.42, 600)
   ctx.fillStyle = L.field
   ctx.beginPath()

@@ -1,0 +1,60 @@
+import { glBackground } from './gl-background'
+import { placeLabel } from './place-label'
+import { RELIEF_FS, RELIEF_SETTINGS, PROJECT_PLACES } from './relief-shader'
+import { texturesStartingWith } from './reliefs'
+import { QUERY, calm } from './shared'
+import { snowGlobe } from './snow-globe'
+import { atThisHour } from './time-of-day'
+
+// The backdrop of the home page: Garance's places in relief (relief-shader.ts), in the light of the hour it is in
+// Paris (time-of-day.ts), with the name of the place shown (place-label.ts) and the snow globe (snow-globe.ts).
+
+export const SETTINGS = atThisHour(RELIEF_SETTINGS)
+// a project opened directly (?p=id): the backdrop starts from its place
+const asked = QUERY.get('p')
+const START = asked && SETTINGS[asked] ? asked : 'rest'
+
+export const inLabNow = () => document.documentElement.classList.contains('in-lab')
+// on arrival the backdrop is flat (the sea of clouds) and nothing else shows but an arrow; the first stretch of
+// scrolling (--lead in cards.css: 1.7 screens, 1.5 on a phone) raises the Canigou out of the clouds, slowly and evenly
+// (a gentle ease, not a steep one); only then do the badges arrive, then the signature
+const lead = () => innerHeight * (innerWidth <= 820 ? 1.5 : 1.7)
+// the settings following the scroll (they stay as they are while hovering); in the lab: Arles, whole
+export const SCROLL_DRIVEN: Record<string, () => number> = {
+  rise: () => {
+    if (inLabNow()) return 1
+    const x = Math.min(1, Math.max(0, scrollY / lead()))
+    return x * x * (3 - 2 * x)
+  },
+}
+export const scrollDriven = () => Object.fromEntries(Object.entries(SCROLL_DRIVEN).map(([k, f]) => [k, f()]))
+
+// hovering changes the place only once « Garance Wetzel » has stuck under the badges (before, the badges passing
+// under the pointer while scrolling would trigger it): scrolled down to its rail, minus its `top`
+export function hoverAllowed() {
+  if (inLabNow()) return true
+  const rail = document.querySelector<HTMLElement>('.signature-rail')
+  const sig = rail?.querySelector('.signature')
+  const scene = rail?.closest<HTMLElement>('.scene')
+  return !!rail && !!sig && !!scene && scrollY >= scene.offsetTop + rail.offsetTop - parseFloat(getComputedStyle(sig).top) - 2
+}
+
+// smaller on a phone; shorter for whoever asked for less motion
+const canvas = document.querySelector<HTMLCanvasElement>('#backdrop')!
+export const BACKDROP = placeLabel(
+  glBackground(canvas, RELIEF_FS, SETTINGS[START], {
+    scale: matchMedia('(pointer: coarse)').matches || innerWidth < 820 ? 0.35 : 0.75,
+    textures: texturesStartingWith(QUERY.has('labo') ? 'arles' : PROJECT_PLACES[START]),
+    duration: calm ? 500 : 1600,
+    ready: () => document.documentElement.classList.add('backdrop-ready'),
+  }),
+  SETTINGS[START] as { here: number },
+)
+
+export function setupBackdrop() {
+  snowGlobe(BACKDROP)
+  // the other reliefs: at the first gesture, or as soon as the page is idle after arriving (4 s at the latest)
+  const loadTheRest = () => BACKDROP.loadAll()
+  addEventListener('pointerdown', loadTheRest, { once: true })
+  setTimeout(() => ('requestIdleCallback' in window ? requestIdleCallback(loadTheRest, { timeout: 3000 }) : loadTheRest()), 1200)
+}

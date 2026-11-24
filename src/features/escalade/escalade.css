@@ -1,4 +1,4 @@
-/* ——— Escalade (voir main.ts) : la page claire du site, le bonhomme à l'encre, sur les bords de la fenêtre ——— */
+/* ——— Escalade (see main.ts): the site's light page, the little man in ink, on the edges of the window ——— */
 @import '@/styles/base.css';
 
 :root {
@@ -6,7 +6,7 @@
   color-scheme: light;
   --carnet-ink: rgb(26 25 23 / 0.5);
   --carnet-ink-hover: rgb(26 25 23 / 0.95);
-  /* (la roue crantée : un panneau d'encre, sur la page claire) */
+  /* (the cog wheel: an ink panel, on the light page) */
   --panel-bg: rgb(26 25 23 / 0.9);
   --panel-accent: #ffffff;
 }
@@ -22,14 +22,14 @@ body {
   user-select: none;
   touch-action: none;
 }
-/* la traînée qu'il laisse (voir trail.ts), sous lui */
+/* the trail he leaves (see trail.ts), under him */
 .es-trail {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
-/* le bonhomme : sa boîte, déplacée par le script (translate), dans le coin en haut à gauche de la page */
+/* the little man: his box, moved by the script (translate), in the top-left corner of the page */
 .es-man {
   position: absolute;
   top: 0;
@@ -40,7 +40,7 @@ body {
   white-space: pre;
   will-change: transform;
 }
-/* l'arrivée : ses caractères en vrac, posés un par un (voir intro.ts) ; ils glissent à leur place */
+/* the arrival: his characters scattered, laid one by one (see intro.ts); they slide into place */
 .es-loose span {
   position: absolute;
   top: 0;
@@ -49,7 +49,7 @@ body {
   color: var(--ink);
   transition: transform 0.7s cubic-bezier(0.45, 0, 0.2, 1);
 }
-/* la porte (voir door.ts) : au milieu de la page, à l'encre, comme lui */
+/* the door (see door.ts): in the middle of the page, in ink, like him */
 .es-door {
   position: absolute;
   top: 0;
@@ -59,7 +59,7 @@ body {
   color: var(--ink);
   white-space: pre;
 }
-/* les flèches, au milieu de la page, discrètes ; elles s'effacent au premier geste */
+/* the arrows, in the middle of the page, discreet; they fade at the first move */
 .es-hint {
   position: absolute;
   inset: 0;

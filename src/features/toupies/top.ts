@@ -2,11 +2,11 @@ import * as THREE from 'three'
 import { motifs, VARIANTS, type Variant } from './motifs'
 import { toy } from './toy'
 
-// Une toupie à pompe en tôle, en 3D : un corps large et plat imprimé (voir motifs.ts) ; le col, la poignée et le
-// pied en plastique, la tige torsadée de la pompe (voir toy.ts).
+// A tinplate pump top, in 3D: a wide, flat printed body (see motifs.ts); the collar, the handle and the foot in
+// plastic, the plunger's twisted rod (see toy.ts).
 
-// le profil (rayon, hauteur), du haut au bas : deux coupelles de tôle bombées, larges et plates, réunies par un
-// rebord ; le haut et le bas, cachés par le col et le pied (posés en TOP et BOTTOM)
+// the profile (radius, height), from top to bottom: two domed tinplate cups, wide and flat, joined by a rim; the
+// top and the bottom, hidden by the collar and the foot (placed at TOP and BOTTOM)
 const TOP = 0.44
 const BOTTOM = -0.44
 const PROFILE = [
@@ -15,10 +15,10 @@ const PROFILE = [
 ]
 function profile() {
   const samples = new THREE.SplineCurve(PROFILE.map(([r, y]) => new THREE.Vector2(r, y))).getSpacedPoints(400)
-  // pour chaque point, son angle depuis le haut (vu du centre) ; et où est le bord, le long du profil
+  // for each point, its angle from the top (seen from the centre); and where the rim is, along the profile
   const angles = samples.map((p) => Math.atan2(p.x, p.y))
   const edge = samples.reduce((best, p, k) => (p.x > samples[best].x ? k : best), 0) / (samples.length - 1)
-  // le point de la surface dans une direction : polar (depuis l'axe, en haut) et ra (autour de l'axe)
+  // the surface point in a direction: polar (from the axis, at the top) and ra (around the axis)
   const onSurface = (polar: number, ra: number) => {
     let k = 1
     while (k < angles.length - 1 && angles[k] < polar) k++
@@ -30,11 +30,10 @@ function profile() {
   return { samples, edge, onSurface }
 }
 
-// la moyenne de l'image le long du tour, comme pour l'œil (uBlur : la portion de tour parcourue pendant que l'œil
-// garde la lumière, voir spin.ts) ; elle se fait sur la lumière elle-même (l'image est décodée en intensités réelles
-// avant d'être lue) : noir et blanc à parts égales donnent un gris clair. Soixante-quatre échantillons, pour
-// qu'aucune fausse rayure n'apparaisse. Les lampes aussi (l'image de ce qui brille) : leurs points s'étirent en
-// traits, puis en anneaux de néon
+// the average of the image along the turn, as for the eye (uBlur: the share of a turn covered while the eye
+// holds the light, see spin.ts); it is done on the light itself (the image is decoded into real intensities
+// before being read): black and white in equal parts give a light grey. Sixty-four samples, so that no false
+// stripe appears. The lamps too (the image of what shines): their dots stretch into lines, then into neon rings
 function eyeBlur(material: THREE.MeshPhysicalMaterial, blur: { value: number }) {
   material.onBeforeCompile = (shader) => {
     shader.uniforms.uBlur = blur
@@ -60,7 +59,7 @@ function eyeBlur(material: THREE.MeshPhysicalMaterial, blur: { value: number }) 
   }
 }
 
-// blur : la portion de tour fondue, de 0 (le motif net) à 1 (une seule couleur) ; glow : ses lampes (0 à 1)
+// blur: the share of a turn blended, from 0 (the sharp pattern) to 1 (a single colour); glow: its lamps (0 to 1)
 export function top(variant: Variant) {
   const d = VARIANTS[variant]
   const group = new THREE.Group()
@@ -78,24 +77,24 @@ export function top(variant: Variant) {
   })
   const blur = { value: 0 }
   eyeBlur(skin, blur)
-  // (le profil, du bas vers le haut : les faces regardent vers l'extérieur, et l'image a son haut en haut)
+  // (the profile, from bottom to top: the faces look outwards, and the image has its top at the top)
   group.add(new THREE.Mesh(new THREE.LatheGeometry(samples.slice().reverse(), 180), skin))
-  // le col, la tige, la poignée, le pied, les fentes du sifflet (voir toy.ts)
+  // the collar, the rod, the handle, the foot, the whistle slits (see toy.ts)
   const { plunger, slots, slotsBlur } = toy(group, TOP, BOTTOM, d.plastic)
   slots(onSurface)
   group.traverse((o) => (o.castShadow = true))
   return {
     group,
     plunger,
-    // (du centre à la pointe, sous le pied ; et le rayon du bord : où elle touche la table quand elle est couchée)
+    // (from the centre to the tip, under the foot; and the rim's radius: where it touches the table when lying down)
     tip: -BOTTOM + 0.48,
     rim: Math.max(...samples.map((p) => p.x)),
     blur(b: number) {
       blur.value = d.blur ? b : 0
       slotsBlur(d.blur ? b : 0)
     },
-    // (une lampe qui tourne vite trace son anneau sans pâlir : la lumière d'un point se répartit sur tout le tour,
-    // mais une vraie lampe est si vive que l'anneau reste éclatant)
+    // (a lamp spinning fast traces its ring without fading: a dot's light spreads over the whole turn, but a real
+    // lamp is so bright that the ring stays dazzling)
     glow(l: number) {
       skin.emissiveIntensity = l * 2.2 * (1 + 7 * blur.value)
     },

@@ -1,6 +1,6 @@
 import { art, type Creature } from './art'
 
-// Le robot : une créature inventée.
+// The robot: an invented creature.
 export const C4: Creature[] = [
   {
     n: 37,

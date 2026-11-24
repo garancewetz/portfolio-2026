@@ -1,19 +1,19 @@
 import * as THREE from 'three'
 import { FLOOR, type Spinner } from './spin'
 
-// Les chocs : les bords de l'écran renvoient les toupies, quelle que soit la vue (de côté : sur les côtés, et devant ;
-// au fond, elles peuvent partir très loin, vers l'horizon, toutes petites ; de dessus : les quatre côtés), et deux
-// toupies ne se traversent pas (leurs rebords se touchent) : elles échangent leur élan le long de la ligne qui les
-// joint. Et elles se frottent : tant qu'elles se touchent, celle qui tourne vite entraîne l'autre (ce qu'elle lui
-// donne, elle le perd, et un peu plus) — une toupie couchée, frottée par une toupie lancée, se met à tourner et se
-// relève ; et leurs rebords, qui filent en sens contraires au point de contact, les écartent l'une de l'autre de côté.
+// The collisions: the screen edges bounce the tops back, whatever the view (from the side: on the sides, and in
+// front; at the back, they can go very far, towards the horizon, tiny; from above: all four sides), and two tops
+// do not pass through each other (their rims touch): they exchange their momentum along the line joining them.
+// And they rub: as long as they touch, the one spinning fast drags the other along (what it gives, it loses, and
+// a little more) — a top lying down, rubbed by a spinning top, starts spinning and stands back up; and their
+// rims, running in opposite directions at the contact point, push them apart sideways.
 
-// (au fond, la limite de la page : très loin)
+// (at the back, the limit of the page: very far)
 const BACK = -150
-// (la part d'écart de vitesse rattrapée par seconde de contact, et celle qui se perd en chaleur)
+// (the share of the speed difference caught up per second of contact, and the share lost as heat)
 const RUB = 2.5
 const LOSS = 0.25
-// (la distance en deçà de laquelle deux rebords se touchent)
+// (the distance under which two rims touch)
 const TOUCH = 0.04
 
 export function bump(tops: Spinner[], camera: THREE.Camera, dt: number) {
@@ -27,7 +27,7 @@ export function bump(tops: Spinner[], camera: THREE.Camera, dt: number) {
       const dz = b.z - a.z
       const d = Math.hypot(dx, dz) || 0.001
       const reach = a.rim + b.rim
-      // (elles se frottent dès que leurs rebords se touchent, même sans se presser)
+      // (they rub as soon as their rims touch, even without pressing)
       if (d >= reach + TOUCH) continue
       const nx = dx / d
       const nz = dz / d
@@ -35,8 +35,8 @@ export function bump(tops: Spinner[], camera: THREE.Camera, dt: number) {
       const given = gap * (1 - Math.exp(-RUB * dt)) * 0.5
       a.omega -= given * (gap > 0 ? 1 + LOSS : 1 - LOSS)
       b.omega += given * (gap > 0 ? 1 - LOSS : 1 + LOSS)
-      // (au point de contact, leurs rebords filent en sens contraires : chacune est poussée de côté, à l'opposé de
-      // l'autre ; elles glissent l'une contre l'autre)
+      // (at the contact point, their rims run in opposite directions: each one is pushed sideways, away from the
+      // other; they slide against each other)
       const side = 0.02 * (a.omega + b.omega) * dt
       a.vx += side * nz
       a.vz -= side * nx
@@ -59,21 +59,21 @@ export function bump(tops: Spinner[], camera: THREE.Camera, dt: number) {
   }
 }
 
-// les bords de l'écran : là où la toupie est posée, vue par la caméra (de -1 à 1 en largeur et en hauteur), moins
-// son rebord ; elle n'est renvoyée que si elle va vers le dehors (une toupie déjà dehors, quand on change de vue,
-// peut toujours revenir)
+// the screen edges: where the top stands, seen by the camera (from -1 to 1 in width and height), minus its rim;
+// it is only bounced back if it is heading out (a top already outside, when the view changes, can always come
+// back)
 const at = new THREE.Vector3()
 const off = new THREE.Vector3()
 function edges(a: Spinner, camera: THREE.Camera) {
   at.set(a.x, FLOOR, a.z).project(camera)
-  // (avec un peu de marge : la toupie reste entière, sa pompe et son ombre comprises)
+  // (with a little margin: the top stays whole, its plunger and its shadow included)
   const rx = 1.2 * Math.abs(off.set(a.x + a.rim, FLOOR, a.z).project(camera).x - at.x)
   const ry = 1.4 * Math.abs(off.set(a.x, FLOOR, a.z + a.rim).project(camera).y - at.y)
   if ((at.x > 1 - rx && a.vx > 0) || (at.x < rx - 1 && a.vx < 0)) {
     a.x = a.px
     a.vx *= -0.5
   }
-  // (en bas de l'écran, c'est vers nous ; en haut, vers le fond)
+  // (at the bottom of the screen, it is towards us; at the top, towards the back)
   if ((at.y < ry - 1 && a.vz > 0) || ((at.y > 1 - ry || a.z < BACK) && a.vz < 0)) {
     a.z = a.pz
     a.vz *= -0.5

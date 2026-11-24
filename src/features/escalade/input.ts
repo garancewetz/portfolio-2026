@@ -1,8 +1,8 @@
 import type { Keys, Where } from './body'
 
-// Ce qu'on lui fait faire. Au clavier : les flèches, la barre d'espace (saut). À la souris, au doigt : appuyer sur
-// lui l'attrape (il pend au curseur, on le promène, on le lâche : il part avec l'élan) ; appuyer ailleurs, et garder
-// appuyé, le dirige vers ce point.
+// What you make him do. On the keyboard: the arrows, the space bar (jump). With the mouse, with a finger:
+// pressing on him grabs him (he hangs from the cursor, you carry him, you drop him: he goes off with the
+// momentum); pressing elsewhere, and holding, steers him towards that point.
 
 type Body = { where: Where; x: number; y: number }
 
@@ -19,11 +19,11 @@ export function input(
   o: {
     body: Body
     size: () => { w: number; h: number }
-    /** un geste (le premier le forme) */
+    /** a move (the first one forms him) */
     onGesture: () => void
-    /** lâché par la souris, avec cet élan (px/s) */
+    /** dropped by the mouse, with this momentum (px/s) */
     drop: (vx: number, vy: number) => void
-    /** promené à la souris, vers ce point (il peut s'y cogner, voir body.ts) */
+    /** dragged by the mouse, towards this point (he may bump into things, see body.ts) */
     drag: (x: number, y: number) => void
   },
 ) {
@@ -32,7 +32,7 @@ export function input(
     const k = KEY[e.key]
     if (!k) return
     e.preventDefault()
-    // (le saut : un appui, un saut ; il ne se répète pas en gardant la touche, voir body.ts)
+    // (the jump: one press, one jump; it does not repeat while holding the key, see body.ts)
     if (k === 'jump') {
       if (on && !e.repeat) keys.jump = true
     } else keys[k] = on
@@ -40,7 +40,7 @@ export function input(
   }
   addEventListener('keydown', press(true))
   addEventListener('keyup', press(false))
-  // (en quittant la fenêtre, plus rien n'est tenu)
+  // (leaving the window, nothing is held any more)
   addEventListener('blur', () => Object.keys(keys).forEach((k) => (keys[k as keyof Keys] = false)))
 
   let pointer: { x: number; y: number } | null = null
@@ -49,7 +49,7 @@ export function input(
     const r = main.getBoundingClientRect()
     return { x: e.clientX - r.left, y: e.clientY - r.top }
   }
-  // (sur lui : dans sa boîte, un peu agrandie)
+  // (on him: inside his box, slightly enlarged)
   const onHim = (p: { x: number; y: number }) => {
     const { w, h } = o.size()
     const b = o.body
@@ -66,7 +66,7 @@ export function input(
     } else pointer = p
     o.onGesture()
   })
-  // promené : sa main sous le curseur ; l'élan, d'après les derniers mouvements
+  // dragged: his hand under the cursor; the momentum, from the latest movements
   function hold(p: { x: number; y: number }) {
     const { w } = o.size()
     o.drag(p.x - w / 2, p.y - 4)
@@ -83,7 +83,7 @@ export function input(
   for (const type of ['pointerup', 'pointercancel'] as const)
     main.addEventListener(type, () => {
       if (carry) {
-        // (la souris immobile depuis un moment : il tombe droit, sans élan)
+        // (the mouse still for a while: he drops straight, without momentum)
         const still = performance.now() - carry.t > 90
         const clamp = (n: number) => (still ? 0 : Math.max(-1600, Math.min(1600, n)))
         o.drop(clamp(carry.vx), clamp(carry.vy))
@@ -92,14 +92,15 @@ export function input(
       pointer = null
     })
 
-  // les flèches tenues ; ou, en appuyant ailleurs que sur lui, la direction du point (sur l'axe où il est le plus loin)
+  // the arrows held; or, pressing elsewhere than on him, the direction of the point (on the axis where it is
+  // farthest)
   function steer(): Keys {
     if (!pointer) return keys
     const { w, h } = o.size()
     const b = o.body
     const dx = pointer.x - (b.x + w / 2)
     const dy = pointer.y - (b.y + h / 2)
-    const far = 12 // px : assez près, il s'arrête
+    const far = 12 // px: close enough, he stops
     const across = Math.abs(dx) > Math.abs(dy) || b.where === 'floor' || b.where === 'ceiling'
     return {
       left: (across || Math.abs(dy) < far) && dx < -far,

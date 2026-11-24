@@ -1,26 +1,25 @@
 import { MAX } from './flock'
 import { perchCol, perchRow, places } from './perches'
 
-// les oiseaux posés qu'on dérange en passant la souris dessus : quand ils se sont envolés (en secondes, horloge
-// réelle), et combien de temps dure leur petit tour avant de revenir à leur place
+// the perched birds disturbed by passing the mouse over them: when they took off (in seconds, real clock), and
+// how long their little loop lasts before coming back to their place
 export const startled = new Float64Array(MAX).fill(-1e9)
-// (de quel côté il part : décidé une fois, au moment où il s'envole, à l'opposé de la souris ; ensuite il finit
-// son tour sans s'occuper d'elle)
+// (which side it leaves towards: decided once, when it takes off, away from the mouse; then it finishes its loop
+// without minding it)
 const startledSide = new Int8Array(MAX).fill(1)
-// (et chacun son tour, tiré au moment de l'envol : sa durée, sa hauteur, sa distance ; d'où il part, s'il change
-// de place en se reposant)
+// (and each its own loop, drawn at take-off: its duration, its height, its distance; where it starts from,
+// whether it changes place when landing again)
 export const startledSpan = new Float32Array(MAX)
 export const startledLift = new Float32Array(MAX)
 export const startledDrift = new Float32Array(MAX)
 export const startledFromX = new Float32Array(MAX)
 export const startledFromY = new Float32Array(MAX)
-export const STARTLE_NEAR = 46 // (en pixels autour de la souris)
+export const STARTLE_NEAR = 46 // (in pixels around the mouse)
 const STARTLE_TIME = 2.2
-// faire s'envoler l'oiseau i (posé, en x, y) à l'instant seconds, vers le côté side (1 : la droite, -1 : la
-// gauche) : la plupart font un petit saut, quelques-uns vont un peu plus loin et plus haut ; un sur cinq se
-// repose ailleurs, sur une place voisine
+// make bird i (perched, at x, y) take off at time seconds, towards side side (1: right, -1: left): most make a
+// little hop, a few go a bit farther and higher; one in five lands elsewhere, on a nearby place
 export function startle(i: number, x: number, y: number, seconds: number, side: number) {
-  const far = Math.random() ** 2 // (souvent petit, parfois grand)
+  const far = Math.random() ** 2 // (often small, sometimes large)
   startled[i] = seconds
   startledSide[i] = side
   startledSpan[i] = STARTLE_TIME * (0.75 + 0.7 * far + 0.2 * Math.random())

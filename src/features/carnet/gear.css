@@ -1,5 +1,5 @@
-/* ——— La roue crantée du carnet (voir gear.ts) et son panneau de réglages. Une page le colore avec --panel-bg (le
-   fond du panneau) et --panel-accent (les réglettes) ——— */
+/* ——— The notebook's cog wheel (see gear.ts) and its settings panel. A page colours it with --panel-bg (the
+   panel background) and --panel-accent (the sliders) ——— */
 .carnet-left {
   position: relative;
 }
@@ -8,7 +8,7 @@
   padding: 0;
   border: 0;
   background: none;
-  /* (un peu plus présente que le reste de la ligne, pour qu'on ait envie de l'ouvrir) */
+  /* (a little more present than the rest of the line, so you feel like opening it) */
   color: var(--carnet-ink-hover, rgb(255 255 255 / 0.85));
   font: inherit;
   font-size: 17px;
@@ -17,7 +17,7 @@
   cursor: pointer;
   pointer-events: auto;
   transition: transform 0.6s;
-  /* (un tour sur elle-même, une seule fois, peu après l'ouverture de la page : un clin d'œil) */
+  /* (one turn on itself, just once, shortly after the page opens: a wink) */
   animation: carnet-gear-wink 1.6s 1.2s cubic-bezier(0.45, 0, 0.2, 1) backwards;
 }
 @keyframes carnet-gear-wink {
@@ -85,7 +85,7 @@
 .carnet-swatches button[aria-pressed='true'] {
   box-shadow: 0 0 0 2px rgb(255 255 255 / 0.85);
 }
-/* des boutons à choisir (voir choices) : des mots, celui choisi sur un fond clair */
+/* buttons to choose from (see choices): words, the chosen one on a light background */
 .carnet-wide {
   grid-column: span 2;
 }

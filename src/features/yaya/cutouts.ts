@@ -1,5 +1,5 @@
-// Le détourage des maisons du village (voir scene.ts), fait une fois au chargement, pixel par pixel : on enlève
-// la végétation autour (ce qui est vert), on garde les murs et les toits (beiges, orangés, gris).
+// Cutting out the village houses (see scene.ts), done once on load, pixel by pixel: the vegetation around is
+// removed (what is green), the walls and roofs are kept (beige, orange, grey).
 
 function pixels(img: HTMLImageElement) {
   const c = document.createElement('canvas')
@@ -22,7 +22,7 @@ export function house(img: HTMLImageElement) {
     const r = d[i]
     const g = d[i + 1]
     const b = d[i + 2]
-    // (vert : le vert dépasse le rouge et le bleu ; et l'ombre sous les arbres, sombre et sans couleur chaude)
+    // (green: green exceeds red and blue; and the shade under the trees, dark and with no warm colour)
     const green = g - Math.max(r, b)
     const dark = (r + g + b) / 3 < 55 && r <= g + 6
     d[i + 3] = dark ? 0 : 255 * (1 - smooth(-4, 14, green))

@@ -1,51 +1,51 @@
-// Le moteur du feu d'artifice liquide : une simulation de fluide en WebGL2 (« stable fluids » : la vitesse du
-// liquide est transportée par elle-même, rendue sans divergence, avec un peu de tourbillon en plus), dans laquelle
-// on verse de la couleur. Une gerbe = des gouttes de couleur projetées en étoile depuis un point ; le liquide les
-// étire, les enroule, puis la couleur se dissout dans le fond papier.
-// Chargé seulement quand on allume le mode (voir Fireworks.tsx).
+// The liquid fireworks engine: a fluid simulation in WebGL2 (« stable fluids »: the liquid's velocity is carried
+// by itself, made divergence-free, with a little extra swirl), into which colour is poured. A burst = drops of
+// colour thrown out in a star from a point; the liquid stretches them, curls them, then the colour dissolves into
+// the paper background.
+// Loaded only when the mode is turned on (see Fireworks.tsx).
 
 import { createPrograms, createTargets, type Double, type Target } from './gl'
 import type { ProgName } from './shaders'
 
-const SIM = 128 // résolution de la vitesse (le petit côté)
-const DYE = 640 // résolution de la couleur (le petit côté)
-const DYE_FADE = 0.55 // la couleur se dissout (par seconde ; réglable, voir createFluid)
-const VEL_FADE = 0.35 // le liquide se calme (par seconde)
+const SIM = 128 // velocity resolution (the short side)
+const DYE = 640 // colour resolution (the short side)
+const DYE_FADE = 0.55 // the colour dissolves (per second; adjustable, see createFluid)
+const VEL_FADE = 0.35 // the liquid calms down (per second)
 const PRESSURE_FADE = 0.8
 const PRESSURE_STEPS = 20
-const CURL = 22 // force des tourbillons (réglable, voir createFluid)
-// les sortes de gerbes : pivoine (une couronne, deux couleurs), chrysanthème (deux couronnes et des crépitements),
-// double (une 2e explosion juste après), saule (doré, qui retombe)
+const CURL = 22 // swirl strength (adjustable, see createFluid)
+// the kinds of bursts: peony (one crown, two colours), chrysanthemum (two crowns and crackles),
+// double (a 2nd explosion just after), willow (golden, falling back down)
 const SHELLS = ['peony', 'chrysanthemum', 'double', 'willow', 'chrysanthemum'] as const
 const GOLD = [1, 0.78, 0.32]
 
-// les couleurs des captures des projets (les mêmes, dans le même ordre, que les étincelles : voir show.ts) (le bleu de Signe, le vert de Synapso, le rose de Trans-trame…)
+// the colours of the project screenshots (the same, in the same order, as the sparks: see show.ts) (Signe's blue, Synapso's green, Trans-trame's pink…)
 const COLORS: [number, number, number][] = [
-  [0.49, 0.36, 0.84], // violet de la grille
-  [0.84, 0.36, 0.59], // rose
-  [0.24, 0.48, 0.88], // bleu
-  [0.18, 0.64, 0.42], // vert
+  [0.49, 0.36, 0.84], // the grid's purple
+  [0.84, 0.36, 0.59], // pink
+  [0.24, 0.48, 0.88], // blue
+  [0.18, 0.64, 0.42], // green
   [0.94, 0.54, 0.24], // orange
-  [0.91, 0.73, 0.19], // or
+  [0.91, 0.73, 0.19], // gold
 ]
 
 export interface Fluid {
-  /** une gerbe, centrée en (x, y) (px CSS, dans la fenêtre) */
+  /** a burst, centred on (x, y) (CSS px, in the window) */
   burst(x: number, y: number, size?: number, colors?: [number, number]): void
-  /** une image : le liquide avance de dt secondes, puis s'affiche */
+  /** one frame: the liquid moves forward by dt seconds, then is displayed */
   step(dt: number): void
   resize(): void
   clear(): void
   destroy(): void
 }
 
-// ink : la quantité de couleur versée (1 : pleine ; moins : un halo léger, sous les étincelles) ; fade : vitesse à
-// laquelle elle se dissout (par seconde) ; curl : force des tourbillons (peu : une lueur douce, pas de marbrures)
+// ink: the amount of colour poured (1: full; less: a light halo, under the sparks); fade: how fast it dissolves
+// (per second); curl: swirl strength (little: a soft glow, no marbling)
 interface FluidOptions {
   ink?: number
-  /** une seule teinte pour toute la couleur versée (la fumée : gris-bleu) */
+  /** a single hue for all the colour poured (the smoke: blue-grey) */
   tint?: number[]
-  /** résolution de la couleur (le petit côté ; moins sur un téléphone) */
+  /** colour resolution (the short side; less on a phone) */
   dye?: number
   fade?: number
   curl?: number
@@ -86,7 +86,7 @@ export function createFluid(
     built = true
   }
 
-  // dessine un programme dans une cible (ou à l'écran), avec ses textures et ses valeurs
+  // draws a program into a target (or to the screen), with its textures and its values
   const run = (name: ProgName, to: Target | null, values: Record<string, number | number[] | Target>) => {
     const { p, u } = progs[name]
     gl.useProgram(p)
@@ -129,13 +129,13 @@ export function createFluid(
   }
   resize()
 
-  // des gestes à faire un peu plus tard (crépitements, 2e explosion), comptés en temps de simulation
+  // gestures to perform a bit later (crackles, 2nd explosion), counted in simulation time
   let clock = 0
   const queue: { at: number; fn: () => void }[] = []
   const later = (sec: number, fn: () => void) => queue.push({ at: clock + sec, fn })
 
-  // une couronne d'étincelles projetées depuis (x, y) : n gouttes, vitesse, rayon de départ, deux couleurs en
-  // alternance, éclat, taille d'une goutte ; fall : un peu de chute (vitesse vers le bas)
+  // a crown of sparks thrown out from (x, y): n drops, speed, starting radius, two alternating colours,
+  // brightness, drop size; fall: a little falling (downward velocity)
   const ring = (
     x: number,
     y: number,
@@ -157,7 +157,7 @@ export function createFluid(
       splat(x + Math.cos(t) * r * ratio, y + Math.sin(t) * r, Math.cos(t) * v, Math.sin(t) * v + fall, col, radius)
     }
   }
-  // des crépitements : de minuscules éclats dorés, au hasard dans un disque
+  // crackles: tiny golden flashes, at random in a disc
   const crackle = (x: number, y: number, spread: number, n: number) => {
     const ratio = canvas.height / canvas.width
     for (let i = 0; i < n; i++) {
@@ -185,7 +185,7 @@ export function createFluid(
       while (!colors && b === a) b = pick()
       const kind = SHELLS[Math.floor(Math.random() * SHELLS.length)]
       const glow = 1.6 + Math.random() * 0.8
-      // l'éclair du départ : un cœur chaud, très dense, qui s'étale
+      // the starting flash: a hot, very dense core, spreading out
       splat(
         x,
         y,
@@ -195,7 +195,7 @@ export function createFluid(
         0.0035 * size,
       )
       if (kind === 'willow') {
-        // saule : beaucoup d'étincelles dorées, plus lentes, qui retombent
+        // willow: many golden sparks, slower, falling back down
         ring(x, y, 40, 160 * size, 0.022 * size, GOLD, GOLD, glow, 0.0003 * size, -90 * size)
         later(0.5, () => crackle(x, y, 0.1 * size, 22))
         later(0.95, () => crackle(x, y - 0.05 * size, 0.13 * size, 18))
@@ -203,11 +203,11 @@ export function createFluid(
       }
       ring(x, y, 34 + Math.floor(Math.random() * 12), 300 * size, 0.026 * size, a, b, glow, 0.00034 * size, 0)
       if (kind === 'chrysanthemum') {
-        // une 2e couronne, plus petite et plus lente, d'une autre couleur, puis des crépitements
+        // a 2nd crown, smaller and slower, in another colour, then crackles
         ring(x, y, 22, 150 * size, 0.014 * size, b, b, glow, 0.00026 * size, 0)
         later(0.45, () => crackle(x, y, 0.12 * size, 26))
       } else if (kind === 'double') {
-        // une seconde explosion, un peu plus tard, dans l'autre couleur
+        // a second explosion, a bit later, in the other colour
         later(0.32, () => ring(x, y, 30, 230 * size, 0.02 * size, b, a, glow, 0.0003 * size, 0))
       }
     },

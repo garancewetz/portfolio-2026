@@ -10,23 +10,23 @@ import { bouncer, step } from './bounce'
 import { lines } from './lines'
 import { trace } from './trace'
 
-// Créatures : les créatures en caractères dorment, chacune sur son bout de ficelle, comme sur des cordes à linge
-// (voir lines.ts). Au survol, celle qu'on approche se réveille et fait du trampoline sur sa ficelle, de plus en
-// plus haut, et laisse derrière elle un trait de sa couleur, la forme de ses sauts, qui s'efface (voir trace.ts) ;
-// laissée, elle se calme, se pose, et se rendort (voir bounce.ts). Endormies, rien ne bouge.
+// Créatures: the creatures made of characters sleep, each on its bit of string, as if on clotheslines
+// (see lines.ts). On hover, the one you approach wakes up and bounces on its string, higher and higher,
+// leaving behind a line in its colour, the shape of its jumps, which fades (see trace.ts); left alone, it calms
+// down, settles, and falls asleep again (see bounce.ts). While they sleep, nothing moves.
 
-// la ligne du carnet (le labo, la page, les voisines)
+// the notebook line (the lab, the page, its neighbours)
 mount()
 
 const CREATURES: Creature[] = [...C1, ...C2, ...C3, ...C4, ...C7]
 const room = document.querySelector<HTMLElement>('.cr')!
 const bouncers = CREATURES.map(bouncer)
-// (sans animation, si on l'a demandé au système : réveillée, elle ouvre les yeux, sans sauter)
+// (without animation, if the system asks for it: awake, it opens its eyes, without jumping)
 const still = matchMedia('(prefers-reduced-motion: reduce)').matches
 const { draw } = lines(room, bouncers, wake)
 const marks = trace(room, bouncers.length)
 
-// l'animation ne tourne que si l'une est réveillée, ou bouge encore
+// the animation only runs while one is awake, or still moving
 let raf = 0
 let last = 0
 function frame(now: number) {
@@ -38,12 +38,12 @@ function frame(now: number) {
       b.awake = b.hover
       continue
     }
-    // (deux demi-pas : la ficelle est raide, un pas entier la ferait vibrer de travers)
+    // (two half-steps: the string is stiff, a whole step would make it quiver wrongly)
     busy = step(b, dt / 2) || busy
     busy = step(b, dt / 2) || busy
   }
   const t = now / 1000
-  // (la trace : tant qu'elle n'est pas tout à fait effacée, on continue ; sans animation, pas de trace)
+  // (the trace: as long as it is not fully faded, keep going; without animation, no trace)
   draw(still ? undefined : (i, x, y) => marks.add(i, x, y, t))
   if (!still) busy = marks.paint(t) || busy
   raf = busy ? requestAnimationFrame(frame) : 0
