@@ -166,17 +166,3 @@ main.mascots.carnet-sheet {
   outline: 1.5px solid #fff;
   outline-offset: 2px;
 }
-.mascots-all {
-  margin-top: 4vh;
-  padding: 6px 14px;
-  background: #ffffff1a;
-  color: #fff;
-  border: 1px solid #ffffff50;
-  border-radius: 4px;
-  font: 12px var(--mono, ui-monospace), monospace;
-  cursor: pointer;
-}
-.mascots-all:hover {
-  background: #fff;
-  color: #1414e6;
-}

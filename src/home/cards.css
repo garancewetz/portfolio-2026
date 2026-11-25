@@ -120,5 +120,3 @@ html:not(.scrolled, .in-lab) .place-label { opacity: 0; }
   position: fixed; left: 50%; bottom: 28px; translate: -50% 0; z-index: 2; margin: 0; pointer-events: none;
   font-size: 11px; letter-spacing: .04em; color: #fff; opacity: calc((var(--pullback, 0) - .8) * 5);
 }
-/* leaving for an experiment of the lab: the page fades while the camera moves into the backdrop */
-html.leaving :is(.scene, .top-bar, .place-label) { opacity: 0 !important; transition: opacity .5s; }
