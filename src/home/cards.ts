@@ -120,10 +120,16 @@ function glide() {
 
 export function setupCards() {
   document.body.append(scene)
-  // the hint to scroll, on arrival: a badge (see cards.css); gone at the first scroll
-  document.body.append(el('<p class="scroll-hint badge" aria-hidden="true">défiler<span>↓</span></p>'))
-  setTimeout(() => document.documentElement.classList.add('hint-on'), 2000)
-  const scrolled = () => document.documentElement.classList.toggle('scrolled', scrollY > 24)
+  // the hint to scroll, on arrival: « projets ↓ », a badge in the blue of the sky (see cards.css); it stays while the
+  // Canigou rises (until 60 % of a screen). A click on it scrolls for you, softly, down to the badges
+  const hint = el<HTMLButtonElement>('<button class="scroll-hint badge" type="button">projets<span aria-hidden="true">↓</span></button>')
+  hint.addEventListener('click', () => scrollTo({ top: document.documentElement.scrollHeight, behavior: calm ? 'auto' : 'smooth' }))
+  document.body.append(hint)
+  setTimeout(() => document.documentElement.classList.add('hint-on'), 900)
+  const scrolled = () => {
+    document.documentElement.classList.toggle('scrolled', scrollY > 24)
+    document.documentElement.classList.toggle('risen', scrollY > innerHeight * 0.6)
+  }
   addEventListener('scroll', scrolled, { passive: true })
   scrolled()
   // the scroll drives the backdrop; « hello, world. » greets on arrival and leads back home from the lab:

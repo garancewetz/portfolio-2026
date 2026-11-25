@@ -83,13 +83,14 @@ html:not(.in-lab) .row a[data-id="labo"]:not(:hover, :focus-visible) b { backgro
   .signature { top: 244px; }
 }
 
-/* on arrival, the hint to scroll: a badge, bottom centre, bobbing gently; only after two seconds without moving
-   (the first seconds are the landscape alone, cards.ts sets html.hint-on), and gone at the first scroll */
-.scroll-hint { position: fixed; left: 50%; bottom: 28px; translate: -50% 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .8s; }
-html.hint-on .scroll-hint { opacity: 1; }
+/* on arrival, the hint to scroll: a badge in the blue of the sky, above the clouds (where it shows), bobbing gently; after a short moment (the landscape first,
+   cards.ts sets html.hint-on), and there until the Canigou is well out of the clouds (html.risen) */
+.scroll-hint { position: fixed; left: 50%; top: 34vh; translate: -50% 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .8s, background .3s, color .3s; cursor: pointer; }
+.scroll-hint:is(:hover, :focus-visible) { background: #fff; color: #1414e6; outline: none; }
+html.hint-on .scroll-hint { opacity: 1; pointer-events: auto; }
 .scroll-hint span { display: inline-block; margin-left: 6px; animation: hint 1.8s ease-in-out infinite; }
 @keyframes hint { 50% { translate: 0 3px; } }
-html:is(.scrolled, .in-lab) .scroll-hint { opacity: 0; }
+html:is(.risen, .in-lab) .scroll-hint { opacity: 0; pointer-events: none; }
 /* « hello, world. »: on the home page, it fades once « Garance Wetzel » has arrived (cards.ts); it comes back when
    scrolling up, and in the lab, where it leads back home */
 .top-bar .home { transition: opacity .6s; }
