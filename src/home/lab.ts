@@ -64,14 +64,12 @@ const LAB_MODE: Mode = {
   },
 }
 
-// the home page as it was left (the scroll, the active badge, its place), to find it again on the way back
+// the active badge (and its place), to find it again on the way back
 let inLab = false
-let homeScroll = 0
 let homeActive: string | null = null
 export function enterLab({ history: push = true, instant = false } = {}) {
   if (inLab) return
   inLab = true
-  homeScroll = scrollY
   homeActive = scene.querySelector<HTMLElement>('.row a.active')?.dataset.id || null
   if (push) history.pushState({ lab: true }, '', LAB_URL)
   document.title = 'Labo — Garance Wetzel'
@@ -96,7 +94,9 @@ function leaveLab({ history: push = true } = {}) {
   transition(() => {
     layCards(PROJECTS_MODE)
     document.documentElement.classList.remove('in-lab')
-    scrollTo(0, homeScroll)
+    // back home, it is ready: everything in place (the badges stuck, the name, the whole relief), never the arrival
+    // in the clouds, even when the lab was the first page (?labo, or from an experiment)
+    scrollTo(0, document.documentElement.scrollHeight)
     if (homeActive) activate(homeActive)
     BACKDROP.goTo(aim(homeActive || 'rest'))
   })
