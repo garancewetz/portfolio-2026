@@ -1,0 +1,27 @@
+/* ——— The sky of the freed mascots (sky.ts), on every page they fly over ——— */
+/* the sky: over the whole page, letting clicks through; it fades in (from one page to the next, the creatures do
+   not pop up) */
+.mascots-sky {
+  animation: mascots-sky-in 0.4s ease-out both;
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  /* (a canvas does not stretch between its edges like a box: it is given the screen's size) */
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  view-transition-name: mascots-sky;
+}
+/* in a transition of the page (the home page opening the lab), the sky is not frozen with the rest: it goes on living
+   through it, its creatures flying on */
+::view-transition-old(mascots-sky) {
+  display: none;
+}
+::view-transition-new(mascots-sky) {
+  animation: none;
+}
+@keyframes mascots-sky-in {
+  from {
+    opacity: 0;
+  }
+}

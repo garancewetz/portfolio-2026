@@ -1,0 +1,182 @@
+/* ——— Mascottes (see main.ts): a line of creatures on the sea of clouds of the home page ——— */
+@import '@/styles/base.css';
+
+:root {
+  --bg: #1414e6;
+  --ink: #ffffff;
+  color-scheme: dark;
+  /* (the notebook's line, in white) */
+  --carnet-ink: rgb(255 255 255 / 0.55);
+  --carnet-ink-hover: rgb(255 255 255 / 0.95);
+}
+/* (more precise than the notebook's sheet, which gives every page its own background) */
+html:has(.mascots),
+body:has(.mascots) {
+  min-height: 100%;
+  background: #2a2ee8 url(/accueil/posters/wide-day.jpg) center bottom / cover no-repeat fixed;
+}
+@media (max-aspect-ratio: 1/1) {
+  html:has(.mascots),
+  body:has(.mascots) {
+    background-image: url(/accueil/posters/tall-day.jpg);
+  }
+}
+main.mascots.carnet-sheet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 100vh;
+  padding: 72px 16px 7vh;
+  background: transparent;
+  color: var(--ink);
+  font: 15px/1.45 -apple-system, system-ui, sans-serif;
+}
+/* the line: all side by side on the horizon of the clouds, as long as the screen allows; then four by four, two by two */
+.mascots-line {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 8px;
+  width: min(100%, 1480px);
+}
+@media (max-width: 1100px) {
+  .mascots-line {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    row-gap: 40px;
+  }
+}
+@media (max-width: 560px) {
+  .mascots-line {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.mascots-place {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  margin: 0;
+  text-align: center;
+}
+/* the ASCII it comes from, above it: when it is out, it is all that is left in its place */
+.mascots-ascii {
+  display: grid;
+  place-items: end center;
+  height: 60px;
+  margin: 0;
+  font: 500 11px/1.15 var(--mono, ui-monospace), monospace;
+  /* (no ligatures: each sign stays itself, as on the Créatures page) */
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0;
+  white-space: pre;
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity 0.4s, transform 0.4s;
+}
+.mascots-place:hover .mascots-ascii {
+  opacity: 0.9;
+}
+.mascots-place.free .mascots-ascii {
+  opacity: 1;
+  transform: translateY(70px);
+  font-size: 15px;
+}
+/* the creature: its canvas reaches past its place on both sides (transparent, letting clicks through), so that a tail
+   or an ear can stick out */
+.mascots-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 212 / 290;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.mascots-stage canvas {
+  position: absolute;
+  top: 0;
+  left: -24%;
+  width: 148%;
+  height: 100%;
+  pointer-events: none;
+}
+/* (name, « libérer », then its word and its dyes) */
+.mascots-place figcaption {
+  display: contents;
+}
+.mascots-place figcaption b {
+  font: 500 12px var(--mono, ui-monospace), monospace;
+  letter-spacing: 0.04em;
+}
+/* « libérer » / « rappeler », always there; its word and its dyes only for the one we look at */
+.mascots-act {
+  order: 1;
+  margin-top: 8px;
+  padding: 3px 10px;
+  background: #ffffff1a;
+  color: #fff;
+  border: 1px solid #ffffff50;
+  border-radius: 4px;
+  font: 11px var(--mono, ui-monospace), monospace;
+  cursor: pointer;
+}
+.mascots-act:hover,
+.mascots-place.free .mascots-act {
+  background: #fff;
+  color: #1414e6;
+}
+.mascots-place figcaption span {
+  order: 2;
+  min-height: 2.9em;
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.2;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.mascots-dyes {
+  order: 3;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.mascots-place:hover :is(figcaption span, .mascots-dyes),
+.mascots-place:focus-within :is(figcaption span, .mascots-dyes) {
+  opacity: 0.85;
+}
+@media (hover: none) {
+  .mascots-dyes {
+    opacity: 0.85;
+  }
+}
+.mascots-dye {
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: 1px solid #ffffff80;
+  border-radius: 50%;
+  background: var(--c);
+  cursor: pointer;
+}
+.mascots-dye.on {
+  outline: 1.5px solid #fff;
+  outline-offset: 2px;
+}
+.mascots-all {
+  margin-top: 4vh;
+  padding: 6px 14px;
+  background: #ffffff1a;
+  color: #fff;
+  border: 1px solid #ffffff50;
+  border-radius: 4px;
+  font: 12px var(--mono, ui-monospace), monospace;
+  cursor: pointer;
+}
+.mascots-all:hover {
+  background: #fff;
+  color: #1414e6;
+}

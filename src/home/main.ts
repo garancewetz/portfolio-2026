@@ -3,6 +3,7 @@ import './header.css'
 import './cards.css'
 import './lab.css'
 import './note.css'
+import { roam } from '@/features/mascots/roam'
 import { setupBackdrop } from './backdrop'
 import { setupCards } from './cards'
 import { setupHeader } from './header'
@@ -10,6 +11,7 @@ import { setupLabGate } from './lab-gate'
 import { setupLab } from './lab'
 import { setupNote } from './note'
 import { setupTrail } from './trail'
+import { setupWheel } from './wheel'
 
 // The home page: Garance's places in relief behind the project badges (backdrop.ts); hovering a badge leads to its
 // place and writes its sentence, a click keeps it with its links (note.ts). The lab opens in the page itself (lab.ts,
@@ -19,9 +21,12 @@ import { setupTrail } from './trail'
 // its clicks; the badges before the lab, which takes them over).
 
 setupTrail()
+setupWheel()
 setupHeader()
 setupBackdrop()
 setupCards()
 setupNote()
 setupLab()
 setupLabGate()
+// the mascots freed on the Mascottes page fly over the home page too (see features/mascots/roam.ts)
+void roam()

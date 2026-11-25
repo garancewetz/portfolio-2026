@@ -3,8 +3,8 @@ import { el } from './shared'
 
 // A project's note, on the home page itself (a project has no page of its own): hovering its badge (or reaching it
 // with Tab, or touching it on a phone) writes what it is, its sentence and its links (the site, the code) under
-// « Garance Wetzel »; it stays there, so that the links can be reached. Escape lets it go. The visible text is in
-// French, like the site.
+// « Garance Wetzel »; it stays there, so that the links can be reached. A click on the background lets it go (see
+// cards.ts), Escape too. The visible text is in French, like the site.
 
 const note = el(`
   <aside class="project-note" aria-live="polite">
@@ -27,9 +27,8 @@ export function showNote(id: string) {
   note.classList.add('on')
 }
 
+export const hideNote = () => note.classList.remove('on')
+
 export function setupNote() {
   document.body.append(note)
-  addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') note.classList.remove('on')
-  })
 }

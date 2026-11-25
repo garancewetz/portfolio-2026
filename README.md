@@ -11,7 +11,7 @@ Wetzel », avec ses liens (le site, le code) : pas de page détail. La lumière 
 
 **Le labo** (`?labo`, `lab.js`) : derrière une petite énigme (`lab-gate.js`), sur Arles, une heure par expérience, le
 yéti sur le o. Chaque expérience a sa propre page HTML (voir `vite.config.ts`) : Toupies, Murmuration, Créatures,
-Ruban, Kit (la mascotte de Kit en 3D), Abyme ; Escalade, Feu d'artifice, Morse et Yaya existent toujours, sans lien.
+Ruban, Kit (la mascotte de Kit en 3D), Mascottes (les créatures ASCII en 3D ; une mascotte libérée vole ensuite sur tout le site), Abyme ; Escalade, Feu d'artifice, Morse et Yaya existent toujours, sans lien.
 
 ## Lancer le projet
 
@@ -33,11 +33,12 @@ src/                           (alias `@/` = `src/`)
   home/                        l'accueil, en modules : main (l'ordre de mise en place), shared, data (projets),
                                header, backdrop (le fond) + gl-background (le moteur WebGL) + reliefs + relief-shader
                                (les lieux) + place-label + snow-globe + time-of-day, cards (les badges), note (la
-                               phrase et les liens d'un projet), motion, lab + yeti + lab-gate (le labo), trail (le chemin, pour Abyme) ; et leur CSS
+                               phrase et les liens d'un projet), motion, lab + yeti + lab-gate (le labo), trail (le chemin, pour Abyme), wheel (la
+                               molette, dans le sens de chacun) ; et leur CSS
   features/                    les expériences du labo, chacune sa page HTML (voir vite.config.ts) :
     carnet/                    le carnet : la ligne en haut de chaque expérience (retour au labo, tourner la
                                page), sheet (la feuille), gear (les réglages), raster + photo (ASCII)
-    murmuration/  toupies/  creatures/  ruban/  kit/  abyme/  escalade/  feu/  fireworks/  morse/  yaya/
+    murmuration/  toupies/  creatures/  ruban/  kit/  mascots/  abyme/  escalade/  feu/  fireworks/  morse/  yaya/
   shared/trail.ts              le chemin de la visite (pour Abyme)
   content/content.ts           les textes du carnet et des projets (pour Abyme)
   styles/base.css              base des pages du labo

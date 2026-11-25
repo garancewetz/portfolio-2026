@@ -2,7 +2,7 @@ import { BACKDROP, SETTINGS, hoverAllowed, nameArrived, scrollDriven } from './b
 import { PROJECTS } from './data'
 import type { Settings } from './gl-background'
 import { openLab } from './lab-gate'
-import { showNote } from './note'
+import { hideNote, showNote } from './note'
 import { LAB_URL, QUERY, calm, el, modified } from './shared'
 
 // The page of badges (see cards.css): the row of badges (six projects and the lab, or five experiments) rising in a
@@ -89,6 +89,15 @@ function pin(id: string) {
   BACKDROP.goTo(aim(id))
   showNote(id)
 }
+// no project chosen any more (a click on the background, Escape): no badge active, no note, the landscape back to
+// where it was before any badge
+function release() {
+  const active = row.querySelector('a.active')
+  if (!active || mode !== PROJECTS_MODE) return
+  active.classList.remove('active')
+  hideNote()
+  BACKDROP.goTo(aim('rest'))
+}
 
 // with a mouse: the hovered project's screenshot follows the cursor, a little below and to the right of it (to the
 // left near the right edge), gliding softly behind it
@@ -154,6 +163,14 @@ export function setupCards() {
     if (!a || modified(e)) return
     e.preventDefault()
     mode.open(a.dataset.id!)
+  })
+
+  // a click anywhere but on a badge, the note, or a link or button of the page lets the chosen project go
+  addEventListener('click', (e) => {
+    if (!(e.target as Element).closest?.('a, button, input, .project-note, .lab-gate')) release()
+  })
+  addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') release()
   })
 
   document.body.append(cursorShot)
