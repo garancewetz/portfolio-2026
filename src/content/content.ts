@@ -129,6 +129,12 @@ export const carnet: Carnet = {
       alt: 'Sur une page gris pâle, six cartes blanches, une par étape d’un ticket, et sur chacune Pousse, une petite mascotte ronde et vernie avec une pousse sur la tête : bleue avec un ticket doré, menthe, corail avec une caméra, orange avec une caisse à outils, violette avec un avion en papier, et menthe encore, sa pousse en fleur.',
     },
     {
+      name: 'mascottes',
+      href: '/mascottes/',
+      src: '/shots/mascottes.webp',
+      alt: 'Sur une mer de nuages bleue, huit créatures de la page Créatures en 3D, en rang, chacune sous l’ASCII dont elle vient et dans sa couleur : deux yétis sans bras aux grandes oreilles, Yétou blanc et Yéta bleue, puis un robot sur ressorts, une souris jaune, un gobelin menthe aux grandes oreilles, un hibou violet, une loutre orange et un paresseux rose.',
+    },
+    {
       name: 'ruban',
       href: '/ruban/',
       src: '/shots/ruban.webp',

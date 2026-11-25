@@ -23,6 +23,7 @@ const LAB_PAGES = [
   { id: 'toupies', title: 'toupies', href: '/toupies/' },
   { id: 'kit', title: 'kit', href: '/kit/' },
   { id: 'abyme', title: 'abyme', href: '/abyme/' },
+  { id: 'mascottes', title: 'mascottes', href: '/mascottes/' },
   { id: 'murmuration', title: 'murmuration', href: '/murmuration/' },
   { id: 'creatures', title: 'créatures', href: '/creatures/' },
 ]
@@ -35,6 +36,7 @@ const HOURS: Record<string, ReturnType<typeof hourSetting>> = {
   toupies: hourSetting('#2b46ea', '#c3c8ff', -3.0, 0.12), // dawn: the sun skimming the water
   kit: hourSetting('#2f4cf2', '#b4beff', -2.6, 0.5), // mid-morning, bright
   abyme: hourSetting('#1414e6', '#9a9aff', -2.2, 0.9), // noon: the blue of the home page
+  mascottes: hourSetting('#1d2ee8', '#a8b2ff', -1.9, 0.6), // early afternoon, the sky high and soft
   murmuration: hourSetting('#2a1690', '#6a4fd6', -0.3, 0.1, 0.25), // indigo dusk
   creatures: hourSetting('#0d1266', '#26308f', -1.6, 0.3, 0.85), // the starry night, under the moon
   ruban: hourSetting('#070a3c', '#151c5e', -4.6, 0.25, 1), // the dark night

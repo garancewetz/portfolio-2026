@@ -1,6 +1,7 @@
 import './carnet.css'
 import './sheet'
 import { remember } from '@/shared/trail'
+import { roam } from '@/features/mascots/roam'
 
 // The lab notebook: the experiments, each on its own page (its own address), leafed through like a notebook. At
 // the top of each page, discreetly: « labo » and the page number on the left; the previous and next pages, by
@@ -17,6 +18,7 @@ const PAGES = [
   { path: '/creatures/', name: 'créatures' },
   { path: '/ruban/', name: 'ruban' },
   { path: '/kit/', name: 'kit' },
+  { path: '/mascottes/', name: 'mascottes' },
   // (Abyme last: it climbs back up the visit)
   { path: '/abyme/', name: 'abyme' },
   // (hidden for now, their pages still exist, unlinked: Yaya, at /yaya/; Escalade, at /escalade/, whose idea
@@ -28,6 +30,8 @@ const indexOf = (url: string) => PAGES.findIndex((p) => new URL(url, location.hr
 export function mount() {
   // (the path of the visit, for the Abyme page)
   remember()
+  // the mascots freed on the Mascottes page fly over every page
+  void roam()
   // (shown in an Abyme window, in an iframe: its links open in the whole window)
   if (window !== window.top) document.head.append(Object.assign(document.createElement('base'), { target: '_top' }))
   const here = indexOf(location.href)

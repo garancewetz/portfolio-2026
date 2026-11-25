@@ -7,7 +7,7 @@ export default defineConfig({
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   // the pages: the site (its lab: /?labo, in the home page itself), and the notebook's: Murmuration (served at
   // /murmuration), Yaya (/yaya), Toupies (/toupies), Feu d'artifice (/feu), Escalade (/escalade), Ruban (/ruban),
-  // Morse (/morse), Créatures (/creatures), Kit (/kit) and Abyme (/abyme)
+  // Morse (/morse), Créatures (/creatures), Kit (/kit), Mascottes (/mascottes) and Abyme (/abyme)
   build: {
     // (three.js alone, shared by the 3D pages, weighs a little over 500 kB: expected)
     chunkSizeWarningLimit: 600,
@@ -24,6 +24,7 @@ export default defineConfig({
         morse: fileURLToPath(new URL('./morse/index.html', import.meta.url)),
         creatures: fileURLToPath(new URL('./creatures/index.html', import.meta.url)),
         kit: fileURLToPath(new URL('./kit/index.html', import.meta.url)),
+        mascottes: fileURLToPath(new URL('./mascottes/index.html', import.meta.url)),
       },
     },
   },
