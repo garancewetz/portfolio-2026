@@ -133,10 +133,17 @@ export function glBackground(canvas: HTMLCanvasElement, FS: string, start: Setti
     gl.drawArrays(gl.TRIANGLES, 0, 3)
   }
 
-  // never more than MAX_PIXELS: on a large Retina screen the (soft, hazy) backdrop gains nothing, and it lagged
+  // never more than MAX_PIXELS: on a large Retina screen the (soft, hazy) backdrop gains nothing, and it lagged.
+  // Zoomed in (⌘ +, which raises devicePixelRatio; or a pinch, visualViewport.scale), the backdrop draws finer, so
+  // that it is not stretched into pixels: the budget grows with the zoom, up to MAX_ZOOMED_PIXELS
   const MAX_PIXELS = 1.6e6
+  const MAX_ZOOMED_PIXELS = 4e6
+  // (the screen's own ratio, at most 2, as on arrival: a phone's 3 gains nothing here; what rises after is a zoom)
+  const startDpr = devicePixelRatio
   function resize() {
-    const R = Math.min(Math.min(devicePixelRatio, 2) * scale, Math.sqrt(MAX_PIXELS / (innerWidth * innerHeight)))
+    const zoom = (window.visualViewport?.scale || 1) * Math.max(1, devicePixelRatio / startDpr)
+    const budget = Math.min(MAX_PIXELS * zoom * zoom, MAX_ZOOMED_PIXELS)
+    const R = Math.min(Math.min(startDpr, 2) * zoom * scale, Math.sqrt(budget / (innerWidth * innerHeight)))
     canvas.width = Math.round(innerWidth * R)
     canvas.height = Math.round(innerHeight * R)
     gl.viewport(0, 0, canvas.width, canvas.height)
@@ -162,6 +169,12 @@ export function glBackground(canvas: HTMLCanvasElement, FS: string, start: Setti
     if (k < 1 || animated) request()
   }
   addEventListener('resize', resize)
+  // a pinch changes only the visual viewport: redrawn once the fingers rest
+  let pinched = 0
+  window.visualViewport?.addEventListener('resize', () => {
+    clearTimeout(pinched)
+    pinched = window.setTimeout(resize, 150)
+  })
   resize()
   if (animated) request()
   return {
