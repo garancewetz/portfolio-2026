@@ -1,6 +1,6 @@
 import { art, type Creature } from './art'
 
-// Le hibou et la loutre.
+// The owl and the otter.
 export const C2: Creature[] = [
   {
     n: 13,
@@ -41,7 +41,7 @@ export const C2: Creature[] = [
 (O,O)
 (___)
 `,
-    // il vole : les ailes en haut, puis à plat, les pattes pendantes (sa tête ne bouge pas)
+    // it flies: wings up, then flat, legs dangling (its head does not move)
     fly: [
       art`
  ,_,

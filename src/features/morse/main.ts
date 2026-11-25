@@ -4,10 +4,10 @@ import { choices, gear, slider } from '@/features/carnet/gear'
 import { spell, timeline, written, type Sign } from './code'
 import { createPlayer } from './player'
 
-// Morse : on tape son prénom, ou une phrase, et elle s'écrit en morse à mesure, lettre à lettre : sous chaque
-// lettre tapée, ses points et ses traits. Les accents reviennent à leur lettre (é : E) ; ce que le morse ne sait
-// pas dire est signalé, sans rien casser. Le bouton la fait entendre (un bip) et clignoter (la lampe, et les marques
-// qui s'allument une à une). La roue crantée règle la vitesse, la note du bip, et le son.
+// Morse: you type your first name, or a sentence, and it is written in Morse as you go, letter by letter: under
+// each typed letter, its dots and dashes. Accents go back to their letter (é: E); what Morse cannot say is
+// flagged, without breaking anything. The button makes it heard (a beep) and blink (the lamp, and the marks
+// lighting up one by one). The cog wheel sets the speed, the beep's pitch, and the sound.
 
 const main = document.querySelector<HTMLElement>('.mo')!
 const field = main.querySelector<HTMLInputElement>('.mo-field')!
@@ -18,7 +18,7 @@ const lamp = main.querySelector<HTMLElement>('.mo-lamp')!
 const text = main.querySelector<HTMLElement>('.mo-text')!
 const copy = main.querySelector<HTMLButtonElement>('.mo-copy')!
 
-// (la vitesse en mots par minute : le mot « PARIS », 50 unités, dit tant de fois par minute)
+// (the speed in words per minute: the word « PARIS », 50 units, said so many times a minute)
 const settings = { wpm: 15, hz: 600, sound: true }
 
 const el = (tag: string, className: string, content = '') => {
@@ -28,10 +28,10 @@ const el = (tag: string, className: string, content = '') => {
   return e
 }
 
-// ——— la phrase, dessinée ———
+// ——— the sentence, drawn ———
 
 let words: Sign[][] = []
-// les signes dessinés (dans l'ordre de la phrase, tous mots confondus), et leurs marques
+// the drawn signs (in sentence order, across all words), and their marks
 let signs: HTMLElement[] = []
 
 function drawSign({ shown, letters, codes }: Sign) {
@@ -47,7 +47,7 @@ function drawSign({ shown, letters, codes }: Sign) {
     marks.append(el('span', 'mo-what', '?'))
   }
   box.append(marks, el('span', 'mo-letter', shown))
-  // (au survol : la lettre, celle du morse si ce n'est pas la même — é → E —, et son code)
+  // (on hover: the letter, the Morse one if it is not the same — é → E —, and its code)
   const said = letters !== shown.toUpperCase() && codes ? ` → ${letters}` : ''
   box.title = codes ? `${shown}${said} : ${written([[{ shown, letters, codes }]])}` : `${shown} : pas de morse`
   return box
@@ -56,7 +56,7 @@ function drawSign({ shown, letters, codes }: Sign) {
 function render() {
   player.stop()
   playing(false)
-  // (rien de tapé : un SOS, à peine visible, pour montrer à quoi ça ressemble)
+  // (nothing typed: an SOS, barely visible, to show what it looks like)
   const ghost = !field.value.trim()
   words = spell(ghost ? 'sos' : field.value)
   out.classList.toggle('is-ghost', ghost)
@@ -85,7 +85,7 @@ function render() {
   button.disabled = !timeline(words).marks.length
 }
 
-// ——— la lecture ———
+// ——— playback ———
 
 let lit: HTMLElement | null = null
 let reading: HTMLElement | null = null
@@ -132,7 +132,7 @@ function toggle() {
 }
 
 field.addEventListener('input', render)
-// (Entrée, dans le champ : écouter)
+// (Enter, in the field: listen)
 field.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     e.preventDefault()
@@ -159,7 +159,7 @@ copy.addEventListener('click', async () => {
 render()
 field.focus({ preventScroll: true })
 
-// la roue crantée (dans la ligne du carnet) : la vitesse, la note du bip, le son
+// the cog wheel (in the notebook line): the speed, the beep's pitch, the sound
 const slot = mount()
 if (slot)
   gear(slot, 'Réglages du morse', [

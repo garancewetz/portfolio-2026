@@ -1,10 +1,10 @@
 import { gear, slider, swatches } from '@/features/carnet/gear'
 import { COLORS } from '@/features/fireworks/show'
 
-// La roue crantée, dans la ligne du carnet (voir carnet/gear.ts) : pour jouer avec le spectacle. La cadence des
-// tirs, la taille des gerbes, et leurs couleurs (leurs places dans COLORS, voir fireworks/show.ts : violet, rose,
-// bleu, vert, orange, or), en pastilles : chacune montre ses couleurs, en parts égales. Tout change tout de suite,
-// dès la fusée suivante.
+// The cog wheel, in the notebook line (see carnet/gear.ts): to play with the show. The firing pace, the size of
+// the bursts, and their colours (their places in COLORS, see fireworks/show.ts: purple, pink, blue, green,
+// orange, gold), as dots: each shows its colours, in equal parts. Everything changes right away, from the
+// next rocket.
 const PALETTES = {
   toutes: [0, 1, 2, 3, 4, 5],
   or: [5],
@@ -13,7 +13,7 @@ const PALETTES = {
 } as const
 type Palette = keyof typeof PALETTES
 const NAMES = Object.keys(PALETTES) as Palette[]
-// une pastille : ses couleurs en parts égales, autour du centre (une seule : la couleur pleine)
+// a dot: its colours in equal parts, around the centre (only one: the solid colour)
 const pastille = (p: readonly number[]) =>
   p.length === 1
     ? COLORS[p[0]]

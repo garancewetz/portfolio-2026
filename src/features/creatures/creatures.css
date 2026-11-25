@@ -1,12 +1,12 @@
-/* ——— Créatures (voir main.ts) : la page blanche du site, des ficelles fines à l'encre, et les créatures dessus
-   (voir lines.ts) ——— */
+/* ——— Créatures (see main.ts): the site's white page, thin strings in ink, and the creatures on them
+   (see lines.ts) ——— */
 @import '@/styles/base.css';
 
 :root {
   --bg: #ffffff;
   --ink: #1a1917;
   color-scheme: light;
-  /* (la ligne du carnet, à l'encre de la page) */
+  /* (the notebook line, in the page's ink) */
   --carnet-ink: rgb(26 25 23 / 0.5);
   --carnet-ink-hover: rgb(26 25 23 / 0.95);
 }
@@ -16,13 +16,13 @@ body {
   overflow: hidden;
   background: var(--bg);
 }
-/* (plus précis que la feuille du carnet) */
+/* (more precise than the notebook sheet) */
 main.cr.carnet-sheet {
   position: fixed;
   inset: 0;
   color: var(--ink);
 }
-/* les ficelles, et la trace des sauts (voir trace.ts) : des toiles sur toute la page, sous les créatures */
+/* the strings, and the trace of the jumps (see trace.ts): canvases over the whole page, under the creatures */
 .cr-trace,
 .cr-lines {
   position: absolute;
@@ -37,7 +37,7 @@ main.cr.carnet-sheet {
   stroke-width: 1;
   stroke-linecap: round;
 }
-/* une créature, placée par le script (ses pieds sur la ficelle) */
+/* a creature, placed by the script (its feet on the string) */
 .cr-art,
 .cr-z,
 .cr-name {
@@ -52,11 +52,11 @@ main.cr.carnet-sheet {
   will-change: transform;
   font: 500 16px / 1.15 var(--mono);
   white-space: pre;
-  /* (la police lie certains signes : ~> en flèche, == en trait ; ici, chaque caractère reste lui-même) */
+  /* (the font joins some signs: ~> into an arrow, == into a line; here, each character stays itself) */
   font-variant-ligatures: none;
   font-feature-settings: 'liga' 0, 'calt' 0;
 }
-/* endormie, un petit z près de sa tête (il s'efface quand elle se réveille) */
+/* asleep, a little z near its head (it fades when it wakes up) */
 .cr-z {
   font: 12px var(--mono);
   color: var(--muted);
@@ -65,7 +65,7 @@ main.cr.carnet-sheet {
 .cr-z.is-off {
   opacity: 0;
 }
-/* réveillée, son nom sous la ficelle, en petit */
+/* awake, its name under the string, small */
 .cr-name {
   font: 11px var(--mono);
   color: var(--muted);
@@ -76,7 +76,7 @@ main.cr.carnet-sheet {
 .cr-name.is-on {
   opacity: 1;
 }
-/* (la zone qui la réveille, invisible) */
+/* (the area that wakes it up, invisible) */
 .cr-hit {
   position: absolute;
 }

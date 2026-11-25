@@ -1,5 +1,5 @@
-/* ——— Ruban (voir main.ts) : un fond noir, où la voix dessine un ruban de lumière (dans le canvas). Par-dessus,
-   l'arrivée (un mot, le micro), puis la note entendue et les boutons ——— */
+/* ——— Ruban (see main.ts): a black background, where the voice draws a ribbon of light (in the canvas). On top,
+   the arrival (a word, the mic), then the note heard and the buttons ——— */
 @import '@/styles/base.css';
 
 :root {
@@ -8,7 +8,7 @@
   --muted: #8f8c99;
   --accent: #ffd282;
   color-scheme: dark;
-  /* (le panneau des réglages, voir carnet/gear.css) */
+  /* (the settings panel, see carnet/gear.css) */
   --panel-bg: rgb(0 0 0 / 0.85);
   --panel-accent: var(--accent);
 }
@@ -37,7 +37,7 @@ body {
   height: 100%;
 }
 
-/* ——— l'arrivée (voir intro.ts) ——— */
+/* ——— the arrival (see intro.ts) ——— */
 .ru-intro {
   position: absolute;
   inset: 0;
@@ -121,7 +121,7 @@ body {
   outline-color: var(--accent);
 }
 
-/* ——— la note entendue, en bas à droite ——— */
+/* ——— the note heard, at the bottom right ——— */
 .ru-note {
   position: absolute;
   right: 18px;
@@ -134,7 +134,7 @@ body {
   pointer-events: none;
 }
 
-/* ——— les boutons (voir controls.ts), en bas au milieu ——— */
+/* ——— the buttons (see controls.ts), at the bottom in the middle ——— */
 .ru-controls {
   position: absolute;
   left: 50%;

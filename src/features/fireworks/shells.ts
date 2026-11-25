@@ -1,6 +1,6 @@
-// Les gerbes du feu d'artifice (voir show.ts) : ce qu'une explosion lance comme étincelles, selon sa sorte.
+// The fireworks bursts (see show.ts): what an explosion throws out as sparks, depending on its kind.
 
-export const GOLD = 5 // (index de l'or dans COLORS, voir show.ts)
+export const GOLD = 5 // (index of gold in COLORS, see show.ts)
 
 export type Shell = 'peony' | 'chrysanthemum' | 'willow' | 'palm' | 'ring'
 export const SHELLS: Shell[] = ['peony', 'chrysanthemum', 'willow', 'palm', 'ring', 'peony', 'chrysanthemum']
@@ -8,27 +8,27 @@ export const SHELLS: Shell[] = ['peony', 'chrysanthemum', 'willow', 'palm', 'rin
 export interface Spark {
   x: number
   y: number
-  px: number // position à l'image précédente (le trait va de là à ici)
+  px: number // position on the previous frame (the stroke goes from there to here)
   py: number
   vx: number
   vy: number
-  drag: number // freinage de l'air (par seconde)
-  fall: number // part de la gravité
-  life: number // secondes restantes
-  max: number // durée de vie totale
+  drag: number // air drag (per second)
+  fall: number // share of gravity
+  life: number // seconds left
+  max: number // total lifetime
   color: number
   width: number
-  crackle: boolean // crépite en fin de vie
-  rocket?: { shell: Shell; size: number; colors: [number, number]; trail: number } // une fusée : éclate en fin de vie
+  crackle: boolean // crackles at the end of its life
+  rocket?: { shell: Shell; size: number; colors: [number, number]; trail: number } // a rocket: bursts at the end of its life
 }
 
 export const rand = (a: number, b: number) => a + Math.random() * (b - a)
 
-// une étincelle de plus (sans sa position précédente : elle part d'où elle est)
+// one more spark (without its previous position: it starts from where it is)
 export type Add = (s: Omit<Spark, 'px' | 'py'>) => void
 
-// les étincelles d'une gerbe de sorte shell en (x, y), lancées à la vitesse speed, dans les couleurs a et b ; gold :
-// la couleur des touches d'or (le saule, les éclats du palmier ; une autre si la palette n'a pas d'or)
+// the sparks of a burst of kind shell at (x, y), thrown at speed speed, in colours a and b; gold: the colour of
+// the golden touches (the willow, the palm's flashes; another one if the palette has no gold)
 export function shellOf(
   add: Add,
   x: number,
@@ -39,7 +39,7 @@ export function shellOf(
   b: number,
   gold = GOLD,
 ) {
-  // l'éclair du départ : quelques éclats de la couleur de la gerbe, très rapides et très courts
+  // the starting flash: a few flashes in the burst's colour, very fast and very short
   for (let i = 0; i < 24; i++) {
     const t = Math.random() * Math.PI * 2
     const v = rand(0.3, 1) * speed * 1.4
@@ -58,7 +58,7 @@ export function shellOf(
     })
   }
   if (shell === 'palm') {
-    // palmier : quelques gros bras qui montent puis retombent en pluie
+    // palm: a few big arms rising then falling back as rain
     const n = 9
     for (let i = 0; i < n; i++) {
       const t = (i / n) * Math.PI * 2 + rand(-0.1, 0.1)
@@ -85,7 +85,7 @@ export function shellOf(
   const n = shell === 'willow' ? 150 : shell === 'ring' ? 90 : 170
   for (let i = 0; i < n; i++) {
     const t = (i / n) * Math.PI * 2 + rand(-0.04, 0.04)
-    // une sphère vue de face : la vitesse projetée varie (anneau : toutes à la même vitesse)
+    // a sphere seen from the front: the projected speed varies (ring: all at the same speed)
     const v = speed * (shell === 'ring' ? rand(0.95, 1.02) : Math.sqrt(Math.random()) * 0.35 + rand(0.6, 0.68))
     const life = shell === 'willow' ? rand(2.6, 3.6) : rand(1.3, 2.1)
     add({
@@ -102,7 +102,7 @@ export function shellOf(
       crackle: shell === 'chrysanthemum' || (shell === 'willow' && i % 3 === 0),
     })
   }
-  // la pivoine et l'anneau : un cœur d'une autre couleur, plus petit
+  // the peony and the ring: a core in another colour, smaller
   if (shell === 'peony' || shell === 'ring') {
     for (let i = 0; i < 60; i++) {
       const t = Math.random() * Math.PI * 2

@@ -1,32 +1,32 @@
-// Les oiseaux (voir main.ts) : chacun sa place dans la nappe, son retard, son rythme ; et le déroulé du vol
-// (quand ils s'envolent, quand ils se reposent).
+// The birds (see main.ts): each with its place in the sheet, its delay, its rhythm; and the flight sequence
+// (when they take off, when they land again).
 
-// MAX : la place réservée (le plus grand vol possible) ; les réglages (la roue crantée, voir settings.ts) disent
-// combien volent, à quelle vitesse, et combien de temps
+// MAX: the space reserved (the largest flock possible); the settings (the cog wheel, see settings.ts) say
+// how many fly, how fast, and for how long
 export const MAX = 15000
 export const settings = { count: 6000, speed: 1, fly: 25 }
-// le déroulé, en secondes de vol : au départ, ils sont posés ; un clic les fait s'envoler (étalés sur quelques
-// secondes, chacun mettant LIFT_TIME secondes à rejoindre le nuage) ; settings.fly secondes après, ils se reposent (étalés
-// sur LAND_SPREAD secondes, chacun mettant jusqu'à LAND_TIME secondes à descendre à sa place) ; et ainsi de suite
+// the sequence, in seconds of flight: at first, they are perched; a click makes them take off (spread over a
+// few seconds, each taking LIFT_TIME seconds to join the cloud); settings.fly seconds later, they land again
+// (spread over LAND_SPREAD seconds, each taking up to LAND_TIME seconds to come down to its place); and so on
 const LIFT_TIME = 2.5
 export const LAND_SPREAD = 10
-// (le plus long : chacun met entre la moitié et la totalité de ce temps)
+// (the longest: each takes between half and all of this time)
 export const LAND_TIME = 5
-// les zones où ils se posent (des morceaux de toits et de sol), qui se remplissent l'une après l'autre
+// the areas where they land (bits of roofs and ground), which fill up one after the other
 export const ZONES = 8
-// avant de se poser, le nuage s'abaisse au-dessus du village et se resserre (pendant DESCENT secondes, à partir de
-// quelques secondes avant les premiers posés) ; à l'envol, il se forme d'abord là, bas et serré, puis monte
+// before landing, the cloud lowers above the village and tightens (for DESCENT seconds, starting a few seconds
+// before the first ones land); on take-off, it first forms there, low and tight, then rises
 export const DESCENT = 7
 export const RISE = 8
-// chaque envol : son instant (en secondes de vol), l'endroit du clic (d'où part l'alarme), et, si un clic en plein
-// vol les a rappelés, quand ils se posent (sinon, settings.fly secondes après l'envol)
+// each take-off: its time (in seconds of flight), the spot of the click (where the alarm starts), and, if a click
+// mid-flight called them back, when they land (otherwise, settings.fly seconds after take-off)
 let lifts: { at: number; x: number; y: number; land?: number }[] = []
-// un envol à l'instant clock, depuis (x, y) (ceux qui étaient prévus après sont oubliés)
+// a take-off at time clock, from (x, y) (those planned after it are forgotten)
 export function lift(clock: number, x: number, y: number) {
   lifts = [...lifts.filter(({ at }) => at < clock), { at: clock, x, y }]
 }
-// un clic en plein vol, à l'instant clock : le nuage s'abaisse tout de suite au-dessus du village et les oiseaux
-// se posent (s'ils ne sont pas déjà en train de le faire) ; renvoie vrai si c'est le cas
+// a click mid-flight, at time clock: the cloud lowers at once above the village and the birds land (if they are
+// not already doing so); returns true if so
 export function land(clock: number) {
   const { liftAt } = cycle(clock)
   const current = lifts.find(({ at }) => at === liftAt)
@@ -34,14 +34,14 @@ export function land(clock: number) {
   current.land = clock + DESCENT - 2
   return true
 }
-// en train de se poser (le nuage descend, ou des oiseaux sont encore en l'air) : un clic les fait repartir
+// landing (the cloud is coming down, or birds are still in the air): a click sends them off again
 export function landing(clock: number) {
   const { liftAt, landAt } = cycle(clock)
   return liftAt !== null && clock >= landAt - DESCENT + 2 && !landed(clock)
 }
-// où en est le vol à l'instant clock : depuis quand ils sont partis (ou null), quand ils se poseront, et quand ils
-// avaient commencé à se poser la fois d'avant (before : un envol peut interrompre un atterrissage, ceux qui étaient
-// encore en l'air repartent de là où ils sont)
+// where the flight stands at time clock: since when they have been gone (or null), when they will land, and
+// when they had started landing the previous time (before: a take-off can interrupt a landing, those still in
+// the air start again from where they are)
 export function cycle(clock: number) {
   let landAt = -Infinity
   let before = -Infinity
@@ -49,7 +49,7 @@ export function cycle(clock: number) {
   let fromX = 0
   let fromY = 0
   for (const { at, x, y, land } of lifts) {
-    // (un nouvel envol, dès que le nuage a commencé à descendre se poser)
+    // (a new take-off, as soon as the cloud has started coming down to land)
     if (at <= clock && at >= landAt - DESCENT + 2) {
       before = landAt
       liftAt = at
@@ -60,41 +60,41 @@ export function cycle(clock: number) {
   }
   return { landAt, liftAt, fromX, fromY, before }
 }
-// tous posés ?
+// all perched?
 export const landed = (clock: number) => clock >= cycle(clock).landAt + LAND_SPREAD + LAND_TIME
-// le plus grand retard d'un oiseau sur ceux de devant, en secondes (un virage traverse le nuage en une
-// demi-seconde environ, comme chez les vrais étourneaux)
+// the largest delay of a bird behind those in front, in seconds (a turn crosses the cloud in about half a
+// second, as with real starlings)
 export const MAX_LAG = 0.6
-// (les retards sont rangés en quelques paliers : la pose de la nappe n'est calculée qu'une fois par palier)
+// (the delays are sorted into a few steps: the sheet's pose is only computed once per step)
 export const LAGS = 48
-// chaque oiseau : sa place dans la nappe (u, v, dans un disque), son retard, et un peu de flottement à lui
+// each bird: its place in the sheet (u, v, in a disc), its delay, and a little floating of its own
 export const u = new Float32Array(MAX)
 export const v = new Float32Array(MAX)
 export const seed = new Float32Array(MAX)
 export const lag = new Uint8Array(MAX)
-// l'écart de chaque oiseau à sa place, quand la souris l'a fait fuir (en pixels), et son élan
+// each bird's offset from its place, when the mouse made it flee (in pixels), and its momentum
 export const ox = new Float32Array(MAX)
 export const oy = new Float32Array(MAX)
 export const ovx = new Float32Array(MAX)
 export const ovy = new Float32Array(MAX)
-// à l'envol, l'alarme part de l'endroit du clic et gagne de proche en proche (ALARM pixels par seconde) : chaque
-// oiseau part quand elle l'atteint, avec un petit retard à lui, et met son propre temps à rejoindre le nuage
+// on take-off, the alarm starts from the spot of the click and spreads step by step (ALARM pixels per second):
+// each bird leaves when it reaches it, with a small delay of its own, and takes its own time to join the cloud
 export const leave = new Float32Array(MAX)
 export const leaveTime = new Float32Array(MAX)
 export const ALARM = 450
-// quand il se pose (secondes après le début de l'atterrissage : ils ne se posent pas tous ensemble)
+// when it lands (seconds after the landing started: they do not all land together)
 export const settle = new Float32Array(MAX)
-// (et le temps qu'il met à descendre)
+// (and the time it takes to come down)
 export const landTime = new Float32Array(MAX)
 for (let i = 0; i < MAX; i++) {
   const a = Math.random() * Math.PI * 2
-  // (un disque aux bords effilochés : quelques oiseaux isolés autour du nuage)
+  // (a disc with frayed edges: a few lone birds around the cloud)
   const r = i % 16 === 0 ? 1 + 0.5 * Math.random() : Math.sqrt(Math.random())
   u[i] = r * Math.cos(a) * (1 + 0.15 * Math.random())
   v[i] = r * Math.sin(a) * (1 + 0.15 * Math.random())
   seed[i] = Math.random() * 1000
-  // ceux de derrière (u petit) et des bords suivent avec plus de retard, et chacun a un peu le sien : un virage
-  // part de l'avant et se propage dans le nuage, qui s'étire en traînées
+  // those at the back (small u) and on the edges follow with more delay, and each has a little of its own: a turn
+  // starts from the front and spreads through the cloud, which stretches into streaks
   const late = 0.5 * (1 - (u[i] + 1) / 2) + 0.2 * Math.abs(v[i]) + 0.3 * Math.random()
   lag[i] = Math.min(LAGS - 1, Math.floor(Math.max(0, late) * LAGS))
   landTime[i] = LAND_TIME * (0.5 + 0.5 * Math.random())

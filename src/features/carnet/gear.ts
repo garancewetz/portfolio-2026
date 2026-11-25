@@ -1,19 +1,19 @@
 import './gear.css'
 
-// La roue crantée, dans la ligne du carnet (après le numéro de page) : elle ouvre un petit panneau de réglages
-// propre à la page. Chaque ligne du panneau : un nom, un réglage (une réglette, des pastilles de couleur, ou des
-// boutons à choisir), et sa valeur. Une page la colore avec --panel-bg et --panel-accent (voir gear.css).
+// The cog wheel, in the notebook line (after the page number): it opens a small settings panel specific to
+// the page. Each row of the panel: a name, a control (a slider, colour dots, or buttons to choose from), and
+// its value. A page colours it with --panel-bg and --panel-accent (see gear.css).
 
-// (wide : le réglage prend aussi la place de la valeur — des boutons qui disent déjà ce qu'ils sont)
+// (wide: the control also takes the value's place — buttons that already say what they are)
 export type Row = { label: string; control: HTMLElement; value?: HTMLElement; wide?: boolean }
 
-// la roue et son panneau, ajoutés dans slot (la ligne du carnet, voir carnet.ts) ; keep : le panneau reste ouvert
-// quand on clique ailleurs (pour essayer les réglages en jouant ; il se ferme avec la roue, ou Échap)
+// the wheel and its panel, added into slot (the notebook line, see carnet.ts); keep: the panel stays open
+// when clicking elsewhere (to try the settings while playing; it closes with the wheel, or Escape)
 export function gear(slot: HTMLElement, name: string, rows: Row[], { keep = false } = {}) {
   const button = document.createElement('button')
   button.className = 'carnet-gear'
   button.type = 'button'
-  // (︎ : la roue en caractère, pas en émoji)
+  // (︎: the wheel as a text character, not an emoji)
   button.textContent = '⚙︎'
   button.setAttribute('aria-label', name)
   button.setAttribute('aria-expanded', 'false')
@@ -22,7 +22,7 @@ export function gear(slot: HTMLElement, name: string, rows: Row[], { keep = fals
   panel.className = 'carnet-panel'
   panel.hidden = true
   for (const { label, control, value, wide } of rows) {
-    // (une ligne de boutons n'est pas une étiquette : un clic sur son nom choisirait le premier bouton)
+    // (a row of buttons is not a label: a click on its name would pick the first button)
     const row = document.createElement(wide ? 'div' : 'label')
     const title = document.createElement('span')
     title.textContent = label
@@ -36,8 +36,8 @@ export function gear(slot: HTMLElement, name: string, rows: Row[], { keep = fals
     button.setAttribute('aria-expanded', String(open))
   }
   button.addEventListener('click', () => toggle(!!panel.hidden))
-  // un clic en dehors du panneau le referme (et ne sert qu'à ça : la page ne le reçoit pas, les oiseaux ne
-  // s'envolent pas) ; Échap aussi
+  // a click outside the panel closes it (and does only that: the page does not get it, the birds do not fly
+  // off); Escape too
   let closing = false
   addEventListener(
     'pointerdown',
@@ -66,7 +66,7 @@ export function gear(slot: HTMLElement, name: string, rows: Row[], { keep = fals
   slot.append(button, panel)
 }
 
-// une réglette : de min à max, et sa valeur affichée (show) ; onInput à chaque changement
+// a slider: from min to max, and its displayed value (show); onInput on every change
 export function slider(
   label: string,
   o: { min: number; max: number; step: number; value: number; show: (n: number) => string },
@@ -88,7 +88,7 @@ export function slider(
   return { label, control: input, value }
 }
 
-// des pastilles de couleur : chacune son nom (pour les lecteurs d'écran, et affiché à côté) et sa couleur
+// colour dots: each with its name (for screen readers, and shown beside it) and its colour
 export function swatches(
   label: string,
   colours: { name: string; css: string }[],
@@ -117,7 +117,7 @@ export function swatches(
 }
 
 
-// des boutons, un par choix, côte à côte : celui qui est choisi est marqué
+// buttons, one per choice, side by side: the chosen one is marked
 export function choices<T extends string>(label: string, names: readonly T[], current: T, onPick: (v: T) => void): Row {
   const box = document.createElement('span')
   box.className = 'carnet-choices'

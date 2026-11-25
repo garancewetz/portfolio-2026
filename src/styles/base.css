@@ -1,4 +1,4 @@
-/* Base du site : polices, couleurs, remise à zéro, accessibilité, touches du clavier */
+/* Site base: fonts, colours, reset, accessibility, keyboard keys */
 *,
 *::before,
 *::after {
@@ -12,15 +12,15 @@
 
   --bg: #ffffff;
   --ink: #111111;
-  --muted: #6b6b6b; /* contraste AA sur --bg */
+  --muted: #6b6b6b; /* AA contrast on --bg */
   --line: #0000001a;
   --accent: var(--ink);
-  /* le bleu des liens du web, celui des navigateurs : le point de « hello, world. » et des projets déjà vus, la
-     seule couleur de la page (hors captures) */
+  /* the blue of web links, the browsers' own: the dot of « hello, world. » and of projects already seen, the
+     only colour on the page (apart from screenshots) */
   --blue: #0000ee;
   --empty: #f0f0f0;
-  /* la teinte des guides de la grille (en canaux R G B) et celle du repère « gap » ; --violet : la même teinte
-     que les guides, assez foncée pour du texte qui porte une information (contraste AA sur le fond) */
+  /* the hue of the grid guides (as R G B channels) and that of the « gap » marker; --violet: the same hue as the
+     guides, dark enough for text that carries information (AA contrast on the background) */
   --tint: 124 92 214;
   --tint-gap: 214 92 150;
   --violet: #5b42b5;
@@ -28,13 +28,13 @@
   --guide-line: rgb(var(--tint) / 0.45);
   --guide-fill: rgb(var(--tint) / 0.035);
   --gap-pink: rgb(var(--tint-gap) / 0.85);
-  color-scheme: light; /* toujours clair, indépendamment du réglage système */
+  color-scheme: light; /* always light, regardless of the system setting */
 }
 
-/* ——— La nuit du feu d'artifice (voir features/fireworks) : quand le mode s'allume, la nuit tombe doucement sur
-   toute la page (le fond, l'encre, les guides), et le jour revient quand on l'éteint. Les couleurs sont déclarées
-   (@property) pour pouvoir passer de l'une à l'autre en fondu. (Pas --line : la signature emploie aussi ce nom,
-   pour le numéro de ligne du nom) ——— */
+/* ——— The fireworks night (see features/fireworks): when the mode turns on, night falls gently over the whole
+   page (the background, the ink, the guides), and day comes back when it is turned off. The colours are
+   declared (@property) so they can crossfade. (Not --line: the signature also uses that name, for the line
+   number of the name) ——— */
 @property --bg {
   syntax: '<color>';
   inherits: true;
@@ -75,7 +75,7 @@
     --tint 1.8s ease;
 }
 :root.is-paf {
-  /* PAF : la première fusée éclate, la nuit tombe d'un coup (voir features/fireworks) */
+  /* BANG: the first rocket bursts, night falls at once (see features/fireworks) */
   transition-duration: 0.15s;
 }
 :root.is-night {
@@ -100,14 +100,14 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
-/* le fond est porté par html seul : body reste transparent, pour que les couches tout au fond (le ciel et la
-   fumée du feu d'artifice, en z-index négatif) passent derrière le texte sans être cachées par lui */
+/* the background is carried by html alone: body stays transparent, so the deepest layers (the sky and the
+   fireworks smoke, at negative z-index) pass behind the text without being hidden by it */
 body {
   background: none;
 }
 
-/* la place de la barre de défilement reste réservée : quand la fiche d'un projet bloque le défilement,
-   la page derrière ne se décale pas */
+/* the scrollbar's space stays reserved: when a project sheet blocks scrolling, the page behind does not
+   shift */
 html {
   scrollbar-gutter: stable;
 }
@@ -125,7 +125,7 @@ a {
 a:hover {
   text-decoration-thickness: 2px;
 }
-/* le texte surligné : la teinte du site (celle des guides), plutôt que le bleu du système */
+/* highlighted text: the site's hue (the guides'), rather than the system blue */
 ::selection {
   background: rgb(var(--tint) / 0.2);
   color: var(--ink);
@@ -144,8 +144,8 @@ a:hover {
   white-space: nowrap;
 }
 
-/* ——— Le clavier : de petites touches (un filet, du texte en mono), là où une touche sert. Seulement avec un
-   clavier et une souris : sur un écran tactile, elles disparaissent ——— */
+/* ——— The keyboard: small keys (a hairline, mono text), where a key does something. Only with a keyboard and a
+   mouse: on a touch screen, they disappear ——— */
 kbd {
   display: inline-grid;
   place-items: center;

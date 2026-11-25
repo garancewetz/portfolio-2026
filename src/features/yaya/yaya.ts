@@ -3,7 +3,7 @@ import { mount } from '@/features/carnet/carnet'
 import { local, sheet } from '@/features/carnet/sheet'
 import { scene } from './scene'
 
-// Où est Yaya ? en photos : le collage d'origine (voir scene.ts), dessiné tel quel.
+// Où est Yaya ? in photos: the original collage (see scene.ts), drawn as is.
 
 const canvas = document.querySelector<HTMLCanvasElement>('.yy-scene')!
 const ctx = canvas.getContext('2d')!
@@ -26,7 +26,7 @@ addEventListener('pointermove', (e) => {
   const { x, y } = local(e)
   yaya.pointer(x, y)
 })
-// (un clic sur Yaya : trouvée ; le doigt, sur un téléphone, compte aussi comme la souris)
+// (a click on Yaya: found; a finger, on a phone, counts as the mouse too)
 addEventListener('pointerdown', (e) => {
   const { x, y } = local(e)
   yaya.pointer(x, y)
@@ -46,5 +46,5 @@ function draw(now: number) {
 }
 requestAnimationFrame(draw)
 
-// la page dans le carnet (voir features/carnet)
+// the page in the notebook (see features/carnet)
 mount()

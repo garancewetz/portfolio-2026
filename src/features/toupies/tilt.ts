@@ -1,9 +1,9 @@
-// La pente : sur un téléphone, on penche l'appareil et la page penche avec lui — les toupies qui tournent glissent
-// vers le bas (couchées, elles frottent et restent : voir spin.ts). Le repos est la façon dont on le tient au
-// premier geste (personne ne tient son téléphone à plat) ; un petit jeu autour, pour qu'une main qui tremble ne fasse
-// rien glisser. Sans capteur (un ordinateur), la page reste plate. Rien ne quitte l'appareil.
+// The slope: on a phone, you tilt the device and the page tilts with it — the spinning tops slide downwards
+// (lying down, they rub and stay: see spin.ts). Rest is the way you hold it at the first gesture (nobody holds
+// their phone flat); a little play around it, so a shaky hand does not make anything slide. Without a sensor (a
+// computer), the page stays flat. Nothing leaves the device.
 
-// le jeu autour du repos, et la pente la plus forte (en degrés)
+// the play around rest, and the steepest slope (in degrees)
 const PLAY = 3
 const STEEPEST = 30
 
@@ -18,19 +18,19 @@ export function tilt() {
     addEventListener('deviceorientation', (e) => {
       if (e.beta === null || e.gamma === null) return
       rest ??= { beta: e.beta, gamma: e.gamma }
-      // beta : penché d'avant en arrière ; gamma : de gauche à droite (l'appareil debout, en portrait)
+      // beta: tilted front to back; gamma: left to right (the device upright, in portrait)
       const b = ease(e.beta - rest.beta)
       const g = ease(e.gamma - rest.gamma)
-      // (l'écran tourné en paysage : les axes de l'appareil ne sont plus ceux de l'écran)
+      // (the screen turned to landscape: the device's axes are no longer the screen's)
       const turn = screen.orientation?.angle ?? 0
       if (turn === 90) Object.assign(slope, { x: b, z: -g })
       else if (turn === 270) Object.assign(slope, { x: -b, z: g })
       else Object.assign(slope, { x: g, z: b })
     })
-  // (l'écran tourne : on reprend le repos)
+  // (the screen rotates: take rest again)
   screen.orientation?.addEventListener('change', () => (rest = null))
 
-  // (sur iPhone, il faut la permission, demandée au premier geste)
+  // (on iPhone, permission is needed, asked at the first gesture)
   type Ask = { requestPermission?: () => Promise<string> }
   const sensor = typeof DeviceOrientationEvent === 'undefined' ? null : (DeviceOrientationEvent as unknown as Ask)
   const ask = sensor?.requestPermission

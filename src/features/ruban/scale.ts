@@ -1,8 +1,8 @@
 import { hue, noteName } from './pitch'
 
-// La gamme, sur le bord gauche : chaque demi-ton à sa hauteur, une pastille de sa couleur (les notes blanches du
-// piano avec leur nom, les noires plus petites), et un trait très pâle à travers la page à chaque do. La note
-// chantée s'allume. C'est la règle du ruban, sous les yeux : la même hauteur, la même couleur.
+// The scale, on the left edge: each semitone at its height, a dot in its colour (the piano's white notes with
+// their name, the black ones smaller), and a very pale line across the page at each C. The note being sung
+// lights up. It is the ribbon's ruler, right there: the same height, the same colour.
 
 const FONT = `10px 'JetBrains Mono', ui-monospace, monospace`
 const NATURAL = [0, 2, 4, 5, 7, 9, 11]

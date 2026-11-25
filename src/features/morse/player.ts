@@ -1,10 +1,10 @@
 import type { Mark } from './code'
 
-// La lecture : un bip (Web Audio, une note pure, ~600 Hz) et une lumière, sur la même horloge (celle du son, plus
-// juste que celle de l'image). Toutes les marques sont posées d'avance sur l'horloge ; à chaque image, on regarde où
-// on en est : la marque allumée (ou aucune, dans un silence) et le signe qu'on lit.
+// Playback: a beep (Web Audio, a pure tone, ~600 Hz) and a light, on the same clock (the sound's, more accurate
+// than the frame's). All marks are laid on the clock in advance; on each frame, we check where we are: the lit
+// mark (or none, during a silence) and the sign being read.
 
-// (le volume du bip, et le temps qu'il met à monter et à retomber : sans ça, chaque marque claquerait)
+// (the beep's volume, and the time it takes to rise and fall: without it, every mark would click)
 const VOLUME = 0.18
 const EDGE = 0.006
 
@@ -23,13 +23,13 @@ export function createPlayer(onFrame: (f: Frame) => void, onEnd: () => void) {
     tone = null
   }
 
-  // unit : la durée d'une unité, en secondes ; hz : la note du bip ; sound : avec le son, ou la lumière seule
+  // unit: the length of one unit, in seconds; hz: the beep's pitch; sound: with sound, or light only
   function play(marks: Mark[], units: number, o: { unit: number; hz: number; sound: boolean }) {
     stop()
     audio ??= 'AudioContext' in window ? new AudioContext() : null
     void audio?.resume()
     const now = () => (audio ? audio.currentTime : performance.now() / 1000)
-    // (un petit temps avant la première marque : que le son ait démarré)
+    // (a short pause before the first mark: so the sound has started)
     const start = now() + 0.08
 
     if (audio && o.sound) {

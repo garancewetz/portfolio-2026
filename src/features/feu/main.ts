@@ -7,22 +7,22 @@ import { createShow } from '@/features/fireworks/show'
 import { starField } from '@/features/fireworks/stars'
 import { palette, settings, settingsGear } from './settings'
 
-// Feu d'artifice : le spectacle du mode feu d'artifice de l'accueil (features/fireworks), seul sur sa page, sur un
-// ciel de nuit, et qui ne finit pas. Le même rythme (fusées seules ou par deux, un bouquet, un silence), les mêmes
-// deux plans : des gerbes lointaines, petites, avec leur fumée qui s'accumule, et des gerbes proches, immenses ;
-// chacune fait fleurir son halo de couleur liquide. Un clic fait éclater une gerbe là où l'on clique. La roue
-// crantée règle la cadence, la taille des gerbes et leurs couleurs (settings.ts).
+// Feu d'artifice: the show from the home's fireworks mode (features/fireworks), alone on its page, on a night
+// sky, and never ending. The same rhythm (rockets alone or in pairs, a finale, a silence), the same two planes:
+// distant bursts, small, with their smoke piling up, and near bursts, huge; each one makes its halo of liquid
+// colour bloom. A click sets off a burst where you click. The cog wheel sets the pace, the size of the bursts
+// and their colours (settings.ts).
 
 const main = document.querySelector<HTMLElement>('.fe')!
-// le ciel : ses étoiles, en deux groupes qui scintillent chacun à son rythme
+// the sky: its stars, in two groups each twinkling at its own rhythm
 const [a, b] = starField(STARS)
 const [one, two] = main.querySelectorAll<HTMLElement>('.fe-sky i')
 one.style.boxShadow = a
 two.style.boxShadow = b
 
-// les toiles, du fond vers l'avant : fumée, plan lointain (halo, étincelles), plan proche (halo, étincelles)
+// the canvases, from back to front: smoke, far plane (halo, sparks), near plane (halo, sparks)
 const [smokeCanvas, farHaloCanvas, farCanvas, nearHaloCanvas, nearCanvas] = main.querySelectorAll('canvas')
-// (sur un petit écran, un téléphone : pas de fumée, et des halos moins fins, pour rester fluide)
+// (on a small screen, a phone: no smoke, and coarser halos, to stay smooth)
 const small = innerWidth < 700
 const halo = small ? { ...HALO, dye: 320 } : HALO
 const smoke = small ? null : createFluid(smokeCanvas, SMOKE)
@@ -40,13 +40,13 @@ const far = createShow(
 const near = createShow(nearCanvas, (x, y, size, colors) => nearHalo?.burst(x, y, size, colors), palette)
 
 if (far && near) {
-  // une gerbe, une fusée : dans le plan qui convient à leur taille
+  // a burst, a rocket: in the plane that suits their size
   const planes: Planes = {
     burst: (x, y, size, close = size >= NEAR) => (close ? near : far).burst(x, y, size),
     launch: (x, y, size, trail, close = size >= NEAR) => (close ? near : far).launch(x, y, size, trail),
   }
-  // une fusée, quelque part dans le ciel, de taille variée (la profondeur), à l'échelle choisie ; une gerbe proche
-  // le reste (elle garde sa profondeur, voir NEAR)
+  // a rocket, somewhere in the sky, of varied size (the depth), at the chosen scale; a near burst stays near
+  // (it keeps its depth, see NEAR)
   const rocket = () => {
     const size = around(0.5, 2.3)
     planes.launch(
@@ -69,11 +69,11 @@ if (far && near) {
   }
   requestAnimationFrame(frame)
 
-  // l'ouverture : une fusée au milieu, puis le spectacle, sans fin
+  // the opening: a rocket in the middle, then the show, endless
   near.launch(innerWidth / 2, innerHeight * 0.36, 2, 0)
   rhythm(rocket, undefined, () => settings.pace)
 
-  // un clic : une gerbe à cet endroit (proche : c'est le geste du visiteur)
+  // a click: a burst at that spot (near: it is the visitor's gesture)
   main.addEventListener('pointerdown', (e) => planes.burst(e.clientX, e.clientY, 1.3 * settings.size, true))
   addEventListener('resize', () => {
     far.resize()
@@ -82,6 +82,6 @@ if (far && near) {
   })
 }
 
-// la page dans le carnet (voir features/carnet), et sa roue crantée
+// the page in the notebook (see features/carnet), and its cog wheel
 const slot = mount()
 if (slot) settingsGear(slot)

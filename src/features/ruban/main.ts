@@ -10,14 +10,14 @@ import { rider } from './rider'
 import { scale } from './scale'
 import { listen, MicError, type Heard, type Voice } from './voice'
 
-// Ruban : un fond noir, et la voix qui y dessine un ruban de lumière. Rien n'est expliqué (l'arrivée n'a que le titre
-// et deux boutons) : on découvre que la note fait la hauteur (aigu en haut) et la couleur (un tour du cercle des couleurs
-// par octave), que le volume fait l'épaisseur et l'éclat, que le ruban file vers la gauche et reste, et qu'un silence
-// le coupe (ribbon.ts). Dessus, un petit yéti marche, glisse dans les descentes, grimpe quand c'est raide, et
-// saute d'un ruban à l'autre (rider.ts). Sur le bord gauche, la gamme, à la même hauteur et de la même couleur
-// (scale.ts). En bas, un bouton (controls.ts) : enregistrer le dessin en image. Sans micro, on
-// dessine au doigt (appuyer : plus haut, plus aigu). La roue crantée règle le registre (la note du milieu),
-// l'étendue, la vitesse, et la sensibilité.
+// Ruban: a black background, and the voice drawing a ribbon of light on it. Nothing is explained (the arrival
+// only has the title and two buttons): you discover that the note sets the height (high pitch at the top) and
+// the colour (one turn of the colour wheel per octave), that the volume sets the thickness and the glow, that
+// the ribbon runs to the left and stays, and that a silence cuts it (ribbon.ts). On it, a little yeti walks,
+// slides down the slopes, climbs when it is steep, and jumps from one ribbon to another (rider.ts). On the left
+// edge, the scale, at the same height and in the same colour (scale.ts). At the bottom, a button (controls.ts):
+// save the drawing as an image. Without a mic, you draw with a finger (press: higher, higher pitch). The cog
+// wheel sets the register (the middle note), the range, the speed, and the sensitivity.
 
 const main = document.querySelector<HTMLElement>('.ru')!
 const canvas = main.querySelector<HTMLCanvasElement>('.ru-canvas')!
@@ -34,28 +34,29 @@ function resize() {
   g.setTransform(dpr, 0, 0, dpr, 0, 0)
 }
 resize()
-// (en développement, la feuille de style arrive après le script : on remesure quand la page prend sa taille)
+// (in development, the stylesheet arrives after the script: measure again when the page gets its size)
 new ResizeObserver(resize).observe(main)
 
-// les réglages : la note du milieu de la page (MIDI ; par défaut, entre 90 et 750 Hz, de quoi chanter grave ou
-// aigu), l'étendue (en octaves, du bas au haut de la page), la vitesse du ruban (en pixels par seconde, et le pas du
-// bonhomme) et la sensibilité du micro
+// the settings: the note in the middle of the page (MIDI; by default, between 90 and 750 Hz, enough to sing low
+// or high), the range (in octaves, from the bottom to the top of the page), the ribbon's speed (in pixels per
+// second, and the little man's stride) and the mic's sensitivity
 const settings = { centre: Math.round(toMidi(Math.sqrt(90 * 750))), span: 3, pace: 100, sensitivity: 1 }
 const lo = () => settings.centre - settings.span * 6
 const hi = () => settings.centre + settings.span * 6
-// la bande où passe le ruban : sous la ligne du carnet, au-dessus du bas de la page
+// the band where the ribbon runs: under the notebook line, above the bottom of the page
 const yOf = (midi: number) => H - 40 - ((midi - lo()) / (hi() - lo())) * (H - 96)
 const midiOf = (y: number) => lo() + ((H - 40 - y) / (H - 96)) * (hi() - lo())
-// la tête du ruban sur la page, où en est le défilement (en pixels du monde), et où tombe un point du monde sur la page
+// the ribbon's head on the page, how far the scrolling has gone (in world pixels), and where a world point
+// lands on the page
 const headX = () => W * 0.72
 let scroll = 0
 const screenX = (x: number) => headX() - (scroll - x)
 
-// ——— ce qui chante ———
+// ——— what sings ———
 
 let voice: Voice | null = null
 let playing = false
-// le doigt (ou la souris) appuyé : sa hauteur fait la note, à volume doux
+// the finger (or the mouse) pressed: its height sets the note, at a soft volume
 let finger: number | null = null
 main.addEventListener('pointerdown', (e) => {
   if (!playing) return
@@ -63,7 +64,7 @@ main.addEventListener('pointerdown', (e) => {
   try {
     main.setPointerCapture(e.pointerId)
   } catch {
-    // (un appui déjà relâché)
+    // (a press already released)
   }
 })
 main.addEventListener('pointermove', (e) => finger !== null && (finger = local(e).y))
@@ -85,18 +86,18 @@ const door = intro(main, {
 })
 let since = 0
 function play() {
-  // (une seule fois)
+  // (only once)
   if (playing) return
   playing = true
   since = performance.now() / 1000
   door.close()
   main.classList.add('is-playing')
-  // le bouton apparaît
+  // the button appears
   button = controls(main, { save })
   settingsUp()
 }
 
-// ——— enregistrer ———
+// ——— saving ———
 
 let button: ReturnType<typeof controls> | null = null
 function save() {
@@ -110,7 +111,7 @@ function save() {
   })
 }
 
-// la ligne du carnet (le labo, la page, les voisines), et la roue crantée, une fois qu'on chante
+// the notebook line (the lab, the page, its neighbours), and the cog wheel, once you sing
 const slot = mount()
 function settingsUp() {
   if (!slot) return
@@ -143,7 +144,7 @@ function settingsUp() {
   )
 }
 
-// ——— l'image ———
+// ——— the frame ———
 
 const ribbon = ribbons()
 const man = rider()
@@ -155,11 +156,11 @@ function frame(now: number) {
   last = now
   const t = now / 1000
 
-  // ce qu'on entend : le doigt d'abord, sinon la voix
+  // what is heard: the finger first, otherwise the voice
   const heard: Heard | null =
     finger !== null ? { midi: midiOf(finger), level: 0.3 } : voice ? voice.read(dt, settings.sensitivity) : null
   if (heard) heardOnce = true
-  // le ruban défile, et ce qui sort à gauche est oublié
+  // the ribbon scrolls, and what goes out on the left is forgotten
   if (playing) {
     scroll += settings.pace * dt
     ribbon.add(scroll, heard)
@@ -173,7 +174,7 @@ function frame(now: number) {
   scale(g, W, lo(), hi(), yOf, heard?.midi ?? null)
   ribbon.draw(g, scroll, headX(), yOf)
   man.draw(g, screenX)
-  // la tête : un point blanc, et le nom de la note, de sa couleur
+  // the head: a white dot, and the name of the note, in its colour
   if (heard) {
     const y = yOf(heard.midi)
     g.fillStyle = '#fff'
@@ -187,7 +188,7 @@ function frame(now: number) {
     g.fillText(noteName(heard.midi), headX() + 22, y)
   }
 
-  // en bas à droite : la note entendue, en hertz, et le volume ; ou, si le micro n'a encore rien entendu, un indice
+  // at the bottom right: the note heard, in hertz, and the volume; or, if the mic has heard nothing yet, a hint
   const text = heard
     ? `${noteName(heard.midi)} · ${Math.round(toHz(heard.midi))} Hz · volume ${Math.round(heard.level * 100)} %`
     : voice && !heardOnce && t - since > 6

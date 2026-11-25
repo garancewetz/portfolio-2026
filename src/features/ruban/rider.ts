@@ -2,47 +2,48 @@ import type { Sprite } from '@/features/escalade/sprites'
 import { BRACE, CLIMB, FALL, FLY, HANG, RISE, SLEEP, SLIDE, STAND, WALK } from './yeti'
 import type { Ribbons, Stroke } from './ribbon'
 
-// Le petit yéti (voir yeti.ts) : il marche sur le ruban, vers la droite, et se comporte comme un vrai petit
-// grimpeur.
-// - Quand le ruban descend, il glisse, plus vite ; trop raide, il ne tient plus : il décroche, et tombe, ou rebondit
-//   plus bas sur le même ruban.
-// - Quand il monte, il peine ; raide (un glissando vers l'aigu), il grimpe, en battant des oreilles, à son rythme. Il y
-//   prend du retard ; quand c'est facile (du plat, une descente), il presse le pas pour reprendre sa place.
-// - Au bout d'un ruban (un silence), il attend au bord : sur du plat, debout ; sur une pente, accroupi, les oreilles
-//   couchées ; si ça descend trop, il glisse, et part dans le vide. Dès qu'un autre ruban commence, il saute le trou ;
-//   parfois un peu court : alors il s'accroche au bord par les oreilles, pend un instant, et se hisse dessus.
-// - Quand il tombe (pas quand il saute), il bat très vite des oreilles : il vole, et descend doucement.
-// - En tombant, s'il passe à portée d'un ruban (le fil entre ses pieds et ses oreilles), il s'y accroche aussi.
-// - S'il sort de la page (emporté à gauche, ou tombé en bas), il retombe du ciel sur le ruban qu'on chante.
-//   Arrêté longtemps, il s'endort.
+// The little yeti (see yeti.ts): he walks on the ribbon, to the right, and behaves like a real little
+// climber.
+// - When the ribbon goes down, he slides, faster; too steep, he cannot hold on: he comes off, and falls, or
+//   bounces lower on the same ribbon.
+// - When it goes up, he struggles; steep (a glissando upwards), he climbs, flapping his ears, at his own pace. He
+//   falls behind; when it is easy (flat, a descent), he hurries to get back to his place.
+// - At the end of a ribbon (a silence), he waits at the edge: on flat ground, standing; on a slope, crouching,
+//   ears flat; if it goes down too much, he slides, and goes off into the void. As soon as another ribbon starts,
+//   he jumps the gap; sometimes a little short: then he catches the edge with his ears, hangs for a moment, and
+//   pulls himself up.
+// - When he falls (not when he jumps), he flaps his ears very fast: he flies, and comes down gently.
+// - Falling, if he passes within reach of a ribbon (the thread between his feet and his ears), he grabs it too.
+// - If he leaves the page (carried off to the left, or fallen at the bottom), he drops from the sky onto the
+//   ribbon being sung. Stopped for a long time, he falls asleep.
 
 const FONT = `500 11px 'JetBrains Mono', ui-monospace, monospace`
 const LINE = 11
-// la pesanteur (pixels par seconde, par seconde)
+// gravity (pixels per second, per second)
 const GRAVITY = 1900
-// en volant (il bat des oreilles), il ne descend pas plus vite que ça (pixels par seconde)
+// flying (he flaps his ears), he does not come down faster than that (pixels per second)
 const FLUTTER = 240
-// les pentes (en pixels de hauteur par pixel d'avancée ; vers le bas : positif) : à partir de laquelle il grimpe, à
-// laquelle il décroche en descendant, et à laquelle il ne tient plus au bord ; sa vitesse de grimpe (en hauteur, une
-// part de son pas)
+// the slopes (in pixels of height per pixel forward; downwards: positive): from which he climbs, at which he
+// comes off going down, and at which he no longer holds at the edge; his climbing speed (in height, a share of
+// his stride)
 const STEEP = 1
 const SLIP = 4
 const EDGE = 1.2
 const CLIMB_RATE = 1
-// sa place sur la page (une part de la largeur jusqu'à la tête du ruban) : en retard, il presse le pas (jusqu'à
-// presque deux fois plus vite) ; en avance, il ralentit un peu
+// his place on the page (a share of the width up to the ribbon's head): behind, he hurries (up to almost twice
+// as fast); ahead, he slows down a little
 const HOME = 0.55
-// pendu : ses oreilles sur le fil, ses pieds dessous ; combien de temps il pend, puis combien il met à se hisser
+// hanging: his ears on the thread, his feet below; how long he hangs, then how long he takes to pull himself up
 const HANG_DROP = 3 * LINE + 9
 const DANGLE = 0.35
 const HOIST = 0.5
-// ses oreilles, au-dessus de ses pieds, quand il tombe (ce qu'il peut attraper)
+// his ears, above his feet, when he falls (what he can catch)
 const REACH = 3 * LINE + 4
 
 type Mode = 'ride' | 'air' | 'hang' | 'gone'
 
 export function rider() {
-  // x : dans le monde (comme les points du ruban) ; y : ses pieds, sur la page ; hung : depuis quand il pend
+  // x: in the world (like the ribbon's points); y: his feet, on the page; hung: since when he has been hanging
   const me = {
     x: 0,
     y: 0,
@@ -61,8 +62,8 @@ export function rider() {
   const walking = (by: number) => WALK[Math.floor((me.step += by) / 9) % WALK.length]
 
   return {
-    // walk : son pas (le défilement, en pixels par seconde) ; screenX : où il est sur la
-    // page ; headX : où naît le ruban ; yOf : la hauteur d'une note
+    // walk: his stride (the scrolling, in pixels per second); screenX: where he is on the
+    // page; headX: where the ribbon is born; yOf: the height of a note
     step(
       dt: number,
       ribbon: Ribbons,
@@ -76,24 +77,24 @@ export function rider() {
         const m = ribbon.at(s, x)
         return m === null ? null : yOf(m)
       }
-      // la pente sous lui (prise sur quelques pixels, pour que le vibrato ne compte pas)
+      // the slope under him (taken over a few pixels, so the vibrato does not count)
       const slopeAt = (s: Stroke, x: number) => {
         const a = yAt(s, x - 6) ?? yAt(s, x)
         const b = yAt(s, x + 6) ?? yAt(s, x)
         return a === null || b === null ? 0 : Math.max(-8, Math.min(8, (b - a) / 12))
       }
-      // (fly : il tombe, et vole ; sinon, il saute, et retombe où il visait)
+      // (fly: he falls, and flies; otherwise, he jumps, and lands where he aimed)
       const fall = (vx: number, vy: number, fly = true) => Object.assign(me, { mode: 'air', vx, vy, fly })
 
       if (me.mode === 'gone') {
-        // il retombe du ciel, juste derrière la tête du ruban qu'on chante
+        // he drops from the sky, just behind the head of the ribbon being sung
         const s = ribbon.singing
         if (!s || s.length < 8) return
         Object.assign(me, { x: s[s.length - 1].x - walk * 0.4, y: -20, vx: walk, vy: 0, mode: 'air', fly: true, on: s })
       }
 
       if (me.mode === 'hang' && me.on) {
-        // pendu au fil (qui bouge avec la voix) : il pend un instant, puis se hisse
+        // hanging from the thread (which moves with the voice): he hangs for a moment, then pulls himself up
         const line = yAt(me.on, me.x) ?? yAt(me.on, me.on[0].x)!
         me.hung += dt
         const up = Math.max(0, Math.min(1, (me.hung - DANGLE) / HOIST))
@@ -112,8 +113,8 @@ export function rider() {
           me.y = yAt(s, me.x) ?? me.y
           const next = s === ribbon.singing ? null : ribbon.after(end)
           if (next) {
-            // un autre ruban commence plus loin : il saute le trou (une fois sur trois, un peu court : il se
-            // rattrapera au bord)
+            // another ribbon starts farther on: he jumps the gap (one time in three, a little short: he will catch
+            // himself at the edge)
             const short = Math.random() < 0.35 ? 0.8 + Math.random() * 0.1 : 1
             const tx = me.x + (next[0].x + 6 - me.x) * short
             const ty = yAt(next, next[0].x + 6) ?? yOf(next[0].midi)
@@ -121,28 +122,28 @@ export function rider() {
             Object.assign(me, { on: next })
             fall((tx - me.x) / T, (ty - me.y) / T - 0.5 * GRAVITY * T, false)
           } else if (s === ribbon.singing) {
-            // au bout du ruban qu'on chante : il avance avec lui
+            // at the end of the ribbon being sung: he moves forward with it
             me.speed = walk
             pose = slope > 0.45 ? SLIDE : walking(walk * dt)
           } else if (slope > EDGE) {
-            // au bord d'une descente trop raide : il ne tient pas, il glisse dans le vide
+            // at the edge of a descent too steep: he cannot hold on, he slides into the void
             pose = SLIDE
             fall(walk * 0.5, 60)
           } else {
-            // au bord d'un trou, il attend : debout sur du plat, accroupi sur une pente
+            // at the edge of a gap, he waits: standing on flat ground, crouching on a slope
             me.speed = 0
             me.idle += dt
             pose = Math.abs(slope) > 0.25 ? BRACE : me.idle > 4 ? SLEEP[Math.floor(me.idle * 1.5) % 2] : STAND
           }
         } else if (slope > SLIP) {
-          // trop raide en descendant : il décroche, emporté par son élan
+          // too steep going down: he comes off, carried by his momentum
           pose = FALL
           fall(Math.max(me.speed, walk), Math.max(me.speed, walk) * 0.8)
         } else {
-          // la pente fait sa vitesse : il glisse en descendant, peine en montant ; raide, il grimpe : il monte à
-          // vitesse fixe, donc plus c'est raide, moins il avance
+          // the slope sets his speed: he slides going down, struggles going up; steep, he climbs: he rises at a fixed
+          // speed, so the steeper it is, the less he moves forward
           const climbing = slope < -STEEP
-          // (en retard : positif ; il rattrape quand le terrain est facile, pas en peinant dans une montée)
+          // (behind: positive; he catches up when the ground is easy, not while struggling up a climb)
           const late = (headX * HOME - screenX(me.x)) / 200
           const hurry = slope > -0.3 ? 1 + Math.max(-0.25, Math.min(0.9, late)) : 1
           const want = climbing
@@ -167,10 +168,10 @@ export function rider() {
         me.y += me.vy * dt
         if (pose !== SLIDE || me.vy > 200)
           pose = me.vy < 0 ? RISE : me.fly ? FLY[Math.floor((me.flap += dt) * 16) % FLY.length] : FALL
-        // il retrouve un ruban dès qu'il le traverse : en tombant dessus, ou quand le fil remonte et le rattrape par
-        // en dessous (une descente raide qui repart vers le haut) ; on compare où il était par rapport au fil à
-        // l'image d'avant, et maintenant. Sinon, s'il en a un à portée (le fil entre ses pieds et ses oreilles,
-        // et pas trop raide : il faut pouvoir se hisser dessus), il s'y accroche
+        // he gets back on a ribbon as soon as he crosses it: falling onto it, or when the thread rises and catches him
+        // from below (a steep descent that turns back up); compare where he was relative to the thread on the previous
+        // frame, and now. Otherwise, if he has one within reach (the thread between his feet and his ears, and not too
+        // steep: he must be able to pull himself up), he grabs it
         const strokes = me.on ? [me.on, ...ribbon.strokes] : ribbon.strokes
         for (const s of strokes) {
           const y = yAt(s, me.x)
@@ -188,7 +189,7 @@ export function rider() {
         }
       }
 
-      // sorti de la page : à gauche (le ruban l'a emporté), ou en bas (tombé)
+      // out of the page: on the left (the ribbon carried him off), or at the bottom (fallen)
       if (screenX(me.x) < 10 || me.y > H + 60) {
         me.mode = 'gone'
         me.on = null
@@ -200,7 +201,7 @@ export function rider() {
       g.textAlign = 'center'
       g.textBaseline = 'bottom'
       g.fillStyle = '#eeeae2'
-      // (les pieds un peu au-dessus du fil)
+      // (feet slightly above the thread)
       const x = screenX(me.x)
       for (let i = 0; i < pose.length; i++) g.fillText(pose[i], x, me.y - 3 - (pose.length - 1 - i) * LINE)
     },

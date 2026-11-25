@@ -1,54 +1,54 @@
-// Le bonhomme, en caractères : une tête o, un corps # (comme une veste à clous), des bras et des jambes en traits.
-// Chaque image fait 3 caractères sur 4 lignes (la même boîte dans toutes les postures, pour qu'il ne saute pas d'une
-// image à l'autre). Dessiné tourné vers la droite ; mirror() le retourne.
+// The little man, in characters: an o head, a # body (like a studded jacket), arms and legs as strokes.
+// Each frame is 3 characters by 4 lines (the same box in every posture, so he does not jump from one frame to
+// the next). Drawn facing right; mirror() flips him.
 
 export type Sprite = string[]
 
-// debout, à l'arrêt
+// standing, still
 export const STAND: Sprite = ['   ', ' o ', '/#\\', '/ \\']
-// la marche : les jambes s'écartent, se croisent, les bras balancent
+// walking: legs apart, then crossing, arms swinging
 export const WALK: Sprite[] = [
   ['   ', ' o ', '/#\\', '/ \\'],
   ['   ', ' o ', ' #\\', ' | '],
   ['   ', ' o ', '/# ', ' |\\'],
   ['   ', ' o ', ' #\\', ' | '],
 ]
-// l'escalade, contre le bord (à droite) : les mains vers le bord, l'une en haut, puis l'autre ; un pied qui pousse
+// climbing, against the edge (on the right): hands towards the edge, one up, then the other; one foot pushing
 export const CLIMB: Sprite[] = [
   ['  /', ' o ', ' #\\', '/ |'],
   ['   ', ' o/', ' #\\', ' |\\'],
 ]
-// suspendu au bord du haut : les mains accrochées, l'une avance, puis l'autre
+// hanging from the top edge: hands gripping, one moves ahead, then the other
 export const HANG: Sprite[] = [
   ['\\ /', ' o ', ' # ', '/ \\'],
   [' |/', ' o ', ' # ', ' |\\'],
 ]
-// en l'air : en montant (un saut), en descendant (il tombe, les bras en l'air)
+// in the air: going up (a jump), coming down (he falls, arms up)
 export const RISE: Sprite = ['  /', ' o ', '/# ', '/ \\']
 export const FALL: Sprite = ['\\o/', ' # ', '/ \\', '   ']
 
-// poussé par un bord qui avance : il recule, les bras en avant
+// pushed by an edge moving in: he backs off, arms forward
 export const PUSHED: Sprite = ['   ', ' o ', '\\#/', '/ \\']
-// écrasé par une fenêtre trop basse : accroupi
+// crushed by a window too low: crouching
 export const CROUCH: Sprite = ['   ', '   ', ' o ', '/#\\']
-// il dort (on est parti sur un autre onglet) : assis, les jambes allongées, et ses z
+// he sleeps (you switched to another tab): sitting, legs stretched out, and his z's
 export const SLEEP: Sprite[] = [
   ['  z', ' o ', '/#\\', ' ‾‾'],
   ['  Z', ' o ', '/#\\', ' ‾‾'],
 ]
-// attrapé par la souris : accroché d'une main, il pend
+// grabbed by the mouse: holding on with one hand, he dangles
 export const CARRIED: Sprite[] = [
   [' | ', ' o ', '/#\\', '/ \\'],
   [' | ', ' o ', '/#\\', ' |\\'],
 ]
 
-// coucou : face à nous, il agite la main (devant la porte, avant d'entrer)
+// a wave: facing us, he waves his hand (in front of the door, before going in)
 export const WAVE: Sprite[] = [
   ['   ', ' o/', '/# ', '/ \\'],
   ['   ', ' o_', '/# ', '/ \\'],
 ]
 
-// tourné vers la gauche : chaque ligne à l'envers, les traits obliques retournés
+// facing left: each line reversed, the slanted strokes flipped
 const flip: Record<string, string> = { '/': '\\', '\\': '/' }
 export const mirror = (s: Sprite): Sprite =>
   s.map((line) =>

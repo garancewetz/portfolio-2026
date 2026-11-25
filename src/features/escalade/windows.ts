@@ -1,8 +1,8 @@
-// Deux fenêtres (ou plus), la page ouverte dans chacune, côte à côte sur l'écran : il n'y a qu'un bonhomme, et il
-// passe de l'une à l'autre. Les fenêtres se parlent (BroadcastChannel, dans ce navigateur seulement : rien ne sort
-// de l'ordinateur) : chacune dit où elle est sur l'écran ; quand il marche contre le bord d'une fenêtre et qu'une
-// autre touche ce bord, il y entre, à la même hauteur sur l'écran. Une page qui s'ouvre alors qu'il est déjà
-// ailleurs reste vide ; s'il était dans une fenêtre qu'on ferme, une autre le reprend.
+// Two windows (or more), the page open in each, side by side on the screen: there is only one little man, and he
+// goes from one to the other. The windows talk to each other (BroadcastChannel, in this browser only: nothing
+// leaves the computer): each one says where it is on the screen; when he walks against the edge of a window and
+// another one touches that edge, he enters it, at the same height on the screen. A page that opens while he is
+// already elsewhere stays empty; if he was in a window that gets closed, another one takes him back.
 
 type Rect = { left: number; top: number; right: number; bottom: number }
 type Msg =
@@ -12,9 +12,9 @@ type Msg =
   | { t: 'take'; to: string; y: number; side: -1 | 1; floor: boolean }
   | { t: 'bye'; id: string; had: boolean }
 
-const NEAR = 90 // px sur l'écran : deux bords plus proches que ça se touchent
+const NEAR = 90 // px on the screen: two edges closer than that touch
 
-// la page dans l'écran (le haut de la fenêtre moins ses barres)
+// the page on the screen (the top of the window minus its bars)
 export const screenRect = (): Rect => {
   const left = screenX + (outerWidth - innerWidth) / 2
   const top = screenY + (outerHeight - innerHeight)
@@ -22,13 +22,13 @@ export const screenRect = (): Rect => {
 }
 
 export function windows(o: {
-  /** il est ici en ce moment */
+  /** he is here right now */
   has: () => boolean
-  /** une autre fenêtre l'a déjà : cette page reste vide */
+  /** another window already has him: this page stays empty */
   leave: () => void
-  /** il arrive par ce bord (-1 : gauche), à cette hauteur dans la page (px), au sol ou pas */
+  /** he arrives through this edge (-1: left), at this height in the page (px), on the ground or not */
   enter: (side: -1 | 1, y: number, floor: boolean) => void
-  /** personne ne l'a plus : il revient ici, au milieu */
+  /** nobody has him any more: he comes back here, in the middle */
   adopt: () => void
 }) {
   const id = Math.random().toString(36).slice(2)
@@ -50,7 +50,7 @@ export function windows(o: {
       o.enter(m.side, m.y - me.top, m.floor)
     } else if (m.t === 'bye') {
       others.delete(m.id)
-      // (s'il était là-bas : la fenêtre restante au plus petit nom le reprend)
+      // (if he was over there: the remaining window with the smallest name takes him back)
       if (m.had && !o.has() && [...others.keys(), id].sort()[0] === id) o.adopt()
     }
   }
@@ -61,7 +61,7 @@ export function windows(o: {
   addEventListener('pagehide', () => post({ t: 'bye', id, had: o.has() }))
 
   return {
-    // une fenêtre qui touche ce bord (-1 : gauche, 1 : droite) à cette hauteur sur l'écran
+    // a window touching this edge (-1: left, 1: right) at this height on the screen
     neighbour(side: -1 | 1, y: number) {
       const me = screenRect()
       const now = performance.now()
@@ -72,7 +72,7 @@ export function windows(o: {
       }
       return null
     },
-    // il y passe : par le bord opposé, à cette hauteur sur l'écran
+    // he crosses into it: through the opposite edge, at this height on the screen
     send(to: string, side: -1 | 1, y: number, floor: boolean) {
       post({ t: 'take', to, y, side: -side as -1 | 1, floor })
     },

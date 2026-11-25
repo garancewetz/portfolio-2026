@@ -1,4 +1,4 @@
-// Les types du contenu (voir content.ts)
+// The content types (see content.ts)
 
 export interface Person {
   name: string
@@ -7,37 +7,37 @@ export interface Person {
 }
 
 export interface Project {
-  /** l'adresse de sa fiche : #id */
+  /** the address of its sheet: #id */
   id: string
   title: string
-  /** la phrase qui dit ce que c'est (dans la fiche, et sur mobile) */
+  /** the sentence that says what it is (in the sheet, and on mobile) */
   short: string
-  /** quelques mots-clés, sous le titre de la carte (« handicap », « astronomie »…) */
+  /** a few keywords, under the card title (« handicap », « astronomie »…) */
   tags: string[]
-  /** le type de projet (« Application web 3D »…) */
+  /** the kind of project (« Application web 3D »…) */
   kind: string
   stack: string[]
-  /** capture 16/10 dans public/shots (WebP, 1200 px de large) */
+  /** 16/10 screenshot in public/shots (WebP, 1200 px wide) */
   image?: string
   alt?: string
-  /** dans la fiche (site pensé pour le téléphone) : un écran de téléphone à côté de la capture (WebP, 640 px de
-      large, 390 × 844) */
+  /** in the sheet (site designed for phones): a phone screen beside the screenshot (WebP, 640 px wide,
+      390 × 844) */
   phone?: Screen
-  /** le site, s'il est en ligne */
+  /** the site, if it is online */
   demo: string | null
-  /** le code sur GitHub (sans : le dépôt est privé) */
+  /** the code on GitHub (absent: the repository is private) */
   code?: string
-  /** en cours, bientôt en ligne */
+  /** in progress, online soon */
   wip?: boolean
 }
 
-/** le carnet d'expériences : l'adresse de son sommaire, ses pages */
+/** the notebook of experiments: the address of its table of contents, its pages */
 export interface Carnet {
   href: string
   pages: Page[]
 }
 
-/** une page du carnet : son nom, son adresse, sa capture (16/10, WebP, 1200 px de large) et sa
+/** a page of the notebook: its name, its address, its screenshot (16/10, WebP, 1200 px wide) and its
     description */
 interface Page {
   name: string
@@ -46,7 +46,7 @@ interface Page {
   alt: string
 }
 
-/** un écran : son image et sa description */
+/** a screen: its image and its description */
 interface Screen {
   src: string
   alt: string

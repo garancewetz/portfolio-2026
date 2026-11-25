@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { LAMPS } from './motifs'
 
-// une tache de lumière douce posée sur la page (sa couleur glisse d'une lampe à l'autre en tournant)
+// a pool of soft light laid on the page (its colour glides from one lamp to the next as it spins)
 export function lightPool() {
   const c = document.createElement('canvas')
   c.width = c.height = 128

@@ -1,7 +1,7 @@
 import { around } from './salvos'
 
-// les étoiles : des points (une ombre portée chacune), plus nombreux en haut du ciel ; deux groupes, qui
-// scintillent chacun à son rythme
+// the stars: dots (one drop shadow each), more of them at the top of the sky; two groups, each twinkling at
+// its own rhythm
 export function starField(n: number): [string, string] {
   const one = () => {
     const x = (Math.random() * 100).toFixed(2)

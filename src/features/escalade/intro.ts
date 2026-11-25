@@ -1,12 +1,12 @@
-// L'arrivée : le bonhomme n'est pas encore là. Les caractères qui le composent traînent en bas de la page, en
-// vrac, sur une ligne : une suite de signes sans aucun sens. Au premier geste (une touche, un appui), son corps se
-// rassemble d'un coup (les jambes, le corps, les bras), mais sa tête est restée par terre : il la ramasse, son bras
-// la monte et la pose sur ses épaules. Il est formé (le vrai dessin prend alors le relais, voir main.ts).
+// The arrival: the little man is not there yet. The characters he is made of lie scattered at the bottom of the
+// page, on one line: a string of signs with no meaning at all. At the first move (a key, a press), his body
+// comes together at once (legs, body, arms), but his head stayed on the ground: he picks it up, his arm lifts
+// it and puts it on his shoulders. He is formed (the real drawing then takes over, see main.ts).
 
-const ORDER_SEED = [3, 0, 5, 2, 4, 1] // (un vrac toujours le même : pas de hasard qui tomberait sur le bon ordre)
+const ORDER_SEED = [3, 0, 5, 2, 4, 1] // (always the same jumble: no chance of randomly landing on the right order)
 
 export function intro(main: HTMLElement, man: HTMLElement, sprite: string[], at: () => { x: number; y: number }) {
-  // ses caractères, et leur place dans le dessin (colonne, ligne)
+  // his characters, and their place in the drawing (column, row)
   const chars = sprite.flatMap((line, row) => [...line].map((c, col) => ({ c, col, row })).filter((p) => p.c !== ' '))
   const layer = document.createElement('div')
   layer.className = 'es-loose'
@@ -15,16 +15,16 @@ export function intro(main: HTMLElement, man: HTMLElement, sprite: string[], at:
   layer.append(...spans)
   main.append(layer)
 
-  // la taille d'un caractère (le dessin fait 3 caractères sur 4 lignes)
+  // the size of a character (the drawing is 3 characters by 4 lines)
   const cell = () => ({ w: man.offsetWidth / sprite[0].length, h: man.offsetHeight / sprite.length })
-  // en vrac : sur la ligne du sol, au milieu, dans le désordre, un peu espacés
+  // scattered: on the ground line, in the middle, out of order, a little spaced out
   const scatter = () => {
     const { x, y } = at()
     const { w, h } = cell()
     const order = chars.map((_, i) => ORDER_SEED[i % ORDER_SEED.length] + Math.floor(i / ORDER_SEED.length) * 6)
     const rank = [...order].sort((a, b) => a - b)
     spans.forEach((s, i) => {
-      // (posés d'un coup : seul le rassemblement glisse)
+      // (laid at once: only the gathering slides)
       s.style.transition = 'none'
       const k = rank.indexOf(order[i])
       s.style.transform = `translate(${x + (k - chars.length / 2 + 1.5) * w * 1.6}px, ${y + (sprite.length - 1) * h}px)`
@@ -40,8 +40,8 @@ export function intro(main: HTMLElement, man: HTMLElement, sprite: string[], at:
   }
   let formed = false
   let started = false
-  // la tête : son bras droit se lève (il devient un /, plus haut), la tête monte avec la main, jusqu'aux
-  // épaules ; puis le bras redescend, et le vrai dessin prend le relais
+  // the head: his right arm rises (it becomes a /, higher), the head goes up with the hand, up to the
+  // shoulders; then the arm comes back down, and the real drawing takes over
   function pickUp(head: number) {
     const { x, y } = at()
     const { w, h } = cell()
@@ -76,8 +76,8 @@ export function intro(main: HTMLElement, man: HTMLElement, sprite: string[], at:
     get formed() {
       return formed
     },
-    // le premier geste : le corps se rassemble d'un coup (les jambes, le corps, les bras), la tête roule à côté de
-    // ses pieds ; puis il la ramasse
+    // the first move: the body comes together at once (legs, body, arms), the head rolls beside his feet; then he
+    // picks it up
     start() {
       if (started) return
       started = true
@@ -91,7 +91,7 @@ export function intro(main: HTMLElement, man: HTMLElement, sprite: string[], at:
       })
       setTimeout(() => pickUp(head), 450)
     },
-    // il est déjà formé ailleurs (dans une autre fenêtre) : plus de vrac ici
+    // he is already formed elsewhere (in another window): no jumble here any more
     dismiss() {
       formed = started = true
       removeEventListener('resize', scatter)

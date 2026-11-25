@@ -2,7 +2,7 @@
    Canigou rising out of the clouds (--lead: that first stretch of scrolling, see SCROLL_DRIVEN in index.html); then
    the projects, as badges, rising in a gentle wave (left to right) and sticking at the top; at the very end
    « Garance Wetzel » rises and sticks just under them. Hovering a badge changes the backdrop's place, and its
-   screenshot follows the cursor (cards.js). (The lab, a mode of the same page: see lab.css.) */
+   screenshot follows the cursor (cards.ts). (The lab, a mode of the same page: see lab.css.) */
 html, body { background: #0b0b2a; color: #fff; }
 canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 0; opacity: 0; transition: opacity 1.2s; }
 html.backdrop-ready canvas { opacity: 1; }           /* the backdrop fades in, once its relief has arrived */
@@ -27,7 +27,7 @@ html.poster::before { content: ''; position: fixed; inset: 0; z-index: 0; backgr
 .row a { display: block; position: sticky; top: 88px; margin-top: calc(var(--lead) + 100vh + var(--i) * 5vh); }   /* a gentle wave, entering once the Canigou is up */
 .row a:focus-visible { outline: none; }
 /* the projects (and the lab's experiments): a badge each, the name centred (the screenshot follows the cursor, see
-   cards.js) */
+   cards.ts) */
 .row b { display: block; overflow: hidden; text-overflow: ellipsis; }
 .row a:is(:hover, :focus-visible, .active) b { background: #fff; color: #1414e6; text-shadow: none; }
 /* the lab is something else (experiments, not projects): a quieter badge, no ground, a fainter rule and text; it
@@ -50,7 +50,7 @@ html:not(.in-lab) .row a[data-id="labo"]:not(:hover, :focus-visible) b { backgro
   .row a { top: 15px; }   /* stuck on the line of « hello, world. », centred on it */
   .signature { top: 84px; font-size: clamp(20px, 1.8vw, 28px); }
 }
-/* the screenshot following the cursor (cards.js), with a mouse only */
+/* the screenshot following the cursor (cards.ts), with a mouse only */
 .cursor-shot {
   position: fixed; left: 0; top: 0; z-index: 25; width: clamp(220px, 20vw, 320px); aspect-ratio: 16 / 10; margin: 0;
   pointer-events: none; opacity: 0; scale: .96; transition: opacity .25s, scale .35s cubic-bezier(.2, .7, .2, 1);
@@ -78,13 +78,13 @@ html.project-open .cursor-shot { display: none; }
 }
 
 /* on arrival, the hint to scroll: a badge, bottom centre, bobbing gently; only after two seconds without moving
-   (the first seconds are the landscape alone, cards.js sets html.hint-on), and gone at the first scroll */
+   (the first seconds are the landscape alone, cards.ts sets html.hint-on), and gone at the first scroll */
 .scroll-hint { position: fixed; left: 50%; bottom: 28px; translate: -50% 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .8s; }
 html.hint-on .scroll-hint { opacity: 1; }
 .scroll-hint span { display: inline-block; margin-left: 6px; animation: hint 1.8s ease-in-out infinite; }
 @keyframes hint { 50% { translate: 0 3px; } }
 html:is(.scrolled, .in-lab, .project-open) .scroll-hint { opacity: 0; }
-/* « hello, world. »: on the home page, it fades once « Garance Wetzel » has arrived (cards.js); it comes back when
+/* « hello, world. »: on the home page, it fades once « Garance Wetzel » has arrived (cards.ts); it comes back when
    scrolling up, on a project page and in the lab, where it leads back home */
 .top-bar .home { transition: opacity .6s; }
 html.name-here:not(.in-lab, .project-open) .top-bar .home { opacity: 0; pointer-events: none; }
@@ -95,7 +95,7 @@ html.name-here:not(.in-lab, .project-open) .signature { translate: 0 -64px; }
 /* (and nothing else: the name of the place appears with the first scroll) */
 html:not(.scrolled, .in-lab, .project-open) .place-label { opacity: 0; }
 
-/* the name of the place shown by the backdrop, bottom right (see place-label.js): one quiet line, in mono, a caption;
+/* the name of the place shown by the backdrop, bottom right (see place-label.ts): one quiet line, in mono, a caption;
    it shows when the place changes, then fades after a few seconds (.resting) */
 .place-label {
   position: fixed; right: var(--pad); bottom: 24px; z-index: 2; margin: 0; pointer-events: none; text-align: right;
@@ -108,7 +108,7 @@ html:not(.scrolled, .in-lab, .project-open) .place-label { opacity: 0; }
 .place-label.changing, .place-label.resting { opacity: 0; }
 .place-label.resting { transition: opacity 1.2s; }
 
-/* the snow globe (see snow-globe.js, which also makes the page inert): the page fades when pulling back */
+/* the snow globe (see snow-globe.ts, which also makes the page inert): the page fades when pulling back */
 .top-bar, .scene, .place-label { opacity: calc(1 - var(--pullback, 0) * 1.6); }
 .globe-hint {
   position: fixed; left: 50%; bottom: 28px; translate: -50% 0; z-index: 2; margin: 0; pointer-events: none;

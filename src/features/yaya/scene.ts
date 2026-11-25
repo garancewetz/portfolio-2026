@@ -1,11 +1,11 @@
-// Où est Yaya ? La scène (voir yaya.ts, qui la dessine). Un collage fait dans le train entre Nice et Paris, le 19
-// septembre 2021 : le ciel, trois plans de montagnes, un village perché dont les maisons sont découpées une à une
-// (et détourées, voir cutouts.ts), et des feuillages au premier plan, en blocs comme dans le collage d'origine.
-// Un « Où est Charlie ? » : Yaya est cachée dans l'image. Quand on clique sur elle, on l'a trouvée ; elle s'efface
-// et va se cacher à la cachette suivante (voir spots.ts) : sur le clocher, toute petite sur une colline, la tête qui
-// dépasse d'un buisson, ou tout entière derrière un buisson ou l'église… On la compte ; trouvée dix fois, elle
-// apparaît en grand, devant ; un clic sur elle et on recommence. Le collage est immobile, comme une page de carnet ;
-// ses morceaux s'écartent un peu sous la souris (voir push.ts) : il faut fouiller.
+// Où est Yaya ? The scene (see yaya.ts, which draws it). A collage made on the train between Nice and Paris, on
+// 19 September 2021: the sky, three layers of mountains, a hilltop village whose houses are cut out one by one
+// (and trimmed, see cutouts.ts), and foliage in the foreground, in blocks as in the original collage.
+// A « Où est Charlie ? »: Yaya is hidden in the picture. When you click on her, you have found her; she fades
+// and goes to hide in the next hiding place (see spots.ts): on the bell tower, tiny on a hill, her head peeking
+// out of a bush, or entirely behind a bush or the church… She is counted; found ten times, she appears large, in
+// front; a click on her and it starts again. The collage is still, like a notebook page; its pieces move aside
+// a little under the mouse (see push.ts): you have to search.
 
 import { house } from './cutouts'
 import { push, PUSH } from './push'
@@ -15,19 +15,19 @@ const SRC = '/carnet/yaya/'
 type Picture = HTMLImageElement | HTMLCanvasElement
 type Images = { sky: Picture; mountains: Picture[]; village: Picture[]; leaves: Picture[]; yaya: Picture }
 
-// le village : la hauteur de chaque maison (en part de la hauteur du village) ; les feuillages : la hauteur de
-// chacun (en part du premier plan)
+// the village: each house's height (as a share of the village height); the foliage: each one's height (as a
+// share of the foreground)
 const HOUSES = [0.4, 0.5, 0.6, 0.7, 1, 0.8]
 const LEAVES = [1, 0.3, 0.5, 0.6, 1]
-// quand on l'a trouvée : elle reste encore WAIT secondes, puis s'efface (en GONE secondes) pendant qu'elle apparaît
-// ailleurs (en COME secondes, un peu après)
+// once found: she stays WAIT more seconds, then fades (over GONE seconds) while she appears elsewhere (over
+// COME seconds, a bit later)
 const WAIT = 0.12
 const GONE = 0.3
 const COME = 1.1
 const LATE = 0.6
-// (« Trouvée ! » reste écrit un peu plus longtemps, le temps de le lire : SAID secondes)
+// (« Trouvée ! » stays written a little longer, time to read it: SAID seconds)
 const SAID = 1.4
-// une petite marge autour d'elle pour le clic (en pixels), sinon les toutes petites seraient introuvables
+// a small margin around her for the click (in pixels), otherwise the tiny ones would be impossible to find
 const PAD = 6
 
 function load(src: string) {
@@ -39,8 +39,8 @@ function load(src: string) {
   })
 }
 
-// une image dans une boîte, comme un fond CSS : cover (elle remplit la boîte) ou contain (elle y tient), calée en
-// haut ou en bas, centrée en largeur ; ce qui dépasse de la boîte est coupé
+// an image in a box, like a CSS background: cover (it fills the box) or contain (it fits in it), aligned to the
+// top or the bottom, centred horizontally; whatever overflows the box is cut
 function drawIn(ctx: CanvasRenderingContext2D, img: Picture, box: Rect, fit: 'cover' | 'contain', at: 'top' | 'bottom') {
   const s = fit === 'cover' ? Math.max(box.w / img.width, box.h / img.height) : Math.min(box.w / img.width, box.h / img.height)
   const w = img.width * s
@@ -65,10 +65,10 @@ export function scene() {
     images = { sky, mountains, village: village.map(house), leaves, yaya }
   })
 
-  // la mise en page, pour une fenêtre W × H (comme dans le collage d'origine : chaque plan de montagne occupe le bas
-  // du précédent, le village est posé sur le dernier, les feuillages couvrent le bas de l'écran)
+  // the layout, for a W × H window (as in the original collage: each mountain layer takes up the bottom of the
+  // previous one, the village sits on the last, the foliage covers the bottom of the screen)
   function layout(W: number, H: number): Layout {
-    // (un peu plus larges que l'écran, et les feuillages un peu plus bas, pour qu'aucun bord ne se découvre)
+    // (a little wider than the screen, and the foliage a little lower, so that no edge is uncovered)
     const M = 8
     const m1: Rect = { x: -M, y: H * 0.15, w: W + 2 * M, h: H * 0.85 }
     const m2: Rect = { x: -M, y: H - m1.h * 0.85, w: W + 2 * M, h: m1.h * 0.85 }
@@ -77,8 +77,8 @@ export function scene() {
     const vh = m3.h * 0.6
     const village = HOUSES.map((h, k) => ({ x: (W - vw) / 2 + (k * vw) / HOUSES.length, y: m3.y + vh * (1 - h), w: vw / HOUSES.length, h: vh * h }))
     const front = H * 0.6
-    // (les feuillages se chevauchent un peu, pour qu'aucune fente ne s'ouvre entre eux)
-    // (et ceux des bords dépassent de l'écran, pour qu'aucun bord ne se découvre quand la souris les pousse)
+    // (the foliage pieces overlap a little, so that no gap opens between them)
+    // (and those on the edges overflow the screen, so that no edge is uncovered when the mouse pushes them)
     const edge = (PUSH.leaves.x * W) / LEAVES.length
     const leaves = LEAVES.map((h, k) => {
       const r = { x: (k * W) / LEAVES.length - M / 2, y: H - front * h, w: W / LEAVES.length + M, h: front * h + M }
@@ -86,31 +86,31 @@ export function scene() {
       if (k === LEAVES.length - 1) return { ...r, w: r.w + edge }
       return r
     })
-    // (le collage ne bouge pas tout seul : seule la souris écarte un peu les morceaux, voir push.ts)
+    // (the collage does not move on its own: only the mouse moves the pieces aside a little, see push.ts)
     return { m1, m2, m3, village, leaves }
   }
 
-  // l'état : la souris, la lumière de chaque maison (qui change en douceur), où est Yaya (au début, la première
-  // cachette), de quel côté elle regarde, et combien de fois on l'a trouvée
+  // the state: the mouse, each house's light (which changes smoothly), where Yaya is (at first, the first hiding
+  // place), which way she looks, and how many times she has been found
   let mouseX = -1
   let mouseY = -1
   let spot = 0
   let facing = Math.random() < 0.5 ? -1 : 1
   let score = 0
-  // (d'où elle vient, depuis quand elle a bougé, et quand on l'a trouvée)
+  // (where she comes from, since when she has moved, and when she was found)
   let was = spot
   let wasFacing = 1
   let since = 99
   let found: number | null = null
   let clock = 0
   const glow = HOUSES.map(() => 0)
-  // (et elle, qui brille un peu quand la souris passe sur elle, pour donner envie de cliquer)
+  // (and her, glowing a little when the mouse passes over her, to make you want to click)
   let lit = 0
   let size = { W: 1, H: 1 }
 
   const inside = (r: Rect, x: number, y: number) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h
   const smooth = (t: number) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t))
-  // à la cachette suivante (après la fin, on recommence)
+  // to the next hiding place (after the end, start again)
   function next() {
     was = spot
     wasFacing = facing
@@ -119,10 +119,10 @@ export function scene() {
     facing = Math.random() < 0.5 ? -1 : 1
     if (spot === 0) score = 0
   }
-  // les morceaux, poussés par la souris (Yaya, elle, ne bouge pas avec eux : elle se découvre)
+  // the pieces, pushed by the mouse (Yaya does not move with them: she gets uncovered)
   const pushed = push(HOUSES.length, LEAVES.length)
-  // sa boîte à l'écran, pour une place donnée : posée sur un morceau, elle bouge avec lui quand la souris le pousse ;
-  // cachée derrière, elle reste là (L : les morceaux sans la souris, S : poussés)
+  // her box on screen, for a given place: sitting on a piece, she moves with it when the mouse pushes it; hidden
+  // behind, she stays put (L: the pieces without the mouse, S: pushed)
   function box(k: number, L: Layout, S: Layout) {
     const still = SPOTS[k](size.W, size.H, L)
     const at = still.under !== undefined || still.behind !== undefined ? still : SPOTS[k](size.W, size.H, S)
@@ -130,7 +130,7 @@ export function scene() {
     const w = h * (images ? images.yaya.width / images.yaya.height : 0.29)
     return { at, x: at.x - w / 2, y: at.y - h * FEET, w, h }
   }
-  // a-t-on cliqué sur elle ? (dans sa boîte, un peu élargie, mais pas sur ce qui la cache)
+  // was she clicked? (in her box, slightly widened, but not on what hides her)
   function hit(x: number, y: number) {
     const L = layout(size.W, size.H)
     const S = pushed.apply(L)
@@ -144,20 +144,20 @@ export function scene() {
 
   return {
     ready,
-    // (la souris est-elle sur elle ? la page montre alors une main)
+    // (is the mouse over her? the page then shows a hand)
     over: () => lit > 0.5,
-    // le texte sous le carnet : « Trouvée ! » jusqu'à ce qu'elle se soit effacée, et le compte ; à la fin, coucou
+    // the text under the notebook: « Trouvée ! » until she has faded, and the count; at the end, a wave
     caption: () => {
       if (spot === LAST) return 'Coucou !'
       const just = found !== null || (since < SAID && was !== LAST)
-      // (les deux phrases font la même largeur, en police à chasse fixe : le compteur ne bouge pas)
+      // (both sentences have the same width, in a monospaced font: the counter does not move)
       return `${(just ? 'Trouvée !' : 'Où est Yaya ?').padEnd(13)}  ${score}/${LAST}`
     },
     pointer(x: number, y: number) {
       mouseX = x
       mouseY = y
     },
-    // un clic : si c'est sur elle (et qu'elle est bien là), on l'a trouvée
+    // a click: if it is on her (and she is really there), she has been found
     click(x: number, y: number) {
       if (found !== null || since < LATE + COME) return false
       if (!hit(x, y)) return false
@@ -165,13 +165,13 @@ export function scene() {
       if (spot !== LAST) score++
       return true
     },
-    // avancer le temps (Yaya qui s'efface et réapparaît, les morceaux poussés par la souris)
+    // move time forward (Yaya fading and reappearing, the pieces pushed by the mouse)
     tick(dt: number) {
       const L = layout(size.W, size.H)
       const ease = 1 - Math.exp(-dt * 5)
       clock += dt
       since += dt
-      // (trouvée : un instant après, elle file se cacher ailleurs)
+      // (found: a moment later, she runs off to hide elsewhere)
       if (found !== null && clock - found > WAIT) {
         next()
         found = null
@@ -184,21 +184,21 @@ export function scene() {
         glow[k] += (t - glow[k]) * ease
       })
     },
-    // dessiner la scène dans ctx, pour une fenêtre W × H
+    // draw the scene into ctx, for a W × H window
     draw(ctx: CanvasRenderingContext2D, W: number, H: number) {
       size = { W, H }
       if (!images) return
-      // (Yaya se place selon les morceaux à leur place ; on les dessine poussés par la souris)
+      // (Yaya is placed according to the pieces in their place; they are drawn pushed by the mouse)
       const L = layout(W, H)
       const S = pushed.apply(L)
       const { sky, mountains, village, leaves, yaya } = images
-      // Yaya à une place donnée, avec une transparence (quand elle s'efface ou apparaît)
+      // Yaya at a given place, with some transparency (when she fades or appears)
       const yayaAt = (k: number, side: number, alpha: number) => {
         if (alpha <= 0.01) return
         const b = box(k, L, S)
         ctx.save()
         ctx.globalAlpha = alpha
-        // (sous la souris : un peu plus claire, avec un halo doré autour)
+        // (under the mouse: a little lighter, with a golden halo around her)
         const l = k === spot ? lit : 0
         if (l > 0.01) ctx.filter = `brightness(${1 + 0.35 * l}) drop-shadow(0 0 ${Math.max(3, b.h * 0.06) * l}px rgb(255 236 170 / ${0.9 * l}))`
         ctx.translate(b.at.x, 0)
@@ -206,7 +206,7 @@ export function scene() {
         ctx.drawImage(yaya, -b.w / 2, b.y, b.w, b.h)
         ctx.restore()
       }
-      // (là où elle est, et là d'où elle part, chacune juste avant ce qui la cache)
+      // (where she is, and where she leaves from, each just before what hides her)
       const shown: [number, number, number][] = [
         [was, wasFacing, 1 - smooth(since / GONE)],
         [spot, facing, smooth((since - LATE) / COME)],
@@ -218,7 +218,7 @@ export function scene() {
       drawIn(ctx, mountains[1], S.m2, 'contain', 'top')
       drawIn(ctx, mountains[2], S.m3, 'cover', 'top')
       yayasUnder('village')
-      // les maisons (un peu plus claires sous la souris)
+      // the houses (a little lighter under the mouse)
       S.village.forEach((r, k) => {
         ctx.filter = glow[k] > 0.01 ? `brightness(${1 + 0.3 * glow[k]})` : 'none'
         drawIn(ctx, village[k], r, 'cover', 'top')

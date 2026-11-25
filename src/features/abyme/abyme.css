@@ -1,5 +1,5 @@
-/* ——— Abyme (voir abyme.ts) : la fenêtre du navigateur, dans la fenêtre du navigateur… Sur le fond clair du site,
-   en encre sombre ; la fenêtre est dessinée dans le canvas ——— */
+/* ——— Abyme (see abyme.ts): the browser window, inside the browser window… On the site's light background,
+   in dark ink; the window is drawn in the canvas ——— */
 @import '@/styles/base.css';
 
 :root {
@@ -28,8 +28,8 @@ body {
   width: 100%;
   height: 100%;
 }
-/* les vraies pages, dans leurs fenêtres (voir door.ts) : posées sur leur fenêtre dessinée, à son échelle ; elles
-   apparaissent une fois chargées (avant, ce sont leurs captures qu'on voit) */
+/* the real pages, in their windows (see door.ts): laid on their drawn window, at its scale; they
+   appear once loaded (before that, their screenshots are what you see) */
 .ab-door {
   position: absolute;
   top: 0;

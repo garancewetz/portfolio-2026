@@ -1,4 +1,4 @@
-// Tout le contenu du site : textes, projets, parcours, liens (le reste du code ne contient pas de texte à changer).
+// All the site's content: texts, projects, background, links (the rest of the code holds no text to change).
 import type { Carnet, Person, Project } from './types'
 
 export const me: Person = {
@@ -7,15 +7,15 @@ export const me: Person = {
   linkedin: 'https://www.linkedin.com/in/garancewetzel/',
 }
 
-// Les projets (une carte chacun). demo : lien du site s'il est en ligne ; sinon la carte mène à code.
-// wip : en cours, bientôt en ligne. short : la phrase qui dit ce que c'est, écrite par Garance (dans la fiche).
-// tags : quelques mots sur le sujet du projet (pas la technique), sous le titre de la carte. kind, stack : les
-// détails, affichés dans la fiche du projet (clic sur une carte).
-// L'ordre : pour le rythme de la grille en bichromie, une capture claire, une sombre (Synapso, Signe, Handiplan,
-// Mosaïque) ; celui qui n'est pas encore en ligne à la fin. (Le CV en jeu, wwwetzel journey, n'y est plus : il parle de Garance, le site montre ses projets ; il
-// reste en ligne, sous /journey, voir netlify.toml.)
-// image : capture 16/10 dans public/shots (WebP, 1200 px de large). phone : dans la fiche, un écran de téléphone
-// à côté (voir types.ts).
+// The projects (one card each). demo: link to the site if it is online; otherwise the card leads to code.
+// wip: in progress, online soon. short: the sentence that says what it is, written by Garance (in the sheet).
+// tags: a few words about the project's subject (not the tech), under the card title. kind, stack: the
+// details, shown in the project sheet (click on a card).
+// The order: for the rhythm of the two-tone grid, a light screenshot, then a dark one (Synapso, Signe, Handiplan,
+// Mosaïque); the one not online yet comes last. (The CV as a game, wwwetzel journey, is no longer here: it is
+// about Garance, the site shows her projects; it stays online, under /journey, see netlify.toml.)
+// image: 16/10 screenshot in public/shots (WebP, 1200 px wide). phone: in the sheet, a phone screen
+// beside it (see types.ts).
 export const projects: Project[] = [
   {
     id: 'synapso',
@@ -25,10 +25,9 @@ export const projects: Project[] = [
     tags: ['rééducation', 'AVC', 'santé'],
     kind: 'Application mobile (PWA)',
     stack: ['Next.js', 'TypeScript', 'Prisma'],
-    image: '/shots/synapso.webp', // capture de la zone « Haut du corps » du site en ligne (800 × 500, faite dans le navigateur de Claude ; l'accueil est déjà dans l'écran de téléphone)
+    image: '/shots/synapso.webp', // screenshot of the « Haut du corps » area of the live site (800 × 500, taken in Claude's browser; the home is already in the phone screen)
     alt: 'Synapso, la zone « Haut du corps » : les onglets des zones du corps (Visage, Haut, Tronc, Jambes, Étirer), le bouton vert « Lancer la séance » (5 exercices, environ 7 min) et les huit exercices à faire, comme « Serrer une balle », « Cercles du poignet » ou « Bras avec poids ».',
-    // dans la fiche, à côté de la capture : l'accueil sur téléphone (fait en local, avec le compte et les données
-    // de démo)
+    // in the sheet, beside the screenshot: the home on a phone (made locally, with the demo account and data)
     phone: {
       src: '/shots/synapso-home.webp',
       alt: 'Sur téléphone, l’accueil : « Bonjour, Calypso », 7 jours actifs sur 7, le bouton « Commencer ma séance » et les zones du corps.',
@@ -46,7 +45,7 @@ export const projects: Project[] = [
     stack: ['TypeScript', 'React', 'Cesium', 'SGP4'],
     image: '/shots/signe.webp',
     alt: 'Interface de Signe astronomique : un formulaire de date de naissance à gauche, la Terre en 3D sur fond étoilé à droite.',
-    // dans la fiche, à côté de la capture : le résultat sur téléphone (fait sur le site en ligne)
+    // in the sheet, beside the screenshot: the result on a phone (made on the live site)
     phone: {
       src: '/shots/signe-signe.webp',
       alt: 'Sur téléphone, le résultat : le vrai signe est Poissons, alors que l’horoscope dit Bélier, avec un schéma Terre, Soleil, constellation.',
@@ -61,10 +60,10 @@ export const projects: Project[] = [
     tags: ['handicap', 'accessibilité', 'stationnement'],
     kind: 'Application web (carte)',
     stack: ['TypeScript', 'React', 'Leaflet', 'Tailwind'],
-    image: '/shots/handiplan-bureau.webp', // le site en ligne sur ordinateur (1280 × 800, données de démo : ?demo, le centre de Paris)
+    image: '/shots/handiplan-bureau.webp', // the live site on a computer (1280 × 800, demo data: ?demo, the centre of Paris)
     alt: 'Handiplan sur ordinateur : à gauche, la légende (Facile, Attention, Difficile, Pas d’info, Place handicapée) et la liste « Les plus faciles d’abord », des toilettes publiques, Pastasuta et McDonald’s, faciles avec toilettes adaptées, une place handicapée, puis les filtres et « Où allez-vous ? » ; à droite, la carte autour de l’Hôtel de Ville de Paris, avec des cafés et restaurants verts ou orange et des places handicapées en bleu.',
-    // dans la fiche, à côté de la capture : sur téléphone, la fiche d'une place et « Me garer ici », qui ouvre Waze
-    // ou Google Maps (site en ligne, données de démo)
+    // in the sheet, beside the screenshot: on a phone, a parking spot's sheet and « Me garer ici », which opens Waze
+    // or Google Maps (live site, demo data)
     phone: {
       src: '/shots/handiplan-telephone.webp',
       alt: 'Sur téléphone, la fiche d’une place handicapée à 178 mètres de l’arrivée, rue des Rosiers, au-dessus de la carte du Marais, avec les boutons Fermer et « Me garer ici ».',
@@ -79,7 +78,7 @@ export const projects: Project[] = [
     tags: ['favoris', 'simplicité', 'autonomie'],
     kind: 'Extension Chrome',
     stack: ['React', 'TypeScript', 'API Chrome'],
-    image: '/shots/mosaique.webp', // capture de la fiche Chrome Web Store
+    image: '/shots/mosaique.webp', // screenshot of the Chrome Web Store listing
     alt: 'Interface de Mosaïque sur fond sombre : les onglets ouverts à gauche, une recherche, des favoris en tuiles (Gmail, SNCF, Météo, Doctolib…) et des groupes colorés comme « Démarches » et « Actualité ».',
     demo: 'https://chromewebstore.google.com/detail/mosa%C3%AFque-%E2%80%94-onglets-favori/hjbbfpkhfclkaefafhbkjocbpkgnlnpd',
     code: 'https://github.com/garancewetz/mosaique-chrome-extension',
@@ -92,16 +91,16 @@ export const projects: Project[] = [
     tags: ['intersectionnalité', 'livres', 'transmission'],
     kind: 'Visualisation de données',
     stack: ['React', 'TypeScript', 'Supabase'],
-    image: '/shots/trame.webp', // capture faite avec des données de démo
+    image: '/shots/trame.webp', // screenshot made with demo data
     alt: 'Graphe de Trans-trame sur fond sombre : des cercles colorés, un par livre, reliés par des lignes de citation, avec des titres comme Le Deuxième Sexe, Gender Trouble ou Sister Outsider, et une frise chronologique en bas.',
     demo: null,
     code: 'https://github.com/garancewetz/Trans-trame',
   },
 ]
 
-// Le labo (le carnet d'expériences) : sur l'accueil, le badge « labo → » (/?labo, see public/accueil/lab.js) ; puis
-// on en tourne les pages (voir features/carnet). Chaque page : son nom, son adresse, sa capture
-// (16/10, WebP, 1200 px de large) et sa description.
+// The lab (the notebook of experiments): on the home, the « labo → » badge (/?labo, see src/home/lab.ts); then
+// you turn its pages (see features/carnet). Each page: its name, its address, its screenshot
+// (16/10, WebP, 1200 px wide) and its description.
 export const carnet: Carnet = {
   href: '/?labo',
   pages: [

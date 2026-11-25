@@ -1,7 +1,10 @@
-// Garance's places (see reliefs.js) in 3D, seen level with the horizon: perspective, water and its reflections
+import type { Settings } from './gl-background'
+import { placeWeights, RELIEFS_GLSL, type Place } from './reliefs'
+
+// Garance's places (see reliefs.ts) in 3D, seen level with the horizon: perspective, water and its reflections
 // where it exists (elsewhere, a sea of clouds), haze, a single colour. The place weights (places1, places2, arles,
 // bay) turn one relief into another, where it stands.
-// The whole landscape sits in a snow globe, unseen while we are inside. `pullback` (0…1, see snow-globe.js) moves the
+// The whole landscape sits in a snow globe, unseen while we are inside. `pullback` (0…1, see snow-globe.ts) moves the
 // camera back: we go through the glass, see the globe from outside, on its base, at night, and snow starts falling
 // in it. One continuous scene: no crossfade.
 // Settings: tint, sky (the two blues), places1, places2, arles, bay, light (the sun's angle), sun (its height), stars,
@@ -11,7 +14,7 @@
 // place, brought to the middle of the globe when pulling back).
 const RELIEF_CAMERA = { origin: [0, .5, -3.2], focal: 1.3 } // in world units (the landscape × 2)
 const FOCAL = RELIEF_CAMERA.focal.toFixed(2)
-const RELIEF_FS = `
+export const RELIEF_FS = `
 precision highp float;
 uniform vec2 res;
 uniform vec3 tint, sky;
@@ -201,17 +204,17 @@ void main(){
 }`
 
 // each project leads to its place ('rest': before any card is hovered)
-const PROJECT_PLACES = { rest: 'canigou', synapso: 'eus', handiplan: 'bay', signe: 'canigou', mosaique: 'ireland', trame: 'barcelona', 'paris-forest': 'romainville' }
+export const PROJECT_PLACES: Record<string, Place> = { rest: 'canigou', synapso: 'eus', handiplan: 'bay', signe: 'canigou', mosaique: 'ireland', trame: 'barcelona', 'paris-forest': 'romainville' }
 // the heart of each place, in world coordinates (x, z): what comes to the centre of the snow globe
-const PLACE_CENTERS = { canigou: [0, 2.8] }
+const PLACE_CENTERS: Partial<Record<Place, number[]>> = { canigou: [0, 2.8] }
 // the gaze of each place: the horizon goes down for high peaks, which must stay below the row of cards
-const PLACE_GAZE = { romainville: .02, eus: -.06, canigou: -.15, ireland: 0, barcelona: .02, bay: -.04 }
+const PLACE_GAZE: Partial<Record<Place, number>> = { romainville: .02, eus: -.06, canigou: -.15, ireland: 0, barcelona: .02, bay: -.04 }
 // the sun's angle, where the default one does not carve the relief enough: grazing on the Romainville scarp, facing
 // the cliffs of Inis Mór
-const PLACE_LIGHT = { romainville: -3.6, ireland: -1.0 }
-// the colours and the sun are those of daytime; time-of-day.js (home) and lab.js (each experiment's hour) set them
+const PLACE_LIGHT: Partial<Record<Place, number>> = { romainville: -3.6, ireland: -1.0 }
+// the colours and the sun are those of daytime; time-of-day.ts (home) and lab.ts (each experiment's hour) set them
 const DAY = { tint: '#1414e6', sky: '#9a9aff', sun: .75, stars: 0 }
-const RELIEF_SETTINGS = Object.fromEntries(Object.entries(PROJECT_PLACES).map(([id, place]) => [id, {
+export const RELIEF_SETTINGS: Record<string, Settings> = Object.fromEntries(Object.entries(PROJECT_PLACES).map(([id, place]) => [id, {
   ...DAY, ...placeWeights(place),
   light: PLACE_LIGHT[place] ?? -2.47, gaze: PLACE_GAZE[place] ?? 0, rise: 1, center: PLACE_CENTERS[place] || [0, 0],
 }]))

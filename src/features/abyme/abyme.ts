@@ -2,10 +2,10 @@ import './abyme.css'
 import { mount } from '@/features/carnet/carnet'
 import { drawn } from './drawn'
 
-// Abyme : la fenêtre du navigateur, dans la fenêtre du navigateur, dans la fenêtre du navigateur… La fenêtre est
-// dessinée, celle du navigateur de la personne (voir drawn.ts) ; on y plonge en faisant défiler.
+// Abyme: the browser window, inside the browser window, inside the browser window… The window is drawn, the
+// visitor's own browser (see drawn.ts); you dive into it by scrolling.
 
 drawn(document.querySelector<HTMLCanvasElement>('.ab-drawn')!)
 
-// la page dans le carnet (voir features/carnet)
+// the page in the notebook (see features/carnet)
 mount()

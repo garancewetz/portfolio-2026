@@ -1,10 +1,10 @@
 import { pose, type Bouncer } from './bounce'
 
-// Les cordes à linge : une ficelle par créature, tendue entre deux attaches, à des hauteurs et des longueurs
-// différentes sur la page (pas en grille). La ficelle se creuse sous la créature ; elle s'y tient debout (ou en
-// l'air, au-dessus) ; endormie, un petit z près de sa tête ; réveillée, son nom sous la ficelle.
+// The clotheslines: one string per creature, stretched between two hooks, at different heights and lengths
+// across the page (not in a grid). The string dips under the creature; it stands on it (or in the air, above);
+// asleep, a little z near its head; awake, its name under the string.
 
-// où sont tendues les ficelles (en fractions de la page : de, à, hauteur) ; sur un téléphone, l'une sous l'autre
+// where the strings are stretched (as fractions of the page: from, to, height); on a phone, one below the other
 const WIDE = [
   [0.06, 0.24, 0.36],
   [0.3, 0.44, 0.3],
@@ -31,7 +31,7 @@ interface Line {
   path: SVGPathElement
 }
 
-// les ficelles, dans la page (room) ; onStir : quand la souris arrive sur une créature, ou s'en va
+// the strings, in the page (room); onStir: when the mouse reaches a creature, or leaves it
 export function lines(room: HTMLElement, bouncers: Bouncer[], onStir: () => void) {
   const svg = document.createElementNS(SVG, 'svg')
   svg.classList.add('cr-lines')
@@ -52,7 +52,7 @@ export function lines(room: HTMLElement, bouncers: Bouncer[], onStir: () => void
       b.hover = false
       onStir()
     })
-    // (au doigt, pas de survol : un toucher la réveille un moment)
+    // (with a finger, no hover: a touch wakes it up for a while)
     hit.addEventListener('pointerdown', (e) => {
       if (e.pointerType === 'mouse') return
       b.hover = true
@@ -65,7 +65,7 @@ export function lines(room: HTMLElement, bouncers: Bouncer[], onStir: () => void
     return { b, ax: 0, bx: 0, y: 0, x: 0, art, z, name, hit, path }
   })
 
-  // (la place de chaque ficelle, à la taille de la page)
+  // (each string's place, at the page's size)
   function place() {
     const w = room.clientWidth
     const h = room.clientHeight
@@ -76,8 +76,8 @@ export function lines(room: HTMLElement, bouncers: Bouncer[], onStir: () => void
     })
   }
 
-  // le dessin : la ficelle (jamais tout à fait tendue), la créature les pieds dessus, son z, son nom ; awake :
-  // où sont les pieds de chacune, réveillée (pour la trace de ses sauts, voir trace.ts)
+  // the drawing: the string (never quite taut), the creature with its feet on it, its z, its name; awake:
+  // where each one's feet are, when awake (for the trace of its jumps, see trace.ts)
   function draw(awake?: (i: number, x: number, y: number) => void) {
     all.forEach((l, i) => {
       const { b } = l
@@ -94,7 +94,7 @@ export function lines(room: HTMLElement, bouncers: Bouncer[], onStir: () => void
       l.z.classList.toggle('is-off', b.awake)
       l.name.style.transform = `translate(${l.x}px, ${l.y + 18}px) translateX(-50%)`
       l.name.classList.toggle('is-on', b.awake)
-      // (la zone qui la réveille : elle, et un peu de place autour, pour ses sauts)
+      // (the area that wakes it up: itself, and a little room around it, for its jumps)
       l.hit.style.cssText = `left:${l.x - 48}px;top:${l.y - 120}px;width:96px;height:150px`
     })
   }

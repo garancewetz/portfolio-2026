@@ -1,5 +1,5 @@
-/* ——— Le carnet (voir carnet.ts) : une ligne de texte en haut de la page, à peine visible, qui s'éclaire au survol.
-   Blanche par défaut ; une page claire donne son encre (--carnet-ink, --carnet-ink-hover) ——— */
+/* ——— The notebook (see carnet.ts): a line of text at the top of the page, barely visible, that lights up on
+   hover. White by default; a light page gives its ink (--carnet-ink, --carnet-ink-hover) ——— */
 .carnet {
   position: fixed;
   z-index: 10;
@@ -12,14 +12,14 @@
   padding: 14px 18px;
   font: 12px/1 var(--mono);
   color: var(--carnet-ink, rgb(255 255 255 / 0.38));
-  /* (le carnet n'arrête que ses liens : le reste de la ligne laisse passer la souris vers la page) */
+  /* (the notebook only catches its links: the rest of the line lets the mouse through to the page) */
   pointer-events: none;
 }
 .carnet a {
   color: inherit;
   text-decoration: none;
   pointer-events: auto;
-  /* (une page peut cacher la souris : on la retrouve sur les liens) */
+  /* (a page may hide the mouse: it comes back on the links) */
   cursor: pointer;
   transition: color 0.4s;
 }

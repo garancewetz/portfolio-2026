@@ -1,6 +1,6 @@
 import { art, type Creature } from './art'
 
-// Le paresseux.
+// The sloth.
 export const C3: Creature[] = [
   {
     n: 22,

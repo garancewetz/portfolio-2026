@@ -1,10 +1,4 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["oxc"],
-  "overrides": [
-    {
-      "files": ["public/accueil/*.js"],
-      "rules": { "no-unused-vars": "off" }
-    }
-  ]
+  "plugins": ["oxc"]
 }

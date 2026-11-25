@@ -1,5 +1,5 @@
-// La plomberie WebGL2 du liquide (voir fluid.ts) : les programmes compilés, avec leurs valeurs, et les cibles où
-// dessiner (une texture et son framebuffer ; doubles, pour lire l'une en écrivant l'autre).
+// The liquid's WebGL2 plumbing (see fluid.ts): the compiled programs, with their values, and the targets to draw
+// into (a texture and its framebuffer; doubled, to read one while writing the other).
 import { FRAG, VERT, type ProgName } from './shaders'
 
 export interface Target {
@@ -40,7 +40,7 @@ export function createPrograms(gl: WebGL2RenderingContext): Programs {
     progs[name] = { p, u }
   }
 
-  // un grand triangle qui couvre tout
+  // one big triangle covering everything
   const vbo = gl.createBuffer()
   gl.bindBuffer(gl.ARRAY_BUFFER, vbo)
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)

@@ -8,19 +8,19 @@ import { stage } from './stage'
 import { tilt } from './tilt'
 import { traces } from './trace'
 
-// Toupies : sept toupies d'enfant à pompe, en tôle imprimée de couleurs et de décors différents (voir motifs.ts),
-// posées sur la page. On en lance une (voir input.ts) : sa pompe s'enfonce, elle tourne, ses couleurs se fondent comme
-// pour l'œil, puis elle ralentit, vacille, grelotte et tombe sur le côté (voir spin.ts). On peut la pousser (seulement
-// si elle tourne), pencher le téléphone (voir tilt.ts) ; elles se cognent entre elles et contre les bords, et se
-// frottent (voir bump.ts) ; leur pointe dessine sur la page (voir trace.ts). La roue crantée change la vue (voir
-// settings.ts). Deux sont devant ; les cinq autres attendent au fond : pour bien les voir, il faut aller les chercher.
+// Toupies: seven children's pump tops, in tinplate printed with different colours and patterns (see motifs.ts),
+// standing on the page. You launch one (see input.ts): its plunger goes down, it spins, its colours blend as they
+// do for the eye, then it slows down, wobbles, rattles and falls on its side (see spin.ts). You can push it (only
+// if it spins), tilt the phone (see tilt.ts); they bump into each other and the edges, and rub (see bump.ts);
+// their tip draws on the page (see trace.ts). The cog wheel changes the view (see settings.ts). Two are in
+// front; the other five wait at the back: to see them well, you have to go and fetch them.
 
 const canvas = document.querySelector<HTMLCanvasElement>('.tp-scene')!
 const view = stage(canvas)
 const { renderer, scene, camera } = view
 
-// les toupies, disposées en arène : deux devant (les quartiers et les rayures noir et blanc), les cinq autres plus
-// loin, sur un arc de cercle tourné vers nous (au milieu, Benham), à 16° l'une de l'autre
+// the tops, laid out as an arena: two in front (the quarters and the black and white stripes), the other five
+// farther away, on an arc facing us (Benham in the middle), 16° apart
 const ARC = ['pois', 'bicolore', 'benham', 'oiseau', 'lampes'] as const
 const tops: Spinner[] = [
   spinner('quartiers', -1.8, 0),
@@ -40,7 +40,7 @@ const draw = traces(scene, tops)
 const phone = tilt()
 canvas.addEventListener('pointerdown', phone.start)
 
-// la page dans le carnet ; les réglages s'y ajoutent, après le numéro de page
+// the page in the notebook; the settings are added to it, after the page number
 const slot = mount()
 if (slot) settingsGear(slot, view.look)
 

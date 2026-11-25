@@ -1,11 +1,13 @@
+import type { Backdrop } from './gl-background'
+import { calm, el } from './shared'
+
 // The Easter egg: zooming out (pinching on the trackpad, ⌘ − or Ctrl −) pulls the camera back, and back, until the
 // landscape sits in a snow globe. To return: a click, Escape, or zooming in (pinching, ⌘ +, ⌘ 0). On a phone: a
 // two-finger pinch (fingers closing). For whoever asked for less motion: the pullback is shorter, and the globe stays
 // still once there (no turning, no falling snow).
 // Drives the backdrop's `pullback` setting (0…1), and fades the page around it (--pullback, see cards.css). Only
 // zooming out is taken from the browser: zooming the page stays possible, except to come back from the globe.
-// Uses calm (header.js).
-function snowGlobe(backdrop) {
+export function snowGlobe(backdrop: Backdrop) {
   let target = 0, pullback = 0, running = false, inside = false
   const away = () => target > 0 || pullback > 0        // pulling back has started (or we are coming back)
   // the page zoomed in by the browser (⌘ +, a pinch, or a zoom the browser remembers for this site): zooming out is then
@@ -20,7 +22,7 @@ function snowGlobe(backdrop) {
     || Math.abs(devicePixelRatio - Math.round(devicePixelRatio)) > .05 || (mouse && devicePixelRatio > 2.05)
   const hint = el(`<p class="globe-hint mono">${matchMedia('(pointer: coarse)').matches ? 'toucher' : 'cliquer'} pour y retourner</p>`)
   document.body.append(hint)
-  function aim(v) {
+  function aim(v: number) {
     target = Math.min(1, Math.max(0, v))
     if (!running) { running = true; requestAnimationFrame(frame) }
   }
@@ -28,12 +30,12 @@ function snowGlobe(backdrop) {
     pullback += (target - pullback) * (calm ? .14 : .045)   // softly, never a jolt
     if (Math.abs(target - pullback) < .0005) pullback = target
     backdrop.set('pullback', pullback)
-    document.documentElement.style.setProperty('--pullback', pullback)
+    document.documentElement.style.setProperty('--pullback', String(pullback))
     // in the globe, the (faded) page can neither be clicked nor reached with the keyboard
     if ((pullback > .5) !== inside) {
       inside = pullback > .5
       document.documentElement.classList.toggle('in-globe', inside)
-      document.querySelectorAll('.top-bar, .scene, .project-layer').forEach((e) => { e.inert = inside })
+      document.querySelectorAll<HTMLElement>('.top-bar, .scene, .project-layer').forEach((e) => { e.inert = inside })
     }
     running = pullback !== target || (!calm && pullback > 0)   // the snow falls while we are out (unless calm)
     if (running) requestAnimationFrame(frame)
@@ -52,7 +54,7 @@ function snowGlobe(backdrop) {
   }, true)
   // on a phone: a two-finger pinch (closing: pull back; opening: come back, if away)
   let d0 = 0
-  const spread = (t) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY)
+  const spread = (t: TouchList) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY)
   addEventListener('touchstart', (e) => { if (e.touches.length === 2) d0 = spread(e.touches) }, { passive: true })
   addEventListener('touchmove', (e) => {
     if (e.touches.length !== 2 || !d0) return

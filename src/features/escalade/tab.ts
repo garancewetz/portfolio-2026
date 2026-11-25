@@ -1,5 +1,5 @@
-// L'onglet du navigateur : quand on part sur un autre onglet, le bonhomme s'endort, et le titre de l'onglet le dit
-// (z, z z, z z z). Tout revient comme avant au retour.
+// The browser tab: when you switch to another tab, the little man falls asleep, and the tab title says so
+// (z, z z, z z z). Everything goes back to normal on your return.
 
 const TITLE = document.title
 let timer = 0
@@ -8,7 +8,7 @@ const stop = () => {
   document.title = TITLE
 }
 
-// il dort : le titre compte ses z (les minuteries des onglets cachés ralentissent : une par seconde suffit)
+// he sleeps: the title counts his z's (hidden tabs' timers slow down: one per second is enough)
 export function sleepInTab() {
   stop()
   let n = 0

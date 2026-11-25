@@ -1,10 +1,10 @@
 import * as THREE from 'three'
 import { FLOOR, type Spinner } from './spin'
 
-// Les gestes : appuyer sur une toupie (souris, doigt) la pompe ; en gardant appuyé et en glissant, on la pousse dans
-// le sens du geste (si elle tourne) — vers le haut de l'écran, elle s'éloigne. Au clavier, sur la dernière touchée :
-// Espace la pompe ; les flèches la poussent (← → en largeur, ↑ ↓ en profondeur : ↑ l'éloigne). La main n'apparaît
-// qu'au-dessus d'une toupie. Renvoie la toupie choisie (celle qui répond aux touches).
+// The gestures: pressing on a top (mouse, finger) pumps it; holding and sliding pushes it in the direction of the
+// gesture (if it spins) — towards the top of the screen, it moves away. On the keyboard, on the last one touched:
+// Space pumps it; the arrows push it (← → in width, ↑ ↓ in depth: ↑ moves it away). The hand only appears over a
+// top. Returns the chosen top (the one that answers the keys).
 
 export function controls(canvas: HTMLCanvasElement, camera: THREE.Camera, tops: Spinner[]) {
   let current = tops[0]
@@ -15,12 +15,12 @@ export function controls(canvas: HTMLCanvasElement, camera: THREE.Camera, tops: 
     screen.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1)
     ray.setFromCamera(screen, camera)
   }
-  // la toupie sous la souris (ou rien)
+  // the top under the mouse (or nothing)
   const hit = () => {
     const h = ray.intersectObjects(tops.map((t) => t.wobble), true)[0]
     return h ? tops.find((t) => t.wobble.getObjectById(h.object.id)) : undefined
   }
-  // (sinon, la plus proche de l'endroit visé sur la table : les toupies du fond sont toutes petites)
+  // (otherwise, the closest to the spot aimed at on the table: the tops at the back are tiny)
   const table = new THREE.Plane(new THREE.Vector3(0, 1, 0), -FLOOR)
   const nearest = () => {
     const p = new THREE.Vector3()
@@ -31,7 +31,7 @@ export function controls(canvas: HTMLCanvasElement, camera: THREE.Camera, tops: 
   let from: { x: number; y: number } | null = null
   canvas.addEventListener('pointerdown', (e) => {
     aim(e)
-    // (celle qu'on quitte n'est plus poussée)
+    // (the one being left is no longer pushed)
     current.pushX = current.pushZ = 0
     current = hit() ?? nearest()
     current.pressed = true
@@ -40,7 +40,7 @@ export function controls(canvas: HTMLCanvasElement, camera: THREE.Camera, tops: 
   })
   canvas.addEventListener('pointermove', (e) => {
     if (from) {
-      // (glisser en gardant appuyé : la poussée suit le geste)
+      // (sliding while holding: the push follows the gesture)
       const clamp = (v: number) => Math.max(-1, Math.min(1, v / 90))
       current.pushX = clamp(e.clientX - from.x)
       current.pushZ = clamp(e.clientY - from.y)
@@ -57,7 +57,7 @@ export function controls(canvas: HTMLCanvasElement, camera: THREE.Camera, tops: 
   canvas.addEventListener('pointerup', release)
   canvas.addEventListener('pointercancel', release)
 
-  // les flèches poussent la toupie (← → en largeur, ↑ ↓ en profondeur)
+  // the arrows push the top (← → in width, ↑ ↓ in depth)
   const arrow = (e: KeyboardEvent, on: number) => {
     const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key]
     if (!d) return false

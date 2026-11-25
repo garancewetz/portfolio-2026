@@ -1,9 +1,9 @@
 import { gear, slider } from '@/features/carnet/gear'
 import { MAX, settings } from './flock'
 
-// La roue crantée, dans la ligne du carnet (voir carnet/gear.ts) : elle ouvre un petit panneau pour jouer avec le
-// vol (la vitesse, la durée avant qu'ils se reposent, le nombre d'oiseaux). Les réglages changent tout de suite,
-// même en plein vol. redraw : redessiner (le vol figé ou posé ne se redessine pas tout seul)
+// The cog wheel, in the notebook line (see carnet/gear.ts): it opens a small panel to play with the flight (the
+// speed, the time before they land again, the number of birds). The settings change at once, even mid-flight.
+// redraw: redraw (a frozen or perched flock does not redraw itself)
 export function settingsGear(slot: HTMLElement, redraw: () => void) {
   gear(slot, 'Réglages du vol', [
     slider('vitesse', { min: 0.25, max: 3, step: 0.05, value: settings.speed, show: (n) => `×${n.toFixed(2)}` }, (n) => {

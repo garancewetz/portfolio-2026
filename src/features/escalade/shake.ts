@@ -1,9 +1,9 @@
-// La fenêtre qu'on déplace sur l'écran : sa position (screenX, screenY), image après image, donne sa vitesse, puis
-// son accélération (px/s²). Le bonhomme la ressent à l'envers, comme un passager quand le bus freine (body.ts).
-// Lissée un peu (sans quoi un pas de souris irrégulier ferait des à-coups), et bornée.
+// The window being moved on the screen: its position (screenX, screenY), frame after frame, gives its speed,
+// then its acceleration (px/s²). The little man feels it in reverse, like a passenger when the bus brakes
+// (body.ts). Smoothed a little (otherwise an uneven mouse step would cause jolts), and capped.
 
-const SMOOTH = 0.35 // part de la nouvelle mesure, à chaque image
-const MAX = 20000 // px/s², au plus
+const SMOOTH = 0.35 // share of the new measurement, on each frame
+const MAX = 20000 // px/s², at most
 
 export function createShake() {
   let px = screenX

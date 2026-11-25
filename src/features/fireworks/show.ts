@@ -1,53 +1,51 @@
-// Le moteur du feu d'artifice : de vraies étincelles (des particules), dessinées en traits fins sur un canvas
-// transparent posé sur le fond papier. Chaque image efface un peu la précédente : les étincelles laissent des
-// traînées. Une fusée monte en zigzaguant, en semant de l'or, puis éclate ; les étincelles partent en étoile,
-// ralenties par l'air et tirées vers le bas, avec un léger balancement (comme dans l'eau), puis scintillent et
-// s'éteignent. Plusieurs sortes de gerbes : pivoine, chrysanthème (qui crépite), saule (doré, qui retombe
-// longuement), palmier (de gros bras), anneau.
-// Chargé seulement quand on allume le mode (voir Fireworks.tsx).
+// The fireworks engine: real sparks (particles), drawn as thin strokes on a transparent canvas laid over the paper
+// background. Each frame erases a little of the previous one: the sparks leave trails. A rocket rises
+// zigzagging, sowing gold, then bursts; the sparks fly out in a star, slowed by the air and pulled down, with a
+// slight sway (as in water), then twinkle and die out. Several kinds of bursts: peony, chrysanthemum (which
+// crackles), willow (golden, falling back slowly), palm (big arms), ring.
+// Loaded only when the mode is turned on (see Fireworks.tsx).
 
 import { GOLD, SHELLS, rand, shellOf, type Add, type Shell, type Spark } from './shells'
 
-// les couleurs des captures des projets (les mêmes, dans le même ordre, que le liquide : voir fluid.ts) :
-// violet de la grille, rose, bleu, vert, orange, or
+// the colours of the project screenshots (the same, in the same order, as the liquid: see fluid.ts):
+// the grid's purple, pink, blue, green, orange, gold
 export const COLORS = ['#7d5cd6', '#d65c96', '#3d7ae0', '#2ea36b', '#f08a3d', '#e8ba30']
-// le cœur des traits : la même couleur, à peine éclaircie (qu'elle reste franche, pas blanche)
+// the core of the strokes: the same colour, barely lightened (so it stays vivid, not white)
 const CORES = COLORS.map((hex) => {
   const n = parseInt(hex.slice(1), 16)
   const mix = (v: number) => Math.round(v + (255 - v) * 0.12)
   return `rgb(${mix(n >> 16)}, ${mix((n >> 8) & 255)}, ${mix(n & 255)})`
 })
-const STEPS = 4 // nuances d'opacité (les traits sont dessinés par couleur et par nuance, d'un seul coup)
-const MAX = 14000 // étincelles à la fois, au plus (sur un grand écran ; moins sur un petit, voir resize)
-const TRAIL = 6 // vitesse d'effacement des traînées (plus grand : traînées plus courtes)
+const STEPS = 4 // opacity shades (strokes are drawn by colour and by shade, in one go)
+const MAX = 14000 // sparks at once, at most (on a large screen; fewer on a small one, see resize)
+const TRAIL = 6 // how fast the trails fade (larger: shorter trails)
 const GRAVITY = 140 // px/s²
 
 export interface Show {
-  /** une gerbe, centrée en (x, y) (px CSS, dans la fenêtre) ; size : sa taille (1 = normale) */
+  /** a burst, centred on (x, y) (CSS px, in the window); size: its size (1 = normal) */
   burst(x: number, y: number, size?: number): void
-  /** une fusée qui part du bas de l'écran et éclate en (x, y) */
+  /** a rocket that leaves from the bottom of the screen and bursts at (x, y) */
   launch(x: number, y: number, size?: number, trail?: number): void
-  /** une image : tout avance de dt secondes ; renvoie le nombre d'étincelles encore en vol */
+  /** one frame: everything moves forward by dt seconds; returns the number of sparks still in flight */
   step(dt: number): number
   resize(): void
   clear(): void
 }
 
-// onBurst : prévenu à chaque explosion (pour le halo de couleur liquide, dessous), avec ses deux couleurs ;
-// palette (facultatif) : les couleurs permises (leurs places dans COLORS), sinon toutes
+// onBurst: notified on each explosion (for the liquid colour halo, underneath), with its two colours;
+// palette (optional): the allowed colours (their places in COLORS), otherwise all of them
 export function createShow(
   canvas: HTMLCanvasElement,
   onBurst?: (x: number, y: number, size: number, colors: [number, number]) => void,
   palette?: () => readonly number[],
 ): Show | null {
-  // (en couleurs flottantes, là où le navigateur le permet : en 8 bits, l'effacement des traînées s'arrondit et
-  // laisse pour toujours un fantôme de chaque trait, visible sur la nuit)
+  // (in floating-point colours, where the browser allows it: in 8 bits, fading the trails rounds off and leaves a
+  // ghost of every stroke forever, visible against the night)
   const ctx = canvas.getContext('2d', { colorType: 'float16' } as CanvasRenderingContext2DSettings)
   if (!ctx) return null
   let w = 0
   let h = 0
-  // à l'échelle de l'écran : sur un téléphone, des gerbes plus petites (elles tiennent dans l'écran) et moins
-  // d'étincelles à la fois
+  // at the screen's scale: on a phone, smaller bursts (they fit on the screen) and fewer sparks at once
   let scale = 1
   let max = MAX
   let time = 0
@@ -56,13 +54,13 @@ export function createShow(
     const p = palette?.()
     return p?.length ? p[Math.floor(Math.random() * p.length)] : Math.floor(Math.random() * COLORS.length)
   }
-  // l'or des fusées, des crépitements et des saules : de l'or, sauf si la palette n'en a pas (une de ses couleurs)
+  // the gold of rockets, crackles and willows: gold, unless the palette has none (one of its colours)
   const gold = () => {
     const p = palette?.()
     return !p?.length || p.includes(GOLD) ? GOLD : pick()
   }
 
-  // (la profondeur : une gerbe proche, plus grande, a aussi des traits plus épais)
+  // (depth: a near burst, larger, also has thicker strokes)
   let thick = 1
   const add: Add = (s) => {
     if (sparks.length < max) sparks.push({ ...s, width: s.width * thick, px: s.x, py: s.y })
@@ -76,7 +74,7 @@ export function createShow(
     colors: [number, number] = [pick(), pick()],
   ) => {
     const [a, b] = colors
-    // (le halo suit la taille réelle de la gerbe, à l'échelle de l'écran)
+    // (the halo follows the burst's real size, at the screen's scale)
     onBurst?.(x, y, size * scale, colors)
     thick = Math.min(1.6, Math.max(0.6, Math.sqrt(size)))
     try {
@@ -86,15 +84,15 @@ export function createShow(
     }
   }
 
-  // trail : la couleur de la fusée et de ce qu'elle sème (de l'or, d'habitude)
+  // trail: the colour of the rocket and of what it sows (gold, usually)
   const launch = (x: number, y: number, size = 1, given = GOLD) => {
-    // (l'or d'habitude : celui de la palette)
+    // (gold usually: the palette's)
     const trail = given === GOLD ? gold() : given
-    // la fusée monte depuis le bas, à peu près à la verticale du point d'éclatement
+    // the rocket rises from the bottom, roughly straight below the burst point
     const x0 = x + rand(-60, 60)
     const y0 = h + 10
     const dur = rand(0.75, 1.05)
-    // (vitesse de départ qui, freinée par la gravité, arrive juste en (x, y) au bout de dur)
+    // (starting speed which, slowed by gravity, arrives exactly at (x, y) after dur)
     const vy = (y - y0 - 0.5 * GRAVITY * 0.35 * dur * dur) / dur
     add({
       x: x0,
@@ -114,7 +112,7 @@ export function createShow(
 
   const step = (dt: number) => {
     time += dt
-    // les traînées : ce qui est déjà dessiné s'efface un peu
+    // the trails: what is already drawn fades a little
     ctx.globalCompositeOperation = 'destination-out'
     ctx.globalAlpha = 1 - Math.exp(-dt * TRAIL)
     ctx.fillRect(0, 0, w, h)
@@ -128,13 +126,13 @@ export function createShow(
       const k = Math.exp(-s.drag * dt)
       s.vx *= k
       s.vy = s.vy * k + GRAVITY * s.fall * dt
-      // le léger balancement, comme dans l'eau
+      // the slight sway, as in water
       s.vx += Math.sin(s.y * 0.02 + time * 3) * 18 * dt
       s.x += s.vx * dt
       s.y += s.vy * dt
       s.life -= dt
       if (s.rocket) {
-        // la fusée sème de l'or (ou sa couleur) derrière elle
+        // the rocket sows gold (or its colour) behind it
         if (Math.random() < 0.8) {
           add({
             x: s.x,
@@ -156,7 +154,7 @@ export function createShow(
           born.push(() => burst(x, y, size, shell, colors))
         }
       } else if (s.crackle && s.life < s.max * 0.3 && Math.random() < 0.25) {
-        // crépitement : de minuscules éclats blancs-dorés, au hasard
+        // crackle: tiny white-gold flashes, at random
         add({
           x: s.x,
           y: s.y,
@@ -178,7 +176,7 @@ export function createShow(
     }
     for (const b of born) b()
 
-    // les traits, par couleur et par nuance d'opacité (en fin de vie : elles s'éteignent en scintillant)
+    // the strokes, by colour and by opacity shade (at the end of their life: they die out twinkling)
     const groups: Spark[][] = Array.from({ length: COLORS.length * STEPS }, () => [])
     for (const s of sparks) {
       let a = s.rocket ? 1 : Math.min(1, s.life / (s.max * 0.5))
@@ -186,9 +184,9 @@ export function createShow(
       const step = Math.min(STEPS - 1, Math.floor(a * STEPS))
       groups[s.color * STEPS + step].push(s)
     }
-    // de la lumière sur la nuit : chaque trait a son halo (large et léger, les halos s'additionnent : là où les
-    // étincelles se croisent, ça brille plus) et son cœur (fin, de sa couleur, posé dessus sans s'additionner :
-    // les couleurs restent franches, elles ne tournent pas au blanc)
+    // light on the night: each stroke has its halo (wide and light, halos add up: where sparks cross, it shines
+    // brighter) and its core (thin, in its colour, laid on top without adding up: the colours stay vivid, they do
+    // not turn white)
     for (let g = 0; g < groups.length; g++) {
       const list = groups[g]
       if (!list.length) continue
@@ -199,8 +197,8 @@ export function createShow(
         ctx.moveTo(s.px, s.py)
         ctx.lineTo(s.x, s.y)
       }
-      // (épaisseurs voisines : on garde celle de la première)
-      // (le halo à bouts droits : arrondis, en fin de vie, ils feraient des pastilles)
+      // (similar thicknesses: keep the first one's)
+      // (the halo with square ends: rounded, at the end of their life, they would make dots)
       ctx.globalCompositeOperation = 'lighter'
       ctx.lineCap = 'butt'
       ctx.strokeStyle = COLORS[c]

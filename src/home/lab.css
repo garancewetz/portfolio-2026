@@ -1,9 +1,9 @@
-/* The lab (see lab.js): a mode of the same page, with no scrolling, almost empty, in the home page's register. At the
+/* The lab (see lab.ts): a mode of the same page, with no scrolling, almost empty, in the home page's register. At the
    top left, « labo » very large, the yeti standing on its o; at the top right, the five experiments as badges; the
    hovered one lights up, its screenshot follows the cursor, and the backdrop changes hour. */
 .yeti { display: none; position: absolute; margin: 0; font: 400 clamp(9px, .8vw, 13px)/1.05 var(--mono); letter-spacing: 0; white-space: pre; opacity: .9; }
 html.in-lab .yeti { display: block; }
-/* a jump (lab.js places the yeti and switches its poses): one soft arc; it crouches, rises, hovers a moment, comes
+/* a jump (lab.ts places the yeti and switches its poses): one soft arc; it crouches, rises, hovers a moment, comes
    down and lands */
 .yeti.jumping { animation: jump 1.8s both; }
 @keyframes jump {
@@ -20,7 +20,7 @@ html.in-lab .signature-rail { position: fixed; top: 76px; bottom: auto; }
 html.in-lab .signature { position: relative; top: auto; border-top: 0; padding: 0; font-size: clamp(88px, 13vw, 220px); letter-spacing: -0.065em; }
 
 /* the experiments: badges, like the projects, on one line at the top right, on the line of « hello, world. » (their screenshot follows the cursor,
-   cards.js); hovering one sets its hour over Arles */
+   cards.ts); hovering one sets its hour over Arles */
 html.in-lab .row { position: fixed; inset: 15px var(--pad) auto auto; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; padding: 0; }
 html.in-lab .row .col { width: auto; }
 html.in-lab .row a { position: static; margin-top: 0; width: auto; }
@@ -33,7 +33,7 @@ html.in-lab .row b { padding: 6px 12px; }
   html.in-lab .row b { font-size: 11px; padding: 5px 9px; }
 }
 
-/* the lab's door (lab-gate.js): a small box in the middle, in the badges' register, over a veil; the yeti on top */
+/* the lab's door (lab-gate.ts): a small box in the middle, in the badges' register, over a veil; the yeti on top */
 .lab-gate {
   position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: var(--pad);
   background: #0b0b2a66; backdrop-filter: blur(6px); opacity: 0; transition: opacity .3s;

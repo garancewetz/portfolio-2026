@@ -1,6 +1,6 @@
-// Le chemin de la visite : les pages vues, dans l'ordre, gardées par le site lui-même le temps de l'onglet
-// (sessionStorage : rien n'est envoyé, tout s'efface en fermant l'onglet). La page Abyme le remonte (voir
-// features/abyme). Une page : son adresse (avec la fiche ouverte, #id) et son titre.
+// The path of the visit: the pages seen, in order, kept by the site itself for the life of the tab
+// (sessionStorage: nothing is sent, everything is cleared when the tab closes). The Abyme page climbs back up
+// it (see features/abyme). A page: its address (with the open sheet, #id) and its title.
 
 export type Step = { path: string; title: string }
 const KEY = 'gw-trail'
@@ -16,22 +16,22 @@ export function trail(): Step[] {
 function add() {
   const step = { path: location.pathname + location.hash, title: document.title }
   const steps = trail()
-  // (une fiche qu'on referme : on revient sur la page, ce n'est pas une page de plus)
+  // (a sheet being closed: you come back to the page, it is not one more page)
   if (!location.hash && steps.at(-1)?.path.startsWith(`${location.pathname}#`)) return
-  // (la même page, rechargée : une seule fois)
+  // (the same page, reloaded: only once)
   if (steps.at(-1)?.path === step.path) steps.pop()
   steps.push(step)
   try {
     sessionStorage.setItem(KEY, JSON.stringify(steps.slice(-40)))
   } catch {
-    // (stockage refusé : pas de chemin, tant pis)
+    // (storage refused: no path, too bad)
   }
 }
 
-// noter cette page, et chaque fiche qu'on y ouvre : une fiche change l'adresse (#id) sans recharger la page, et
-// change le titre ; c'est le titre qu'on guette
+// record this page, and each sheet opened on it: a sheet changes the address (#id) without reloading the page,
+// and changes the title; it is the title we watch for
 export function remember() {
-  // (la page d'accueil montrée au fond d'Abyme, dans une iframe : ce n'est pas une page de la visite)
+  // (the home page shown at the bottom of Abyme, in an iframe: it is not a page of the visit)
   if (window !== window.top) return
   add()
   const title = document.querySelector('title')

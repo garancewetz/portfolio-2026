@@ -1,4 +1,4 @@
-/* A project's page, as a layer over the home page (see project.js). In front of the backdrop: the large screenshot,
+/* A project's page, as a layer over the home page (see project.ts). In front of the backdrop: the large screenshot,
    in the middle (the card's thumbnail, grown); below it, the caption, like the home page's signature: a rule, then on
    a five-column grid the name, the sentence, the facts. Bottom left: back home and the neighbouring projects. */
 .project-layer { position: fixed; inset: 0; z-index: 1; overflow-y: auto; visibility: hidden; }

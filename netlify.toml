@@ -1,21 +1,21 @@
-# Déploiement sur Netlify (réglages lus automatiquement depuis le dépôt)
+# Deployment on Netlify (settings read automatically from the repository)
 [build]
   command = "npm run build"
   publish = "dist"
 
 [build.environment]
-  # Vite 8 demande Node 20.19+ ou 22.12+
+  # Vite 8 needs Node 20.19+ or 22.12+
   NODE_VERSION = "22"
 
-# L'ancienne adresse Netlify renvoie vers le domaine (redirection permanente, le chemin est gardé)
+# The old Netlify address redirects to the domain (permanent redirect, the path is kept)
 [[redirects]]
   from = "https://garancewetz.netlify.app/*"
   to = "https://garancewetz.dev/:splat"
   status = 301
   force = true
 
-# Le jeu wwwetzel journey (dépôt garancewetz/wwwetzel-journey) a son propre site Netlify, que le public ne voit pas :
-# on le sert ici, sous /journey (Netlify ne distingue pas /journey de /journey/ : une seule règle)
+# The wwwetzel journey game (repository garancewetz/wwwetzel-journey) has its own Netlify site, hidden from the
+# public: it is served here, under /journey (Netlify does not tell /journey from /journey/: a single rule)
 [[redirects]]
   from = "/journey/*"
   to = "https://wwwetzel-journey.netlify.app/:splat"
@@ -28,19 +28,19 @@
   to = "/?labo"
   status = 301
 
-# Vocalise s'appelle maintenant Ruban : l'ancienne adresse y mène
+# Vocalise is now called Ruban: the old address leads there
 [[redirects]]
   from = "/vocalise/*"
   to = "/ruban/:splat"
   status = 301
 
-# Les fichiers du build ont un nom qui change à chaque version : on peut les garder en cache longtemps
+# Build files have a name that changes with each version: they can be cached for a long time
 [[headers]]
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# Les captures changent rarement : un mois de cache
+# Screenshots rarely change: one month of cache
 [[headers]]
   for = "/shots/*"
   [headers.values]
@@ -51,6 +51,6 @@
   [headers.values]
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    # (SAMEORIGIN plutôt que DENY : le site peut se montrer lui-même dans une iframe, au fond de la page Abyme ;
-    # aucun autre site ne le peut)
+    # (SAMEORIGIN rather than DENY: the site can show itself in an iframe, at the bottom of the Abyme page;
+    # no other site can)
     X-Frame-Options = "SAMEORIGIN"
