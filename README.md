@@ -5,8 +5,8 @@ Portfolio de projets personnels, en Vite + TypeScript (strict) et WebGL, sans fr
 **L'accueil** (`index.html`, son code dans `src/home/`) : en fond, les lieux de Garance en relief, dans un
 seul bleu (`relief-shader.js`, `reliefs.js`, données IGN et Copernicus). À l'arrivée, la mer de nuages ; le défilement
 fait sortir le Canigou, puis les projets arrivent en badges et « Garance Wetzel » prend la place de « hello, world. ».
-Au survol d'un badge, sa capture suit le curseur, le fond part vers le lieu du projet, et sa phrase s'écrit sous les
-badges ; un clic la garde, avec ses liens (le site, le code) : pas de page détail. La lumière suit l'heure de Paris
+Au survol d'un badge, sa capture suit le curseur, le fond part vers le lieu du projet, et sa phrase s'écrit sous « Garance
+Wetzel », avec ses liens (le site, le code) : pas de page détail. La lumière suit l'heure de Paris
 (`time-of-day.ts`) ; un dézoom finit en boule à neige (`snow-globe.ts`).
 
 **Le labo** (`?labo`, `lab.js`) : derrière une petite énigme (`lab-gate.js`), sur Arles, une heure par expérience, le

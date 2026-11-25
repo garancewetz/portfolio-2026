@@ -2,7 +2,7 @@ import { BACKDROP, SETTINGS, hoverAllowed, nameArrived, scrollDriven } from './b
 import { PROJECTS } from './data'
 import type { Settings } from './gl-background'
 import { openLab } from './lab-gate'
-import { pinNote, showNote } from './note'
+import { showNote } from './note'
 import { LAB_URL, QUERY, calm, el, modified } from './shared'
 
 // The page of badges (see cards.css): the row of badges (six projects and the lab, or five experiments) rising in a
@@ -25,7 +25,7 @@ const row = scene.querySelector<HTMLElement>('.row')!
 
 export const aim = (id: string): Settings => ({ ...SETTINGS[id], ...scrollDriven() })
 
-// the projects: hovering leads to their place and writes their sentence, clicking keeps it with their links (see
+// the projects: hovering (or a click, a touch) leads to their place and writes their sentence and links (see
 // note.ts); then the lab as a last badge (« labo → »: it opens the lab behind a riddle, see lab-gate.ts; it is just a page: hovering
 // it shows no screenshot and does not change the place)
 export const PROJECTS_MODE: Mode = {
@@ -81,13 +81,13 @@ function hover(a: HTMLAnchorElement | null) {
   BACKDROP.goTo(mode.aim(id))
   if (mode === PROJECTS_MODE) showNote(id)
 }
-// a project chosen (a click, a touch): its place, its note with its links. Chosen while the badges still rise: the
+// a project chosen (a click, a touch): its place, its note. Chosen while the badges still rise: the
 // page goes on down to them first.
 function pin(id: string) {
   if (!hoverAllowed()) scrollTo({ top: document.documentElement.scrollHeight, behavior: calm ? 'auto' : 'smooth' })
   activate(id)
   BACKDROP.goTo(aim(id))
-  pinNote(id)
+  showNote(id)
 }
 
 // with a mouse: the hovered project's screenshot follows the cursor, a little below and to the right of it (to the

@@ -1,13 +1,13 @@
 /* A project's note (see note.ts): no page of its own, a few lines on the home page, on the left under « Garance
    Wetzel » (away from the badges, so that the screenshot following the cursor never covers it): what it is (mono), its
-   sentence; once chosen, its links. It shows as soon as the badges are on the screen (html.badges-here), never in the
+   sentence, its links. It shows as soon as the badges are on the screen (html.badges-here), never in the
    lab. */
 .project-note {
   position: fixed; z-index: 2; top: 140px; left: var(--pad); right: var(--pad); margin: 0;
   opacity: 0; pointer-events: none; transition: opacity .35s;
 }
 html.badges-here:not(.in-lab, .name-passing) .project-note.on { opacity: 1; }
-html.badges-here:not(.in-lab) .project-note.pinned { pointer-events: auto; }
+html.badges-here:not(.in-lab, .name-passing) .project-note.on { pointer-events: auto; }
 .project-note p { margin: 0; }
 .project-note .kind { font-size: 12px; opacity: .75; }
 .project-note .short { margin-top: 4px; max-width: 34ch; font: 400 clamp(16px, 1.25vw, 19px)/1.4 var(--sans); letter-spacing: -0.01em; }
