@@ -16,15 +16,16 @@ const START = asked && SETTINGS[asked] ? asked : 'rest'
 
 export const inLabNow = () => document.documentElement.classList.contains('in-lab')
 // on arrival the backdrop is flat (the sea of clouds) and nothing else shows but an arrow; the first stretch of
-// scrolling (--lead in cards.css: 1.7 screens, 1.5 on a phone) raises the Canigou out of the clouds, slowly and evenly
-// (a gentle ease, not a steep one); only then do the badges arrive, then the signature
+// scrolling (--lead in cards.css: 1.7 screens, 1.5 on a phone) raises the Canigou out of the clouds: it answers the
+// very first move of the wheel (eased out: quick at first, slowing down as it comes up), so that scrolling is never
+// in vain; only then do the badges arrive, then the signature
 const lead = () => innerHeight * (innerWidth <= 820 ? 1.5 : 1.7)
 // the settings following the scroll (they stay as they are while hovering); in the lab: Arles, whole
 export const SCROLL_DRIVEN: Record<string, () => number> = {
   rise: () => {
     if (inLabNow()) return 1
     const x = Math.min(1, Math.max(0, scrollY / lead()))
-    return x * x * (3 - 2 * x)
+    return 1 - (1 - x) * (1 - x)
   },
 }
 export const scrollDriven = () => Object.fromEntries(Object.entries(SCROLL_DRIVEN).map(([k, f]) => [k, f()]))
