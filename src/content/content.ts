@@ -126,7 +126,7 @@ export const carnet: Carnet = {
       name: 'kit',
       href: '/kit/',
       src: '/shots/kit.webp',
-      alt: 'Sur une page gris pâle, six cartes blanches, une par étape d’un ticket, et sur chacune Pousse, une petite mascotte ronde et vernie avec une pousse sur la tête : bleue avec un ticket doré, menthe, corail avec une caméra, orange avec une caisse à outils, violette avec un avion en papier, et menthe encore, sa pousse en fleur.',
+      alt: 'Sur la mer de nuages bleue, Pousse, une petite mascotte ronde et vernie avec une pousse sur la tête, quatorze fois : en haut les six étapes d’un ticket en rang, reliées par un fil pointillé et numérotées (Plan avec son ticket, Implémentation entourée de signes de calcul, Vidéo avec sa caméra, Audit avec sa loupe, PR avec son avion en papier, Livré avec sa pousse en fleur) ; en dessous, plus petites, ses humeurs : au repos, endormie, hors ligne sous un nuage, validation demandée, CI rouge avec un pansement, session lourde sous un gros sac à dos, relecture demandée avec des lunettes, retour sur la PR avec une bulle.',
     },
     {
       name: 'mascottes',

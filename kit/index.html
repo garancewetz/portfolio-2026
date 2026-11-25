@@ -8,17 +8,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kit — Garance Wetzel</title>
     <meta name="description" content="Pousse, la mascotte de Kit, en 3D : une seule mascotte pour chaque étape d’un ticket, sa couleur et ce qu’elle tient disent laquelle ; une fois livré, sa pousse fleurit." />
-    <meta name="theme-color" content="#f4f5f8" />
+    <meta name="theme-color" content="#1414e6" />
     <link rel="canonical" href="https://garancewetz.dev/kit" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <!-- the mock-ups of Kit's mascot, one per step of a ticket (see src/features/kit) -->
+    <!-- Kit's mascot: one per step of a ticket, in a line, then its other looks (see src/features/kit) -->
     <main class="kit carnet-sheet">
       <h1 class="sr">Kit</h1>
-      <div class="kit-grid"></div>
+      <h2 class="kit-title">le ticket</h2>
+      <ol class="kit-line"></ol>
+      <ul class="kit-moods"></ul>
     </main>
     <script type="module" src="/src/features/kit/main.ts"></script>
   </body>
