@@ -51,16 +51,12 @@ const ENTRIES = ROSTER.map((m) => {
   return { ...m, name: name[0].toUpperCase() + name.slice(1), line: note, ascii: asciiOf(m.key) }
 })
 
-// « tous les libérer », or « tous les rappeler » when they are all out
-const all = document.querySelector<HTMLButtonElement>('.mascots-all')!
-const out: (() => boolean)[] = []
-const label = () => (all.textContent = out.every((isOut) => isOut()) ? 'tous les rappeler' : 'tous les libérer')
 
 const flight = sky(ENTRIES.map((e) => e.flier))
 keepFlying(flight, ENTRIES.map((e) => e.key))
 // those out since another page: where they were flying a moment ago
 const seen = lastSeen()
-const toggles = ENTRIES.map((entry, i) => {
+ENTRIES.forEach((entry, i) => {
   // its own colour first, then the dyes it does not already wear
   const dyes = [entry.own, ...DYES.map(([, c]) => c).filter((c) => c !== (entry.own ?? '#ffffff'))]
   const figure = place(entry.name, entry.line, entry.ascii, dyes)
@@ -106,7 +102,6 @@ const toggles = ENTRIES.map((entry, i) => {
     if (landing || free === !!recall) return
     if (free) {
       setOut(flight.free(i, canvas, home))
-      label()
       return
     }
     landing = true
@@ -119,7 +114,6 @@ const toggles = ENTRIES.map((entry, i) => {
       act.setAttribute('aria-label', `libérer ${entry.name}`)
     })
     recall = null
-    label()
   }
   // the button under its name, or the creature itself
   for (const b of [button, act]) b.addEventListener('click', () => toggle(!recall))
@@ -132,14 +126,4 @@ const toggles = ENTRIES.map((entry, i) => {
     // (given its place, either one tells how to call it back)
     setOut((seen[entry.key] ? flight.resume(i, seen[entry.key], back) : flight.roam(i, back))!)
   } else wear(entry.own)
-  out.push(() => !!recall)
-  return toggle
-})
-
-label()
-
-// all at once: free them all, or, when they are all out, call them all back
-all.addEventListener('click', () => {
-  const free = !out.every((isOut) => isOut())
-  toggles.forEach((toggle, i) => setTimeout(() => toggle(free), i * 90))
 })
