@@ -1,8 +1,7 @@
 import { calm, el } from './shared'
 
 // The header: « hello, world. », alone (the lab is a badge among the projects, see cards.ts). On the home page it
-// scrolls back to the top; from a project page or the lab, project.ts and lab.ts catch the click first and bring the
-// home page back.
+// scrolls back to the top; in the lab, lab.ts catches the click first and brings the home page back.
 
 export function setupHeader() {
   const header = el(`

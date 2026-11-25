@@ -5,9 +5,9 @@ Portfolio de projets personnels, en Vite + TypeScript (strict) et WebGL, sans fr
 **L'accueil** (`index.html`, son code dans `src/home/`) : en fond, les lieux de Garance en relief, dans un
 seul bleu (`relief-shader.js`, `reliefs.js`, données IGN et Copernicus). À l'arrivée, la mer de nuages ; le défilement
 fait sortir le Canigou, puis les projets arrivent en badges et « Garance Wetzel » prend la place de « hello, world. ».
-Au survol d'un badge, sa capture suit le curseur et le fond part vers le lieu du projet. Un clic ouvre la page du
-projet en calque (`?p=id`), sans recharger le fond. La lumière suit l'heure de Paris (`time-of-day.js`) ; un dézoom
-finit en boule à neige (`snow-globe.js`).
+Au survol d'un badge, sa capture suit le curseur, le fond part vers le lieu du projet, et sa phrase s'écrit sous les
+badges ; un clic la garde, avec ses liens (le site, le code) : pas de page détail. La lumière suit l'heure de Paris
+(`time-of-day.ts`) ; un dézoom finit en boule à neige (`snow-globe.ts`).
 
 **Le labo** (`?labo`, `lab.js`) : derrière une petite énigme (`lab-gate.js`), sur Arles, une heure par expérience, le
 yéti sur le o. Chaque expérience a sa propre page HTML (voir `vite.config.ts`) : Toupies, Murmuration, Créatures,
@@ -32,8 +32,8 @@ index.html                     l'accueil : choisit l'humeur de l'heure (et l'aff
 src/                           (alias `@/` = `src/`)
   home/                        l'accueil, en modules : main (l'ordre de mise en place), shared, data (projets),
                                header, backdrop (le fond) + gl-background (le moteur WebGL) + reliefs + relief-shader
-                               (les lieux) + place-label + snow-globe + time-of-day, cards (les badges), project (la
-                               page projet), lab + yeti + lab-gate (le labo), trail (le chemin, pour Abyme) ; et leur CSS
+                               (les lieux) + place-label + snow-globe + time-of-day, cards (les badges), note (la
+                               phrase et les liens d'un projet), motion, lab + yeti + lab-gate (le labo), trail (le chemin, pour Abyme) ; et leur CSS
   features/                    les expériences du labo, chacune sa page HTML (voir vite.config.ts) :
     carnet/                    le carnet : la ligne en haut de chaque expérience (retour au labo, tourner la
                                page), sheet (la feuille), gear (les réglages), raster + photo (ASCII)

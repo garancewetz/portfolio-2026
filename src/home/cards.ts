@@ -1,9 +1,9 @@
-import { BACKDROP, SETTINGS, hoverAllowed, scrollDriven } from './backdrop'
+import { BACKDROP, SETTINGS, hoverAllowed, nameArrived, scrollDriven } from './backdrop'
 import { PROJECTS } from './data'
 import type { Settings } from './gl-background'
 import { openLab } from './lab-gate'
-import { openProject } from './project'
-import { LAB_URL, el, modified } from './shared'
+import { pinNote, showNote } from './note'
+import { LAB_URL, QUERY, calm, el, modified } from './shared'
 
 // The page of badges (see cards.css): the row of badges (six projects and the lab, or five experiments) rising in a
 // wave and sticking to the top, the signature arriving after them. It shows in turn the projects (home) or the
@@ -25,8 +25,8 @@ const row = scene.querySelector<HTMLElement>('.row')!
 
 export const aim = (id: string): Settings => ({ ...SETTINGS[id], ...scrollDriven() })
 
-// the projects: hovering leads to their place, clicking opens their page (in the page itself, see project.ts); then
-// the lab as a last badge (« labo → »: it opens the lab behind a riddle, see lab-gate.ts; it is just a page: hovering
+// the projects: hovering leads to their place and writes their sentence, clicking keeps it with their links (see
+// note.ts); then the lab as a last badge (« labo → »: it opens the lab behind a riddle, see lab-gate.ts; it is just a page: hovering
 // it shows no screenshot and does not change the place)
 export const PROJECTS_MODE: Mode = {
   items: [
@@ -35,7 +35,7 @@ export const PROJECTS_MODE: Mode = {
   ],
   signature: 'Garance Wetzel',
   aim,
-  open: (id) => (id === 'labo' ? openLab() : openProject(id)),
+  open: (id) => (id === 'labo' ? openLab() : pin(id)),
 }
 let mode = PROJECTS_MODE
 
@@ -74,11 +74,20 @@ export function activate(id: string) {
 }
 const linkOf = (e: Event) => (e.target as Element).closest<HTMLAnchorElement>('a')
 function hover(a: HTMLAnchorElement | null) {
-  if (!a || a.classList.contains('active') || !hoverAllowed()) return // not while the badges rise
+  if (!a || a.classList.contains('active') || !hoverAllowed()) return // not before the badges are there
   const id = a.dataset.id!
   if (mode === PROJECTS_MODE && id === 'labo') return // the lab badge has no place
   activate(id)
   BACKDROP.goTo(mode.aim(id))
+  if (mode === PROJECTS_MODE) showNote(id)
+}
+// a project chosen (a click, a touch): its place, its note with its links. Chosen while the badges still rise: the
+// page goes on down to them first.
+function pin(id: string) {
+  if (!hoverAllowed()) scrollTo({ top: document.documentElement.scrollHeight, behavior: calm ? 'auto' : 'smooth' })
+  activate(id)
+  BACKDROP.goTo(aim(id))
+  pinNote(id)
 }
 
 // with a mouse: the hovered project's screenshot follows the cursor, a little below and to the right of it (to the
@@ -99,8 +108,6 @@ function glide() {
   gliding = Math.abs(mouse.x - shown.x) + Math.abs(mouse.y - shown.y) > 0.5
   if (gliding) requestAnimationFrame(glide)
 }
-// the image a project's page grows from (project.ts): the screenshot following the cursor, if it shows this project
-export const thumbFor = (id: string) => (cursorShot.classList.contains('on') && cursorShot.dataset.id === id ? cursorImage : null)
 
 export function setupCards() {
   document.body.append(scene)
@@ -110,11 +117,17 @@ export function setupCards() {
   const scrolled = () => document.documentElement.classList.toggle('scrolled', scrollY > 24)
   addEventListener('scroll', scrolled, { passive: true })
   scrolled()
-  // the scroll drives the backdrop; « hello, world. » greets on arrival and leads back home from a project or the lab:
+  // the scroll drives the backdrop; « hello, world. » greets on arrival and leads back home from the lab:
   // on the home page, once the name has arrived under the badges, it steps aside (cards.css: html.name-here)
   const follow = () => {
     Object.entries(scrollDriven()).forEach(([k, v]) => BACKDROP.set(k, v))
-    document.documentElement.classList.toggle('name-here', !document.documentElement.classList.contains('in-lab') && hoverAllowed())
+    const home = !document.documentElement.classList.contains('in-lab')
+    document.documentElement.classList.toggle('name-here', home && nameArrived())
+    document.documentElement.classList.toggle('badges-here', home && hoverAllowed())
+    // the name, rising to its place, passes where the project's note is: the note steps aside meanwhile (note.css)
+    const name = scene.querySelector('.signature')!.getBoundingClientRect()
+    const note = document.querySelector('.project-note')?.getBoundingClientRect()
+    document.documentElement.classList.toggle('name-passing', !!note && !nameArrived() && name.top < note.bottom && name.bottom > note.top)
   }
   addEventListener('scroll', follow, { passive: true })
   follow()
@@ -122,7 +135,8 @@ export function setupCards() {
     if (!warmed) warm()
   }, { passive: true, once: true })
 
-  // with a finger (no hover): a first touch leads to the badge's place, a second one opens it
+  // with a finger (no hover): a touch is a click (the badge's place, its note and links); its focus must not count
+  // as a hover first
   let lastTouch = 0
   const touchedRecently = () => performance.now() - lastTouch < 800
   row.addEventListener('pointerdown', (e) => {
@@ -139,10 +153,6 @@ export function setupCards() {
     const a = linkOf(e)
     if (!a || modified(e)) return
     e.preventDefault()
-    if (touchedRecently() && hoverAllowed() && !a.classList.contains('active') && a.dataset.id !== 'labo') {
-      hover(a)
-      return
-    }
     mode.open(a.dataset.id!)
   })
 
@@ -162,7 +172,7 @@ export function setupCards() {
   )
   row.addEventListener('pointerover', (e) => {
     const a = linkOf(e)
-    if (!a || e.pointerType !== 'mouse' || !hoverAllowed() || !a.dataset.shot) return // not while the badges rise; not for the lab
+    if (!a || e.pointerType !== 'mouse' || !hoverAllowed() || !a.dataset.shot) return // not before the badges are there; not for the lab
     cursorImage.src = a.dataset.shot
     cursorShot.dataset.id = a.dataset.id
     cursorShot.classList.add('on')
@@ -173,4 +183,11 @@ export function setupCards() {
   })
   addEventListener('scroll', () => cursorShot.classList.remove('on'), { passive: true })
   layCards(PROJECTS_MODE)
+  // an old link to a project's page (?p=id): the home page, scrolled down to the badges, this project chosen
+  const asked = QUERY.get('p')
+  if (asked && PROJECTS.some((p) => p.id === asked)) {
+    history.replaceState({}, '', location.pathname)
+    scrollTo(0, document.documentElement.scrollHeight)
+    pin(asked)
+  }
 }

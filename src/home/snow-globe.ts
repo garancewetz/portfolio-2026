@@ -35,7 +35,7 @@ export function snowGlobe(backdrop: Backdrop) {
     if ((pullback > .5) !== inside) {
       inside = pullback > .5
       document.documentElement.classList.toggle('in-globe', inside)
-      document.querySelectorAll<HTMLElement>('.top-bar, .scene, .project-layer').forEach((e) => { e.inert = inside })
+      document.querySelectorAll<HTMLElement>('.top-bar, .scene, .project-note').forEach((e) => { e.inert = inside })
     }
     running = pullback !== target || (!calm && pullback > 0)   // the snow falls while we are out (unless calm)
     if (running) requestAnimationFrame(frame)
@@ -64,7 +64,7 @@ export function snowGlobe(backdrop: Backdrop) {
     if (d < d0 * .85) { aim(target + .34); d0 = d } else if (d > d0 * 1.18) { aim(target - .34); d0 = d }
   }, { passive: false })
   addEventListener('gesturestart', (e) => { if (away()) e.preventDefault() })   // Safari: no page zoom in the globe
-  // Escape comes back (caught before the project page: it does not close it too); ⌘ − pulls back, ⌘ + and ⌘ 0 return
+  // Escape comes back (caught before the note: it does not let it go too); ⌘ − pulls back, ⌘ + and ⌘ 0 return
   addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && away()) { e.stopImmediatePropagation(); aim(0); return }
     if (!(e.metaKey || e.ctrlKey)) return
