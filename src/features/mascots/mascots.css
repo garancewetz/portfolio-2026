@@ -180,10 +180,3 @@ main.mascots.carnet-sheet {
   background: #fff;
   color: #1414e6;
 }
-/* the sky: over the whole page, letting clicks through */
-.mascots-sky {
-  position: fixed;
-  inset: 0;
-  z-index: 20;
-  pointer-events: none;
-}

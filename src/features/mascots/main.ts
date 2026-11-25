@@ -6,7 +6,7 @@ import { C4 } from '@/features/creatures/bestiary-4'
 import { C7 } from '@/features/creatures/bestiary-7'
 import { mount } from '@/features/carnet/carnet'
 import { dye } from './fur'
-import { freed, remember } from './roam'
+import { freed, keepFlying, lastSeen, remember } from './roam'
 import { ROSTER } from './roster'
 import { sky } from './sky'
 import { stage } from './stage'
@@ -14,8 +14,8 @@ import { stage } from './stage'
 // Mascottes: the creatures of the lab's Créatures page, in 3D, standing in a line on the sea of clouds, each under the
 // ASCII it comes from: the armless yeti, two ways (Yétou, Yéta), then the robot, the mouse, the goblin, the owl, the
 // otter, the sloth. « libérer » (or a click on it) frees one: it flies off over the page, and only its ASCII is left in
-// its place; it stays free on the whole site (roam.ts) until « rappeler » brings it back. A few dyes for each one's
-// fur. The visible text is in French.
+// its place; it stays free on the whole site (roam.ts), coming back to this page too, until « rappeler » brings it
+// home. A few dyes for each one's fur. The visible text is in French.
 
 // the notebook's line (the lab, the page number, the neighbours)
 mount()
@@ -57,6 +57,9 @@ const out: (() => boolean)[] = []
 const label = () => (all.textContent = out.every((isOut) => isOut()) ? 'tous les rappeler' : 'tous les libérer')
 
 const flight = sky(ENTRIES.map((e) => e.flier))
+keepFlying(flight, ENTRIES.map((e) => e.key))
+// those out since another page: where they were flying a moment ago
+const seen = lastSeen()
 const toggles = ENTRIES.map((entry, i) => {
   // its own colour first, then the dyes it does not already wear
   const dyes = [entry.own, ...DYES.map(([, c]) => c).filter((c) => c !== (entry.own ?? '#ffffff'))]
@@ -66,7 +69,7 @@ const toggles = ENTRIES.map((entry, i) => {
   const act = figure.querySelector<HTMLButtonElement>('.mascots-act')!
   act.setAttribute('aria-label', `libérer ${entry.name}`)
   const home = stage(canvas, entry.build())
-  // out: how to call it back (a click while it lands is ignored)
+  // out: how to call it back; landing: on its way back
   let recall: ((landed: () => void) => void) | null = null
   let landing = false
   // the colour it wears (out, the site remembers it in this colour)
@@ -89,16 +92,20 @@ const toggles = ENTRIES.map((entry, i) => {
     })
   }
   dyeButtons.forEach((b, k) => b.addEventListener('click', () => choose(k)))
+  // out of its place, into the sky (with how to call it back)
+  const setOut = (back: (landed: () => void) => void) => {
+    recall = back
+    home.show(false)
+    remember(entry.key, worn)
+    figure.classList.add('free')
+    act.textContent = 'rappeler'
+    act.setAttribute('aria-label', `rappeler ${entry.name}`)
+  }
   // out of its place, into the sky; then back to land in it (a click while it lands is ignored)
   const toggle = (free: boolean) => {
     if (landing || free === !!recall) return
     if (free) {
-      home.show(false)
-      recall = flight.free(i, canvas, home)
-      remember(entry.key, worn)
-      figure.classList.add('free')
-      act.textContent = 'rappeler'
-      act.setAttribute('aria-label', `rappeler ${entry.name}`)
+      setOut(flight.free(i, canvas, home))
       label()
       return
     }
@@ -116,15 +123,20 @@ const toggles = ENTRIES.map((entry, i) => {
   }
   // the button under its name, or the creature itself
   for (const b of [button, act]) b.addEventListener('click', () => toggle(!recall))
-  // out since another visit: in its colour (its own if that dye is gone), and off again
+  // out since another page: it flies on (from where it was, or in from a side) until it is called back, in the colour it
+  // wore (its own if that dye is gone); the others stay in their places
   const before = freed()
   if (entry.key in before) {
     choose(Math.max(0, dyes.indexOf(before[entry.key])))
-    setTimeout(() => toggle(true), 500 + i * 120)
+    const back = { canvas, home }
+    // (given its place, either one tells how to call it back)
+    setOut((seen[entry.key] ? flight.resume(i, seen[entry.key], back) : flight.roam(i, back))!)
   } else wear(entry.own)
   out.push(() => !!recall)
   return toggle
 })
+
+label()
 
 // all at once: free them all, or, when they are all out, call them all back
 all.addEventListener('click', () => {

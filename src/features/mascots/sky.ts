@@ -1,3 +1,4 @@
+import './sky.css'
 import * as THREE from 'three'
 import type { Flier } from './parts'
 import { fit, studio, type Home } from './stage'
@@ -13,11 +14,13 @@ const MAX_SPEED = 2.4
 const STEER = 1.6
 const ease = (x: number) => x * x * (3 - 2 * x)
 const smoothTo = (from: number, to: number, rate: number, dt: number) => from + (to - from) * (1 - Math.exp(-rate * dt))
+// where one flying is, as fractions of the screen (so that it goes on from there on the next page)
+export type Snapshot = { x: number; y: number; z: number; vx: number; vy: number; vz: number; turn: number; scale: number; beat: number }
 type Place = { at: THREE.Vector3; scale: number; turn: number }
 type Flyer = {
   piece: Flier; holder: THREE.Group; phase: number; rate: number; speed: number
   clock: number; beat: number; heading: number; pos: THREE.Vector3; vel: THREE.Vector3; goal: THREE.Vector3; goalUntil: number
-  place: () => Place; going: boolean; since: number; from: THREE.Vector3; fromScale: number; landed: () => void
+  place: () => Place; fresh: boolean; going: boolean; since: number; trip: number; away: boolean; from: THREE.Vector3; fromScale: number; landed: () => void
 }
 
 export function sky(builds: (() => Flier)[]) {
@@ -37,19 +40,35 @@ export function sky(builds: (() => Flier)[]) {
   }
   // a point of the screen (px) on the plane where they fly
   const toWorld = (px: number, py: number) => new THREE.Vector3(((px / width()) * 2 - 1) * span().x, (1 - (py / height()) * 2) * span().y, 0)
+  // where it heads next: somewhere on the screen, nearer or further; now and then out of it, past a side, where it
+  // stays a while before coming back
   const newGoal = (f: Flyer) => {
     const s = span()
-    f.goal.set((Math.random() * 2 - 1) * s.x * 0.78, (Math.random() * 2 - 1) * s.y * 0.62, Math.random() * 4 - 2.8)
-    f.goalUntil = f.clock + 3 + Math.random() * 4
+    f.away = Math.random() < 0.3
+    if (f.away) {
+      f.goal.set((Math.random() < 0.5 ? -1 : 1) * s.x * 1.7, (Math.random() * 2 - 1) * s.y * 0.5, Math.random() * 3 - 2)
+      f.goalUntil = f.clock + 6 + Math.random() * 6
+    } else {
+      f.goal.set((Math.random() * 2 - 1) * s.x * 0.78, (Math.random() * 2 - 1) * s.y * 0.62, Math.random() * 4 - 2.8)
+      f.goalUntil = f.clock + 3 + Math.random() * 4
+    }
+  }
+  // its first goal, just freed: up and away, into the distance, before it wanders
+  const firstGoal = (f: Flyer) => {
+    f.away = false
+    f.goal.set(f.pos.x * 0.6, span().y * 0.45, -6)
+    f.goalUntil = f.clock + 2.5
   }
   const flyers = new Set<Flyer>()
 
   function fly(f: Flyer, dt: number) {
-    const home = f.place()
     // a moment in place, the ears starting to beat, then it takes off, steering towards its goal
     const awake = Math.min(1, f.clock / 0.35)
     if (f.clock > 0.35) {
-      if (f.clock > f.goalUntil || f.pos.distanceTo(f.goal) < 0.6) newGoal(f)
+      if (f.fresh) {
+        f.fresh = false
+        firstGoal(f)
+      } else if (f.clock > f.goalUntil || (!f.away && f.pos.distanceTo(f.goal) < 0.6)) newGoal(f)
       const wanted = f.goal.clone().sub(f.pos)
       wanted.setLength(Math.min(f.speed, wanted.length() * 0.9)) // slower as it arrives
       for (const o of flyers) {
@@ -62,7 +81,8 @@ export function sky(builds: (() => Flier)[]) {
       f.pos.addScaledVector(f.vel, dt)
     }
     f.holder.position.copy(f.pos)
-    f.holder.scale.setScalar(home.scale + (0.8 - home.scale) * ease(Math.min(1, Math.max(0, (f.clock - 0.35) / 1.6))))
+    // (from its size where it set off to its size in the sky)
+    f.holder.scale.setScalar(f.fromScale + (0.8 - f.fromScale) * ease(Math.min(1, Math.max(0, (f.clock - 0.35) / 1.6))))
     const speed = Math.hypot(f.vel.x, f.vel.z)
     const heading = Math.atan2(f.vel.x, Math.abs(f.vel.z) + 0.9)
     const turnRate = (heading - f.heading) / dt
@@ -76,10 +96,11 @@ export function sky(builds: (() => Flier)[]) {
     // its own way of flying (ears, wings, arms, tail…), harder to climb, softer to glide down
     f.piece.fly(f.beat % 1, awake * (0.62 + 0.38 * Math.max(climb, 0) - 0.3 * Math.max(-climb, 0)), f.clock + f.phase)
   }
-  // the way back: from where it is to its place, shrinking to its size there; then it lands in it
+  // the way back: from where it is (coming in from past the edge if it was out) to its place, in an arc, shrinking to
+  // its size there; then it lands in it. The further it is, the longer the way.
   function land(f: Flyer, t: number, dt: number) {
     const home = f.place()
-    const e = ease(Math.min(1, (t - f.since) / 1.6))
+    const e = ease(Math.min(1, (t - f.since) / f.trip))
     if (e >= 1) {
       f.holder.visible = false
       flyers.delete(f)
@@ -87,6 +108,7 @@ export function sky(builds: (() => Flier)[]) {
       return
     }
     f.holder.position.copy(f.from).lerp(home.at, e)
+    f.holder.position.y += Math.sin(Math.PI * e) * Math.min(2, f.from.distanceTo(home.at) * 0.15)
     f.holder.scale.setScalar(f.fromScale + (home.scale - f.fromScale) * e)
     const r = f.holder.rotation
     r.set(smoothTo(r.x, 0, 6, dt), smoothTo(r.y, home.turn, 6, dt), smoothTo(r.z, 0, 6, dt))
@@ -135,7 +157,7 @@ export function sky(builds: (() => Flier)[]) {
   function launch(i: number, place: () => Place) {
     const c = place()
     const f: Flyer = Object.assign(ready[i], {
-      place, going: false, since: 0, from: c.at.clone(), fromScale: c.scale, landed: () => {},
+      place, fresh: false, going: false, since: 0, trip: 1.6, away: false, from: c.at.clone(), fromScale: c.scale, landed: () => {},
       clock: 0, beat: 0, heading: 0, pos: c.at.clone(), vel: new THREE.Vector3(0, 0.6, 0), goal: new THREE.Vector3(), goalUntil: 0,
       // each its own pace: a beat a little quicker or slower, a cruising speed of its own
       rate: 2.9 + (i % 3) * 0.3,
@@ -150,25 +172,60 @@ export function sky(builds: (() => Flier)[]) {
     return f
   }
 
+  // its place in the line (its canvas, its stage): where, how big and how turned it stands there
+  const placeOf = (canvas: HTMLCanvasElement, home: Home) => (): Place => {
+    const r = canvas.getBoundingClientRect()
+    const ppu = home.pixelsPerUnit()
+    // (its place's camera looks a quarter unit above the creature's origin)
+    return { at: toWorld(r.left + r.width / 2, r.top + r.height / 2 + 0.25 * ppu), scale: ppu / (height() / (2 * span().y)), turn: home.turn() }
+  }
+  // how to call it back: from where it is to its place
+  const recallOf = (f: Flyer) => (landed: () => void) => {
+    const from = f.holder.position.clone()
+    const trip = Math.max(1.6, Math.min(3.4, from.distanceTo(f.place().at) / 4))
+    Object.assign(f, { going: true, from, fromScale: f.holder.scale.x, since: performance.now() / 1000, trip, landed })
+  }
+  // its place in the line, for one already out that goes on flying but may be called back to it (its canvas, its stage)
+  type Back = { canvas: HTMLCanvasElement; home: Home }
+  const homing = (f: Flyer, back?: Back) => {
+    if (!back) return undefined
+    f.place = placeOf(back.canvas, back.home)
+    return recallOf(f)
+  }
+
   return {
     piece: (i: number) => ready[i].piece,
-    // free the creature of place i (its canvas, its stage): it starts exactly where, as big as and turned as it stood
-    // in its place, then flies off; returns how to call it back
-    free(i: number, placeCanvas: HTMLCanvasElement, home: Home) {
-      const place = (): Place => {
-        const r = placeCanvas.getBoundingClientRect()
-        const ppu = home.pixelsPerUnit()
-        // (its place's camera looks a quarter unit above the creature's origin)
-        return { at: toWorld(r.left + r.width / 2, r.top + r.height / 2 + 0.25 * ppu), scale: ppu / (height() / (2 * span().y)), turn: home.turn() }
-      }
-      const f = launch(i, place)
-      return (landed: () => void) => Object.assign(f, { going: true, from: f.holder.position.clone(), fromScale: f.holder.scale.x, since: performance.now() / 1000, landed })
+    // free the creature of place i: it starts exactly where, as big as and turned as it stood in its place, then flies
+    // off; returns how to call it back
+    free(i: number, canvas: HTMLCanvasElement, home: Home) {
+      const f = launch(i, placeOf(canvas, home))
+      f.fresh = true
+      return recallOf(f)
     },
-    // a creature already out, on another page: it comes in from a side of the screen
-    roam(i: number) {
+    // where one flying is, to go on from there on the next page (null: not flying)
+    where(i: number): Snapshot | null {
+      const f = ready[i] as Flyer
+      if (!flyers.has(f) || f.going) return null
+      const s = span()
+      const p = f.holder.position
+      return { x: p.x / s.x, y: p.y / s.y, z: p.z, vx: f.vel.x, vy: f.vel.y, vz: f.vel.z, turn: f.holder.rotation.y, scale: f.holder.scale.x, beat: f.beat }
+    },
+    // one that was flying on the previous page: on at once, where it was, as it was going
+    resume(i: number, was: Snapshot, back?: Back) {
+      const s = span()
+      const at = new THREE.Vector3(was.x * s.x, was.y * s.y, was.z)
+      const f = launch(i, () => ({ at, scale: was.scale, turn: was.turn }))
+      f.vel.set(was.vx, was.vy, was.vz)
+      // (past its take-off, full size)
+      Object.assign(f, { clock: 2, fromScale: 0.8, beat: was.beat })
+      return homing(f, back)
+    },
+    // one out since a while: it comes in from a side of the screen
+    roam(i: number, back?: Back) {
       const s = span()
       const at = new THREE.Vector3((i % 2 ? 1 : -1) * (s.x + 1.5), (Math.random() - 0.3) * s.y, 0)
-      launch(i, () => ({ at, scale: 0.8, turn: 0 }))
+      const f = launch(i, () => ({ at, scale: 0.8, turn: 0 }))
+      return homing(f, back)
     },
   }
 }
