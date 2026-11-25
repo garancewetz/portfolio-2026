@@ -2,7 +2,7 @@ import { BACKDROP, scrollDriven } from './backdrop'
 import { PROJECTS_MODE, activate, aim, layCards, scene, type Mode } from './cards'
 import { SHOTS } from './data'
 import { homeLink } from './header'
-import { approach, closeProject, openProject, transition } from './project'
+import { approach, transition } from './motion'
 import { RELIEF_SETTINGS } from './relief-shader'
 import { placeWeights } from './reliefs'
 import { LAB_URL, QUERY, calm } from './shared'
@@ -14,7 +14,7 @@ import { setupYeti, sleepYeti, wakeYeti } from './yeti'
 // Rhône, the rock of the old town and the Roquette at its feet (the bare ground, from IGN's laser), reflected in the
 // river. It arrives at night; each experiment sets another hour, from dawn to the starry night: the light (the sun's
 // angle and height) and the blue. Clicking an experiment: the camera moves into the backdrop (see approach,
-// project.ts), then it opens. « hello, world. » brings the home page back. The address follows (?labo): the lab opens
+// motion.ts), then it opens. « hello, world. » brings the home page back. The address follows (?labo): the lab opens
 // directly, and the browser's back button works (route(), below, for the whole page).
 
 // the experiments, their own pages on this site, in the order of the day (their hours: HOURS, below)
@@ -85,8 +85,7 @@ export function enterLab({ history: push = true, instant = false } = {}) {
   if (instant) update()
   else transition(update)
 }
-// then: what to show instead of the home page (a project page, when going back to it)
-function leaveLab({ history: push = true, then = null as (() => void) | null } = {}) {
+function leaveLab({ history: push = true } = {}) {
   if (!inLab) return
   inLab = false
   sleepYeti()
@@ -99,26 +98,14 @@ function leaveLab({ history: push = true, then = null as (() => void) | null } =
     document.documentElement.classList.remove('in-lab')
     scrollTo(0, homeScroll)
     if (homeActive) activate(homeActive)
-    if (then) then()
-    else BACKDROP.goTo(aim(homeActive || 'rest'))
+    BACKDROP.goTo(aim(homeActive || 'rest'))
   })
 }
 
-// the browser's back and forward buttons, for the whole page: the lab, a project page, or the home page
+// the browser's back and forward buttons: the lab, or the home page
 function route() {
-  const q = new URLSearchParams(location.search)
-  const id = q.get('p')
-  if (q.has('labo')) {
-    closeProject({ history: false, instant: true })
-    enterLab({ history: false })
-    return
-  }
-  if (inLab) {
-    leaveLab({ history: false, then: id ? () => openProject(id, { history: false, instant: true }) : null })
-    return
-  }
-  if (id) openProject(id, { history: false })
-  else closeProject({ history: false })
+  if (new URLSearchParams(location.search).has('labo')) enterLab({ history: false })
+  else leaveLab({ history: false })
 }
 
 export function setupLab() {

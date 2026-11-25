@@ -1,6 +1,6 @@
 // The WebGL backdrop engine: a single full-screen shader, driven by numbers and colours. Going from one project to
 // another means gliding these settings: the backdrop transforms. It only redraws while gliding, unless it is
-// `animated` (the drift of a project page, the falling snow).
+// `animated` (the drift when leaving for an experiment, the falling snow).
 // Settings: a number → float, [a, b] → vec2, '#rrggbb' → vec3. The shader also gets `res` and `time`.
 // Options:
 // · textures: { sampler2D name: image URL } (read as is, no smoothing nor colour conversion); the first one loads at

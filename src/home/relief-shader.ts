@@ -8,8 +8,8 @@ import { placeWeights, RELIEFS_GLSL, type Place } from './reliefs'
 // camera back: we go through the glass, see the globe from outside, on its base, at night, and snow starts falling
 // in it. One continuous scene: no crossfade.
 // Settings: tint, sky (the two blues), places1, places2, arles, bay, light (the sun's angle), sun (its height), stars,
-// gaze (the smaller, the lower the horizon: the landscape must stay below the row of cards), pullback, drift (on a
-// project page: the camera drifts slowly), near (entering a place: the camera moves in, turning a little), rise
+// gaze (the smaller, the lower the horizon: the landscape must stay below the row of cards), pullback, drift (leaving
+// for an experiment: the camera drifts slowly), near (entering a place: the camera moves in, turning a little), rise
 // (0: all flat; 1: the whole relief; on the home page it rises while the cards line up), center (the heart of the
 // place, brought to the middle of the globe when pulling back).
 const RELIEF_CAMERA = { origin: [0, .5, -3.2], focal: 1.3 } // in world units (the landscape × 2)
@@ -42,7 +42,9 @@ float inGlobe(vec2 xz){ float r = mix(60., RADIUS*.93, smoothstep(0., .3, pullba
 // In the globe, Arles (very flat) rises more: otherwise nothing shows.
 float relief(vec2 xz){
   vec2 w = -(xz + center*smoothstep(.15, .6, pullback))/S;           // pulling back, the landscape slides: its heart to the globe's centre
-  return S*mix(WATER() - .06, height(w)*rise*(1. + 1.6*arles*smoothstep(.3, .8, pullback)), inGrid(w)*inGlobe(xz));
+  // flat (rise 0), the relief lies under the water or the clouds, like what is around it: no square raft at the horizon
+  float below = WATER() - .06;
+  return S*mix(below, mix(below, height(w)*(1. + 1.6*arles*smoothstep(.3, .8, pullback)), rise), inGrid(w)*inGlobe(xz));
 }
 vec3 march(vec3 o, vec3 d, vec3 bg, out float t, out bool hit){
   t = .02; float h; hit = false;
@@ -119,15 +121,15 @@ float snow(vec3 ro, vec3 rd, float tmax){
 void main(){
   vec2 uv = (gl_FragCoord.xy - .5*res) / min(res.x, res.y);           // in portrait (phone), framed on the width
   vec3 ro = vec3(${RELIEF_CAMERA.origin.join(', ')}), rd = normalize(vec3(uv.x, uv.y - gaze, ${FOCAL}));
-  // near: entering the place (home → project page): the camera moves towards the heart of the landscape, turning a
-  // little around it (0: home; 1: project page)
+  // near: entering the place (leaving for an experiment of the lab): the camera moves towards the heart of the
+  // landscape, turning a little around it (0: the page; 1: moved in)
   if (near > 0.){
     float k = near*near*(3. - 2.*near), a = k*.32, ca = cos(a), sa = sin(a);
     vec2 v = ro.xz*(1. - .35*k);
     ro.xz = vec2(ca*v.x - sa*v.y, sa*v.x + ca*v.y);
     rd.xz = vec2(ca*rd.x - sa*rd.z, sa*rd.x + ca*rd.z);
   }
-  // on a project page: the camera drifts very slowly (a wandering gaze, a step aside)
+  // moved in: the camera drifts very slowly (a wandering gaze, a step aside)
   if (drift > 0.){
     float a = sin(time*.06)*.07*drift, ca = cos(a), sa = sin(a);
     rd.xz = vec2(ca*rd.x - sa*rd.z, sa*rd.x + ca*rd.z);

@@ -10,7 +10,7 @@ import { atThisHour } from './time-of-day'
 // Paris (time-of-day.ts), with the name of the place shown (place-label.ts) and the snow globe (snow-globe.ts).
 
 export const SETTINGS = atThisHour(RELIEF_SETTINGS)
-// a project opened directly (?p=id): the backdrop starts from its place
+// an old link to a project (?p=id, see cards.ts): the backdrop starts from its place
 const asked = QUERY.get('p')
 const START = asked && SETTINGS[asked] ? asked : 'rest'
 
@@ -29,10 +29,14 @@ export const SCROLL_DRIVEN: Record<string, () => number> = {
 }
 export const scrollDriven = () => Object.fromEntries(Object.entries(SCROLL_DRIVEN).map(([k, f]) => [k, f()]))
 
-// hovering changes the place only once « Garance Wetzel » has stuck under the badges (before, the badges passing
-// under the pointer while scrolling would trigger it): scrolled down to its rail, minus its `top`
+// hovering a badge works as soon as the badges are on the screen (not on arrival, while only the clouds show)
 export function hoverAllowed() {
   if (inLabNow()) return true
+  const first = document.querySelector('.row a')
+  return !!first && first.getBoundingClientRect().top < innerHeight - 40
+}
+// « Garance Wetzel » has stuck under the badges: scrolled down to its rail, minus its `top`
+export function nameArrived() {
   const rail = document.querySelector<HTMLElement>('.signature-rail')
   const sig = rail?.querySelector('.signature')
   const scene = rail?.closest<HTMLElement>('.scene')
