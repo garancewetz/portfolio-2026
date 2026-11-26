@@ -1,12 +1,12 @@
-import { BACKDROP, SETTINGS, hoverAllowed, scrollDriven } from './backdrop'
+import { BACKDROP, SETTINGS, hoverAllowed, lead, scrollDriven } from './backdrop'
 import { PROJECTS } from './data'
 import type { Settings } from './gl-background'
 import { enterLab } from './lab'
 import { hideNote, showNote } from './note'
 import { LAB_URL, QUERY, calm, el, modified } from './shared'
 
-// The page of badges (see cards.css): the projects and the lab, in a staircase on arrival, rising and sticking to the
-// top.
+// The page of badges (see cards.css): the projects and the lab, at the top from the start, stuck there while the
+// scroll raises the Canigou.
 
 export const scene = el(`
   <div class="scene">
@@ -114,9 +114,11 @@ export function setupCards() {
   document.body.append(scene)
   // the badges' arrival (cards.css) plays once: not again when the lab gives the page back
   setTimeout(() => document.documentElement.classList.add('arrived'), 2500)
-  // on arrival, the sign that the page goes on below: a thin line at the bottom, a drop running down it (cards.css);
-  // gone at the first scroll
-  document.body.append(el('<div class="scroll-line" aria-hidden="true"><i></i></div>'))
+  // on arrival, the sign that the page goes on below, with no word: three dots, one under the other, lighting up one
+  // after the other downwards, at the bottom centre (cards.css); a click on it scrolls; gone at the first scroll
+  const cue = el('<button class="scroll-cue" type="button" aria-label="Défiler"><i></i><i></i><i></i></button>')
+  cue.addEventListener('click', () => scrollTo({ top: lead(), behavior: calm ? 'auto' : 'smooth' }))
+  document.body.append(cue)
   const scrolled = () => document.documentElement.classList.toggle('scrolled', scrollY > 24)
   addEventListener('scroll', scrolled, { passive: true })
   scrolled()
@@ -125,6 +127,9 @@ export function setupCards() {
     Object.entries(scrollDriven()).forEach(([k, v]) => BACKDROP.set(k, v))
     const home = !document.documentElement.classList.contains('in-lab')
     document.documentElement.classList.toggle('badges-here', home && hoverAllowed())
+    // the badges appear one by one with the first stretch of scrolling, each one whole (never half there: cards.css)
+    const seen = scrollY / lead()
+    row.querySelectorAll('a').forEach((a, i) => a.classList.toggle('shown', seen > 0.02 + i * 0.07))
   }
   addEventListener('scroll', follow, { passive: true })
   follow()

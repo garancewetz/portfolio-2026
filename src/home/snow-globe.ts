@@ -3,9 +3,10 @@ import { calm, el } from './shared'
 
 // Zooming moves the camera. Zooming out (pinching on the trackpad, ⌘ − or Ctrl −) pulls it back, and back, until the
 // landscape sits in a snow globe (the Easter egg); to return: a click, Escape, or zooming in (pinching, ⌘ +, ⌘ 0).
-// Zooming in moves it forward into the place, a little, and no further, and the browser zooms the page as usual: the
-// text must be able to grow (accessibility). Only a page already zoomed by the browser (a zoom it remembers for the
-// site) can be zoomed back out to 100 %, before the camera moves back. On a phone: a two-finger pinch. For
+// Zooming in moves it forward into the place, a little, and no further. A pinch (trackpad or fingers) zooms only the
+// landscape: the name and the badges stay as they are. The keys (⌘ +) still zoom the page as usual: the text must be
+// able to grow (accessibility). Only a page already zoomed by the browser (a zoom it remembers for the site) can be
+// zoomed back out to 100 %, before the camera moves back. On a phone: a two-finger pinch. For
 // whoever asked for less motion: shorter moves, and the globe stays still once there (no turning, no falling snow).
 // One value, `depth`: below 0 the camera has moved forward (the backdrop's `near`), above 0 it has pulled back
 // (`pullback`, 0…1, which also fades the page around it: --pullback, see cards.css).
@@ -50,10 +51,14 @@ export function snowGlobe(backdrop: Backdrop) {
   // zooming out is the camera's, except while the page is zoomed by the browser: then the browser first, back to 100 %.
   // Zooming in is the browser's (the camera only follows, forward), except to come back from the globe
   const mine = (zoomIn: boolean) => (zoomIn ? away() : away() || !pageZoomed())
+  // a pinch zooming in is always the camera's (only the landscape comes closer, the page stays as it is)
+  const pinchMine = (zoomIn: boolean) => zoomIn || mine(false)
   // a trackpad pinch arrives as a wheel event with Ctrl
+  let wheelPinch = 0
   addEventListener('wheel', (e) => {
     if (!e.ctrlKey) return
-    if (mine(e.deltaY < 0)) e.preventDefault()
+    wheelPinch = performance.now()
+    if (pinchMine(e.deltaY < 0)) e.preventDefault()
     else if (e.deltaY > 0) return
     aim(target + e.deltaY * .012)
   }, { passive: false })
@@ -70,9 +75,20 @@ export function snowGlobe(backdrop: Backdrop) {
   addEventListener('touchmove', (e) => {
     if (e.touches.length !== 2 || !d0) return
     const d = spread(e.touches)
-    if (mine(d > d0)) e.preventDefault()                // (opening: the browser zooms too, the camera follows)
+    if (pinchMine(d > d0)) e.preventDefault()           // (opening: only the camera, the page stays as it is)
     else if (d < d0) return                             // the browser unzooms, as usual
     if (d < d0 * .85) { aim(target + step(true)); d0 = d } else if (d > d0 * 1.18) { aim(target - step(false)); d0 = d }
+  }, { passive: false })
+  // Safari (a Mac trackpad, an iPhone) pinches with gesture events of its own: the page must not zoom in with them
+  // either; the camera follows them when no Ctrl wheel event does (a Mac trackpad sends both in Safari)
+  let lastScale = 1
+  type Gesture = Event & { scale: number }
+  addEventListener('gesturestart', (e) => { lastScale = (e as Gesture).scale }, { passive: true })
+  addEventListener('gesturechange', (e) => {
+    const scale = (e as Gesture).scale
+    if (pinchMine(scale > lastScale)) e.preventDefault()
+    if (performance.now() - wheelPinch > 300 && !('ontouchstart' in window)) aim(target - Math.log(scale / lastScale) * 1.2)
+    lastScale = scale
   }, { passive: false })
   // Escape comes back (caught before the note: it does not let it go too); ⌘ − back, ⌘ + forward, ⌘ 0 where it was
   addEventListener('keydown', (e) => {
