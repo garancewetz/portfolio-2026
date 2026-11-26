@@ -21,8 +21,6 @@
 <meta property="og:image:height" content="630" />
 <meta property="og:image:alt" content="Le Canigou, tout en bleu, qui sort d’une mer de nuages ; en haut, « Garance Wetzel » et ses projets." />
 <meta name="twitter:card" content="summary_large_image" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <!-- The home page (its code: src/home/, see main.ts): the project badges, and behind them Garance's places in relief;
      hovering a badge leads to its place and writes its sentence and its links. The lab opens in the
      page itself (/lab/): the backdrop never reloads. The visible text is in French. -->
@@ -39,10 +37,20 @@
     const root = document.documentElement
     root.dataset.mood = mood
     if (/[?&](p|labo)\b/.test(location.search) || /^\/lab\/?$/.test(location.pathname)) return
-    const src = `/accueil/posters/${matchMedia('(max-aspect-ratio: 1/1)').matches ? 'tall' : 'wide'}-${mood}.jpg`
+    const shape = matchMedia('(max-aspect-ratio: 1/1)').matches ? 'tall' : 'wide'
+    const src = `/accueil/posters/${shape}-${mood}.jpg`
     document.head.append(Object.assign(document.createElement('link'), { rel: 'preload', as: 'image', href: src }))
+    // while the poster is on its way (a slow connection), even before the page's styles: its own colours, top to
+    // bottom, rather than a flat dark ground
+    const bands = {
+      'tall-dawn': '#2c45ec,#4e62f0,#adb5fc,#bdc2fd,#c6cafe', 'tall-day': '#1613e8,#3232ec,#8787fb,#9f9efd,#adacfd',
+      'tall-dusk': '#2a1691,#3822a0,#6146cc,#826cd8,#9785dd', 'tall-night': '#161993,#1e24a0,#3741c4,#6168d1,#7c82d8',
+      'wide-dawn': '#5367f0,#8490f6,#b3b9fc,#bfc4fc,#bec3fc', 'wide-day': '#3736ec,#6261f4,#8c8bfb,#9898fc,#a1a0fb',
+      'wide-dusk': '#3b25a2,#5036b7,#6448cf,#6e52d6,#8570d7', 'wide-night': '#1f26a3,#2c34b5,#3843c5,#424cca,#656cd1',
+    }
     root.classList.add('poster')
     root.style.setProperty('--poster', `url(${src})`)
+    root.style.background = `linear-gradient(${bands[`${shape}-${mood}`]}) fixed`
   })()
 </script>
 </head>
