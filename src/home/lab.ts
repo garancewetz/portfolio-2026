@@ -12,11 +12,12 @@ import { LAB_URL, atLab, el } from './shared'
 
 // the experiments, in their order in the mosaic
 const TILES = ['/lab/ribbon/', '/lab/mascots/', '/lab/spinning-tops/', '/lab/murmuration/', '/lab/creatures/', '/lab/abyme/']
-const mosaic = el(`<main class="lab-mosaic" aria-label="Le labo"></main>`)
+const mosaic = el(`<main class="lab-mosaic" tabindex="-1"><h1 class="sr">Le labo, mes expériences</h1></main>`)
 for (const href of TILES) {
   const page = carnet.pages.find((p) => p.href === href)!
   const tile = el(`<a class="lab-tile" href="${href}"><img alt="" loading="lazy" /><span class="mono"></span></a>`)
-  Object.assign(tile.querySelector('img')!, { src: page.src, alt: page.alt })
+  // (the image says nothing more than the name beside it, for a screen reader: the link is the name)
+  Object.assign(tile.querySelector('img')!, { src: page.src, alt: '' })
   tile.querySelector('span')!.textContent = page.name
   mosaic.append(tile)
 }
@@ -34,8 +35,10 @@ export function enterLab({ history: push = true, instant = false } = {}) {
     document.documentElement.classList.add('in-lab')
     scrollTo(0, 0)
   }
+  // (the « labo » badge that had the focus is gone: the focus goes to the lab itself)
+  const focus = () => mosaic.focus({ preventScroll: true })
   if (instant) update()
-  else transition(update)
+  else transition(update).then(focus)
 }
 function leaveLab({ history: push = true } = {}) {
   if (!inLab) return
@@ -44,12 +47,12 @@ function leaveLab({ history: push = true } = {}) {
   document.title = 'Garance Wetzel'
   transition(() => {
     document.documentElement.classList.remove('in-lab')
-    // back home, it is ready: everything in place (the badges stuck, the name, the whole relief), never the arrival
-    // in the clouds, even when the lab was the first page (/lab/, or from an experiment)
+    // back home, it is ready: everything in place (the badges stuck, the whole relief), never the arrival in the
+    // clouds, even when the lab was the first page (/lab/, or from an experiment)
     scrollTo(0, document.documentElement.scrollHeight)
     if (homeActive) activate(homeActive)
     BACKDROP.goTo(aim(homeActive || 'rest'))
-  })
+  }).then(() => scene.querySelector<HTMLElement>('.row a[data-id="labo"]')?.focus({ preventScroll: true }))
 }
 
 // the browser's back and forward buttons: the lab, or the home page

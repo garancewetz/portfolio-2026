@@ -1,3 +1,4 @@
+import { leaveFor } from './cards'
 import { PROJECTS } from './data'
 import { el } from './shared'
 
@@ -23,8 +24,9 @@ export function showNote(id: string) {
   short.textContent = p.short
   // (a page of this site opens here; another site, in a new tab)
   const own = p.demo?.startsWith('/')
-  const site = !p.demo ? '<span>en cours · bientôt en ligne</span>' : own ? `<a href="${p.demo}">voir la page →</a>` : `<a href="${p.demo}" target="_blank" rel="noopener">voir le site ↗</a>`
-  const code = p.code ? `<a href="${p.code}" target="_blank" rel="noopener">le code ↗</a>` : ''
+  const away = '<span class="sr"> (nouvel onglet)</span>'
+  const site = !p.demo ? '<span>en cours · bientôt en ligne</span>' : own ? `<a href="${p.demo}" data-own="${p.id}">voir la page →</a>` : `<a href="${p.demo}" target="_blank" rel="noopener">voir le site ↗${away}</a>`
+  const code = p.code ? `<a href="${p.code}" target="_blank" rel="noopener">le code ↗${away}</a>` : ''
   links.innerHTML = [site, code].filter(Boolean).join('')
   note.classList.add('on')
 }
@@ -33,4 +35,9 @@ export const hideNote = () => note.classList.remove('on')
 
 export function setupNote() {
   document.body.append(note)
+  // (a page of this site: the home page notes where it was, as for a click on the badge)
+  links.addEventListener('click', (e) => {
+    const own = (e.target as Element).closest<HTMLAnchorElement>('a[data-own]')
+    if (own) leaveFor(own.dataset.own!)
+  })
 }

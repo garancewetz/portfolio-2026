@@ -16,7 +16,8 @@ export type Mode = {
 
 export const scene = el(`
   <div class="scene">
-    <nav class="row"></nav>
+    <h1 class="sr">Garance Wetzel, développeuse front-end : ses projets</h1>
+    <nav class="row" aria-label="Projets"></nav>
   </div>`)
 const row = scene.querySelector<HTMLElement>('.row')!
 
@@ -45,7 +46,7 @@ export function layCards(m: Mode) {
       (it, i) => `
     <div class="col">
       <a href="${it.href}" data-id="${it.id}"${it.src ? ` data-shot="${it.src}"` : ''} style="--i:${i}; view-transition-name: card-${i}">
-        <b>${it.title}</b>
+        <b>${it.title}${it.href.startsWith('http') ? '<span class="sr"> (nouvel onglet)</span>' : ''}</b>
       </a>
     </div>`,
     )
@@ -85,6 +86,10 @@ function pin(id: string) {
   BACKDROP.goTo(aim(id))
   showNote(id)
 }
+// leaving for a page of this site (Kit's): the home page notes where it was, so that coming back, by its link or the
+// back button, finds it ready, this project chosen, never the arrival in the clouds
+export const leaveFor = (id: string) => history.replaceState({}, '', `?p=${id}`)
+
 // no project chosen any more (a click on the background, Escape): no badge active, no note, the landscape back to
 // where it was before any badge
 function release() {
@@ -159,11 +164,10 @@ export function setupCards() {
     e.preventDefault()
     const project = mode === PROJECTS_MODE && PROJECTS.find((p) => p.id === a.dataset.id)
     const target = project && (project.demo ?? project.code)
-    if (target && !touchedRecently()) {
+    // (a pointer's click, not the keyboard's Enter: with the keyboard, Enter chooses it, and its note gives the links)
+    if (target && e.detail > 0 && !touchedRecently()) {
       if (target.startsWith('/')) {
-        // (a page of this site: the home page notes where it was, so that coming back, by its link or the back
-        // button, finds it ready, this project chosen, never the arrival in the clouds)
-        history.replaceState({}, '', `?p=${project.id}`)
+        leaveFor(project.id)
         location.href = target
       } else window.open(target, '_blank', 'noopener')
       return
@@ -176,6 +180,7 @@ export function setupCards() {
     if (!(e.target as Element).closest?.('a, button, input, .project-note')) release()
   })
   addEventListener('keydown', (e) => {
+    document.documentElement.classList.remove('by-mouse')
     if (e.key === 'Escape') release()
   })
 
@@ -184,6 +189,7 @@ export function setupCards() {
     'pointermove',
     (e) => {
       if (e.pointerType !== 'mouse') return
+      document.documentElement.classList.add('by-mouse')
       mouse = { x: e.clientX, y: e.clientY }
       if (!cursorShot.classList.contains('on')) shown = { ...mouse }
       if (!gliding) {
@@ -213,7 +219,8 @@ export function setupCards() {
   layCards(PROJECTS_MODE)
   // back on the page (the back button: the browser may give it back as it was, or put the scroll back itself, with
   // no scroll event): the page looks again where it is
-  addEventListener('pageshow', () => {
+  addEventListener('pageshow', (e) => {
+    if (e.persisted && QUERY.has('p')) history.replaceState({}, '', location.pathname)
     scrolled()
     follow()
   })

@@ -25,7 +25,9 @@ html.in-lab .lab-mosaic {
 }
 .lab-tile img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 5px; }
 .lab-tile span { padding: 0 2px; font-size: 12px; }
-.lab-tile:is(:hover, :focus-visible) { background: #ffffff2e; border-color: #fff; outline: none; }
+.lab-tile:is(:hover, :focus-visible) { background: #ffffff2e; border-color: #fff; }
+.lab-tile:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.lab-mosaic:focus { outline: none; }
 
 @media (max-width: 560px) {
   html.in-lab .lab-mosaic { gap: 10px; }

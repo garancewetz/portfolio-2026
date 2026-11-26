@@ -20,8 +20,8 @@ const PAGES = [
   { path: '/lab/mascots/', name: 'mascottes' },
   // (Abyme last: it climbs back up the visit)
   { path: '/lab/abyme/', name: 'abyme' },
-  // (hidden for now, their pages still exist, unlinked: Yaya, at /yaya/; Escalade, at /escalade/, whose idea
-  // Créatures picks up; Morse, at /morse/; Feu d'artifice, at /feu/, on the home in secret mode)
+  // (hidden for now, their pages still exist, unlinked: Yaya, at /lab/yaya/; Escalade, at /lab/climbing/, whose idea
+  // Créatures picks up; Morse, at /lab/morse/; Feu d'artifice, at /lab/fireworks/, on the home in secret mode)
 ]
 
 const indexOf = (url: string) => PAGES.findIndex((p) => new URL(url, location.href).pathname.startsWith(p.path))

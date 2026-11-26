@@ -195,6 +195,12 @@ export function sky(builds: (() => Flier)[]) {
 
   return {
     piece: (i: number) => ready[i].piece,
+    // all gone: the sky emptied, its canvas taken away (the loop stops with no one left to draw)
+    clear() {
+      flyers.clear()
+      canvas.remove()
+      renderer.dispose()
+    },
     // free the creature of place i: it starts exactly where, as big as and turned as it stood in its place, then flies
     // off; returns how to call it back
     free(i: number, canvas: HTMLCanvasElement, home: Home) {

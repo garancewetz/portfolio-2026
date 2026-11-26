@@ -23,13 +23,9 @@
   force = true
 
 # The lab: /lab/, in the home page itself (the same page, served for this address)
+# (Netlify does not tell /lab from /lab/: a single rule)
 [[redirects]]
   from = "/lab"
-  to = "/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/lab/"
   to = "/index.html"
   status = 200
 

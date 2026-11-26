@@ -52,8 +52,20 @@ const lines = SAID.map((said, i) => {
   $('.kit-said').append(item)
   return item
 })
+// it goes on by itself only while the scene is on screen, the tab seen, nobody's pointer or focus on it, and not
+// paused (its « pause » button; never, for whoever asked for less motion)
+const scene = $('.kit-scene')
+const pause = $<HTMLButtonElement>('.kit-pause')
 let now = -1
 let timer = 0
+let swap = 0
+let paused = still
+let held = false
+let seen = false
+function next(delay: number) {
+  clearTimeout(timer)
+  if (!paused && !held && seen && !document.hidden) timer = window.setTimeout(() => say((now + 1) % SAID.length), delay)
+}
 function say(i: number, chosen = false) {
   if (i === now) return
   const said = SAID[i]
@@ -61,16 +73,36 @@ function say(i: number, chosen = false) {
   if (now >= 0) speaker.wear(outfits[i])
   now = i
   lines.forEach((item, j) => item.classList.toggle('now', j === i))
+  // (a screen reader hears the card only when a line was chosen, not every few seconds)
+  card.setAttribute('aria-live', chosen ? 'polite' : 'off')
   // the card changes with the hop: it leaves, and comes back with the new line
   card.classList.remove('in')
-  setTimeout(() => {
+  clearTimeout(swap)
+  swap = window.setTimeout(() => {
     $('.kit-card-line').textContent = said.line
     $('.kit-card-actions .kit-button').textContent = said.action
     card.querySelectorAll('.kit-card-steps i').forEach((bar, j) => (bar.className = j + 1 < said.step ? 'done' : j + 1 === said.step ? 'now' : ''))
     card.classList.add('in')
   }, still ? 0 : 240)
   // the next one in a few seconds (a chosen line holds a little longer)
-  clearTimeout(timer)
-  if (!still) timer = window.setTimeout(() => say((now + 1) % SAID.length), chosen ? 7000 : 4200)
+  next(chosen ? 7000 : 4200)
 }
+for (const [type, hold] of [['pointerenter', true], ['pointerleave', false], ['focusin', true], ['focusout', false]] as const) {
+  scene.addEventListener(type, () => {
+    held = hold
+    next(4200)
+  })
+}
+new IntersectionObserver(([entry]) => {
+  seen = entry.isIntersecting
+  next(4200)
+}).observe(scene)
+addEventListener('visibilitychange', () => next(4200))
+pause.hidden = still
+pause.addEventListener('click', () => {
+  paused = !paused
+  pause.textContent = paused ? 'lecture' : 'pause'
+  pause.setAttribute('aria-pressed', String(paused))
+  next(1200)
+})
 say(0)

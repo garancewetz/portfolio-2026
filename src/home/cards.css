@@ -21,7 +21,7 @@ html.poster::before { content: ''; position: fixed; inset: 0; z-index: 0; backgr
 /* the badge: the site's small label (mono, a faint white ground and rule, square-ish corners); lit, it turns white */
 .badge, .row b {
   margin: 0; padding: 6px 10px; font: 400 12px/1.2 var(--mono); letter-spacing: .02em; color: #fff; white-space: nowrap;
-  text-align: center; background: #ffffff1a; border: 1px solid #ffffff40; border-radius: 4px; transition: background .3s, color .3s;
+  text-align: center; background: #1414e659; border: 1px solid #ffffff59; border-radius: 4px; transition: background .3s, color .3s;   /* (a blue ground: the white text holds on pale clouds) */
 }
 
 .scene { --lead: 170vh; position: relative; z-index: 1; height: calc(var(--lead) + 100vh); }
@@ -41,7 +41,7 @@ html.poster::before { content: ''; position: fixed; inset: 0; z-index: 0; backgr
 .row a:is(:hover, :focus-visible, .active) b { background: #fff; color: #1414e6; text-shadow: none; }
 /* the lab is something else (experiments, not projects): a quieter badge, no ground, a fainter rule and text; it
    lights up like the others when hovered */
-html:not(.in-lab) .row a[data-id="labo"]:not(:hover, :focus-visible) b { background: transparent; border-color: #ffffff2e; color: #ffffffa6; }
+html:not(.in-lab) .row a[data-id="labo"]:not(:hover, :focus-visible) b { background: #1414e633; border-color: #ffffff40; color: #ffffffe0; }
 /* on a wide screen, everything on one line: the small « Garance Wetzel » on the left, the badges on the right at their
    own width; the rest of the screen is the landscape */
 @media (min-width: 1100px) {
@@ -81,6 +81,8 @@ html:not(.in-lab) .row a[data-id="labo"]:not(:hover, :focus-visible) b { backgro
   html:not(.in-lab) .row .col:nth-child(8) { grid-column: 1 / -1; }   /* the lab, alone on the last line, full width */
   html:not(.in-lab) .row .col:nth-child(8) a { top: 224px; }
   html:not(.in-lab) .row b { font-size: 11px; padding: 5px 8px; }
+  /* (on the narrowest screens, a long name goes on two lines rather than being cut) */
+  @media (max-width: 360px) { .row b { white-space: normal; } }
 }
 
 /* on arrival, the sign that the page goes on below (cards.ts): a thin line at the bottom centre, a drop running down
@@ -104,7 +106,7 @@ html:not(.scrolled, .in-lab) .place-label { opacity: 0; }
 }
 .place-label { font: 400 11px/1.4 var(--mono); letter-spacing: .04em; max-width: calc(100vw - 2 * var(--pad)); }
 .place-label b { font-weight: 400; }
-.place-label span { opacity: .7; }
+.place-label span { opacity: .88; }
 .place-label span::before { content: ' · '; }
 .place-label.changing, .place-label.resting { opacity: 0; }
 .place-label.resting { transition: opacity 1.2s; }

@@ -33,14 +33,30 @@
   padding: 4px 0;
   background: none;
   border: 0;
-  color: var(--dim);
+  color: var(--faint);
   font: 16px var(--sans);
   text-align: left;
   cursor: pointer;
   transition: color 0.3s, font-size 0.3s;
 }
 .kit-said button:hover {
+  color: var(--ink);
+}
+/* stops the scene (and plays it again) */
+.kit-pause {
+  align-self: flex-start;
+  min-height: 28px;
+  padding: 4px 12px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
   color: var(--muted);
+  font: 12px var(--mono);
+  cursor: pointer;
+}
+.kit-pause:hover {
+  color: var(--ink);
+  border-color: var(--faint);
 }
 .kit-said .now button {
   color: var(--ink);

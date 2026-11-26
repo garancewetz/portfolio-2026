@@ -20,7 +20,7 @@ export const inLabNow = () => document.documentElement.classList.contains('in-la
 // very first move of the wheel (eased out: quick at first, slowing down as it comes up), so that scrolling is never
 // in vain
 const lead = () => innerHeight * (innerWidth <= 820 ? 1.5 : 1.7)
-// the settings following the scroll (they stay as they are while hovering); in the lab: the whole relief
+// the settings following the scroll (they stay as they are while hovering); in the lab, behind its mosaic: risen
 export const SCROLL_DRIVEN: Record<string, () => number> = {
   rise: () => {
     if (inLabNow()) return 1
@@ -36,7 +36,6 @@ export function hoverAllowed() {
   const first = document.querySelector('.row a')
   return !!first && first.getBoundingClientRect().top < innerHeight - 40
 }
-
 
 // smaller on a phone; shorter for whoever asked for less motion
 const canvas = document.querySelector<HTMLCanvasElement>('#backdrop')!

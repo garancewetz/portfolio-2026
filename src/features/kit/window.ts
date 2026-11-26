@@ -42,6 +42,8 @@ export function route(still: boolean) {
             : ''
       button.className = done ? 'done' : under ? 'now' : ''
       button.setAttribute('aria-pressed', String(under))
+      // (its name: the step and where it stands, not the words of its pretend buttons)
+      button.setAttribute('aria-label', `Étape ${i + 1}, ${step.title} : ${done ? 'faite' : under ? `en cours, ${step.progress}` : 'à venir'}`)
       button.innerHTML = `<span class="kit-n">${n} ${mark}</span><b>${step.title}</b>${tail}`
     })
     const last = now === ROUTE.length - 1

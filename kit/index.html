@@ -34,7 +34,7 @@
       <section class="kit-section">
         <p class="kit-label">Le parcours</p>
         <h2>Cinq étapes, une seule chose à faire.</h2>
-        <div class="kit-window" aria-label="Un ticket dans Kit">
+        <div class="kit-window" role="group" aria-label="Un ticket dans Kit">
           <p class="kit-ticket"><span class="kit-accent">KIT-128 ↗</span> · feat/export-pdf · <span class="kit-state kit-accent">● En cours</span></p>
           <p class="kit-ticket-title"><canvas class="kit-mini" aria-hidden="true"></canvas>Exporter une facture en PDF</p>
           <ol class="kit-steps"></ol>
@@ -48,9 +48,10 @@
           <div class="kit-thread">
             <p class="kit-label">Il saute, change de tenue, dit autre chose</p>
             <ol class="kit-said"></ol>
+            <button class="kit-pause" type="button" aria-pressed="false">pause</button>
           </div>
           <div class="kit-speaker">
-            <div class="kit-card" aria-live="polite">
+            <div class="kit-card" aria-live="off">
               <p class="kit-card-ticket kit-accent">KIT-128</p>
               <p class="kit-card-line"></p>
               <span class="kit-card-steps"><i></i><i></i><i></i><i></i><i></i></span>

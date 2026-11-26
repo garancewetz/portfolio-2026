@@ -89,4 +89,12 @@ export async function roam() {
     if (seen[m.key]) flight.resume(i, seen[m.key])
     else setTimeout(() => flight.roam(i), 600 + i * 700)
   })
+  // what moves on its own must be able to stop (accessibility): a small button calls them all back home
+  const back = Object.assign(document.createElement('button'), { type: 'button', className: 'mascots-home', textContent: 'rappeler les mascottes' })
+  back.addEventListener('click', () => {
+    for (const m of members) remember(m.key, undefined)
+    flight.clear()
+    back.remove()
+  })
+  document.body.append(back)
 }
