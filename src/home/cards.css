@@ -30,7 +30,10 @@ html.poster::before { content: ''; position: fixed; inset: 0; z-index: 0; backgr
   position: absolute; inset: 0; padding: 0 var(--pad);
   display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 20px;   /* six projects and the lab, equal columns */
 }
-.row .col { position: relative; }
+/* the columns overlap (on a phone they all share one grid row, the lab across the whole width): only the badges
+   themselves take a tap or a click, never the empty column above another badge */
+.row .col { position: relative; pointer-events: none; }
+.row .col a { pointer-events: auto; }
 .row a { display: block; position: sticky; top: 88px; margin-top: calc(var(--lead) + 100vh + var(--i) * 5vh); }   /* a gentle wave, entering once the Canigou is up */
 .row a:focus-visible { outline: none; }
 /* the projects (and the lab's experiments): a badge each, the name centred (the screenshot follows the cursor, see
