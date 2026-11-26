@@ -32,28 +32,3 @@ html.in-lab .lab-mosaic {
   .lab-tile { width: calc(50% - 5px); padding: 6px 6px 8px; }
   .lab-tile span { font-size: 11px; }
 }
-
-/* the lab's door (lab-gate.ts): a small box in the middle, in the badges' register, over a veil; the yeti on top */
-.lab-gate {
-  position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: var(--pad);
-  background: #0b0b2a66; backdrop-filter: blur(6px); opacity: 0; transition: opacity .3s;
-}
-.lab-gate.open { opacity: 1; }
-.lab-gate[hidden] { display: none; }
-.lab-gate-box {
-  width: min(360px, 100%); padding: 22px 22px 18px; text-align: center; background: #1414e6e6;
-  border: 1px solid #ffffff40; border-radius: 8px; box-shadow: 0 30px 80px #00001a80;
-  translate: 0 8px; transition: translate .4s cubic-bezier(.2, .7, .2, 1);
-}
-.lab-gate.open .lab-gate-box { translate: none; }
-.lab-gate-yeti { margin: 0 auto 10px; font-size: 11px; line-height: 1.05; white-space: pre; display: inline-block; text-align: left; }
-.lab-gate-title { margin: 0; font: 500 20px/1.1 var(--sans); letter-spacing: -0.02em; }
-.lab-gate-riddle { margin: 8px 0 16px; font-size: 14px; line-height: 1.4; opacity: .85; }
-.lab-gate-row { display: flex; gap: 6px; }
-.lab-gate-row input { flex: 1; min-width: 0; text-align: left; outline: none; }
-.lab-gate-row input:focus { border-color: #fff; }
-.lab-gate-row button { cursor: pointer; }
-.lab-gate-row button:hover { background: #fff; color: #1414e6; }
-.lab-gate-note { min-height: 1.4em; margin: 10px 0 0; font-size: 11px; opacity: .8; }
-.lab-gate-box.wrong { animation: no .4s; }
-@keyframes no { 25% { translate: -6px 0; } 50% { translate: 5px 0; } 75% { translate: -3px 0; } }

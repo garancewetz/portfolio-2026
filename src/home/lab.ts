@@ -5,7 +5,7 @@ import { homeLink } from './header'
 import { transition } from './motion'
 import { LAB_URL, QUERY, el } from './shared'
 
-// The lab (the notebook of experiments), in the home page itself: « labo → » (behind its riddle, lab-gate.ts) turns
+// The lab (the notebook of experiments), in the home page itself: « labo → » turns
 // the page into a mosaic of the experiments over the sea of clouds of the hour (the arrival's poster): small cards,
 // their screenshot and their name; a click opens it. « hello, world. » brings the home page back. The address follows (?labo): the lab
 // opens directly, and the browser's back button works (route(), below, for the whole page).
@@ -60,7 +60,7 @@ function route() {
 
 export function setupLab() {
   document.body.append(mosaic)
-  // « hello, world. », in the lab, goes home (the « labo → » badge opens the lab: cards.ts, lab-gate.ts)
+  // « hello, world. », in the lab, goes home (the « labo → » badge opens the lab: cards.ts)
   homeLink().addEventListener(
     'click',
     (e) => {

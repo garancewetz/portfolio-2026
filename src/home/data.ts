@@ -1,5 +1,5 @@
 // The content: the projects, in French like the site, with their screenshots (public/shots/: from the live sites, and
-// the game's title screen for Paris Forest); and the yeti's poses.
+// the game's title screen for Paris Forest).
 
 export const SHOTS = '/shots/'
 
@@ -38,16 +38,3 @@ const LIST: (Omit<Project, 'src'> & { src?: string })[] = [
     src: SHOTS + 'paris-forest.jpg', demo: null, code: null },
 ]
 export const PROJECTS: Project[] = LIST.map((p) => ({ ...p, src: p.src || SHOTS + p.id + '.webp' }))
-
-// the armless yeti, drawn in characters, and its five poses: 0 crouching, 1 taking off, 2 arms up, 3 arms flat,
-// 4 standing
-const EARS = '(\\.:::./)', FLAP_UP = '\\\\.:::.//', FLAP_FLAT = '--.:::.--', EARS_DOWN = ' _.:::._'
-const HEAD = ' :(o.o):', HAPPY = ' :(^.^):', BELLY = ' :(   ):', BELLY_LOW = ' :(___):'
-const FEET = "  '' ''", STEP = "  /' '\\", LEGS = '  /   \\'
-export const YETI = [
-  ['', '', '', '', EARS_DOWN, HEAD, BELLY_LOW],
-  ['', '', EARS, HEAD, BELLY, STEP, ''],
-  [FLAP_UP, HAPPY, BELLY, LEGS, '', '', ''],
-  ['', FLAP_FLAT, HAPPY, BELLY, LEGS, '', ''],
-  ['', '', '', EARS, HEAD, BELLY, FEET],
-].map((f) => f.map((l) => l.padEnd(9)).join('\n'))

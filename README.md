@@ -9,7 +9,7 @@ Au survol d'un badge, sa capture suit le curseur, le fond part vers le lieu du p
 Wetzel », avec ses liens (le site, le code) : pas de page détail. La lumière suit l'heure de Paris
 (`time-of-day.ts`) ; un dézoom finit en boule à neige (`snow-globe.ts`).
 
-**Le labo** (`?labo`, `lab.js`) : derrière une petite énigme (`lab-gate.js`), une mosaïque de petites cartes sur la
+**Le labo** (`?labo`, `lab.js`) : une mosaïque de petites cartes sur la
 mer de nuages de l'heure. Chaque expérience a sa propre page HTML (voir `vite.config.ts`) : Toupies, Murmuration, Créatures,
 Ruban, Kit (la mascotte de Kit en 3D), Mascottes (les créatures ASCII en 3D ; une mascotte libérée vole ensuite sur tout le site), Abyme ; Escalade, Feu d'artifice, Morse et Yaya existent toujours, sans lien.
 
@@ -33,7 +33,7 @@ src/                           (alias `@/` = `src/`)
   home/                        l'accueil, en modules : main (l'ordre de mise en place), shared, data (projets),
                                header, backdrop (le fond) + gl-background (le moteur WebGL) + reliefs + relief-shader
                                (les lieux) + place-label + snow-globe + time-of-day, cards (les badges), note (la
-                               phrase et les liens d'un projet), motion, lab + lab-gate (le labo), trail (le chemin, pour Abyme), wheel (la
+                               phrase et les liens d'un projet), motion, lab (le labo), trail (le chemin, pour Abyme), wheel (la
                                molette, dans le sens de chacun) ; et leur CSS
   features/                    les expériences du labo, chacune sa page HTML (voir vite.config.ts) :
     carnet/                    le carnet : la ligne en haut de chaque expérience (retour au labo, tourner la

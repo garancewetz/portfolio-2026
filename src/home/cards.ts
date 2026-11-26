@@ -1,7 +1,7 @@
 import { BACKDROP, SETTINGS, hoverAllowed, nameArrived, scrollDriven } from './backdrop'
 import { PROJECTS } from './data'
 import type { Settings } from './gl-background'
-import { openLab } from './lab-gate'
+import { enterLab } from './lab'
 import { hideNote, showNote } from './note'
 import { LAB_URL, QUERY, calm, el, modified } from './shared'
 
@@ -26,7 +26,7 @@ const row = scene.querySelector<HTMLElement>('.row')!
 export const aim = (id: string): Settings => ({ ...SETTINGS[id], ...scrollDriven() })
 
 // the projects: hovering (or a click, a touch) leads to their place and writes their sentence and links (see
-// note.ts); then the lab as a last badge (« labo → »: it opens the lab behind a riddle, see lab-gate.ts; it is just a page: hovering
+// note.ts); then the lab as a last badge (« labo → »: it opens the lab, see lab.ts; it is just a page: hovering
 // it shows no screenshot and does not change the place)
 export const PROJECTS_MODE: Mode = {
   items: [
@@ -35,7 +35,7 @@ export const PROJECTS_MODE: Mode = {
   ],
   signature: 'Garance Wetzel',
   aim,
-  open: (id) => (id === 'labo' ? openLab() : pin(id)),
+  open: (id) => (id === 'labo' ? enterLab() : pin(id)),
 }
 let mode = PROJECTS_MODE
 
@@ -173,7 +173,7 @@ export function setupCards() {
 
   // a click anywhere but on a badge, the note, or a link or button of the page lets the chosen project go
   addEventListener('click', (e) => {
-    if (!(e.target as Element).closest?.('a, button, input, .project-note, .lab-gate')) release()
+    if (!(e.target as Element).closest?.('a, button, input, .project-note')) release()
   })
   addEventListener('keydown', (e) => {
     if (e.key === 'Escape') release()
