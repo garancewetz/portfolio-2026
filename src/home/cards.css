@@ -13,7 +13,10 @@ html.backdrop-ready canvas { opacity: 1; }           /* the backdrop fades in, o
 ::view-transition-old(backdrop) { display: none; }
 ::view-transition-new(backdrop) { animation: none; }
 /* the poster: the backdrop's first image (the sea of clouds), rendered beforehand; the live backdrop fades over it */
-html.poster::before { content: ''; position: fixed; inset: 0; z-index: 0; background: var(--poster) center / cover; }
+/* framed as the backdrop frames it (relief-shader.ts: the screen's height in landscape, its width in portrait), so that
+   the backdrop fading over it changes nothing; the posters are 2.4:1 (and 1:2.4), wider than any screen but the widest */
+html.poster::before { content: ''; position: fixed; inset: 0; z-index: 0; background: var(--poster) center / max(100vw, 240.6vh) auto no-repeat; }   /* (a hair more: no seam at the top) */
+@media (max-aspect-ratio: 1/1) { html.poster::before { background-size: max(100.3vw, 41.8vh) auto; } }
 /* the texts lying on the backdrop: a very light shadow, so they read even on the pale haze */
 .top-bar, .row b, .row span, .place-label, .globe-hint, .project-note {
   text-shadow: 0 0 24px #0a0a4a66, 0 1px 2px #0a0a4a40;

@@ -31,8 +31,9 @@ float hazeAt(float t, float y){ return 1. - exp(-t*.28/S*exp(-max(y, 0.)*1.1)); 
 // the sun: its angle (light) and its height (sun; low at dawn and dusk)
 vec3 toSun(){ return normalize(vec3(cos(light)*.64, sun, sin(light)*.64)); }
 float water(){ return WATER()*S; }
-// the sea of clouds: pale billows, in the same blue
+// the sea of clouds: pale billows, in the same blue, drifting slowly
 vec3 cloud(vec2 xz){
+  xz += vec2(.05, .02)*time;
   float n = .55*noise(xz*1.1/S) + .3*noise(xz*2.7/S + 5.) + .15*noise(xz*7./S + 9.);
   return mix(mix(sky, tint, .3), mix(sky, vec3(1.), .75), smoothstep(.25, .75, n));
 }
@@ -41,8 +42,9 @@ float inGlobe(vec2 xz){ float r = mix(60., RADIUS*.93, smoothstep(0., .3, pullba
 // in 3D we look south, so east is on the left: w = -(x, z). At the grid's edge, the relief sinks under the water.
 float relief(vec2 xz){
   vec2 w = -(xz + center*smoothstep(.15, .6, pullback))/S;           // pulling back, the landscape slides: its heart to the globe's centre
-  // flat (rise 0), the relief lies under the water or the clouds, like what is around it: no square raft at the horizon
-  float below = WATER() - .06;
+  // flat (rise 0), the relief lies at the level around it (OUTSIDE, reliefs.ts): no square raft at the horizon
+  // (pulling back, the Moon's plain goes: in the globe its crater is a disc, like the other places)
+  float below = mix(OUTSIDE(), WATER() - .06, smoothstep(0., .3, pullback));
   return S*mix(below, mix(below, height(w), rise), inGrid(w)*inGlobe(xz));
 }
 vec3 march(vec3 o, vec3 d, vec3 bg, out float t, out bool hit){
@@ -52,15 +54,24 @@ vec3 march(vec3 o, vec3 d, vec3 bg, out float t, out bool hit){
     if (h < .0015*t){ hit = true; break; }
     t += max(.004*S, .45*h); if (t > 8.*S || p.y > 2.*S) break;
   }
+  // on the Moon (no water, no clouds to hide it), out of steps while skimming its plain far away: it is the ground,
+  // not a hole onto the sky
+  if (!hit && t < 8.*S && h < .03*t*moon) hit = true;
   if (!hit) return bg;
   // the slope: over two grid points up close (no stripes), finer far away (sharp ridges)
   vec3 p = o + d*t; vec2 e = vec2(S*mix(.012, .005, smoothstep(2.*S, 5.*S, t)), 0.);
   vec3 n = normalize(vec3(relief(p.xz - e.xy) - relief(p.xz + e.xy), 2.*e.x, relief(p.xz - e.yx) - relief(p.xz + e.yx)));
   float lit = clamp(dot(n, toSun()), 0., 1.);
   vec3 c = mix(tint*.3, tint*1.05 + vec3(.14), lit);                 // all in one colour
-  // the foot of the slopes fades into the sea of clouds (not into real water)
-  c = mix(c, cloud(p.xz), (1. - REAL_WATER())*smoothstep(water() + .16, water(), p.y)*.85);
-  return mix(c, bg, hazeAt(t, p.y));                                 // and the haze, lighter up high
+  // the light catching the summit, high above the clouds
+  c += vec3(.16, .15, .24)*smoothstep(water() + .45, water() + .95, p.y)*lit;
+  // the haze, lighter up high; whole at the farthest the gaze goes (no edge against the sky; sooner on the Moon,
+  // whose plain goes on to the horizon, before the steps of the march run out)
+  c = mix(c, bg, max(hazeAt(t, p.y), smoothstep(mix(5., 2.5, moon)*S, mix(8., 4.5, moon)*S, t)));
+  // the foot of the slopes fades into the sea of clouds (not into real water), wholly at its level (no edge, no
+  // islet standing out), hazed as the sea of clouds around it
+  // is at that distance: far away, it melts into the sky as the sea does, never a pale strip standing out
+  return mix(c, mix(cloud(p.xz), bg, haze(t)), (1. - REAL_WATER())*smoothstep(water() + .16, water(), p.y));
 }
 // the stars (at night): fixed in the sky, more of them higher up
 float star(vec3 d){
@@ -87,10 +98,11 @@ vec3 landscape(vec3 o, vec3 rd, vec3 bg, out float tp){
       float fresnel = .25 + .75*pow(1. - max(rd2.y, 0.), 4.);
       surface = mix(surface, mix(tint*.25, seen, fresnel), REAL_WATER());
     }
-    c = mix(surface, bg, haze(tl));
-    // the water stops at the glass: it fades into the haze before
+    c = mix(surface, bg, max(haze(tl), smoothstep(5.*S, 8.*S, tl)));   // as the relief: whole far away
+    // pulling back, the water stops at the glass: it fades into the haze before (inside, it goes on to the horizon,
+    // around the far hills too)
     float rw = sqrt(RADIUS*RADIUS - (water() - GLOBE.y)*(water() - GLOBE.y));
-    c = mix(c, bg, smoothstep(rw - .8, rw, length(p.xz - GLOBE.xz)));
+    c = mix(c, bg, smoothstep(rw - .8, rw, length(p.xz - GLOBE.xz))*smoothstep(0., .15, pullback));
   }
   if (tp > 1e8) c += stars*star(rd);                                 // the night sky
   return c;

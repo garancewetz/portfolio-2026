@@ -41,6 +41,8 @@ export const BACKDROP = placeLabel(
     scale: matchMedia('(pointer: coarse)').matches || innerWidth < 820 ? 0.35 : 0.75,
     textures: texturesStartingWith(PROJECT_PLACES[START]),
     duration: calm ? 500 : 1600,
+    // always drawing: the sea of clouds drifts (still for whoever asked for less motion)
+    animated: !calm,
     ready: () => document.documentElement.classList.add('backdrop-ready'),
   }),
   SETTINGS[START] as { here: number },
