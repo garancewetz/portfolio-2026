@@ -65,6 +65,8 @@ const heightGLSL = (name: Place, fn: string) => {
 }
 const edgeGLSL = (name: Place) => `edgeUV(toUV(w, ${glVec3(RELIEFS[name].frame)}))`
 const waterW = (name: Place) => toW(RELIEFS[name], RELIEFS[name].water)
+// the Moon's plain around the crater (m)
+const MOON_PLAIN = 0
 export const RELIEFS_GLSL = `
 uniform sampler2D ${PLACES.map((p) => p + 'T').join(', ')};
 uniform vec3 places1;   // Romainville, Eus, Canigou
@@ -120,4 +122,7 @@ float WATER(){
 }
 // 1 where the water is real, 0 where it is a sea of clouds
 float REAL_WATER(){ return places2.x + places2.y + bay; }
+// the level around the grid, where there are no heights: just under the water or the clouds, which hide it; on the
+// Moon (neither), a plain at the level of the land around the crater, so that the relief never ends on a square edge
+float OUTSIDE(){ return WATER() - .06 + moon*(${toW(RELIEFS.moon, MOON_PLAIN)} - ${waterW('moon')} + .06); }
 `
