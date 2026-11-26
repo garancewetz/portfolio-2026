@@ -18,7 +18,7 @@ const LIST: (Omit<Project, 'src'> & { src?: string })[] = [
   // its repository is private: its link leads to its page on this site, the mascot's reference
   { id: 'kit', title: 'Kit', kind: 'Outil de développement · conçu chez Okeiro',
     short: 'Un outil qui mène un ticket du plan à la mise en ligne avec Claude ; sa mascotte, Pousse, se tait tant que ce n’est pas à toi.',
-    demo: '/kit/', code: null },
+    src: SHOTS + 'kit-page.webp', demo: '/kit/', code: null },
   // not yet on the live portfolio: its repository (garancewetz/paris-forest) is private; the screenshot is the game's
   // title screen, in October at 5 pm
   { id: 'paris-forest', title: 'Paris Forest', kind: 'Jeu 3D, dans le navigateur',
