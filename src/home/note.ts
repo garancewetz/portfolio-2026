@@ -2,8 +2,8 @@ import { PROJECTS } from './data'
 import { el } from './shared'
 
 // A project's note, on the home page itself (a project has no page of its own): hovering its badge (or reaching it
-// with Tab, or touching it on a phone) writes what it is, its sentence and its links (the site, the code) under
-// « Garance Wetzel »; it stays there, so that the links can be reached. A click on the background lets it go (see
+// with Tab, or touching it on a phone) writes what it is, its sentence and its links (the site, the code) under the
+// badges; it stays there, so that the links can be reached. A click on the background lets it go (see
 // cards.ts), Escape too. The visible text is in French, like the site.
 
 const note = el(`
@@ -21,7 +21,9 @@ export function showNote(id: string) {
   if (!p) return
   kind.textContent = p.kind
   short.textContent = p.short
-  const site = p.demo ? `<a href="${p.demo}" target="_blank" rel="noopener">voir le site ↗</a>` : '<span>en cours · bientôt en ligne</span>'
+  // (a page of this site opens here; another site, in a new tab)
+  const own = p.demo?.startsWith('/')
+  const site = !p.demo ? '<span>en cours · bientôt en ligne</span>' : own ? `<a href="${p.demo}">voir la page →</a>` : `<a href="${p.demo}" target="_blank" rel="noopener">voir le site ↗</a>`
   const code = p.code ? `<a href="${p.code}" target="_blank" rel="noopener">le code ↗</a>` : ''
   links.innerHTML = [site, code].filter(Boolean).join('')
   note.classList.add('on')

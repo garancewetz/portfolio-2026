@@ -1,30 +1,44 @@
 import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
+
+// the lab is the home page itself: /lab/ is served index.html, as Netlify does (netlify.toml), in dev and preview
+const labPage = (): Plugin => {
+  const rewrite = (req: { url?: string }, _res: unknown, next: () => void) => {
+    if (req.url && /^\/lab\/?(\?.*)?$/.test(req.url)) req.url = '/index.html'
+    next()
+  }
+  return {
+    name: 'lab-page',
+    configureServer: (server) => void server.middlewares.use(rewrite),
+    configurePreviewServer: (server) => void server.middlewares.use(rewrite),
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig({
+  plugins: [labPage()],
   // « @/ »: the src folder (imports that do not depend on where you are)
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
-  // the pages: the site (its lab: /?labo, in the home page itself), and the notebook's: Murmuration (served at
-  // /murmuration), Yaya (/yaya), Toupies (/toupies), Feu d'artifice (/feu), Escalade (/escalade), Ruban (/ruban),
-  // Morse (/morse), Créatures (/creatures), Kit (/kit), Mascottes (/mascottes) and Abyme (/abyme)
+  // the pages: the site (its lab: /lab/, in the home page itself), Kit (/kit), and the lab's experiments, under /lab/
+  // in English: Murmuration, Yaya, Toupies (spinning-tops), Feu d'artifice (fireworks), Escalade (climbing), Ruban
+  // (ribbon), Morse, Créatures (creatures), Mascottes (mascots) and Abyme
   build: {
     // (three.js alone, shared by the 3D pages, weighs a little over 500 kB: expected)
     chunkSizeWarningLimit: 600,
     rollupOptions: {
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
-        murmuration: fileURLToPath(new URL('./murmuration/index.html', import.meta.url)),
-        yaya: fileURLToPath(new URL('./yaya/index.html', import.meta.url)),
-        abyme: fileURLToPath(new URL('./abyme/index.html', import.meta.url)),
-        toupies: fileURLToPath(new URL('./toupies/index.html', import.meta.url)),
-        feu: fileURLToPath(new URL('./feu/index.html', import.meta.url)),
-        escalade: fileURLToPath(new URL('./escalade/index.html', import.meta.url)),
-        ruban: fileURLToPath(new URL('./ruban/index.html', import.meta.url)),
-        morse: fileURLToPath(new URL('./morse/index.html', import.meta.url)),
-        creatures: fileURLToPath(new URL('./creatures/index.html', import.meta.url)),
+        murmuration: fileURLToPath(new URL('./lab/murmuration/index.html', import.meta.url)),
+        yaya: fileURLToPath(new URL('./lab/yaya/index.html', import.meta.url)),
+        abyme: fileURLToPath(new URL('./lab/abyme/index.html', import.meta.url)),
+        spinningtops: fileURLToPath(new URL('./lab/spinning-tops/index.html', import.meta.url)),
+        fireworks: fileURLToPath(new URL('./lab/fireworks/index.html', import.meta.url)),
+        climbing: fileURLToPath(new URL('./lab/climbing/index.html', import.meta.url)),
+        ribbon: fileURLToPath(new URL('./lab/ribbon/index.html', import.meta.url)),
+        morse: fileURLToPath(new URL('./lab/morse/index.html', import.meta.url)),
+        creatures: fileURLToPath(new URL('./lab/creatures/index.html', import.meta.url)),
         kit: fileURLToPath(new URL('./kit/index.html', import.meta.url)),
-        mascottes: fileURLToPath(new URL('./mascottes/index.html', import.meta.url)),
+        mascots: fileURLToPath(new URL('./lab/mascots/index.html', import.meta.url)),
       },
     },
   },

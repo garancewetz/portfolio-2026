@@ -6,8 +6,7 @@
   position: fixed; z-index: 2; top: 140px; left: var(--pad); right: var(--pad); margin: 0;
   opacity: 0; pointer-events: none; transition: opacity .35s;
 }
-html.badges-here:not(.in-lab, .name-passing) .project-note.on { opacity: 1; }
-html.badges-here:not(.in-lab, .name-passing) .project-note.on { pointer-events: auto; }
+html.badges-here:not(.in-lab) .project-note.on { opacity: 1; pointer-events: auto; }
 .project-note p { margin: 0; }
 .project-note .kind { font-size: 12px; opacity: .75; }
 .project-note .short { margin-top: 4px; max-width: 34ch; font: 400 clamp(16px, 1.25vw, 19px)/1.4 var(--sans); letter-spacing: -0.01em; }
@@ -19,9 +18,14 @@ html.badges-here:not(.in-lab, .name-passing) .project-note.on { pointer-events: 
 @media (min-width: 1100px) {
   .project-note { top: 66px; right: auto; width: min(380px, 36vw); }
 }
+/* with a mouse, the sentence goes with the screenshot that follows the cursor (cards.ts): this note is for a finger,
+   and for the keyboard */
+@media (hover: hover) and (pointer: fine) {
+  html:not(:has(.row a:focus-visible)) .project-note { display: none; }
+}
 /* on a phone: under the name */
 @media (max-width: 820px) {
-  .project-note { top: 226px; }
+  .project-note { top: 266px; }
 }
 /* the snow globe: the note fades too when pulling back */
 .project-note { filter: opacity(calc(1 - var(--pullback, 0) * 1.6)); }

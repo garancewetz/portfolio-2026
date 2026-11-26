@@ -4,14 +4,14 @@ Portfolio de projets personnels, en Vite + TypeScript (strict) et WebGL, sans fr
 
 **L'accueil** (`index.html`, son code dans `src/home/`) : en fond, les lieux de Garance en relief, dans un
 seul bleu (`relief-shader.js`, `reliefs.js`, données IGN et Copernicus). À l'arrivée, la mer de nuages ; le défilement
-fait sortir le Canigou, puis les projets arrivent en badges et « Garance Wetzel » prend la place de « hello, world. ».
+fait sortir le Canigou, pendant que les projets, déjà là en escalier, montent se ranger en haut ; « Garance Wetzel » reste en petit, en haut à gauche.
 Au survol d'un badge, sa capture suit le curseur, le fond part vers le lieu du projet, et sa phrase s'écrit sous « Garance
 Wetzel », avec ses liens (le site, le code) : pas de page détail. La lumière suit l'heure de Paris
 (`time-of-day.ts`) ; un dézoom finit en boule à neige (`snow-globe.ts`).
 
-**Le labo** (`?labo`, `lab.js`) : une mosaïque de petites cartes sur la
-mer de nuages de l'heure. Chaque expérience a sa propre page HTML (voir `vite.config.ts`) : Toupies, Murmuration, Créatures,
-Ruban, Kit (la mascotte de Kit en 3D), Mascottes (les créatures ASCII en 3D ; une mascotte libérée vole ensuite sur tout le site), Abyme ; Escalade, Feu d'artifice, Morse et Yaya existent toujours, sans lien.
+**Le labo** (`/lab/`, `lab.ts`) : une mosaïque de petites cartes sur la
+mer de nuages de l'heure. Chaque expérience a sa propre page HTML, sous `/lab/`, en anglais (voir `vite.config.ts`) : Toupies, Murmuration, Créatures,
+Ruban, Mascottes (les créatures ASCII en 3D ; une mascotte libérée vole ensuite sur tout le site), Abyme ; Escalade, Feu d'artifice, Morse et Yaya existent toujours, sans lien.
 
 ## Lancer le projet
 
@@ -39,6 +39,8 @@ src/                           (alias `@/` = `src/`)
     carnet/                    le carnet : la ligne en haut de chaque expérience (retour au labo, tourner la
                                page), sheet (la feuille), gear (les réglages), raster + photo (ASCII)
     murmuration/  toupies/  creatures/  ruban/  kit/  mascots/  abyme/  escalade/  feu/  fireworks/  morse/  yaya/
+lab/                           les pages des expériences, en anglais : ribbon, spinning-tops, creatures, mascots, murmuration,
+                               abyme ; et, cachées, climbing, fireworks, morse, yaya. kit/ : la page du projet Kit
   shared/trail.ts              le chemin de la visite (pour Abyme)
   content/content.ts           les textes du carnet et des projets (pour Abyme)
   styles/base.css              base des pages du labo
@@ -66,7 +68,7 @@ cwebp -q 82 -resize 1200 0 capture.png -o public/shots/nom.webp
 
 ## À savoir
 
-- L'ancienne adresse du labo, `/labo/`, mène à `/?labo` (voir `netlify.toml`).
+- Le labo est à `/lab/` (la page d'accueil elle-même) ; ses anciennes adresses (`/labo/`, `/?labo`) et celles des expériences (`/ruban/`, `/toupies/`…) mènent aux nouvelles (voir `netlify.toml`).
 - Les captures de Trans-trame, Mosaïque (fiche Chrome Web Store) et Synapso montrent des données de démo.
 
 ## Mise en ligne

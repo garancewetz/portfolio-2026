@@ -72,7 +72,7 @@ export function lastSeen(): Record<string, Snapshot> {
 
 export async function roam() {
   // (not on the Mascottes page, which frees them itself; not in an Abyme window; not for whoever asked for less motion)
-  if (location.pathname.startsWith('/mascottes') || !topPage() || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  if (location.pathname.startsWith('/lab/mascots') || !topPage() || matchMedia('(prefers-reduced-motion: reduce)').matches) return
   const out = freed()
   if (!Object.keys(out).length) return
   const modules = await Promise.all([import('./roster'), import('./sky'), import('./fur')]).catch(() => null)

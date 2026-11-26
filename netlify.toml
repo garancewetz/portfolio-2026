@@ -22,16 +22,77 @@
   status = 200
   force = true
 
-# The lab is now in the home page itself (/?labo): its old address leads there
+# The lab: /lab/, in the home page itself (the same page, served for this address)
+[[redirects]]
+  from = "/lab"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/lab/"
+  to = "/index.html"
+  status = 200
+
+# Its old address (/labo, then /?labo) leads there
 [[redirects]]
   from = "/labo/*"
-  to = "/?labo"
+  to = "/lab/"
   status = 301
 
-# Vocalise is now called Ruban: the old address leads there
+# The experiments live under /lab/, in English: their old addresses lead there
+[[redirects]]
+  from = "/toupies/*"
+  to = "/lab/spinning-tops/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/feu/*"
+  to = "/lab/fireworks/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/escalade/*"
+  to = "/lab/climbing/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/ruban/*"
+  to = "/lab/ribbon/:splat"
+  status = 301
+
 [[redirects]]
   from = "/vocalise/*"
-  to = "/ruban/:splat"
+  to = "/lab/ribbon/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/creatures/*"
+  to = "/lab/creatures/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/mascottes/*"
+  to = "/lab/mascots/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/murmuration/*"
+  to = "/lab/murmuration/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/abyme/*"
+  to = "/lab/abyme/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/morse/*"
+  to = "/lab/morse/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/yaya/*"
+  to = "/lab/yaya/:splat"
   status = 301
 
 # Build files have a name that changes with each version: they can be cached for a long time

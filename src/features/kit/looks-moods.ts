@@ -23,6 +23,21 @@ export function rest(): Look {
   }
 }
 
+// a Claude session is done, its turn handed back to you: mint, happy, it waves at you, hello, your turn
+export function turnDone(): Look {
+  const pose = pousse()
+  const face = addFace(pose)
+  return {
+    root: pose.root,
+    update: (t, open) => {
+      sway(pose, t)
+      breathe(pose, t, 1.6, 0.018)
+      pose.arm.rotation.z = 0.1 + Math.sin(t * 6) * 0.3
+      face.set({ ...MOOD.good, open })
+    },
+  }
+}
+
 // do-not-disturb: asleep, eyes shut, the sprout drooping, a slow deep breath, small « z » rising
 export function asleep(): Look {
   const pose = pousse()

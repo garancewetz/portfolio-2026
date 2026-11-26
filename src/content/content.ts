@@ -98,51 +98,52 @@ export const projects: Project[] = [
   },
 ]
 
-// The lab (the notebook of experiments): on the home, the « labo → » badge (/?labo, see src/home/lab.ts); then
+// The lab (the notebook of experiments): on the home, the « labo → » badge (/lab/, see src/home/lab.ts); then
 // you turn its pages (see features/carnet). Each page: its name, its address, its screenshot
 // (16/10, WebP, 1200 px wide) and its description.
 export const carnet: Carnet = {
-  href: '/?labo',
+  href: '/lab/',
   pages: [
     {
       name: 'toupies',
-      href: '/toupies/',
+      href: '/lab/spinning-tops/',
       src: '/shots/toupies.webp',
       alt: 'Des toupies à pompe en tôle posées sur une page claire ; les deux de devant tournent : l’une, à quartiers de couleurs, fondue en pastels mêlés, l’autre, à rayures noires et blanches, devenue grise ; sous elles, sur la page, le trait fin de leur pointe, bleu et rouge ; au fond, les autres attendent, couchées.',
     },
     {
       name: 'murmuration',
-      href: '/murmuration/',
+      href: '/lab/murmuration/',
       src: '/shots/murmuration.webp',
       alt: 'Sur un ciel de crépuscule indigo, un grand nuage d’oiseaux dessiné en caractères aux couleurs d’un coucher de soleil, rose fluo en haut, orange en bas (des points, des v, des W plus denses là où ils se croisent) au-dessus d’un village perché, son clocher et ses maisons en escalier, en bas à droite.',
     },
     {
       name: 'créatures',
-      href: '/creatures/',
+      href: '/lab/creatures/',
       src: '/shots/creatures.webp',
       alt: 'Sur une page blanche, des créatures dessinées en caractères dorment chacune sur son bout de ficelle, les yeux fermés, un petit z près de la tête ; deux sont réveillées, un hibou et un yéti : ils sautent sur leur ficelle et laissent derrière eux un trait de leur couleur, vert et rouge, qui garde la forme de leurs sauts.',
     },
+    // (Kit is a project of the home page now, not in the lab; kept here for its screenshot in Abyme)
     {
       name: 'kit',
       href: '/kit/',
       src: '/shots/kit.webp',
-      alt: 'Sur la mer de nuages bleue, Pousse, une petite mascotte ronde et vernie avec une pousse sur la tête, quatorze fois : en haut les six étapes d’un ticket en rang, reliées par un fil pointillé et numérotées (Plan avec son ticket, Implémentation entourée de signes de calcul, Vidéo avec sa caméra, Audit avec sa loupe, PR avec son avion en papier, Livré avec sa pousse en fleur) ; en dessous, plus petites, ses humeurs : au repos, endormie, hors ligne sous un nuage, validation demandée, CI rouge avec un pansement, session lourde sous un gros sac à dos, relecture demandée avec des lunettes, retour sur la PR avec une bulle.',
+      alt: 'Sur un fond sombre, en grand : « Un ticket, du plan au merge, sans tout garder en tête. », et dessous « Un worktree et une session Claude par ticket. Kit retient, pas toi. » ; à droite, Pousse, une petite mascotte ronde menthe avec une pousse sur la tête, fait coucou dans un halo.',
     },
     {
       name: 'mascottes',
-      href: '/mascottes/',
+      href: '/lab/mascots/',
       src: '/shots/mascottes.webp',
       alt: 'Sur une mer de nuages bleue, huit créatures de la page Créatures en 3D, en rang, chacune sous l’ASCII dont elle vient et dans sa couleur : deux yétis sans bras aux grandes oreilles, Yétou blanc et Yéta bleue, puis un robot sur ressorts, une souris jaune, un gobelin menthe aux grandes oreilles, un hibou violet, une loutre orange et un paresseux rose.',
     },
     {
       name: 'ruban',
-      href: '/ruban/',
+      href: '/lab/ribbon/',
       src: '/shots/ruban.webp',
       alt: 'Sur un fond noir, un ruban de lumière, coupé par deux silences, ondule de gauche à droite en changeant de couleur avec la note ; un petit yéti en caractères, aux grandes oreilles, grimpe dessus ; sur le bord gauche, la gamme, chaque note à sa hauteur et de sa couleur.',
     },
     {
       name: 'abyme',
-      href: '/abyme/',
+      href: '/lab/abyme/',
       src: '/shots/abyme.webp',
       alt: 'Une fenêtre de navigateur ouverte sur la page Toupies ; dedans, une fenêtre plus petite sur la page Fourrure, toute noire, puis une sur Murmuration, et tout au fond, l’accueil du site.',
     },

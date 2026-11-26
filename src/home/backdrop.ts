@@ -18,9 +18,9 @@ export const inLabNow = () => document.documentElement.classList.contains('in-la
 // on arrival the backdrop is flat (the sea of clouds) and nothing else shows but an arrow; the first stretch of
 // scrolling (--lead in cards.css: 1.7 screens, 1.5 on a phone) raises the Canigou out of the clouds: it answers the
 // very first move of the wheel (eased out: quick at first, slowing down as it comes up), so that scrolling is never
-// in vain; only then do the badges arrive, then the signature
+// in vain
 const lead = () => innerHeight * (innerWidth <= 820 ? 1.5 : 1.7)
-// the settings following the scroll (they stay as they are while hovering); in the lab: Arles, whole
+// the settings following the scroll (they stay as they are while hovering); in the lab: the whole relief
 export const SCROLL_DRIVEN: Record<string, () => number> = {
   rise: () => {
     if (inLabNow()) return 1
@@ -36,20 +36,14 @@ export function hoverAllowed() {
   const first = document.querySelector('.row a')
   return !!first && first.getBoundingClientRect().top < innerHeight - 40
 }
-// « Garance Wetzel » has stuck under the badges: scrolled down to its rail, minus its `top`
-export function nameArrived() {
-  const rail = document.querySelector<HTMLElement>('.signature-rail')
-  const sig = rail?.querySelector('.signature')
-  const scene = rail?.closest<HTMLElement>('.scene')
-  return !!rail && !!sig && !!scene && scrollY >= scene.offsetTop + rail.offsetTop - parseFloat(getComputedStyle(sig).top) - 2
-}
+
 
 // smaller on a phone; shorter for whoever asked for less motion
 const canvas = document.querySelector<HTMLCanvasElement>('#backdrop')!
 export const BACKDROP = placeLabel(
   glBackground(canvas, RELIEF_FS, SETTINGS[START], {
     scale: matchMedia('(pointer: coarse)').matches || innerWidth < 820 ? 0.35 : 0.75,
-    textures: texturesStartingWith(QUERY.has('labo') ? 'arles' : PROJECT_PLACES[START]),
+    textures: texturesStartingWith(PROJECT_PLACES[START]),
     duration: calm ? 500 : 1600,
     ready: () => document.documentElement.classList.add('backdrop-ready'),
   }),

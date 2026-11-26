@@ -3,15 +3,15 @@ import { BACKDROP } from './backdrop'
 import { activate, aim, scene } from './cards'
 import { homeLink } from './header'
 import { transition } from './motion'
-import { LAB_URL, QUERY, el } from './shared'
+import { LAB_URL, atLab, el } from './shared'
 
 // The lab (the notebook of experiments), in the home page itself: « labo → » turns
 // the page into a mosaic of the experiments over the sea of clouds of the hour (the arrival's poster): small cards,
-// their screenshot and their name; a click opens it. « hello, world. » brings the home page back. The address follows (?labo): the lab
+// their screenshot and their name; a click opens it. The small « Garance Wetzel » brings the home page back. The address follows (/lab/): the lab
 // opens directly, and the browser's back button works (route(), below, for the whole page).
 
 // the experiments, in their order in the mosaic
-const TILES = ['/ruban/', '/mascottes/', '/toupies/', '/kit/', '/murmuration/', '/creatures/', '/abyme/']
+const TILES = ['/lab/ribbon/', '/lab/mascots/', '/lab/spinning-tops/', '/lab/murmuration/', '/lab/creatures/', '/lab/abyme/']
 const mosaic = el(`<main class="lab-mosaic" aria-label="Le labo"></main>`)
 for (const href of TILES) {
   const page = carnet.pages.find((p) => p.href === href)!
@@ -40,12 +40,12 @@ export function enterLab({ history: push = true, instant = false } = {}) {
 function leaveLab({ history: push = true } = {}) {
   if (!inLab) return
   inLab = false
-  if (push) history.pushState({}, '', location.pathname)
+  if (push) history.pushState({}, '', '/')
   document.title = 'Garance Wetzel'
   transition(() => {
     document.documentElement.classList.remove('in-lab')
     // back home, it is ready: everything in place (the badges stuck, the name, the whole relief), never the arrival
-    // in the clouds, even when the lab was the first page (?labo, or from an experiment)
+    // in the clouds, even when the lab was the first page (/lab/, or from an experiment)
     scrollTo(0, document.documentElement.scrollHeight)
     if (homeActive) activate(homeActive)
     BACKDROP.goTo(aim(homeActive || 'rest'))
@@ -54,13 +54,13 @@ function leaveLab({ history: push = true } = {}) {
 
 // the browser's back and forward buttons: the lab, or the home page
 function route() {
-  if (new URLSearchParams(location.search).has('labo')) enterLab({ history: false })
+  if (atLab()) enterLab({ history: false })
   else leaveLab({ history: false })
 }
 
 export function setupLab() {
   document.body.append(mosaic)
-  // « hello, world. », in the lab, goes home (the « labo → » badge opens the lab: cards.ts)
+  // the small « Garance Wetzel », in the lab, goes home (the « labo → » badge opens the lab: cards.ts)
   homeLink().addEventListener(
     'click',
     (e) => {
@@ -72,5 +72,9 @@ export function setupLab() {
     true,
   )
   addEventListener('popstate', route)
-  if (QUERY.has('labo')) enterLab({ history: false, instant: true })
+  if (atLab()) {
+    // (the old address, ?labo, becomes the new one)
+    if (location.pathname === '/') history.replaceState({ lab: true }, '', LAB_URL)
+    enterLab({ history: false, instant: true })
+  }
 }

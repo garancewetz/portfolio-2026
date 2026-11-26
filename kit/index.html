@@ -7,20 +7,68 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kit — Garance Wetzel</title>
-    <meta name="description" content="Pousse, la mascotte de Kit, en 3D : une seule mascotte pour chaque étape d’un ticket, sa couleur et ce qu’elle tient disent laquelle ; une fois livré, sa pousse fleurit." />
-    <meta name="theme-color" content="#1414e6" />
+    <meta name="description" content="Kit, un outil de développement : un ticket, du plan au merge, sans tout garder en tête. Et Pousse, sa mascotte en 3D, qui se tait tant que ce n’est pas à toi." />
+    <meta name="theme-color" content="#1c1c1f" />
     <link rel="canonical" href="https://garancewetz.dev/kit" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <!-- Kit's mascot: one per step of a ticket, in a line, then its other looks (see src/features/kit) -->
-    <main class="kit carnet-sheet">
-      <h1 class="sr">Kit</h1>
-      <h2 class="kit-title">le ticket</h2>
-      <ol class="kit-line"></ol>
-      <ul class="kit-moods"></ul>
+    <!-- Kit, one of Garance's projects: what it does, then Pousse, its mascot, speaking (see src/features/kit) -->
+    <main class="kit">
+      <nav class="kit-bar">
+        <a href="/?p=kit">← Garance Wetzel</a>
+        <span>Kit · un outil de développement · chez Okeiro · 2026</span>
+      </nav>
+
+      <header class="kit-hero">
+        <div class="kit-hero-text">
+          <p class="kit-label kit-accent">Kit</p>
+          <h1>Un ticket, du plan au merge, sans tout garder en tête.</h1>
+          <p class="kit-lead">Un worktree et une session Claude par ticket. Kit retient, pas toi.</p>
+        </div>
+        <div class="kit-halo"><canvas data-look="done" aria-hidden="true"></canvas></div>
+      </header>
+
+      <section class="kit-section">
+        <p class="kit-label">Le parcours</p>
+        <h2>Cinq étapes, une seule chose à faire.</h2>
+        <div class="kit-window" aria-label="Un ticket dans Kit">
+          <p class="kit-ticket"><span class="kit-accent">KIT-128 ↗</span> · feat/export-pdf · <span class="kit-state kit-accent">● En cours</span></p>
+          <p class="kit-ticket-title"><canvas class="kit-mini" aria-hidden="true"></canvas>Exporter une facture en PDF</p>
+          <ol class="kit-steps"></ol>
+        </div>
+      </section>
+
+      <section class="kit-section">
+        <p class="kit-label">Pousse, sa mascotte</p>
+        <h2 class="kit-big">Il se tait tant que<br /><em>ce n’est pas à toi.</em></h2>
+        <div class="kit-scene">
+          <div class="kit-thread">
+            <p class="kit-label">Il saute, change de tenue, dit autre chose</p>
+            <ol class="kit-said"></ol>
+          </div>
+          <div class="kit-speaker">
+            <div class="kit-card" aria-live="polite">
+              <p class="kit-card-ticket kit-accent">KIT-128</p>
+              <p class="kit-card-line"></p>
+              <span class="kit-card-steps"><i></i><i></i><i></i><i></i><i></i></span>
+              <p class="kit-card-actions"><span class="kit-button primary"></span><span class="kit-later">Plus tard</span></p>
+            </div>
+            <canvas class="kit-pousse" aria-hidden="true"></canvas>
+          </div>
+        </div>
+        <p class="kit-label kit-group">Quand il te parle · une tenue par message</p>
+        <ul class="kit-outfits kit-speaking"></ul>
+        <p class="kit-label kit-group">Quand il se tait</p>
+        <ul class="kit-outfits kit-quiet"></ul>
+      </section>
+
+      <footer class="kit-bar">
+        <span>Conçu et développé par Garance Wetzel</span>
+        <span>Extension VS Code · Claude · worktrees · three.js</span>
+      </footer>
     </main>
     <script type="module" src="/src/features/kit/main.ts"></script>
   </body>

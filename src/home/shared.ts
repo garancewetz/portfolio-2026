@@ -1,8 +1,11 @@
 // A few tools shared by the home page's modules: the address on arrival, `calm` (for whoever asked for less motion),
 // the soft easing curve, and el(), an element from its HTML.
 
-export const QUERY = new URLSearchParams(location.search) // the address on arrival (?p=id, ?labo…)
-export const LAB_URL = '?labo' // the lab opens in the page itself (see lab.ts)
+export const QUERY = new URLSearchParams(location.search) // the address on arrival (?p=id…)
+// the lab: /lab/, opened in the home page itself (see lab.ts; the server gives this page for /lab/); ?labo, its old
+// address, still opens it
+export const LAB_URL = '/lab/'
+export const atLab = () => /^\/lab\/?$/.test(location.pathname) || new URLSearchParams(location.search).has('labo')
 export const calm = matchMedia('(prefers-reduced-motion: reduce)').matches
 // from 0 to 1, starting and ending softly
 export const smooth = (x: number) => x * x * x * (x * (x * 6 - 15) + 10)

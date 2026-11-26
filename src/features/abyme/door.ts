@@ -16,7 +16,7 @@ export type Place = {
 
 // (only the home is a real, living page: the lab pages, often heavy — 3D, fireworks —, stay as their
 // screenshots, drawn in their windows)
-const live = (path: string) => path === '/'   // (the home page itself, not a project page nor the lab: ?p=…, ?labo)
+const live = (path: string) => path === '/'   // (the home page itself, not a project page nor the lab: ?p=…, /lab/)
 
 export function doors(main: HTMLElement, paths: string[], dive: (deltaY: number) => void, full: () => boolean) {
   const frames = paths.map((path, d) => {

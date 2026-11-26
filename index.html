@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <!-- The home page (its code: src/home/, see main.ts): the project badges, and behind them Garance's places in relief;
      hovering a badge leads to its place and writes its sentence and its links. The lab opens in the
-     page itself (?labo): the backdrop never reloads. The visible text is in French. -->
+     page itself (/lab/): the backdrop never reloads. The visible text is in French. -->
 <script>
   // the light of the hour it is in Paris (see src/home/time-of-day.ts; ?hour=22 to try an hour), picked before anything
   // shows: arriving on the home page (not in the lab, nor by an old link to a project), the poster, an image of the sea of clouds
@@ -38,7 +38,7 @@
     const mood = hour < 6 ? 'night' : hour < 8 ? 'dawn' : hour < 18 ? 'day' : hour < 21.5 ? 'dusk' : 'night'
     const root = document.documentElement
     root.dataset.mood = mood
-    if (/[?&](p|labo)\b/.test(location.search)) return
+    if (/[?&](p|labo)\b/.test(location.search) || /^\/lab\/?$/.test(location.pathname)) return
     const src = `/accueil/posters/${matchMedia('(max-aspect-ratio: 1/1)').matches ? 'tall' : 'wide'}-${mood}.jpg`
     document.head.append(Object.assign(document.createElement('link'), { rel: 'preload', as: 'image', href: src }))
     root.classList.add('poster')

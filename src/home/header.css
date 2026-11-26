@@ -1,8 +1,7 @@
-/* The header: « hello, world. » on the left, « labo → » on the right, fixed above the page. */
+/* The header: the small « Garance Wetzel » on the left, fixed above the page. */
 body { overflow-x: hidden; }
 .top-bar {
   position: fixed; inset: 0 0 auto; z-index: 20; display: flex; align-items: baseline; justify-content: space-between;
   padding: 20px var(--pad); color: #fff; pointer-events: none;
 }
 .top-bar > * { pointer-events: auto; }
-.dot { color: var(--blue); }

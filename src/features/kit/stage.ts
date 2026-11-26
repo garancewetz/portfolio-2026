@@ -11,6 +11,10 @@ import { blobShadow } from './parts'
 
 const BLINK = 0.16
 const STILL_AT = 1.05
+// a change of outfit: a hop on the spot, up and down, a parabola; the outfit changes at the top, it never grows
+const HOP = 0.48
+const HOP_HEIGHT = 0.3
+const hopAt = (progress: number) => (progress >= 1 ? 0 : HOP_HEIGHT * (1 - (progress * 2 - 1) ** 2))
 
 let renderer: THREE.WebGLRenderer | null = null
 let environment: THREE.Texture | null = null
@@ -50,7 +54,9 @@ const request = () => {
   if (!frame) frame = requestAnimationFrame(tick)
 }
 
-export function stage(canvas: HTMLCanvasElement, look: Look, isStill: boolean) {
+// room: how much more space there is around Pousse than in a card (the canvas is that much bigger and the camera that
+// much further back: Pousse keeps its size, what it holds or throws has room, never cut)
+export function stage(canvas: HTMLCanvasElement, look: Look, isStill: boolean, room = 1) {
   still = isStill
   const { renderer, environment } = shared()
   const context = canvas.getContext('2d')!
@@ -62,14 +68,17 @@ export function stage(canvas: HTMLCanvasElement, look: Look, isStill: boolean) {
   const rim = new THREE.DirectionalLight(0xcfe6ff, 1.6)
   rim.position.set(2.5, 1.5, -3)
   scene.add(key, rim)
-  // a step back, aimed a little high: the cloud, the « z », the thrown plane stay in frame
+  // close enough that Pousse fills its card, as in Kit's reference (what it throws may leave the card)
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50)
-  camera.position.set(0, 0.4, 7)
-  camera.lookAt(0, 0.25, 0)
+  camera.position.set(0, 0.35, 5.6 * room)
+  camera.lookAt(0, 0.22, 0)
   const holder = new THREE.Group()
   holder.add(look.root)
   scene.add(holder, blobShadow())
-  const float = look.float ?? 1
+  // the look it wears, and the one it changes into at the top of its next hop
+  let current = look
+  let next: Look | null = null
+  let hopStart = -1
 
   // (each starts at another moment, so that they do not move in step)
   const offset = Math.random() * 10
@@ -89,14 +98,23 @@ export function stage(canvas: HTMLCanvasElement, look: Look, isStill: boolean) {
     renderer.getSize(size)
     camera.aspect = w / h
     camera.updateProjectionMatrix()
-    holder.position.y = Math.sin(t * 2.2) * 0.07 * float
+    const float = current.float ?? 1
+    const hop = hopStart < 0 ? 1 : (now / 1000 - hopStart) / HOP
+    if (next && hop >= 0.5) {
+      holder.remove(current.root)
+      holder.add(next.root)
+      current = next
+      next = null
+    }
+    if (hop >= 1) hopStart = -1
+    holder.position.y = Math.sin(t * 2.2) * 0.07 * float + hopAt(hop)
     holder.rotation.y = still ? -0.32 : Math.sin(t * 0.7) * 0.4
     holder.rotation.z = Math.sin(t * 1.3) * 0.04 * float
     // a blink: the eyes close and open in 0.16 s, every 2 to 5 s
     if (!still && t > nextBlink + BLINK) nextBlink = t + 2 + Math.random() * 3
     const phase = (t - nextBlink) / BLINK
     const open = still || phase < 0 || phase > 1 ? 1 : Math.max(0.08, Math.abs(phase * 2 - 1))
-    look.update(t, open)
+    current.update(t, open)
     // drawn in the bottom left corner of the shared picture, then copied (the picture's rows start at its top)
     renderer.setViewport(0, 0, w, h)
     renderer.setScissor(0, 0, w, h)
@@ -116,4 +134,19 @@ export function stage(canvas: HTMLCanvasElement, look: Look, isStill: boolean) {
     s.dirty = true
     request()
   }).observe(canvas)
+  return {
+    // another outfit: a hop, and the change at its top (at once, for whoever asked for less motion)
+    wear(look: Look) {
+      if (still) {
+        holder.remove(current.root)
+        holder.add(look.root)
+        current = look
+      } else {
+        next = look
+        hopStart = performance.now() / 1000
+      }
+      s.dirty = true
+      request()
+    },
+  }
 }
