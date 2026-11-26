@@ -126,8 +126,8 @@ export const carnet: Carnet = {
     {
       name: 'kit',
       href: '/kit/',
-      src: '/shots/kit.webp',
-      alt: 'Sur un fond sombre, en grand : « Un ticket, du plan au merge, sans tout garder en tête. », et dessous « Un worktree et une session Claude par ticket. Kit retient, pas toi. » ; à droite, Pousse, une petite mascotte ronde menthe avec une pousse sur la tête, fait coucou dans un halo.',
+      src: '/shots/kit-page.webp',
+      alt: 'Sur un fond sombre, en haut « ← Garance Wetzel » et « Kit · un outil de développement · chez Okeiro · 2026 » ; en grand : « Un ticket, du plan au merge, sans tout garder en tête. », et dessous « Un worktree et une session Claude par ticket. Kit retient, pas toi. » ; à droite, Pousse, une petite mascotte ronde menthe avec une pousse sur la tête, fait coucou dans un halo.',
     },
     {
       name: 'mascottes',

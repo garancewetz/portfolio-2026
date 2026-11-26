@@ -30,12 +30,10 @@ export const SCROLL_DRIVEN: Record<string, () => number> = {
 }
 export const scrollDriven = () => Object.fromEntries(Object.entries(SCROLL_DRIVEN).map(([k, f]) => [k, f()]))
 
-// hovering a badge works as soon as the badges are on the screen (not on arrival, while only the clouds show)
-export function hoverAllowed() {
-  if (inLabNow()) return true
-  const first = document.querySelector('.row a')
-  return !!first && first.getBoundingClientRect().top < innerHeight - 40
-}
+// hovering a badge works once the Canigou has nearly risen (three quarters of the first stretch of scrolling): before
+// that, the badges are already on the screen, but a hover would change the place before the Canigou has come out of
+// the clouds (a click there scrolls down first, see cards.ts)
+export const hoverAllowed = () => inLabNow() || scrollY >= lead() * 0.75
 
 // smaller on a phone; shorter for whoever asked for less motion
 const canvas = document.querySelector<HTMLCanvasElement>('#backdrop')!
