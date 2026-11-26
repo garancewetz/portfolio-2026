@@ -1,5 +1,5 @@
 /* Shared base: the fonts and colours of the site (portfolio/src/styles/base.css) */
-@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300..500&family=JetBrains+Mono:wght@400;500&display=swap');
+@import '../styles/fonts.css';   /* the fonts, from the site itself */
 
 *, *::before, *::after { box-sizing: border-box; }
 :root {

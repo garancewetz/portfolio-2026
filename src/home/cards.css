@@ -21,7 +21,8 @@ html.poster::before { content: ''; position: fixed; inset: 0; z-index: 0; backgr
 /* the badge: the site's small label (mono, a faint white ground and rule, square-ish corners); lit, it turns white */
 .badge, .row b {
   margin: 0; padding: 6px 10px; font: 400 12px/1.2 var(--mono); letter-spacing: .02em; color: #fff; white-space: nowrap;
-  text-align: center; background: #1414e659; border: 1px solid #ffffff59; border-radius: 4px; transition: background .3s, color .3s;   /* (a blue ground: the white text holds on pale clouds) */
+  text-align: center; background: #ffffff14; border: 1px solid #ffffff59; border-radius: 4px; transition: background .3s, color .3s;
+  backdrop-filter: blur(10px);   /* (see-through, the landscape blurred behind: the white text holds on pale clouds) */
 }
 
 .scene { --lead: 170vh; position: relative; z-index: 1; height: calc(var(--lead) + 100vh); }
@@ -41,7 +42,7 @@ html.poster::before { content: ''; position: fixed; inset: 0; z-index: 0; backgr
 .row a:is(:hover, :focus-visible, .active) b { background: #fff; color: #1414e6; text-shadow: none; }
 /* the lab is something else (experiments, not projects): a quieter badge, no ground, a fainter rule and text; it
    lights up like the others when hovered */
-html:not(.in-lab) .row a[data-id="labo"]:not(:hover, :focus-visible) b { background: #1414e633; border-color: #ffffff40; color: #ffffffe0; }
+html:not(.in-lab) .row a[data-id="labo"]:not(:hover, :focus-visible) b { background: #ffffff0a; border-color: #ffffff40; color: #ffffffe0; }
 /* on a wide screen, everything on one line: the small « Garance Wetzel » on the left, the badges on the right at their
    own width; the rest of the screen is the landscape */
 @media (min-width: 1100px) {
@@ -126,3 +127,11 @@ html:not(.scrolled, .in-lab) .place-label { opacity: 0; }
   position: fixed; left: 50%; bottom: 28px; translate: -50% 0; z-index: 2; margin: 0; pointer-events: none;
   font-size: 11px; letter-spacing: .04em; color: #fff; opacity: calc((var(--pullback, 0) - .8) * 5);
 }
+
+/* arriving on the home page (the poster showing, see index.html): the small « Garance Wetzel » and the badges come
+   in softly, one after the other down the staircase, rather than all at once over the clouds (backwards only: once
+   arrived, the snow globe's opacity above takes over) */
+@keyframes arrive { from { opacity: 0; translate: 0 14px; } }
+html.poster:not(.arrived) .top-bar { animation: arrive 1s cubic-bezier(.2, .7, .2, 1) .2s backwards; }
+html.poster:not(.arrived) .row a { animation: arrive 1s cubic-bezier(.2, .7, .2, 1) calc(.35s + var(--i) * .08s) backwards; }
+@media (prefers-reduced-motion: reduce) { html.poster :is(.top-bar, .row a) { animation-name: none; } }

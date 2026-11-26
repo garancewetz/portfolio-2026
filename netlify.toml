@@ -97,6 +97,12 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# The fonts (public/fonts, see src/styles/fonts.css) never change: one year
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
 # Screenshots rarely change: one month of cache
 [[headers]]
   for = "/shots/*"

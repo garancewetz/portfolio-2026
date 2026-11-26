@@ -112,6 +112,8 @@ function glide() {
 
 export function setupCards() {
   document.body.append(scene)
+  // the badges' arrival (cards.css) plays once: not again when the lab gives the page back
+  setTimeout(() => document.documentElement.classList.add('arrived'), 2500)
   // on arrival, the sign that the page goes on below: a thin line at the bottom, a drop running down it (cards.css);
   // gone at the first scroll
   document.body.append(el('<div class="scroll-line" aria-hidden="true"><i></i></div>'))
