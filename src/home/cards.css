@@ -85,6 +85,15 @@ html:not(.in-lab) .row a[data-id="labo"]:not(:hover, :focus-visible) b { backgro
   @media (max-width: 360px) { .row b { white-space: normal; } }
 }
 
+/* a very low screen (a phone held sideways, a page zoomed a lot): the rows of badges closer together, smaller */
+@media (max-width: 820px) and (max-height: 520px) {
+  html:not(.in-lab) .row b { font-size: 10px; padding: 3px 6px; }
+  html:not(.in-lab) .row .col a { top: 48px; }
+  html:not(.in-lab) .row .col:nth-child(n + 3) a { top: 72px; }
+  html:not(.in-lab) .row .col:nth-child(n + 5) a { top: 96px; }
+  html:not(.in-lab) .row .col:nth-child(n + 7) a { top: 120px; }
+  html:not(.in-lab) .row .col:nth-child(8) a { top: 144px; }
+}
 /* on arrival, the sign that the page goes on below (cards.ts): a thin line at the bottom centre, a drop running down
    it again and again; it fades at the first scroll, and is never in the lab */
 .scroll-line {

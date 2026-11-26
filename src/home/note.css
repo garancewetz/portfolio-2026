@@ -27,3 +27,8 @@ html.by-mouse .project-note { display: none; }
 }
 /* the snow globe: the note fades too when pulling back */
 .project-note { filter: opacity(calc(1 - var(--pullback, 0) * 1.6)); }
+/* a very low screen: right under the closer badges, and it scrolls if it is longer than what is left */
+@media (max-width: 820px) and (max-height: 520px) {
+  .project-note { top: 176px; max-height: calc(100vh - 186px); overflow-y: auto; }
+  .project-note .short { font-size: 14px; }
+}
