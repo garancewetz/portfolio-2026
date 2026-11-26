@@ -19,7 +19,7 @@ export const inLabNow = () => document.documentElement.classList.contains('in-la
 // scrolling (--lead in cards.css: 1.7 screens, 1.5 on a phone) raises the Canigou out of the clouds: it answers the
 // very first move of the wheel (eased out: quick at first, slowing down as it comes up), so that scrolling is never
 // in vain
-const lead = () => innerHeight * (innerWidth <= 820 ? 1.5 : 1.7)
+export const lead = () => innerHeight * (innerWidth <= 820 ? 1.5 : 1.7)
 // the settings following the scroll (they stay as they are while hovering); in the lab, behind its mosaic: risen
 export const SCROLL_DRIVEN: Record<string, () => number> = {
   rise: () => {
