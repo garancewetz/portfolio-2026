@@ -7,7 +7,6 @@ import { roam } from '@/features/mascots/roam'
 import { setupBackdrop } from './backdrop'
 import { setupCards } from './cards'
 import { setupHeader } from './header'
-import { setupLabGate } from './lab-gate'
 import { setupLab } from './lab'
 import { setupNote } from './note'
 import { setupTrail } from './trail'
@@ -27,6 +26,5 @@ setupBackdrop()
 setupCards()
 setupNote()
 setupLab()
-setupLabGate()
 // the mascots freed on the Mascottes page fly over the home page too (see features/mascots/roam.ts)
 void roam()
