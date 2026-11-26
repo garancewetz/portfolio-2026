@@ -33,18 +33,19 @@ export function route(still: boolean) {
       const under = i === now
       const n = String(i + 1).padStart(2, '0')
       const mark = done ? '<i>✓</i>' : under ? '<i>●</i>' : ''
+      // (its pretend buttons are only drawn: a screen reader hears the step, where it stands, and how far)
+      const drawn = (label: string, primary = false) => `<span class="kit-button${primary ? ' primary' : ''}" aria-hidden="true">${label}</span>`
       const tail = under
-        ? `<span class="kit-bars">${[1, 2, 3, 4].map((k) => `<i class="${k <= step.bars ? 'on' : ''}"></i>`).join('')}</span><span class="kit-progress">${step.progress}</span><span class="kit-button primary">${step.go}</span>`
+        ? `<span class="kit-bars" aria-hidden="true">${[1, 2, 3, 4].map((k) => `<i class="${k <= step.bars ? 'on' : ''}"></i>`).join('')}</span><span class="kit-progress">${step.progress}</span>${drawn(step.go, true)}`
         : done && step.back
-          ? `<span class="kit-button">${step.back}</span>`
+          ? drawn(step.back)
           : !done && step.start
-            ? `<span class="kit-button">${step.start}</span>`
+            ? drawn(step.start)
             : ''
       button.className = done ? 'done' : under ? 'now' : ''
       button.setAttribute('aria-pressed', String(under))
-      // (its name: the step and where it stands, not the words of its pretend buttons)
-      button.setAttribute('aria-label', `Étape ${i + 1}, ${step.title} : ${done ? 'faite' : under ? `en cours, ${step.progress}` : 'à venir'}`)
-      button.innerHTML = `<span class="kit-n">${n} ${mark}</span><b>${step.title}</b>${tail}`
+      const where = done ? 'faite' : under ? 'en cours' : 'à venir'
+      button.innerHTML = `<span class="kit-n"><span aria-hidden="true">${n} ${mark}</span></span><b>${step.title}</b><span class="sr"> : ${where}</span>${tail}`
     })
     const last = now === ROUTE.length - 1
     state.textContent = last ? '● Livré' : '● En cours'

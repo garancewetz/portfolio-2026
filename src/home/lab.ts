@@ -22,6 +22,9 @@ for (const href of TILES) {
   mosaic.append(tile)
 }
 
+// the page's canonical address follows: the lab, or the home page
+const canonical = (path: string) => document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://garancewetz.dev${path}`)
+
 // the active badge of the home page, to find it again on the way back
 let inLab = false
 let homeActive: string | null = null
@@ -31,6 +34,7 @@ export function enterLab({ history: push = true, instant = false } = {}) {
   homeActive = scene.querySelector<HTMLElement>('.row a.active')?.dataset.id || null
   if (push) history.pushState({ lab: true }, '', LAB_URL)
   document.title = 'Labo — Garance Wetzel'
+  canonical('/lab/')
   const update = () => {
     document.documentElement.classList.add('in-lab')
     scrollTo(0, 0)
@@ -45,6 +49,7 @@ function leaveLab({ history: push = true } = {}) {
   inLab = false
   if (push) history.pushState({}, '', '/')
   document.title = 'Garance Wetzel'
+  canonical('/')
   transition(() => {
     document.documentElement.classList.remove('in-lab')
     // back home, it is ready: everything in place (the badges stuck, the whole relief), never the arrival in the

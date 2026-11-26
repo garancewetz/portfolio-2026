@@ -6,13 +6,7 @@ import { hideNote, showNote } from './note'
 import { LAB_URL, QUERY, calm, el, modified } from './shared'
 
 // The page of badges (see cards.css): the projects and the lab, in a staircase on arrival, rising and sticking to the
-// top. A "mode" = { items, aim(id): the backdrop's settings, open(id) }.
-
-export type Mode = {
-  items: { id: string; title: string; src: string | null; href: string }[]
-  aim: (id: string) => Settings
-  open: (id: string) => void
-}
+// top.
 
 export const scene = el(`
   <div class="scene">
@@ -26,22 +20,18 @@ export const aim = (id: string): Settings => ({ ...SETTINGS[id], ...scrollDriven
 // the projects: hovering (or a click, a touch) leads to their place and writes their sentence and links (see
 // note.ts); then the lab as a last badge (« labo → »: it opens the lab, see lab.ts; it is just a page: hovering
 // it shows no screenshot and does not change the place)
-export const PROJECTS_MODE: Mode = {
-  items: [
-    // (with a mouse, a click goes to the project itself: its site, else its code; its address is the badge's link)
-    ...PROJECTS.map((p) => ({ id: p.id, title: p.title, src: p.src, href: p.demo ?? p.code ?? `?p=${p.id}` })),
-    { id: 'labo', title: 'labo →', src: null, href: LAB_URL },
-  ],
-  aim,
-  open: (id) => (id === 'labo' ? enterLab() : pin(id)),
-}
-let mode = PROJECTS_MODE
+const ITEMS: { id: string; title: string; src: string | null; href: string }[] = [
+  // (with a mouse, a click goes to the project itself: its site, else its code; its address is the badge's link)
+  ...PROJECTS.map((p) => ({ id: p.id, title: p.title, src: p.src, href: p.demo ?? p.code ?? `?p=${p.id}` })),
+  { id: 'labo', title: 'labo →', src: null, href: LAB_URL },
+]
+// a badge chosen (a click, a touch, Enter): the lab opens, a project is pinned
+const open = (id: string) => (id === 'labo' ? enterLab() : pin(id))
 
-// lay out a mode's badges (the grid stays: the wave does not move); a badge's screenshot is not in the page, only its
-// address (data-shot): the cursor's image shows it (below)
-export function layCards(m: Mode) {
-  mode = m
-  row.innerHTML = m.items
+// lay out the badges; a badge's screenshot is not in the page, only its address (data-shot): the cursor's image shows
+// it (below)
+function layCards() {
+  row.innerHTML = ITEMS
     .map(
       (it, i) => `
     <div class="col">
@@ -51,10 +41,8 @@ export function layCards(m: Mode) {
     </div>`,
     )
     .join('')
-  if (warmed || m !== PROJECTS_MODE) warm()
 }
-// the screenshots, loaded ahead of the first hover: on the home page at the first scroll (not on arrival: the
-// landscape first), in the lab at once
+// the screenshots, loaded ahead of the first hover, at the first scroll (not on arrival: the landscape first)
 let warmed = false
 function warm() {
   warmed = true
@@ -73,10 +61,10 @@ const linkOf = (e: Event) => (e.target as Element).closest<HTMLAnchorElement>('a
 function hover(a: HTMLAnchorElement | null) {
   if (!a || a.classList.contains('active') || !hoverAllowed()) return // not before the badges are there
   const id = a.dataset.id!
-  if (mode === PROJECTS_MODE && id === 'labo') return // the lab badge has no place
+  if (id === 'labo') return // the lab badge has no place
   activate(id)
-  BACKDROP.goTo(mode.aim(id))
-  if (mode === PROJECTS_MODE) showNote(id)
+  BACKDROP.goTo(aim(id))
+  showNote(id)
 }
 // a project chosen (a click, a touch): its place, its note. Chosen while the badges still rise: the
 // page goes on down to them first.
@@ -94,7 +82,7 @@ export const leaveFor = (id: string) => history.replaceState({}, '', `?p=${id}`)
 // where it was before any badge
 function release() {
   const active = row.querySelector('a.active')
-  if (!active || mode !== PROJECTS_MODE) return
+  if (!active) return
   active.classList.remove('active')
   hideNote()
   BACKDROP.goTo(aim('rest'))
@@ -162,7 +150,7 @@ export function setupCards() {
     const a = linkOf(e)
     if (!a || modified(e)) return
     e.preventDefault()
-    const project = mode === PROJECTS_MODE && PROJECTS.find((p) => p.id === a.dataset.id)
+    const project = PROJECTS.find((p) => p.id === a.dataset.id)
     const target = project && (project.demo ?? project.code)
     // (a pointer's click, not the keyboard's Enter: with the keyboard, Enter chooses it, and its note gives the links)
     if (target && e.detail > 0 && !touchedRecently()) {
@@ -172,7 +160,7 @@ export function setupCards() {
       } else window.open(target, '_blank', 'noopener')
       return
     }
-    mode.open(a.dataset.id!)
+    open(a.dataset.id!)
   })
 
   // a click anywhere but on a badge, the note, or a link or button of the page lets the chosen project go
@@ -216,7 +204,7 @@ export function setupCards() {
     if (linkOf(e) && !to?.closest?.('.row a')) cursorShot.classList.remove('on')
   })
   addEventListener('scroll', () => cursorShot.classList.remove('on'), { passive: true })
-  layCards(PROJECTS_MODE)
+  layCards()
   // back on the page (the back button: the browser may give it back as it was, or put the scroll back itself, with
   // no scroll event): the page looks again where it is
   addEventListener('pageshow', (e) => {
