@@ -3,7 +3,7 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import { glow, halo, labelTexture, material, mesh, sphere, type Vec3 } from './parts'
 
 // What Pousse wears or holds, one thing per message (see looks.ts): the ticket (the plan), a camera (the video), a
-// paper plane (the PR), a notepad (at work), a green light (Claude waits for your go), a magnifying glass (the
+// paper plane (the PR), a green light (Claude waits for your go), a magnifying glass (the
 // audit), a plaster (red CI), a speech bubble (a comment on your PR), a backpack far too big (a heavy session),
 // reading glasses (a review asked of you), a grey cloud (Kit's server no longer answers). Props keep their gloss:
 // only Pousse himself is soft.
@@ -57,16 +57,6 @@ export function plane() {
   prop.add(triangles([nose, back, [-0.45, 0.04, -0.34]], 0xf4f8ff))
   prop.add(triangles([nose, back, [-0.36, -0.16, 0]], 0xb9c8e3))
   prop.add(mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.95, 6), material(0x8fa3c7), { position: [0.07, 0.005, 0], rotation: [0, 0, Math.PI / 2] }))
-  return prop
-}
-
-// a small ruled notepad, tilted towards Pousse: what it writes on while Claude works
-export function notepad() {
-  const prop = new THREE.Group()
-  prop.add(mesh(new RoundedBoxGeometry(0.46, 0.56, 0.05, 3, 0.02), material(0xfaf7ef, { roughness: 0.7, clearcoat: 0 })))
-  prop.add(mesh(new RoundedBoxGeometry(0.46, 0.08, 0.07, 3, 0.02), material(0x5aaef0), { position: [0, 0.27, 0] }))
-  const ink = material(0x9aa3b5)
-  for (let i = 0; i < 4; i++) prop.add(mesh(new THREE.BoxGeometry(i === 3 ? 0.2 : 0.32, 0.018, 0.01), ink, { position: [i === 3 ? -0.06 : 0, 0.13 - i * 0.1, 0.03] }))
   return prop
 }
 

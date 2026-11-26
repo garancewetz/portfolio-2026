@@ -11,7 +11,7 @@
   gap: 24px;
   padding: 14px 18px;
   font: 12px/1 var(--mono);
-  color: var(--carnet-ink, rgb(255 255 255 / 0.38));
+  color: var(--carnet-ink, rgb(255 255 255 / 0.7));
   /* (the notebook only catches its links: the rest of the line lets the mouse through to the page) */
   pointer-events: none;
 }

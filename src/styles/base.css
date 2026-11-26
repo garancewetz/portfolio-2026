@@ -15,7 +15,7 @@
   --muted: #6b6b6b; /* AA contrast on --bg */
   --line: #0000001a;
   --accent: var(--ink);
-  /* the blue of web links, the browsers' own: the dot of « hello, world. » and of projects already seen, the
+  /* the blue of web links, the browsers' own: the dot of projects already seen, the
      only colour on the page (apart from screenshots) */
   --blue: #0000ee;
   --empty: #f0f0f0;

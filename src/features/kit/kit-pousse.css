@@ -1,0 +1,173 @@
+/* ——— Kit (see main.ts): Pousse speaking, and its outfits in a row ——— */
+
+/* the scene: the thread of what it says on the left, Pousse speaking on the right */
+.kit-scene {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 48px;
+  min-height: 440px;
+  padding: 40px 48px;
+  background: radial-gradient(circle at 78% 70%, #2a2a30 0%, #202024 55%);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+.kit-thread {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  width: 360px;
+}
+.kit-thread .kit-label {
+  font-size: 11px;
+}
+.kit-said {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 16px !important;
+  border-left: 1px solid var(--border);
+}
+.kit-said button {
+  padding: 4px 0;
+  background: none;
+  border: 0;
+  color: var(--faint);
+  font: 16px var(--sans);
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.3s, font-size 0.3s;
+}
+.kit-said button:hover {
+  color: var(--ink);
+}
+/* stops the scene (and plays it again) */
+.kit-pause {
+  align-self: flex-start;
+  min-height: 28px;
+  padding: 4px 12px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font: 12px var(--mono);
+  cursor: pointer;
+}
+.kit-pause:hover {
+  color: var(--ink);
+  border-color: var(--faint);
+}
+.kit-said .now button {
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 700;
+}
+.kit-said .now button::before {
+  content: '●';
+  margin-right: 10px;
+  color: var(--accent);
+  font-size: 11px;
+  vertical-align: 3px;
+}
+.kit-speaker {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 8px;
+  flex: 1;
+}
+/* its card, as in Kit: the ticket, the line, the five steps, one button */
+.kit-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 280px;
+  margin-bottom: 120px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 14px 40px rgb(0 0 0 / 0.45);
+  transform-origin: 100% 100%;
+  opacity: 0;
+  scale: 0.6;
+  transition: opacity 0.2s, scale 0.2s;
+}
+.kit-card.in {
+  opacity: 1;
+  scale: 1;
+  transition: opacity 0.35s, scale 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.kit-card-ticket {
+  font: 12px var(--mono);
+}
+.kit-card-line {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 22px;
+}
+.kit-card-steps {
+  display: flex;
+  gap: 4px;
+}
+.kit-card-steps i {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+}
+.kit-card-steps i.done {
+  background: #4fb286;
+}
+.kit-card-steps i.now {
+  background: var(--accent);
+}
+.kit-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.kit-card-actions .kit-button {
+  padding: 8px 13px;
+}
+.kit-later {
+  color: var(--faint);
+  font-size: 13px;
+}
+/* its canvas is 1.6 times its place (stage.ts, room), reaching past it on every side, over the box's edge: what it
+   holds or throws is never cut */
+.kit-speaker {
+  position: relative;
+}
+.kit-pousse {
+  flex-shrink: 0;
+  width: 384px;
+  height: 480px;
+  margin: -90px -72px -90px -72px;
+  pointer-events: none;
+}
+
+/* the outfits, in a row */
+.kit-outfits {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+  padding-top: 24px !important;
+}
+.kit-outfits li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+.kit-outfits canvas {
+  width: 160%;
+  height: 272px;
+  margin: -51px -30%;
+  pointer-events: none;
+}
+.kit-outfits b {
+  font-size: 15px;
+}

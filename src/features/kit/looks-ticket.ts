@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { MOOD, addFace } from './face'
 import { AMBER, BLUE, CORAL, VIOLET, hold, pulse, sway, type Look } from './looks-shared'
 import { material, mesh, sign, sphere } from './parts'
-import { camera, magnifier, notepad, plane, ticket } from './props'
+import { camera, magnifier, plane, ticket } from './props'
 import { pousse } from './pousse'
 
 // The six steps of a ticket, in order: the plan, the work, the video, the audit, the PR, shipped. All good news
@@ -24,8 +24,8 @@ export function planReady(): Look {
   }
 }
 
-// while Claude works: eyes narrowed, a hand tapping its temple, the mouth pursed, the tip of the tongue out, a
-// notepad in front of it, sums and a doubt rising from its head
+// while Claude works: it racks its brains, eyes screwed up under knitted brows, glancing to one side then the other,
+// a hand tapping its temple, the mouth pursed, the tip of the tongue out, sums and a doubt rising from its head
 export function think(): Look {
   const pose = pousse()
   const face = addFace(pose)
@@ -33,7 +33,6 @@ export function think(): Look {
   pose.arm.visible = false
   const temple = mesh(new THREE.CapsuleGeometry(0.13, 0.3, 8, 16), pose.body, { position: [0.86, 0.2, 0.42], rotation: [0.3, 0, 0.55] })
   pose.root.add(temple)
-  hold(pose.root, notepad(), [0.55, -0.42, 0.85], [-0.55, -0.25, 0.08])
   // the pursed mouth, pushed to one side, in place of the smile
   const mouth = new THREE.Group()
   mouth.position.set(0.07, -0.13, pose.mouthZ)
@@ -54,7 +53,7 @@ export function think(): Look {
       pose.sprout.rotation.y = t * 2.5
       sway(pose, t)
       temple.position.y = 0.2 + pulse(t, 5) * 0.03
-      pose.root.rotation.x = -0.03
+      pose.root.rotation.x = -0.07
       sums.forEach((sprite, index) => {
         const rise = (t * 0.7 + index * 0.37) % 1
         sprite.position.set(columns[index] + Math.sin(t * 2 + index) * 0.05, 0.95 + rise * 0.45, 0.3)
@@ -62,8 +61,9 @@ export function think(): Look {
       })
       tongue.visible = Math.sin(t * 1.4) > 0.2
       mouth.scale.x = 1 + Math.sin(t * 3) * 0.12
-      // narrowed, looking up and aside: someone working something out in their head
-      face.set({ open: open * 0.35, dx: 0.03, dy: 0.04, mouth: 'none' })
+      // (screwed up, one more than the other, under knitted brows and glancing up: racking its brains, not dozing)
+      const squint = 0.42 + pulse(t, 1.1) * 0.08
+      face.set({ brows: 'focused', left: open * squint, right: open * (squint + 0.14), dx: 0.045 * Math.tanh(Math.sin(t * 0.7) * 3), dy: 0.04, mouth: 'none' })
     },
   }
 }

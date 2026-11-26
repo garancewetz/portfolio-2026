@@ -6,15 +6,15 @@
 // · Eus (IGN, 24 km), turned around: seen from the Têt valley, towards the hilltop village and the hills behind;
 // · the Canigou (IGN, 24 km): seen from the north, above its sea of clouds, the range far away;
 // · Inis Mór, Aran Islands (Copernicus DEM, 9.4 km): the Atlantic in front, the cliffs of Dún Aonghasa;
-// · Arles (IGN laser, bare ground, 8.4 km), facing the Rhône: the river in front, the rock of the old town and the
-//   Roquette at its feet (the lab);
+// · the Moon, the crater Copernicus (NASA, LRO's laser altimeter LOLA, 64 points a degree, 480 km): 93 km across,
+//   its terraced walls and its central peaks, in the middle of the seas (Signe astronomique);
 // · San Francisco Bay (AWS Terrain Tiles, 31 km), facing east: the bay in front, Berkeley and its hills behind;
 // · Barcelona (AWS Terrain Tiles, 31 km), seen from the sea: Montjuïc in front, the Collserola behind.
-// (IGN: RGE ALTI, Géoplateforme, downloaded on 23–24/11/2026.)
+// (IGN: RGE ALTI, Géoplateforme, downloaded on 23–24/11/2026. The Moon: LDEM_64, PDS / imbrium.mit.edu, 26/11/2026.)
 // All share the same coordinates w: ±1 covers what is seen up close (5 to 11 km). The shader gets the weight of each
-// place (places1: Romainville, Eus, Canigou; places2: Ireland, Barcelona; then arles, bay): one place turns into
+// place (places1: Romainville, Eus, Canigou; places2: Ireland, Barcelona; then moon, bay): one place turns into
 // another where it stands, crossfading.
-export const PLACES = ['romainville', 'eus', 'canigou', 'ireland', 'barcelona', 'arles', 'bay'] as const
+export const PLACES = ['romainville', 'eus', 'canigou', 'ireland', 'barcelona', 'moon', 'bay'] as const
 export type Place = (typeof PLACES)[number]
 // the caption of each place, bottom right (shown in French, like the site): the place, what is seen, the latitude
 export const PLACE_NAMES: Record<Place, [string, string]> = {
@@ -23,13 +23,13 @@ export const PLACE_NAMES: Record<Place, [string, string]> = {
   canigou: ['le Canigou', 'au-dessus des nuages · 42°31′ N'],
   ireland: ['Inis Mór', 'les falaises de Dún Aonghasa · 53°07′ N'],
   barcelona: ['Barcelone', 'Montjuïc, vu de la mer · 41°22′ N'],
-  arles: ['Arles', 'le Rhône, la vieille ville · 43°40′ N'],
+  moon: ['la Lune', 'le cratère Copernic · 9°37′ N'],
   bay: ['Berkeley', 'la baie, les collines derrière · 37°52′ N'],
 }
 // the settings of a place: its weights, and `here` (its index)
 export function placeWeights(name: Place) {
   const p = PLACES.map((l) => (l === name ? 1 : 0))
-  return { places1: p.slice(0, 3), places2: p.slice(3, 5), arles: p[5], bay: p[6], here: PLACES.indexOf(name) }
+  return { places1: p.slice(0, 3), places2: p.slice(3, 5), moon: p[5], bay: p[6], here: PLACES.indexOf(name) }
 }
 const RELIEF_TEXTURES: Record<string, string> = Object.fromEntries(PLACES.map((p) => [`${p}T`, `/accueil/reliefs/${p}.png`]))
 // the same, one place first (the place seen on arrival loads first)
@@ -45,9 +45,9 @@ const RELIEFS: Record<Place, Grid> = {
   // Inis Mór: from the Atlantic, south-east, along the cliffs to the headland of Dún Aonghasa; ×3, the sea floor dug
   // to −15 m, the cliff edge softened (a vertical wall renders as steps)
   ireland: { size: 1024, frame: [.5, .5, .15], meters: [-15, 119.8], zero: 0, scale: .29, water: 1 },
-  // Arles (the lab): the bare ground from IGN's LiDAR HD, the geology without the buildings; seen from Trinquetaille,
-  // across the Rhône (its bed dug under the water); ×3 (the rock only rises to 21 m; more, and the dykes turn to spikes)
-  arles: { size: 1024, frame: [.5, .5, .13], meters: [-4, 64.5], zero: 2, scale: .19, water: 2.3 },
+  // the Moon (Signe astronomique): Copernicus in the middle, from its floor (−3.6 km) to the highlands around; about
+  // smoothed (the laser's noise), about ×3; no water, no clouds (their level is below the lowest point)
+  moon: { size: 1024, frame: [.5, .5, .2], meters: [-3566, 2050.5], zero: -1200, scale: .3, water: -4000 },
   // San Francisco Bay (Handiplan: Berkeley, birthplace of the disability rights movement; Garance's sister lives
   // there): from the bay, 2 km offshore, the town and its hills behind; ×2.5, the bay floor dug to −15 m
   bay: { size: 1024, frame: [.5, .5, .11], meters: [-15, 583.6], zero: 0, scale: .441, water: 1 },
@@ -69,7 +69,7 @@ export const RELIEFS_GLSL = `
 uniform sampler2D ${PLACES.map((p) => p + 'T').join(', ')};
 uniform vec3 places1;   // Romainville, Eus, Canigou
 uniform vec2 places2;   // Ireland, Barcelona
-uniform float arles;    // Arles, the lab's
+uniform float moon;     // the Moon
 uniform float bay;      // San Francisco Bay
 float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float noise(vec2 p){
@@ -90,7 +90,7 @@ ${heightGLSL('eus', 'heightE')}
 ${heightGLSL('canigou', 'heightC')}
 ${heightGLSL('ireland', 'heightI')}
 ${heightGLSL('barcelona', 'heightB')}
-${heightGLSL('arles', 'heightA')}
+${heightGLSL('moon', 'heightM')}
 ${heightGLSL('bay', 'heightS')}
 // the height in w units; only the places that count are computed
 float height(vec2 w){
@@ -100,24 +100,24 @@ float height(vec2 w){
   if (places1.z > .001) h += places1.z*heightC(w);
   if (places2.x > .001) h += places2.x*heightI(w);
   if (places2.y > .001) h += places2.y*heightB(w);
-  if (arles > .001) h += arles*heightA(w);
+  if (moon > .001) h += moon*heightM(w);
   if (bay > .001) h += bay*heightS(w);
   return h;
 }
 // 1 inside the grid, 0 beyond (no heights there), fading at the edges, far on the horizon
 float inGrid(vec2 w){
   return places1.x*${edgeGLSL('romainville')} + places1.y*${edgeGLSL('eus')} + places1.z*${edgeGLSL('canigou')}
-    + places2.x*${edgeGLSL('ireland')} + places2.y*${edgeGLSL('barcelona')} + arles*${edgeGLSL('arles')} + bay*${edgeGLSL('bay')};
+    + places2.x*${edgeGLSL('ireland')} + places2.y*${edgeGLSL('barcelona')} + moon*${edgeGLSL('moon')} + bay*${edgeGLSL('bay')};
 }
 // the level of the plane carrying the relief. Where water exists, it is water: the Atlantic at Inis Mór, the sea at
-// Barcelona, the Rhône at Arles, the bay at Berkeley. Elsewhere, a sea of clouds lying in the hollows: at Romainville,
+// Barcelona, the bay at Berkeley (none on the Moon). Elsewhere, a sea of clouds lying in the hollows: at Romainville,
 // below the Seine (the whole plain shows); the morning fog in the Têt valley, just below the village of Eus
 // (≈ 330 m); halfway up the Canigou (≈ 1,500 m).
 float WATER(){
   return dot(places1, vec3(${waterW('romainville')}, ${waterW('eus')}, ${waterW('canigou')}))
     + dot(places2, vec2(${waterW('ireland')}, ${waterW('barcelona')}))
-    + arles*${waterW('arles')} + bay*${waterW('bay')};
+    + moon*${waterW('moon')} + bay*${waterW('bay')};
 }
 // 1 where the water is real, 0 where it is a sea of clouds
-float REAL_WATER(){ return places2.x + places2.y + arles + bay; }
+float REAL_WATER(){ return places2.x + places2.y + bay; }
 `

@@ -1,0 +1,101 @@
+/* ——— Kit (see main.ts): on narrower screens, then on a phone ——— */
+
+@media (max-width: 1100px) {
+  main.kit {
+    gap: 88px;
+    padding-inline: 40px;
+  }
+  .kit-hero h1 {
+    font-size: 56px;
+    line-height: 60px;
+  }
+  .kit-halo {
+    width: 260px;
+    height: 260px;
+  }
+  .kit-halo canvas {
+    width: 220px;
+    height: 220px;
+  }
+  .kit-steps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .kit-steps button {
+    min-height: 0;
+  }
+  .kit-scene {
+    flex-direction: column;
+    padding: 32px;
+  }
+  .kit-thread {
+    width: auto;
+  }
+  .kit-outfits {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  main.kit {
+    gap: 64px;
+    padding: 24px 20px 56px;
+  }
+  .kit-bar span {
+    display: none;
+  }
+  .kit-hero {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 8px;
+    padding-top: 16px;
+  }
+  .kit-hero h1 {
+    font-size: 40px;
+    line-height: 44px;
+  }
+  .kit-lead {
+    font-size: 17px;
+    line-height: 26px;
+  }
+  .kit-halo {
+    width: 180px;
+    height: 180px;
+  }
+  .kit-halo canvas {
+    width: 160px;
+    height: 160px;
+  }
+  .kit-section h2,
+  .kit-section h2.kit-big {
+    font-size: 30px;
+    line-height: 34px;
+  }
+  .kit-window {
+    padding: 22px 18px;
+  }
+  .kit-ticket-title {
+    font-size: 21px;
+  }
+  .kit-steps {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .kit-scene {
+    padding: 22px 18px;
+  }
+  .kit-speaker {
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+  .kit-card {
+    margin-bottom: 0;
+  }
+  .kit-pousse {
+    width: 320px;
+    height: 352px;
+    margin: -66px -60px;
+  }
+  .kit-outfits {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

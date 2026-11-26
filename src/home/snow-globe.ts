@@ -3,9 +3,9 @@ import { calm, el } from './shared'
 
 // Zooming moves the camera. Zooming out (pinching on the trackpad, ⌘ − or Ctrl −) pulls it back, and back, until the
 // landscape sits in a snow globe (the Easter egg); to return: a click, Escape, or zooming in (pinching, ⌘ +, ⌘ 0).
-// Zooming in moves it forward into the place, a little, and no further: the page itself (the badges, the name, the
-// text) never grows. Only a page already zoomed by the browser (a zoom it remembers for the site) can be zoomed back
-// out to 100 %, before the camera moves back. On a phone: a two-finger pinch. For
+// Zooming in moves it forward into the place, a little, and no further, and the browser zooms the page as usual: the
+// text must be able to grow (accessibility). Only a page already zoomed by the browser (a zoom it remembers for the
+// site) can be zoomed back out to 100 %, before the camera moves back. On a phone: a two-finger pinch. For
 // whoever asked for less motion: shorter moves, and the globe stays still once there (no turning, no falling snow).
 // One value, `depth`: below 0 the camera has moved forward (the backdrop's `near`), above 0 it has pulled back
 // (`pullback`, 0…1, which also fades the page around it: --pullback, see cards.css).
@@ -47,13 +47,14 @@ export function snowGlobe(backdrop: Backdrop) {
     running = depth !== target || (!calm && pullback > 0)   // the snow falls while we are out (unless calm)
     if (running) requestAnimationFrame(frame)
   }
-  // zooming in is always the camera's (forward, up to FORWARD, then nothing); zooming out too, except while the page
-  // is zoomed by the browser: then the browser first, back to 100 %
-  const mine = (zoomIn: boolean) => zoomIn || away() || !pageZoomed()
+  // zooming out is the camera's, except while the page is zoomed by the browser: then the browser first, back to 100 %.
+  // Zooming in is the browser's (the camera only follows, forward), except to come back from the globe
+  const mine = (zoomIn: boolean) => (zoomIn ? away() : away() || !pageZoomed())
   // a trackpad pinch arrives as a wheel event with Ctrl
   addEventListener('wheel', (e) => {
-    if (!e.ctrlKey || !mine(e.deltaY < 0)) return
-    e.preventDefault()
+    if (!e.ctrlKey) return
+    if (mine(e.deltaY < 0)) e.preventDefault()
+    else if (e.deltaY > 0) return
     aim(target + e.deltaY * .012)
   }, { passive: false })
   // coming back from the globe: a click anywhere (caught before anything else: it must not open anything)
@@ -69,11 +70,10 @@ export function snowGlobe(backdrop: Backdrop) {
   addEventListener('touchmove', (e) => {
     if (e.touches.length !== 2 || !d0) return
     const d = spread(e.touches)
-    if (!mine(d > d0)) return                           // the browser zooms (and unzooms), as usual
-    e.preventDefault()
+    if (mine(d > d0)) e.preventDefault()                // (opening: the browser zooms too, the camera follows)
+    else if (d < d0) return                             // the browser unzooms, as usual
     if (d < d0 * .85) { aim(target + step(true)); d0 = d } else if (d > d0 * 1.18) { aim(target - step(false)); d0 = d }
   }, { passive: false })
-  addEventListener('gesturestart', (e) => e.preventDefault())   // Safari: the page never zooms in, the camera moves
   // Escape comes back (caught before the note: it does not let it go too); ⌘ − back, ⌘ + forward, ⌘ 0 where it was
   addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && target !== 0) { e.stopImmediatePropagation(); aim(0); return }
@@ -82,8 +82,8 @@ export function snowGlobe(backdrop: Backdrop) {
       if (!mine(false)) return
       e.preventDefault(); aim(target + step(true))
     } else if (e.key === '+' || e.key === '=' || e.code === 'Equal' || e.code === 'NumpadAdd') {
-      if (!mine(true)) return
-      e.preventDefault(); aim(target - step(false))
-    } else if (e.key === '0' && target !== 0) { e.preventDefault(); aim(0) }
+      if (mine(true)) e.preventDefault()   // (else the browser zooms the page too)
+      aim(target - step(false))
+    } else if (e.key === '0' && target !== 0) aim(0)   // (and the browser goes back to 100 % too)
   }, true)
 }

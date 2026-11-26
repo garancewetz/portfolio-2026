@@ -2,12 +2,12 @@ import type { Settings } from './gl-background'
 import { placeWeights, RELIEFS_GLSL, type Place } from './reliefs'
 
 // Garance's places (see reliefs.ts) in 3D, seen level with the horizon: perspective, water and its reflections
-// where it exists (elsewhere, a sea of clouds), haze, a single colour. The place weights (places1, places2, arles,
+// where it exists (elsewhere, a sea of clouds), haze, a single colour. The place weights (places1, places2, moon,
 // bay) turn one relief into another, where it stands.
 // The whole landscape sits in a snow globe, unseen while we are inside. `pullback` (0…1, see snow-globe.ts) moves the
 // camera back: we go through the glass, see the globe from outside, on its base, at night, and snow starts falling
 // in it. One continuous scene: no crossfade.
-// Settings: tint, sky (the two blues), places1, places2, arles, bay, light (the sun's angle), sun (its height), stars,
+// Settings: tint, sky (the two blues), places1, places2, moon, bay, light (the sun's angle), sun (its height), stars,
 // gaze (the smaller, the lower the horizon: the landscape must stay below the row of cards), pullback, drift (leaving
 // for an experiment: the camera drifts slowly), near (entering a place: the camera moves in, turning a little), rise
 // (0: all flat; 1: the whole relief; on the home page it rises while the cards line up), center (the heart of the
@@ -39,12 +39,11 @@ vec3 cloud(vec2 xz){
 // pulling back, whatever sticks out of the globe fades (inside, the relief goes on to the horizon)
 float inGlobe(vec2 xz){ float r = mix(60., RADIUS*.93, smoothstep(0., .3, pullback)); return smoothstep(r, r - .4, length(xz - GLOBE.xz)); }
 // in 3D we look south, so east is on the left: w = -(x, z). At the grid's edge, the relief sinks under the water.
-// In the globe, Arles (very flat) rises more: otherwise nothing shows.
 float relief(vec2 xz){
   vec2 w = -(xz + center*smoothstep(.15, .6, pullback))/S;           // pulling back, the landscape slides: its heart to the globe's centre
   // flat (rise 0), the relief lies under the water or the clouds, like what is around it: no square raft at the horizon
   float below = WATER() - .06;
-  return S*mix(below, mix(below, height(w)*(1. + 1.6*arles*smoothstep(.3, .8, pullback)), rise), inGrid(w)*inGlobe(xz));
+  return S*mix(below, mix(below, height(w), rise), inGrid(w)*inGlobe(xz));
 }
 vec3 march(vec3 o, vec3 d, vec3 bg, out float t, out bool hit){
   t = .02; float h; hit = false;
@@ -80,8 +79,8 @@ vec3 landscape(vec3 o, vec3 rd, vec3 bg, out float tp){
     tp = tl;
     vec3 surface = cloud(p.xz);                                      // the sea of clouds…
     if (REAL_WATER() > .01){                                         // …or water, with its reflections
-      float fr = 40./S*(1. + 5.*arles);                              // (on the Rhône, seen up close: finer, calmer ripples)
-      vec2 ri = vec2(noise(p.xz*fr) - .5, noise(p.xz*fr + 3.) - .5) * .05*(1. - .7*arles);
+      float fr = 40./S;
+      vec2 ri = vec2(noise(p.xz*fr) - .5, noise(p.xz*fr + 3.) - .5) * .05;
       vec3 rd2 = reflect(rd, normalize(vec3(ri.x, 1., ri.y)));
       float t2; bool hit2;
       vec3 seen = march(p + vec3(0., .002, 0.), rd2, mix(sky, tint, .35), t2, hit2);
@@ -206,7 +205,7 @@ void main(){
 }`
 
 // each project leads to its place ('rest': before any card is hovered)
-export const PROJECT_PLACES: Record<string, Place> = { rest: 'canigou', synapso: 'eus', handiplan: 'bay', signe: 'canigou', mosaique: 'ireland', trame: 'barcelona', 'paris-forest': 'romainville' }
+export const PROJECT_PLACES: Record<string, Place> = { rest: 'canigou', kit: 'canigou', synapso: 'eus', handiplan: 'bay', signe: 'moon', mosaique: 'ireland', trame: 'barcelona', 'paris-forest': 'romainville' }
 // the heart of each place, in world coordinates (x, z): what comes to the centre of the snow globe
 const PLACE_CENTERS: Partial<Record<Place, number[]>> = { canigou: [0, 2.8] }
 // the gaze of each place: the horizon goes down for high peaks, which must stay below the row of cards

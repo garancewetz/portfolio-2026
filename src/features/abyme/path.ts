@@ -10,7 +10,7 @@ import { trail, type Step } from '@/shared/trail'
 const PAGES = carnet.pages
 const HOME: Step = { path: '/', title: me.name }
 const CARNET: Step[] = [
-  ...PAGES.filter((p) => p.href !== '/abyme/')
+  ...PAGES.filter((p) => p.href !== '/lab/abyme/')
     .reverse()
     .map((p) => ({ path: p.href, title: `${p.name[0].toUpperCase()}${p.name.slice(1)} — ${me.name}` })),
   HOME,
@@ -24,7 +24,7 @@ export function path(): Step[] {
   const steps = trail()
     .reverse()
     // (each page only once, at its latest visit; neither Abyme nor the home, which is always at the bottom)
-    .filter((s) => !s.path.startsWith('/abyme') && s.path !== '/' && !seen.has(s.path) && seen.add(s.path))
+    .filter((s) => !s.path.startsWith('/lab/abyme') && s.path !== '/' && !seen.has(s.path) && seen.add(s.path))
     .slice(0, MAX)
   return steps.length || trail().some((s) => s.path === '/') ? [...steps, HOME] : CARNET
 }
@@ -37,7 +37,7 @@ export function picture(path: string) {
   const page = PAGES.find((p) => path.startsWith(p.href))
   if (page) return page.src
   // (the lab, on the home page: its own screenshot; a project page, ?p=id: the project's)
-  if (/[?&]labo\b/.test(path)) return '/shots/labo.webp'
+  if (/^\/lab\/?$/.test(path) || /[?&]labo\b/.test(path)) return '/shots/labo.webp'
   const sheet = path.match(/[?&]p=([^&#]+)/)
   const project = sheet && projects.find((p) => p.id === sheet[1])
   return project?.image ?? (sheet && NOT_LISTED[sheet[1]]) ?? '/shots/accueil.webp'

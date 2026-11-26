@@ -6,7 +6,7 @@
   --ink: #ffffff;
   color-scheme: dark;
   /* (the notebook's line, in white) */
-  --carnet-ink: rgb(255 255 255 / 0.55);
+  --carnet-ink: rgb(255 255 255 / 0.8);
   --carnet-ink-hover: rgb(255 255 255 / 0.95);
 }
 /* (more precise than the notebook's sheet, which gives every page its own background) */
@@ -111,6 +111,7 @@ main.mascots.carnet-sheet {
 /* « libérer » / « rappeler », always there; its word and its dyes only for the one we look at */
 .mascots-act {
   order: 1;
+  min-height: 26px;
   margin-top: 8px;
   padding: 3px 10px;
   background: #ffffff1a;
@@ -139,7 +140,7 @@ main.mascots.carnet-sheet {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 6px;
+  gap: 2px;
   margin-top: 4px;
   opacity: 0;
   transition: opacity 0.3s;
@@ -153,16 +154,19 @@ main.mascots.carnet-sheet {
     opacity: 0.85;
   }
 }
+/* (the dot is 14 px, its button 24: easy to hit with a finger) */
 .mascots-dye {
-  width: 14px;
-  height: 14px;
-  padding: 0;
-  border: 1px solid #ffffff80;
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  padding: 5px;
+  border: 0;
   border-radius: 50%;
-  background: var(--c);
+  background: var(--c) content-box;
+  box-shadow: inset 0 0 0 5px transparent;
   cursor: pointer;
 }
 .mascots-dye.on {
   outline: 1.5px solid #fff;
-  outline-offset: 2px;
+  outline-offset: -3px;
 }

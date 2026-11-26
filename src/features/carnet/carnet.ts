@@ -7,22 +7,21 @@ import { roam } from '@/features/mascots/roam'
 // the top of each page, discreetly: « labo » and the page number on the left; the previous and next pages, by
 // name, on the right. Each page takes the whole screen (see sheet.ts); you go from one to the other simply,
 // without animation.
-// (the lab itself, its table of contents, is on the home page: /?labo, see src/home/lab.ts)
-const LAB = '/?labo'
+// (the lab itself, its table of contents, is on the home page: /lab/, see src/home/lab.ts)
+const LAB = '/lab/'
 
 // the pages, in notebook order (to add one: a line here, and `mount()` in its main.ts)
 const PAGES = [
   // (in an order that alternates light and dark screenshots: the two-tone table of contents breathes)
-  { path: '/toupies/', name: 'toupies' },
-  { path: '/murmuration/', name: 'murmuration' },
-  { path: '/creatures/', name: 'créatures' },
-  { path: '/ruban/', name: 'ruban' },
-  { path: '/kit/', name: 'kit' },
-  { path: '/mascottes/', name: 'mascottes' },
+  { path: '/lab/spinning-tops/', name: 'toupies' },
+  { path: '/lab/murmuration/', name: 'murmuration' },
+  { path: '/lab/creatures/', name: 'créatures' },
+  { path: '/lab/ribbon/', name: 'ruban' },
+  { path: '/lab/mascots/', name: 'mascottes' },
   // (Abyme last: it climbs back up the visit)
-  { path: '/abyme/', name: 'abyme' },
-  // (hidden for now, their pages still exist, unlinked: Yaya, at /yaya/; Escalade, at /escalade/, whose idea
-  // Créatures picks up; Morse, at /morse/; Feu d'artifice, at /feu/, on the home in secret mode)
+  { path: '/lab/abyme/', name: 'abyme' },
+  // (hidden for now, their pages still exist, unlinked: Yaya, at /lab/yaya/; Escalade, at /lab/climbing/, whose idea
+  // Créatures picks up; Morse, at /lab/morse/; Feu d'artifice, at /lab/fireworks/, on the home in secret mode)
 ]
 
 const indexOf = (url: string) => PAGES.findIndex((p) => new URL(url, location.href).pathname.startsWith(p.path))

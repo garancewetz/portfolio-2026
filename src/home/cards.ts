@@ -1,25 +1,23 @@
-import { BACKDROP, SETTINGS, hoverAllowed, nameArrived, scrollDriven } from './backdrop'
+import { BACKDROP, SETTINGS, hoverAllowed, scrollDriven } from './backdrop'
 import { PROJECTS } from './data'
 import type { Settings } from './gl-background'
 import { enterLab } from './lab'
 import { hideNote, showNote } from './note'
 import { LAB_URL, QUERY, calm, el, modified } from './shared'
 
-// The page of badges (see cards.css): the row of badges (six projects and the lab, or five experiments) rising in a
-// wave and sticking to the top, the signature arriving after them. It shows in turn the projects (home) or the
-// experiments (the lab, see lab.ts): a "mode" = { items, signature, aim(id): the backdrop's settings, open(id) }.
+// The page of badges (see cards.css): the projects and the lab, in a staircase on arrival, rising and sticking to the
+// top. A "mode" = { items, aim(id): the backdrop's settings, open(id) }.
 
 export type Mode = {
   items: { id: string; title: string; src: string | null; href: string }[]
-  signature: string
   aim: (id: string) => Settings
   open: (id: string) => void
 }
 
 export const scene = el(`
   <div class="scene">
-    <nav class="row"></nav>
-    <div class="signature-rail"><footer class="signature"><span class="name">Garance Wetzel</span></footer></div>
+    <h1 class="sr">Garance Wetzel, développeuse front-end : ses projets</h1>
+    <nav class="row" aria-label="Projets"></nav>
   </div>`)
 const row = scene.querySelector<HTMLElement>('.row')!
 
@@ -30,10 +28,10 @@ export const aim = (id: string): Settings => ({ ...SETTINGS[id], ...scrollDriven
 // it shows no screenshot and does not change the place)
 export const PROJECTS_MODE: Mode = {
   items: [
-    ...PROJECTS.map((p) => ({ id: p.id, title: p.title, src: p.src, href: `?p=${p.id}` })),
+    // (with a mouse, a click goes to the project itself: its site, else its code; its address is the badge's link)
+    ...PROJECTS.map((p) => ({ id: p.id, title: p.title, src: p.src, href: p.demo ?? p.code ?? `?p=${p.id}` })),
     { id: 'labo', title: 'labo →', src: null, href: LAB_URL },
   ],
-  signature: 'Garance Wetzel',
   aim,
   open: (id) => (id === 'labo' ? enterLab() : pin(id)),
 }
@@ -48,12 +46,11 @@ export function layCards(m: Mode) {
       (it, i) => `
     <div class="col">
       <a href="${it.href}" data-id="${it.id}"${it.src ? ` data-shot="${it.src}"` : ''} style="--i:${i}; view-transition-name: card-${i}">
-        <b>${it.title}</b>
+        <b>${it.title}${it.href.startsWith('http') ? '<span class="sr"> (nouvel onglet)</span>' : ''}</b>
       </a>
     </div>`,
     )
     .join('')
-  scene.querySelector('.signature .name')!.textContent = m.signature
   if (warmed || m !== PROJECTS_MODE) warm()
 }
 // the screenshots, loaded ahead of the first hover: on the home page at the first scroll (not on arrival: the
@@ -89,6 +86,10 @@ function pin(id: string) {
   BACKDROP.goTo(aim(id))
   showNote(id)
 }
+// leaving for a page of this site (Kit's): the home page notes where it was, so that coming back, by its link or the
+// back button, finds it ready, this project chosen, never the arrival in the clouds
+export const leaveFor = (id: string) => history.replaceState({}, '', `?p=${id}`)
+
 // no project chosen any more (a click on the background, Escape): no badge active, no note, the landscape back to
 // where it was before any badge
 function release() {
@@ -101,8 +102,11 @@ function release() {
 
 // with a mouse: the hovered project's screenshot follows the cursor, a little below and to the right of it (to the
 // left near the right edge), gliding softly behind it
-const cursorShot = el('<figure class="cursor-shot" aria-hidden="true"><img alt="" /></figure>')
+// (its sentence under it: what it is, and what it does; the note of note.ts stays for a finger and the keyboard)
+const cursorShot = el('<figure class="cursor-shot" aria-hidden="true"><img alt="" /><figcaption><b class="mono"></b><span></span></figcaption></figure>')
 const cursorImage = cursorShot.querySelector('img')!
+const cursorKind = cursorShot.querySelector('b')!
+const cursorShort = cursorShot.querySelector('span')!
 let mouse = { x: 0, y: 0 }
 let shown = { x: 0, y: 0 }
 let gliding = false
@@ -120,29 +124,17 @@ function glide() {
 
 export function setupCards() {
   document.body.append(scene)
-  // the hint to scroll, on arrival: « projets ↓ », a badge in the blue of the sky (see cards.css); it stays while the
-  // Canigou rises (until 60 % of a screen). A click on it scrolls for you, softly, down to the badges
-  const hint = el<HTMLButtonElement>('<button class="scroll-hint badge" type="button">projets<span aria-hidden="true">↓</span></button>')
-  hint.addEventListener('click', () => scrollTo({ top: document.documentElement.scrollHeight, behavior: calm ? 'auto' : 'smooth' }))
-  document.body.append(hint)
-  setTimeout(() => document.documentElement.classList.add('hint-on'), 900)
-  const scrolled = () => {
-    document.documentElement.classList.toggle('scrolled', scrollY > 24)
-    document.documentElement.classList.toggle('risen', scrollY > innerHeight * 0.6)
-  }
+  // on arrival, the sign that the page goes on below: a thin line at the bottom, a drop running down it (cards.css);
+  // gone at the first scroll
+  document.body.append(el('<div class="scroll-line" aria-hidden="true"><i></i></div>'))
+  const scrolled = () => document.documentElement.classList.toggle('scrolled', scrollY > 24)
   addEventListener('scroll', scrolled, { passive: true })
   scrolled()
-  // the scroll drives the backdrop; « hello, world. » greets on arrival and leads back home from the lab:
-  // on the home page, once the name has arrived under the badges, it steps aside (cards.css: html.name-here)
+  // the scroll drives the backdrop, and tells when the badges are on the screen (their note can show, note.css)
   const follow = () => {
     Object.entries(scrollDriven()).forEach(([k, v]) => BACKDROP.set(k, v))
     const home = !document.documentElement.classList.contains('in-lab')
-    document.documentElement.classList.toggle('name-here', home && nameArrived())
     document.documentElement.classList.toggle('badges-here', home && hoverAllowed())
-    // the name, rising to its place, passes where the project's note is: the note steps aside meanwhile (note.css)
-    const name = scene.querySelector('.signature')!.getBoundingClientRect()
-    const note = document.querySelector('.project-note')?.getBoundingClientRect()
-    document.documentElement.classList.toggle('name-passing', !!note && !nameArrived() && name.top < note.bottom && name.bottom > note.top)
   }
   addEventListener('scroll', follow, { passive: true })
   follow()
@@ -164,10 +156,22 @@ export function setupCards() {
   row.addEventListener('focusin', (e) => {
     if (!touchedRecently()) hover(linkOf(e))
   })
+  // a click: with a mouse (the note already showed on hover), it goes to the project, its site or else its code (a
+  // page of this site here, another site in a new tab); with a finger, it chooses the project (its place, its note)
   row.addEventListener('click', (e) => {
     const a = linkOf(e)
     if (!a || modified(e)) return
     e.preventDefault()
+    const project = mode === PROJECTS_MODE && PROJECTS.find((p) => p.id === a.dataset.id)
+    const target = project && (project.demo ?? project.code)
+    // (a pointer's click, not the keyboard's Enter: with the keyboard, Enter chooses it, and its note gives the links)
+    if (target && e.detail > 0 && !touchedRecently()) {
+      if (target.startsWith('/')) {
+        leaveFor(project.id)
+        location.href = target
+      } else window.open(target, '_blank', 'noopener')
+      return
+    }
     mode.open(a.dataset.id!)
   })
 
@@ -176,6 +180,7 @@ export function setupCards() {
     if (!(e.target as Element).closest?.('a, button, input, .project-note')) release()
   })
   addEventListener('keydown', (e) => {
+    document.documentElement.classList.remove('by-mouse')
     if (e.key === 'Escape') release()
   })
 
@@ -184,6 +189,7 @@ export function setupCards() {
     'pointermove',
     (e) => {
       if (e.pointerType !== 'mouse') return
+      document.documentElement.classList.add('by-mouse')
       mouse = { x: e.clientX, y: e.clientY }
       if (!cursorShot.classList.contains('on')) shown = { ...mouse }
       if (!gliding) {
@@ -198,6 +204,11 @@ export function setupCards() {
     if (!a || e.pointerType !== 'mouse' || !hoverAllowed() || !a.dataset.shot) return // not before the badges are there; not for the lab
     cursorImage.src = a.dataset.shot
     cursorShot.dataset.id = a.dataset.id
+    const project = PROJECTS.find((p) => p.id === a.dataset.id)
+    cursorKind.textContent = project?.kind ?? ''
+    cursorShort.textContent = project?.short ?? ''
+    // (a project not yet online to see: its screenshot in grey)
+    cursorShot.classList.toggle('unseen', !project?.demo)
     cursorShot.classList.add('on')
   })
   row.addEventListener('pointerout', (e) => {
@@ -206,11 +217,21 @@ export function setupCards() {
   })
   addEventListener('scroll', () => cursorShot.classList.remove('on'), { passive: true })
   layCards(PROJECTS_MODE)
-  // an old link to a project's page (?p=id): the home page, scrolled down to the badges, this project chosen
+  // back on the page (the back button: the browser may give it back as it was, or put the scroll back itself, with
+  // no scroll event): the page looks again where it is
+  addEventListener('pageshow', (e) => {
+    if (e.persisted && QUERY.has('p')) history.replaceState({}, '', location.pathname)
+    scrolled()
+    follow()
+  })
+  // ?p=id (back from a project's page, or an old link to it): the home page, scrolled down to the badges, this project
+  // chosen; the page may already be down there (the browser keeps the scroll): no scroll event, so it is told
   const asked = QUERY.get('p')
   if (asked && PROJECTS.some((p) => p.id === asked)) {
     history.replaceState({}, '', location.pathname)
     scrollTo(0, document.documentElement.scrollHeight)
+    scrolled()
+    follow()
     pin(asked)
   }
 }

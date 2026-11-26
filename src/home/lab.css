@@ -1,7 +1,7 @@
 /* The lab (see lab.ts): a mode of the same page. The landscape and the badges step aside; over the sea of clouds of
    the hour (the arrival's poster, index.html), a mosaic of small translucent cards, in the badges' register: each
    experiment's screenshot and its name. */
-html.in-lab :is(.scene, .place-label, .scroll-hint, .cursor-shot) { display: none; }
+html.in-lab :is(.scene, .place-label, .cursor-shot) { display: none; }
 html[data-mood='dawn'] { --sky: url(/accueil/posters/wide-dawn.jpg); }
 html[data-mood='day'] { --sky: url(/accueil/posters/wide-day.jpg); }
 html[data-mood='dusk'] { --sky: url(/accueil/posters/wide-dusk.jpg); }
@@ -15,7 +15,7 @@ html[data-mood='night'] { --sky: url(/accueil/posters/wide-night.jpg); }
 .lab-mosaic { display: none; }
 html.in-lab .lab-mosaic {
   position: relative; z-index: 3; display: flex; flex-wrap: wrap; justify-content: center; align-content: center;
-  gap: 14px; min-height: 100vh; padding: 72px max(var(--pad), calc((100vw - 1040px) / 2)) 48px;
+  gap: 14px; min-height: 100vh; padding: 72px max(var(--pad), calc((100vw - 780px) / 2)) 48px;
   background: #1414e6 var(--sky) center bottom / cover no-repeat fixed; color: #fff;
 }
 .lab-tile {
@@ -25,7 +25,9 @@ html.in-lab .lab-mosaic {
 }
 .lab-tile img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 5px; }
 .lab-tile span { padding: 0 2px; font-size: 12px; }
-.lab-tile:is(:hover, :focus-visible) { background: #ffffff2e; border-color: #fff; outline: none; }
+.lab-tile:is(:hover, :focus-visible) { background: #ffffff2e; border-color: #fff; }
+.lab-tile:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.lab-mosaic:focus { outline: none; }
 
 @media (max-width: 560px) {
   html.in-lab .lab-mosaic { gap: 10px; }

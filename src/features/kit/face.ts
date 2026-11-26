@@ -9,12 +9,14 @@ type Eyes = 'round' | 'wide' | 'happy' | 'closed'
 type Brows = 'none' | 'worried' | 'focused' | 'raised' | 'curious'
 type Mouth = 'smile' | 'grin' | 'o' | 'frown' | 'wavy' | 'flat' | 'none'
 
-// open: the blink (round and wide eyes); dx, dy: where they look; say: how open the « o » is; blush: pinker cheeks
+// open: the blink (round and wide eyes), left and right for each eye apart; dx, dy: where they look; say: how open the « o » is; blush: pinker cheeks
 export type Expression = {
   eyes?: Eyes
   brows?: Brows
   mouth?: Mouth
   open?: number
+  left?: number
+  right?: number
   dx?: number
   dy?: number
   say?: number
@@ -89,7 +91,7 @@ export function addFace(pose: Pose) {
   })
 
   return {
-    set({ eyes = 'round', brows: feel = 'none', mouth = 'smile', open = 1, dx = 0, dy = 0, say = 1, blush: pink = false }: Expression = {}) {
+    set({ eyes = 'round', brows: feel = 'none', mouth = 'smile', open = 1, left, right, dx = 0, dy = 0, say = 1, blush: pink = false }: Expression = {}) {
       const drawn = eyes === 'round' || eyes === 'wide'
       const size = eyes === 'wide' ? 1.25 : 1
       for (const eye of pose.eyes) {
@@ -97,7 +99,7 @@ export function addFace(pose: Pose) {
         eye.scale.x = size
       }
       if (drawn) {
-        setEyes(pose.eyes, { open, dx, dy })
+        setEyes(pose.eyes, { open, left: left ?? open, right: right ?? open, dx, dy })
         for (const eye of pose.eyes) eye.scale.y *= size
       }
       happy.forEach((line) => (line.visible = eyes === 'happy'))

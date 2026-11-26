@@ -1,5 +1,5 @@
 import type { Look } from './looks-shared'
-import { approval, asleep, checksRed, heavySession, offline, prFeedback, rest, reviewAsked } from './looks-moods'
+import { approval, asleep, checksRed, heavySession, offline, prFeedback, rest, reviewAsked, turnDone } from './looks-moods'
 import { auditDone, planReady, prReady, shipped, think, videoReady } from './looks-ticket'
 
 // Pousse's outfits, one per message, and how each moves (ported from Kit's VS Code extension). One Pousse, one size:
@@ -10,6 +10,7 @@ export type { Look }
 export const LOOKS = {
   mint: rest,
   think,
+  done: turnDone,
   asleep,
   offline,
   ticket: planReady,

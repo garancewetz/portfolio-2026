@@ -72,7 +72,7 @@ export function lastSeen(): Record<string, Snapshot> {
 
 export async function roam() {
   // (not on the Mascottes page, which frees them itself; not in an Abyme window; not for whoever asked for less motion)
-  if (location.pathname.startsWith('/mascottes') || !topPage() || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  if (location.pathname.startsWith('/lab/mascots') || !topPage() || matchMedia('(prefers-reduced-motion: reduce)').matches) return
   const out = freed()
   if (!Object.keys(out).length) return
   const modules = await Promise.all([import('./roster'), import('./sky'), import('./fur')]).catch(() => null)
@@ -89,4 +89,12 @@ export async function roam() {
     if (seen[m.key]) flight.resume(i, seen[m.key])
     else setTimeout(() => flight.roam(i), 600 + i * 700)
   })
+  // what moves on its own must be able to stop (accessibility): a small button calls them all back home
+  const back = Object.assign(document.createElement('button'), { type: 'button', className: 'mascots-home', textContent: 'rappeler les mascottes' })
+  back.addEventListener('click', () => {
+    for (const m of members) remember(m.key, undefined)
+    flight.clear()
+    back.remove()
+  })
+  document.body.append(back)
 }
