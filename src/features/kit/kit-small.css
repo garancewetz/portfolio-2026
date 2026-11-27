@@ -9,13 +9,25 @@
     font-size: 56px;
     line-height: 60px;
   }
-  .kit-halo {
-    width: 260px;
-    height: 260px;
+  .kit-pile {
+    zoom: 0.75;
   }
-  .kit-halo canvas {
-    width: 220px;
-    height: 220px;
+  .kit-versus,
+  .kit-week {
+    flex-direction: column;
+  }
+  .kit-week {
+    gap: 40px;
+  }
+  /* (the way in rows of three, without its thread) */
+  .kit-walk {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: 40px;
+    justify-items: center;
+  }
+  .kit-walk::before {
+    display: none;
   }
   .kit-steps {
     display: grid;
@@ -57,13 +69,44 @@
     font-size: 17px;
     line-height: 26px;
   }
-  .kit-halo {
-    width: 180px;
-    height: 180px;
+  .kit-pile {
+    zoom: 0.7;
+    align-self: center;
   }
-  .kit-halo canvas {
-    width: 160px;
-    height: 160px;
+  .kit-without,
+  .kit-with {
+    padding: 24px 20px;
+  }
+  .kit-versus ul {
+    font-size: 16px;
+    line-height: 24px;
+  }
+  /* (Pousse under the list, not over it) */
+  .kit-with canvas {
+    position: static;
+    align-self: flex-end;
+    width: 96px;
+    height: 96px;
+    margin-top: -8px;
+  }
+  .kit-walk {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-inline: 0 !important;
+  }
+  .kit-walk li {
+    width: auto;
+  }
+  .kit-walk canvas {
+    width: 192px;
+    height: 192px;
+    margin: -36px;
+  }
+  .kit-figures {
+    flex-direction: column;
+    gap: 28px;
+  }
+  .kit-figures div {
+    width: auto;
   }
   .kit-section h2,
   .kit-section h2.kit-big {

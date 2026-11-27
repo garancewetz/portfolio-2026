@@ -3,12 +3,12 @@ import './kit-pousse.css'
 import './kit-small.css'
 import { mount } from '@/features/carnet/carnet'
 import { LOOKS, type LookName } from './looks'
-import { QUIET, SAID, SPEAKING } from './said'
+import { QUIET, SAID, SPEAKING, WALK } from './said'
 import { route } from './window'
 import { stage } from './stage'
 
-// Kit, one of Garance's projects: what it does (a ticket, from the plan to the merge, in Kit's window: a click on a step
-// shows it), then Pousse, its mascot, the real one in 3D (looks.ts, stage.ts): in a scene where it speaks, hops,
+// Kit, one of Garance's projects: the problem it solves (which session waits for you?), what it does (a ticket's way,
+// Pousse at each stop, then the ticket in Kit's window: a click on a step shows it), then Pousse, its mascot, the real one in 3D (looks.ts, stage.ts): in a scene where it speaks, hops,
 // changes outfit and says something else every few seconds (a click on a line of the thread calls that message), then
 // all its outfits.
 
@@ -21,8 +21,18 @@ const look = (name: LookName) => LOOKS[name]()
 // (the scene's and the row's canvases are 1.6 times their place: see kit-pousse.css)
 const ROOM = 1.6
 
-// the Pousse of the hero
+// the Pousses drawn in the page itself: the hero's pile, the one beside « Avec Kit »
 document.querySelectorAll<HTMLCanvasElement>('canvas[data-look]').forEach((canvas) => stage(canvas, look(canvas.dataset.look as LookName), still))
+
+// one ticket's way through the steps, Pousse in the outfit of each stop
+for (const stop of WALK) {
+  const item = document.createElement('li')
+  item.innerHTML = '<canvas aria-hidden="true"></canvas><small></small><b></b>'
+  item.querySelector('small')!.textContent = stop.step
+  item.querySelector('b')!.textContent = stop.line
+  $('.kit-walk').append(item)
+  stage(item.querySelector('canvas')!, look(stop.look), still, ROOM)
+}
 
 // Kit's window: a click on a step shows the ticket there (window.ts)
 route(still)

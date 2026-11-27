@@ -277,3 +277,185 @@ footer.kit-bar {
   color: var(--accent);
   font-size: 13px;
 }
+
+/* the hero's pile: one Pousse per ticket, as Kit stacks them in the corner; the quiet ones faded, one speaking */
+.kit-lead strong {
+  color: var(--ink);
+  font-weight: 400;
+}
+.kit-pile {
+  position: relative;
+  display: block;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle at 50% 60%, #2a2a30 0%, var(--bg) 68%);
+}
+.kit-pile canvas {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--size);
+  height: var(--size);
+}
+.kit-pile .kit-quiet-one {
+  opacity: 0.5;
+}
+.kit .kit-bubble {
+  position: absolute;
+  left: 150px;
+  top: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: 14px 14px 14px 4px;
+  font: 11px var(--mono);
+  white-space: nowrap;
+}
+.kit-bubble b {
+  font: 700 15px/18px var(--sans);
+}
+
+/* the problem: life without Kit (dashed, grey), and with it (white, Pousse waving in the corner) */
+.kit-versus {
+  display: flex;
+  gap: 16px;
+}
+.kit-without,
+.kit-with {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 32px 36px;
+  border-radius: 18px;
+}
+.kit-without {
+  border: 1px dashed var(--border);
+}
+.kit-with {
+  background: #202024;
+  border: 1px solid var(--border);
+}
+.kit-with .kit-label {
+  color: var(--accent);
+}
+.kit-versus ul {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 18px;
+  line-height: 26px;
+}
+.kit-without ul {
+  color: var(--muted);
+}
+.kit-with ul {
+  max-width: 420px;
+}
+.kit-with canvas {
+  position: absolute;
+  right: 28px;
+  bottom: 24px;
+  width: 120px;
+  height: 120px;
+}
+
+/* a ticket's way: Pousse at each stop, on a dashed thread */
+.kit-walk {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 24px 40px !important;
+}
+.kit-walk::before {
+  content: '';
+  position: absolute;
+  left: 110px;
+  right: 110px;
+  top: 78px;
+  border-top: 2px dashed var(--border);
+}
+.kit-walk li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 200px;
+  text-align: center;
+}
+/* (its canvas 1.6 times its place, as the outfits' row) */
+.kit-walk canvas {
+  width: 224px;
+  height: 224px;
+  margin: -42px -42px;
+  pointer-events: none;
+}
+.kit-walk small {
+  color: var(--faint);
+  font: 12px var(--mono);
+}
+.kit-walk b {
+  font-size: 17px;
+  line-height: 22px;
+}
+
+/* a week of usage: three figures from Kit's log */
+.kit-week {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 64px;
+  padding-top: 32px;
+  border-top: 1px solid var(--rule);
+}
+.kit-week > div {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 420px;
+}
+.kit-week h2 {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 34px;
+}
+.kit-week-lead {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 24px;
+}
+.kit-figures {
+  display: flex;
+  gap: 48px;
+  margin: 0;
+}
+.kit-figures div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 200px;
+}
+.kit-figures dt {
+  /* (the same height with or without its « / 49 », so the three lines below start together) */
+  height: 60px;
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 60px;
+}
+.kit-figures small {
+  color: var(--faint);
+  font-size: 28px;
+}
+.kit-figures dd {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 22px;
+}

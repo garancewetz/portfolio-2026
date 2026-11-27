@@ -2,7 +2,7 @@ import { LOOKS } from './looks'
 import { ROUTE, UNDER_WAY } from './route'
 import { stage } from './stage'
 
-// Kit's window: the ticket's five steps. A click on one shows the ticket there: the steps before it done (a tick, a
+// Kit's window: the ticket's four steps. A click on one shows the ticket there: the steps before it done (a tick, a
 // button to look back), this one under way (in orange: how far, what is happening, the one main button), the steps
 // after it still to come; the small Pousse beside the title changes outfit, and the ticket's state follows.
 

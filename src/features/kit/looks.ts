@@ -1,5 +1,5 @@
 import type { Look } from './looks-shared'
-import { approval, asleep, checksRed, heavySession, offline, prFeedback, rest, reviewAsked, turnDone } from './looks-moods'
+import { approval, asleep, checksRed, heavySession, offline, prAddressed, prFeedback, rest, reviewAsked, turnDone } from './looks-moods'
 import { auditDone, planReady, prReady, shipped, think, videoReady } from './looks-ticket'
 
 // Pousse's outfits, one per message, and how each moves (ported from Kit's VS Code extension). One Pousse, one size:
@@ -23,6 +23,7 @@ export const LOOKS = {
   heavy: heavySession,
   review: reviewAsked,
   feedback: prFeedback,
+  addressed: prAddressed,
 } satisfies Record<string, () => Look>
 
 export type LookName = keyof typeof LOOKS

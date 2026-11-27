@@ -24,14 +24,50 @@
         <div class="kit-hero-text">
           <p class="kit-label kit-accent">Kit</p>
           <h1>Un ticket, du plan au merge, sans tout garder en tête.</h1>
-          <p class="kit-lead">Un worktree et une session Claude par ticket. Kit retient, pas toi.</p>
+          <p class="kit-lead">Cinq tickets, cinq worktrees, cinq sessions Claude. <strong>Laquelle t’attend&nbsp;?</strong> Kit le sait, et Pousse te le dit.</p>
         </div>
-        <div class="kit-halo"><canvas data-look="done" aria-hidden="true"></canvas></div>
+        <!-- one Pousse per ticket, piled in the corner as in Kit: the quiet ones faded, one raising its hand -->
+        <div class="kit-halo kit-pile">
+          <canvas class="kit-quiet-one" data-look="think" aria-hidden="true" style="--x: 18px; --y: 206px; --size: 118px"></canvas>
+          <canvas class="kit-quiet-one" data-look="asleep" aria-hidden="true" style="--x: 280px; --y: 214px; --size: 108px"></canvas>
+          <canvas class="kit-quiet-one" data-look="review" aria-hidden="true" style="--x: 84px; --y: 252px; --size: 104px"></canvas>
+          <canvas class="kit-quiet-one" data-look="mint" aria-hidden="true" style="--x: 226px; --y: 262px; --size: 100px"></canvas>
+          <canvas data-look="approval" aria-hidden="true" style="--x: 118px; --y: 148px; --size: 176px"></canvas>
+          <p class="kit-bubble"><span class="kit-accent">KIT-131</span><b>Claude attend ta réponse.</b></p>
+        </div>
       </header>
 
       <section class="kit-section">
+        <p class="kit-label">Le problème</p>
+        <h2>Claude code vite. Le difficile, c’est de savoir qui attend qui.</h2>
+        <div class="kit-versus">
+          <div class="kit-without">
+            <p class="kit-label">Sans Kit</p>
+            <ul>
+              <li>Six onglets de terminal. Lequel était TEC-4662, déjà&nbsp;?</li>
+              <li>Une session a fini il y a vingt minutes. Personne ne l’a vu.</li>
+              <li>«&nbsp;La vidéo est à jour&nbsp;?&nbsp;» Tu ne sais plus.</li>
+              <li>La CI est rouge depuis ce matin, sur une PR que tu croyais partie.</li>
+            </ul>
+          </div>
+          <div class="kit-with">
+            <p class="kit-label kit-accent">Avec Kit</p>
+            <ul>
+              <li>Un worktree par ticket, une session Claude par worktree.</li>
+              <li>Pousse saute quand c’est à toi, et se tait le reste du temps.</li>
+              <li>La vidéo dit elle-même quand elle est plus vieille que le code.</li>
+              <li>«&nbsp;Mes PR&nbsp;» met en haut celles qui t’attendent.</li>
+            </ul>
+            <canvas data-look="done" aria-hidden="true"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="kit-section">
         <p class="kit-label">Le parcours</p>
-        <h2>Cinq étapes, une seule chose à faire.</h2>
+        <h2>Quatre étapes, une seule chose à faire.</h2>
+        <!-- one ticket's way, Pousse changing outfit at each stop (said.ts, WALK) -->
+        <ol class="kit-walk" aria-label="Un ticket, du plan au merge"></ol>
         <div class="kit-window" role="group" aria-label="Un ticket dans Kit">
           <p class="kit-ticket"><span class="kit-accent">KIT-128 ↗</span> · feat/export-pdf · <span class="kit-state kit-accent">● En cours</span></p>
           <p class="kit-ticket-title"><canvas class="kit-mini" aria-hidden="true"></canvas>Exporter une facture en PDF</p>
@@ -52,7 +88,7 @@
             <div class="kit-card" aria-live="off">
               <p class="kit-card-ticket kit-accent">KIT-128</p>
               <p class="kit-card-line"></p>
-              <span class="kit-card-steps"><i></i><i></i><i></i><i></i><i></i></span>
+              <span class="kit-card-steps"><i></i><i></i><i></i><i></i></span>
               <p class="kit-card-actions"><span class="kit-button primary"></span><span class="kit-later">Plus tard</span></p>
             </div>
             <canvas class="kit-pousse" aria-hidden="true"></canvas>
@@ -64,9 +100,23 @@
         <ul class="kit-outfits kit-quiet"></ul>
       </section>
 
+      <!-- a week of Kit's usage log, read back: what was typed by hand became a button -->
+      <section class="kit-week">
+        <div>
+          <p class="kit-label">Une semaine d’usage</p>
+          <h2>Ce qu’on tapait à la main est devenu un bouton.</h2>
+          <p class="kit-week-lead">Kit a été relu à partir de son propre journal&nbsp;: ce que personne ne cliquait est parti.</p>
+        </div>
+        <dl class="kit-figures">
+          <div><dt>41</dt><dd>fois «&nbsp;la vidéo est à jour&nbsp;?&nbsp;». Elle le dit elle-même, maintenant.</dd></div>
+          <div><dt>30<small> / 49</small></dt><dd>audits suivis de «&nbsp;fais les améliorations&nbsp;». L’audit corrige, désormais.</dd></div>
+          <div><dt>29<small> / 34</small></dt><dd>retours suivis de «&nbsp;mets à jour la PR et resolve&nbsp;». C’est fait d’office.</dd></div>
+        </dl>
+      </section>
+
       <footer class="kit-bar">
         <span>Conçu et développé par Garance Wetzel</span>
-        <span>Extension VS Code · Claude · worktrees · three.js</span>
+        <span>Cursor · app Claude · Orca · worktrees · three.js</span>
       </footer>
     </main>
     <script type="module" src="/src/features/kit/main.ts"></script>

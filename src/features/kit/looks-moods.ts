@@ -194,3 +194,27 @@ export function prFeedback(): Look {
     },
   }
 }
+
+// feedback addressed: the fixes pushed, only the reviewer's move left; the feedback's violet and its bubble, but done:
+// a green tick in it, Pousse pleased with itself
+export function prAddressed(): Look {
+  const pose = pousse({ skin: VIOLET })
+  const face = addFace(pose)
+  const { prop, dots } = bubble(VIOLET)
+  dots.forEach((dot) => (dot.visible = false))
+  const tick = sign('✓', '#2f9e6e', 0.34)
+  tick.position.set(0, 0.01, 0.12)
+  prop.add(tick)
+  const carrier = hold(pose.root, prop, [-0.7, 1.2, 0.3], [0, 0.2, 0])
+  return {
+    root: pose.root,
+    update: (t, open) => {
+      sway(pose, t)
+      breathe(pose, t, 1.6, 0.018)
+      pose.arm.rotation.z = 0.15 + Math.sin(t * 2.2) * 0.12
+      carrier.position.y = 1.2 + Math.sin(t * 1.6) * 0.03
+      tick.scale.setScalar(0.34 * (1 + pulse(t, 1.6) * 0.08))
+      face.set({ ...MOOD.good, open })
+    },
+  }
+}
