@@ -13,24 +13,31 @@ html[data-mood='night'] { --sky: url(/accueil/posters/wide-night.jpg); }
   html[data-mood='night'] { --sky: url(/accueil/posters/tall-night.jpg); }
 }
 .lab-mosaic { display: none; }
-html.in-lab .lab-mosaic {
-  position: relative; z-index: 3; display: flex; flex-wrap: wrap; justify-content: center; align-content: center;
-  gap: 14px; min-height: 100vh; padding: 72px max(var(--pad), calc((100vw - 780px) / 2)) 48px;
-  background: #1414e6 var(--sky) center bottom / cover no-repeat fixed; color: #fff;
+/* on black (the page's own ground too, set inline on arrival: overscrolling shows no blue): small square cards side
+   by side, the last row centred */
+html.in-lab { background: #000 !important; }
+html.in-lab .lab-mosaic { position: relative; z-index: 3; display: block; min-height: 100vh; background: #000; color: #fff; }
+.lab-grid {
+  display: flex; flex-wrap: wrap; justify-content: center; align-content: center;
+  gap: 36px 20px; min-height: 100vh; padding: 88px max(var(--pad), calc((100vw - 1040px) / 2)) 72px;
 }
-.lab-tile {
-  width: 240px; padding: 8px 8px 10px; display: flex; flex-direction: column; gap: 8px;
-  background: #ffffff14; border: 1px solid #ffffff38; border-radius: 10px; backdrop-filter: blur(6px);
-  transition: background .25s, border-color .25s;
+.lab-tile { width: 230px; min-width: 0; display: flex; flex-direction: column; gap: 10px; color: inherit; text-decoration: none; }
+.lab-tile video {
+  display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; background: #111;
+  box-shadow: 0 0 0 1px #ffffff1f;   /* (a dark film still reads on the black) */
+  transition: scale .5s cubic-bezier(.2, .7, .2, 1), filter .3s;
+  filter: saturate(.85) brightness(.92);
 }
-.lab-tile img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 5px; }
-.lab-tile span { padding: 0 2px; font-size: 12px; }
-.lab-tile:is(:hover, :focus-visible) { background: #ffffff2e; border-color: #fff; }
-.lab-tile:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.lab-tile:is(:hover, :focus-visible) video { scale: 1.02; filter: none; }
+.lab-name { font-weight: 400; font-size: 12px; letter-spacing: .02em; opacity: .7; }
+.lab-tile:focus-visible { outline: none; }
+.lab-tile:focus-visible video { outline: 2px solid #fff; outline-offset: 4px; }
 .lab-mosaic:focus { outline: none; }
 
 @media (max-width: 560px) {
-  html.in-lab .lab-mosaic { gap: 10px; }
-  .lab-tile { width: calc(50% - 5px); padding: 6px 6px 8px; }
-  .lab-tile span { font-size: 11px; }
+  .lab-grid { gap: 28px 12px; padding-top: 72px; }
+  .lab-tile { width: calc(50% - 6px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lab-tile video { transition: none; }
 }

@@ -2,24 +2,19 @@
 @import '@/styles/base.css';
 
 :root {
-  --bg: #1414e6;
+  --bg: #a8345a;
   --ink: #ffffff;
   color-scheme: dark;
   /* (the notebook's line, in white) */
   --carnet-ink: rgb(255 255 255 / 0.8);
   --carnet-ink-hover: rgb(255 255 255 / 0.95);
 }
-/* (more precise than the notebook's sheet, which gives every page its own background) */
+/* its own sky, not the home page's: a warm gradient, from a dusky rose above to an apricot glow at the horizon
+   (more precise than the notebook's sheet, which gives every page its own background) */
 html:has(.mascots),
 body:has(.mascots) {
   min-height: 100%;
-  background: #2a2ee8 url(/accueil/posters/wide-day.jpg) center bottom / cover no-repeat fixed;
-}
-@media (max-aspect-ratio: 1/1) {
-  html:has(.mascots),
-  body:has(.mascots) {
-    background-image: url(/accueil/posters/tall-day.jpg);
-  }
+  background: linear-gradient(180deg, #5a1f4a 0%, #a8345a 34%, #e8664a 66%, #ffb067 88%, #ffd49a 100%) fixed;
 }
 main.mascots.carnet-sheet {
   display: flex;

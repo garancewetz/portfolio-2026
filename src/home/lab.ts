@@ -5,21 +5,55 @@ import { homeLink } from './header'
 import { transition } from './motion'
 import { LAB_URL, atLab, el } from './shared'
 
-// The lab (the notebook of experiments), in the home page itself: « labo → » turns
-// the page into a mosaic of the experiments over the sea of clouds of the hour (the arrival's poster): small cards,
-// their screenshot and their name; a click opens it. The small « Garance Wetzel » brings the home page back. The address follows (/lab/): the lab
-// opens directly, and the browser's back button works (route(), below, for the whole page).
+// The lab (the notebook of experiments), in the home page itself: the small snow globe at the end of the badges turns
+// the page into the lab, on black: a small square card for each experiment, a short silent film of it (public/lab-clips:
+// still until hovered, then playing; on a phone, playing while on screen), its name; a click
+// opens it. The small « Garance Wetzel » brings the home page back. The address follows (/lab/): the lab opens
+// directly, and the browser's back button works (route(), below, for the whole page).
 
-// the experiments, in their order in the mosaic
-const TILES = ['/lab/ribbon/', '/lab/mascots/', '/lab/spinning-tops/', '/lab/murmuration/', '/lab/creatures/', '/lab/games/', '/lab/abyme/']
-const mosaic = el(`<main class="lab-mosaic" tabindex="-1"><h1 class="sr">Le labo, mes expériences</h1></main>`)
-for (const href of TILES) {
+// the experiments, in their order (what surprises and plays at once first, the creatures freed on Mascottes then
+// follow the whole visit; then the contemplative and the personal; Abyme last: it climbs back up the visit. Same order
+// as the notebook, carnet.ts)
+const TILES: [href: string, clip: string][] = [
+  ['/lab/mascots/', 'mascottes'],
+  ['/lab/spinning-tops/', 'toupies'],
+  ['/lab/murmuration/', 'murmuration'],
+  ['/lab/ribbon/', 'ruban'],
+  ['/lab/creatures/', 'creatures'],
+  ['/lab/games/', 'jeux'],
+  ['/lab/abyme/', 'abyme'],
+]
+const still = matchMedia('(prefers-reduced-motion: reduce)').matches
+const touch = matchMedia('(hover: none)').matches
+const mosaic = el(`<main class="lab-mosaic" tabindex="-1"><h1 class="sr">Le labo, mes expériences</h1><div class="lab-grid"></div></main>`)
+const grid = mosaic.querySelector<HTMLElement>('.lab-grid')!
+// (on a phone, no hover: the films play while their card is on the screen)
+const seen = new IntersectionObserver((entries) => entries.forEach((e) => {
+  const v = e.target as HTMLVideoElement
+  if (e.isIntersecting) void v.play().catch(() => {})
+  else v.pause()
+}), { threshold: 0.5 })
+for (const [href, clip] of TILES) {
   const page = carnet.pages.find((p) => p.href === href)!
-  const tile = el(`<a class="lab-tile" href="${href}"><img alt="" loading="lazy" /><span class="mono"></span></a>`)
-  // (the image says nothing more than the name beside it, for a screen reader: the link is the name)
-  Object.assign(tile.querySelector('img')!, { src: page.src, alt: '' })
-  tile.querySelector('span')!.textContent = page.name
-  mosaic.append(tile)
+  const tile = el(`<a class="lab-tile" href="${href}">
+    <video muted loop playsinline preload="none" aria-hidden="true"></video>
+    <b class="lab-name mono"></b>
+  </a>`)
+  const video = tile.querySelector('video')!
+  Object.assign(video, { src: `/lab-clips/${clip}.mp4`, poster: `/lab-clips/${clip}.jpg`, muted: true })
+  tile.querySelector('b')!.textContent = page.name
+  if (!still) {
+    if (touch) seen.observe(video)
+    else {
+      const play = () => void video.play().catch(() => {})
+      const stop = () => { video.pause() }
+      tile.addEventListener('pointerenter', play)
+      tile.addEventListener('focus', play)
+      tile.addEventListener('pointerleave', stop)
+      tile.addEventListener('blur', stop)
+    }
+  }
+  grid.append(tile)
 }
 
 // the page's canonical address follows: the lab, or the home page
