@@ -21,7 +21,7 @@ export default defineConfig({
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   // the pages: the site (its lab: /lab/, in the home page itself), Kit (/kit), and the lab's experiments, under /lab/
   // in English: Murmuration, Yaya, Toupies (spinning-tops), Feu d'artifice (fireworks), Escalade (climbing), Ruban
-  // (ribbon), Morse, Créatures (creatures), Mascottes (mascots) and Abyme
+  // (ribbon), Morse, Créatures (creatures), Mascottes (mascots), Jeux (games) and Abyme
   build: {
     // (three.js alone, shared by the 3D pages, weighs a little over 500 kB: expected)
     chunkSizeWarningLimit: 600,
@@ -39,6 +39,7 @@ export default defineConfig({
         creatures: fileURLToPath(new URL('./lab/creatures/index.html', import.meta.url)),
         kit: fileURLToPath(new URL('./kit/index.html', import.meta.url)),
         mascots: fileURLToPath(new URL('./lab/mascots/index.html', import.meta.url)),
+        games: fileURLToPath(new URL('./lab/games/index.html', import.meta.url)),
       },
     },
   },

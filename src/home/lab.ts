@@ -11,7 +11,7 @@ import { LAB_URL, atLab, el } from './shared'
 // opens directly, and the browser's back button works (route(), below, for the whole page).
 
 // the experiments, in their order in the mosaic
-const TILES = ['/lab/ribbon/', '/lab/mascots/', '/lab/spinning-tops/', '/lab/murmuration/', '/lab/creatures/', '/lab/abyme/']
+const TILES = ['/lab/ribbon/', '/lab/mascots/', '/lab/spinning-tops/', '/lab/murmuration/', '/lab/creatures/', '/lab/games/', '/lab/abyme/']
 const mosaic = el(`<main class="lab-mosaic" tabindex="-1"><h1 class="sr">Le labo, mes expériences</h1></main>`)
 for (const href of TILES) {
   const page = carnet.pages.find((p) => p.href === href)!
