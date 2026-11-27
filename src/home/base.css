@@ -14,6 +14,9 @@
   color-scheme: light;
 }
 html, body { margin: 0; background: var(--bg); color: var(--ink); }
+/* the page does not bounce past its top or bottom: the bounce showed the ground under the backdrop (a deep flat blue,
+   or the poster's bands while it loads), never part of the landscape */
+html { overscroll-behavior-y: none; }
 body { font: 15px/1.45 var(--sans); -webkit-font-smoothing: antialiased; min-height: 100vh; }
 a { color: inherit; text-decoration: none; }
 img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }

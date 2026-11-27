@@ -12,13 +12,14 @@ const LAB = '/lab/'
 
 // the pages, in notebook order (to add one: a line here, and `mount()` in its main.ts)
 const PAGES = [
-  // (in an order that alternates light and dark screenshots: the two-tone table of contents breathes)
+  // (the lab's order, src/home/lab.ts: what surprises and plays at once first, then the contemplative and the personal;
+  // its screenshots alternate blue, light and dark, so the table of contents breathes)
+  { path: '/lab/mascots/', name: 'mascottes' },
   { path: '/lab/spinning-tops/', name: 'toupies' },
   { path: '/lab/murmuration/', name: 'murmuration' },
+  { path: '/lab/ribbon/', name: 'ruban' },
   { path: '/lab/creatures/', name: 'créatures' },
   { path: '/lab/games/', name: 'jeux' },
-  { path: '/lab/ribbon/', name: 'ruban' },
-  { path: '/lab/mascots/', name: 'mascottes' },
   // (Abyme last: it climbs back up the visit)
   { path: '/lab/abyme/', name: 'abyme' },
   // (hidden for now, their pages still exist, unlinked: Yaya, at /lab/yaya/; Escalade, at /lab/climbing/, whose idea

@@ -1,3 +1,4 @@
+import { globeBadge } from './globe-badge'
 import { BACKDROP, SETTINGS, hoverAllowed, lead, scrollDriven } from './backdrop'
 import { PROJECTS } from './data'
 import type { Settings } from './gl-background'
@@ -18,8 +19,8 @@ const row = scene.querySelector<HTMLElement>('.row')!
 export const aim = (id: string): Settings => ({ ...SETTINGS[id], ...scrollDriven() })
 
 // the projects: hovering (or a click, a touch) leads to their place and writes their sentence and links (see
-// note.ts); then the lab as a last badge (« labo → »: it opens the lab, see lab.ts; it is just a page: hovering
-// it shows no screenshot and does not change the place)
+// note.ts); then the lab as a last badge, a small snow globe in characters (globe-badge.ts; it opens the lab, see
+// lab.ts; it is just a page: hovering it shows no screenshot and does not change the place)
 const ITEMS: { id: string; title: string; src: string | null; href: string }[] = [
   // (with a mouse, a click goes to the project itself: its site, else its code; its address is the badge's link)
   ...PROJECTS.map((p) => ({ id: p.id, title: p.title, src: p.src, href: p.demo ?? p.code ?? `?p=${p.id}` })),
@@ -36,11 +37,12 @@ function layCards() {
       (it, i) => `
     <div class="col">
       <a href="${it.href}" data-id="${it.id}"${it.src ? ` data-shot="${it.src}"` : ''} style="--i:${i}; view-transition-name: card-${i}">
-        <b>${it.title}${it.href.startsWith('http') ? '<span class="sr"> (nouvel onglet)</span>' : ''}</b>
+        <b>${it.id === 'labo' ? '<span class="sr">labo</span>' : it.title}${it.href.startsWith('http') ? '<span class="sr"> (nouvel onglet)</span>' : ''}</b>
       </a>
     </div>`,
     )
     .join('')
+  globeBadge(row.querySelector<HTMLElement>('a[data-id="labo"] b')!)
 }
 // the screenshots, loaded ahead of the first hover, at the first scroll (not on arrival: the landscape first)
 let warmed = false

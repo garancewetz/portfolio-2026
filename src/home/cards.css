@@ -50,7 +50,12 @@ html:not(.in-lab) .row .col a:not(.shown) { pointer-events: none; }   /* (not ye
 .row a:is(:hover, :focus-visible, .active) b { background: #fff; color: #1414e6; text-shadow: none; }
 /* the lab is something else (experiments, not projects): a quieter badge, no ground, a fainter rule and text; it
    lights up like the others when hovered */
-html:not(.in-lab) .row a[data-id="labo"]:not(:hover, :focus-visible) b { background: #ffffff0a; border-color: #ffffff40; color: #ffffffe0; }
+html:not(.in-lab) .row a[data-id="labo"]:not(:hover, :focus-visible) b { color: #ffffffe0; }
+/* …drawn as a small snow globe in characters (globe-badge.ts): no frame, the drawing alone; it lights up when hovered */
+.row a[data-id="labo"] b, html:not(.in-lab) .row a[data-id="labo"] b { padding: 0; background: none; border: 0; overflow: visible; backdrop-filter: none; }
+.row a[data-id="labo"]:is(:hover, :focus-visible) b { background: none; color: #fff; }
+.globe-ascii { display: block; font: 400 12px/1.08 var(--mono); margin-top: 1px; letter-spacing: 0; white-space: pre; text-align: left; opacity: .85; transition: opacity .3s; }
+.row a[data-id="labo"]:is(:hover, :focus-visible) .globe-ascii { opacity: 1; text-shadow: 0 0 8px #ffffffa0; }
 /* on a wide screen, everything on one line: the small « Garance Wetzel » on the left, the badges on the right at their
    own width; the rest of the screen is the landscape */
 @media (min-width: 1100px) {
@@ -85,8 +90,8 @@ html:not(.in-lab) .row a[data-id="labo"]:not(:hover, :focus-visible) b { backgro
   html:not(.in-lab) .row .col:nth-child(n + 3) a { top: 122px; }
   html:not(.in-lab) .row .col:nth-child(n + 5) a { top: 156px; }
   html:not(.in-lab) .row .col:nth-child(n + 7) a { top: 190px; }
-  html:not(.in-lab) .row .col:nth-child(8) { grid-column: 1 / -1; }   /* the lab, alone on the last line, full width */
-  html:not(.in-lab) .row .col:nth-child(8) a { top: 224px; }
+  html:not(.in-lab) .row .col:nth-child(8) { grid-column: 2; }   /* the lab, its little globe beside the last project */
+  html:not(.in-lab) .row .col:nth-child(8) a { top: 190px; justify-self: start; width: max-content; margin: 0 auto; }
   html:not(.in-lab) .row b { font-size: 11px; padding: 5px 8px; }
   /* (on the narrowest screens, a long name goes on two lines rather than being cut) */
   @media (max-width: 360px) { .row b { white-space: normal; } }
