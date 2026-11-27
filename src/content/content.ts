@@ -122,6 +122,12 @@ export const carnet: Carnet = {
       src: '/shots/creatures.webp',
       alt: 'Sur une page blanche, des créatures dessinées en caractères dorment chacune sur son bout de ficelle, les yeux fermés, un petit z près de la tête ; deux sont réveillées, un hibou et un yéti : ils sautent sur leur ficelle et laissent derrière eux un trait de leur couleur, vert et rouge, qui garde la forme de leurs sauts.',
     },
+    {
+      name: 'jeux',
+      href: '/lab/games/',
+      src: '/shots/jeux.webp',
+      alt: 'Sur un fond noir, une mosaïque de captures de jeux des années 1990 et 2000 : Adibou, les Zoombinis, Age of Empires, le Petit Prince, l’Oncle Ernest, Diablo 2, les Sims 2, World of Warcraft…',
+    },
     // (Kit is a project of the home page now, not in the lab; kept here for its screenshot in Abyme)
     {
       name: 'kit',

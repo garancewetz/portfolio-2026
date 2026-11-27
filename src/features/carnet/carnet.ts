@@ -16,6 +16,7 @@ const PAGES = [
   { path: '/lab/spinning-tops/', name: 'toupies' },
   { path: '/lab/murmuration/', name: 'murmuration' },
   { path: '/lab/creatures/', name: 'créatures' },
+  { path: '/lab/games/', name: 'jeux' },
   { path: '/lab/ribbon/', name: 'ruban' },
   { path: '/lab/mascots/', name: 'mascottes' },
   // (Abyme last: it climbs back up the visit)
